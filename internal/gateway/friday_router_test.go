@@ -150,6 +150,11 @@ func TestFridayPreTruncate(t *testing.T) {
 }
 
 func TestFridayThrottleConcurrency(t *testing.T) {
+	// zero the send interval so the semaphore alone decides; the 0.5s
+	// spacing is a timing behaviour, not this guarantee.
+	old := fridaySendInterval
+	fridaySendInterval = 0
+	t.Cleanup(func() { fridaySendInterval = old })
 	fridaySendMu.Lock()
 	fridayLastSend = time.Time{}
 	fridaySendMu.Unlock()
