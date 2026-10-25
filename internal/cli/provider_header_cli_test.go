@@ -9,12 +9,12 @@ import (
 
 func TestShowProviderMasksSecretHeaders(t *testing.T) {
 	p := provider.Provider{
-		ID:   "friday",
-		Name: "Friday",
-		Chat: "http://127.0.0.1:18082/v1",
+		ID:   "test",
+		Name: "Test",
+		Chat: "http://127.0.0.1:8080/v1",
 		Headers: map[string]string{
-			"X-Friday-Bridge-Token": "private-test-token",
-			"X-Client-Name":         "magpie-test",
+			"Authorization": "private-test-token",
+			"X-Client-Name": "magpie-test",
 		},
 	}
 	out, err := said(t, func() error { return showProvider(p) })

@@ -113,7 +113,6 @@ const usage = `magpie — one place to pick every agent's model
   magpie daemon web [on|off] [--lan] [--addr host:port]
                                   the service's page: its link, or turn it on or off
   magpie healthcheck              exit 0 when the gateway answers (a container's HEALTHCHECK)
-  magpie friday-bridge [--addr host:port]   the Friday Adapter's bridge: 127.0.0.1:18082 to FRIDAY_REMOTE_HOST, behind FRIDAY_BRIDGE_TOKEN
   magpie heap [<file>]            a Go heap profile of the running magpie, with its memory numbers, for a report of it using too much memory
   magpie cpu [<file>] [--seconds N]   a Go CPU profile of the running magpie over 30s (5..120) while you use it, for a report of it using too much CPU
   magpie goroutines [<file>]      every goroutine of the running magpie, its stack and how long it waited, for a report of it stuck at something
@@ -300,8 +299,6 @@ func run(args []string) error {
 			return claudebridge.RunMCP(args[1:])
 		case "statusline":
 			return statuslineCmd(args)
-		case "friday-bridge":
-			return fridayBridgeCmd(args[1:])
 		}
 	}
 	startUp()

@@ -45,10 +45,7 @@ func fridayProvider(t *testing.T, upstream http.Handler) {
 	t.Setenv("XDG_CACHE_HOME", t.TempDir())
 	srv := httptest.NewServer(upstream)
 	t.Cleanup(srv.Close)
-	p, err := provider.FromPreset("friday")
-	if err != nil {
-		t.Fatal(err)
-	}
+	p := provider.Provider{ID: "friday", Name: "Friday", Preset: "friday"}
 	p.Chat = srv.URL + "/v1"
 	p.Models = []string{"gpt", "gpt-6-astra", "gpt-6.1-sol", "gpt-6-sol", "gpt-6-luna", "gpt-5.6-sol", "gpt-5.6-luna", "gpt-5.6-terra", "gpt-5.5"}
 	if err := provider.Save(p); err != nil {
@@ -119,10 +116,8 @@ func TestFridayFailureRestsOnlyFailedModel(t *testing.T) {
 }
 
 func TestFridayToolModelExclusionsSurviveAvailableFiltering(t *testing.T) {
-	p, err := provider.FromPreset("friday")
-	if err != nil {
-		t.Fatal(err)
-	}
+	p := provider.Provider{ID: "friday", Name: "Friday", Preset: "friday"}
+	p.Chat = "http://127.0.0.1:8080/v1"
 	p.Models = []string{"gpt-6-astra", "gpt-6.1-sol", "gpt-6-sol"}
 	p.NoModels = true
 	if err := provider.Save(p); err != nil {
@@ -207,10 +202,7 @@ func kimiFridayProvider(t *testing.T, upstream http.Handler) {
 	t.Setenv("XDG_CACHE_HOME", t.TempDir())
 	srv := httptest.NewServer(upstream)
 	t.Cleanup(srv.Close)
-	p, err := provider.FromPreset("friday")
-	if err != nil {
-		t.Fatal(err)
-	}
+	p := provider.Provider{ID: "friday", Name: "Friday", Preset: "friday"}
 	p.Chat = srv.URL + "/v1"
 	p.Models = []string{"kimi-k3", "kimi-k2.7-code-highspeed", "kimi-k2.7-code"}
 	if err := provider.Save(p); err != nil {
