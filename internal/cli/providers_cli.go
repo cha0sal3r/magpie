@@ -888,7 +888,11 @@ func showProvider(p provider.Provider) error {
 	}
 	cancel()
 	for _, k := range slices.Sorted(maps.Keys(p.Headers)) {
-		kv("header", k+": "+muted.Render(p.Headers[k]))
+		v := p.Headers[k]
+		if provider.SecretHeader(k) {
+			v = provider.Mask(v)
+		}
+		kv("header", k+": "+muted.Render(v))
 	}
 	if d := p.RefreshInterval(); d > 0 {
 		kv("refresh", "every "+p.RefreshSchedule()+muted.Render("  the gateway fetches its list by itself"))

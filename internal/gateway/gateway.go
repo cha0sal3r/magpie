@@ -2103,7 +2103,12 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 			scope += "|" + words
 		}
 	} else {
-		cands, pl = s.plan(p, model, from)
+		if p.Preset == "friday" {
+			body = fridayPreTruncate(body)
+			cands, pl = s.planFriday(p, model, from, body)
+		} else {
+			cands, pl = s.plan(p, model, from)
+		}
 		if handedOnOf(r) != nil {
 			// Codex's own sign-in, asked as often as it is asked: only
 			// the fallbacks are left (codexFallBack)
@@ -2563,6 +2568,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 		// a compaction's summary is held to its end, for a cut or an
 		// error halfway to go to the next candidate (#2274)
 		hw.wantWhole = wantWhole
+		hw.friday = c.p.Preset == "friday"
 		// Claude's and GPT's reasoning is held for a refusal after it only
 		// while another candidate could answer instead: the last one's
 		// refusal isn't asked again, so holding it only kept a lone relay's
@@ -3084,6 +3090,17 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 			}
 			hw.release()
 			break
+		}
+		if c.p.Preset == "friday" && hw.failed() && !hw.passing && hw.code() == http.StatusTooManyRequests {
+			// Friday's own cooldown, with its GPT and no-429 exceptions,
+			// sits beside the group cooldown above: a rate-limited model is
+			// skipped by the next request's planFriday.
+			fridayCools.cool(c.model, false, time.Now())
+		}
+		if c.p.Preset == "friday" && hw.fridayCreated0 {
+			// a created=0 reply cools as created0: aws.claude-opus-4.8, which
+			// a 429 does not cool, cools for it.
+			fridayCools.cool(c.model, true, time.Now())
 		}
 		// The probe lease is released by the deferred release below for
 		// anything but a 429 (fail resets it) or a success (success clears
@@ -4341,6 +4358,16 @@ func (s *Server) forwardOnce(ctx context.Context, p provider.Provider, to provid
 		// a turn goes zstd-compressed, as Codex's own client sends it;
 		// sent plain, ChatGPT answered a 1.1 MB one 503 (ylorn on X)
 		sent = provider.CodexCompressed(req, body)
+	}
+	// a Friday request shares the Router's upstream throttle: at most two in
+	// flight and 0.5s between sends, process-wide across Friday requests.
+	var fridayRelease func()
+	if p.Preset == "friday" {
+		var terr error
+		if fridayRelease, terr = fridayThrottle(ctx); terr != nil {
+			return nil, terr
+		}
+		defer fridayRelease()
 	}
 	res, err := p.Do(s.client, req)
 	if err == nil && res.StatusCode >= 400 && provider.OpenCodeURL(req.URL.String()) {

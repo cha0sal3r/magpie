@@ -1633,6 +1633,10 @@ type holdWriter struct {
 	failure    int       // the status the stream's error stands for
 	failMsg    string
 	sharedPool bool // an OpenRouter upstream pool rejected this attempt
+	friday     bool // use Friday Router's narrower model-switch conditions
+	// fridayCreated0: the stream failed with a created=0 reply, which the
+	// Router cools as created0 (not as a 429)
+	fridayCreated0 bool
 
 	// turnedAway: the account is asked with the system prompt Antigravity
 	// answers with a 429 whatever quota it has left — Claude Code's, its
@@ -2075,7 +2079,32 @@ func (h *holdWriter) scan() {
 			break
 		}
 		h.scanned += end
-		switch kind, status, msg := streamEvent(rest[:end]); kind {
+		kind, status, msg := streamEvent(rest[:end])
+		if h.friday && kind != eventError && kind != eventRefusalError && kind != eventRefusal {
+			// Friday's Router reads a reply the model wrote as a chunk —
+			// a created=0 event, or a [Error] it put in its text — as a
+			// failure to fall back from, before any content reached the
+			// client (classifyFridayFrame).
+			if outcome, _, appErr := classifyFridayFrame(rest[:end]); appErr {
+				code := http.StatusBadGateway
+				if outcome == "fatal" {
+					code = http.StatusBadRequest
+				}
+				h.failure, h.failMsg = code, "Friday "+outcome
+				if outcome == "retry" {
+					if _, body := parseFridayFrame(rest[:end]); body != nil {
+						if created, _ := body["created"].(float64); created == 0 && fridayFalsy(body["id"]) {
+							h.fridayCreated0 = true
+						}
+					}
+				}
+				if h.stop != nil {
+					h.stop()
+				}
+				return
+			}
+		}
+		switch kind {
 		case eventLead:
 			continue
 		case eventBuffering:
@@ -2387,6 +2416,14 @@ func (h *holdWriter) settle() {
 func (h *holdWriter) failed() bool {
 	if h.refused {
 		return !h.passing
+	}
+	if h.friday {
+		switch h.code() {
+		case 429, 500, 502, 503, 504:
+			return !h.passing
+		default:
+			return false
+		}
 	}
 	return !h.passing && h.code() >= 400 && retryable(h.code(), h.errBody())
 }

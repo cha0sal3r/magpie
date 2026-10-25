@@ -584,6 +584,13 @@ var presets = []PresetDef{
 	{ID: "lmstudio", Name: "LM Studio", Icon: "lmstudio", Kind: KindLocal, NoKey: true,
 		Chat: "http://localhost:1234/v1",
 		Note: "local server, port 1234 by default", Website: "https://lmstudio.ai"},
+	// Friday's local bridge exposes the upstream adapter as OpenAI Chat. The
+	// adapter owns Friday authentication; a private bridge token, when needed,
+	// is an ordinary user-supplied provider header and is never built in.
+	{ID: "friday", Name: "Friday", Kind: KindLocal, NoKey: true,
+		Chat:        "http://127.0.0.1:18082/v1",
+		Note:        "local Friday adapter bridge",
+		HeaderHints: []string{"X-Friday-Bridge-Token"}},
 	// its decision models (Clef, OpenJev), served at /v1/systemone since
 	// 0.7.1, are the ones its /v1/models/status says are (omlx_decide.go)
 	{ID: OMLXPreset, Name: "oMLX", Icon: "omlx", Kind: KindLocal, NoKey: true,

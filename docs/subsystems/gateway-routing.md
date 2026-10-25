@@ -31,6 +31,26 @@ to the client never transparently retries. This cooldown is not shared between
 magpie instances and does not disable a provider or parse its `Retry-After`
 for the model cooldown (a future extension).
 
+Friday (`provider.Preset == "friday"`) has an additional model-family plan in
+[`friday_fallback.go`](../../internal/gateway/friday_fallback.go). When an
+agent asks for one of Friday's family aliases or a concrete family model, the
+gateway tries that model and then only lower-priority siblings from Friday's
+model order. It intersects that order with Friday's available model list when
+known; GPT models known not to take tools are skipped on tool calls. This is
+ordinary gateway candidate fallback: only errors the gateway classifies as
+retryable move to the next model, the failed model is rested using the normal
+failure policy, and any reply already sent to the client is never replaced.
+If no candidate is known to work, magpie rejects the route without sending an
+excluded model. Friday family candidates are tried before a provider's manual
+fallback list. Non-family models and providers are unchanged. This applies to
+direct Friday routes; routing-group members retain the group's own ordering and
+fallback semantics. The separate Router's model cooldown is kept here in
+[`friday_router.go`](../../internal/gateway/friday_router.go): a 429 cools only
+the model that failed, for 60 seconds — a GPT model never cools, and
+`aws.claude-opus-4.8` is not cooled by a 429 — and the next request's plan
+skips a cooling model. Its created=0 trigger, request throttling,
+response-text classifiers and truncation retries are not added.
+
 WorkBuddy and CodeBuddy Code's `X-Conversation-ID` is a native session header
 in `sessionHeaders` (`sessionOf`, `nativeSessionOf`, `conversationID` in
 [`gateway.go`](../../internal/gateway/gateway.go)). It keeps their requests
