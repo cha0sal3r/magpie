@@ -3,7 +3,6 @@ package gateway
 import (
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/yetone/magpie/internal/provider"
 )
@@ -25,9 +24,7 @@ func TestBareIDIsTheGroups(t *testing.T) {
 	ask := func(model string) (int, string, Call, *Route) {
 		t.Helper()
 		a.tried, b.tried = nil, nil
-		restingUntil.Lock()
-		restingUntil.m = map[string]time.Time{} // b is tried again each time
-		restingUntil.Unlock()
+		clearRests() // b is tried again each time
 		sticks.Lock()
 		sticks.m = map[string]stick{} // and no conversation stays with a
 		sticks.Unlock()

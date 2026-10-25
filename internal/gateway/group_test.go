@@ -33,6 +33,17 @@ func (k *keyed) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		`"usage":{"prompt_tokens":3000,"completion_tokens":5,"prompt_tokens_details":{"cached_tokens":2500}}}`)
 }
 
+// clearRests lifts every ordinary rest and provider/model cooldown, for
+// tests that re-ask a member between requests.
+func clearRests() {
+	restingUntil.Lock()
+	restingUntil.m = map[string]time.Time{}
+	restingUntil.Unlock()
+	provider429s.Lock()
+	provider429s.states = map[providerModelKey]providerModelState{}
+	provider429s.Unlock()
+}
+
 func fresh(t *testing.T) {
 	t.Helper()
 	home := t.TempDir() // no agent signed in
@@ -40,9 +51,7 @@ func fresh(t *testing.T) {
 	t.Setenv("USERPROFILE", home) // Windows finds the home there
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
 	t.Setenv("XDG_CACHE_HOME", t.TempDir())
-	restingUntil.Lock()
-	restingUntil.m = map[string]time.Time{}
-	restingUntil.Unlock()
+	clearRests()
 	sticks.Lock()
 	sticks.m = map[string]stick{}
 	sticks.Unlock()

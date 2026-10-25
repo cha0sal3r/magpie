@@ -3,7 +3,6 @@ package gateway
 import (
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/yetone/magpie/internal/provider"
 )
@@ -21,9 +20,7 @@ func TestDottedGroupID(t *testing.T) {
 	s := New()
 	for _, id := range []string{"group/gpt-6.1-sol", "gpt-6.1-sol"} {
 		a.tried, b.tried = nil, nil
-		restingUntil.Lock()
-		restingUntil.m = map[string]time.Time{}
-		restingUntil.Unlock()
+		clearRests()
 		sticks.Lock()
 		sticks.m = map[string]stick{}
 		sticks.Unlock()

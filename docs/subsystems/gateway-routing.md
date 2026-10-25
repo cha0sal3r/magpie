@@ -11,6 +11,26 @@ This page covers how a request is routed. Plugins that change requests and
 replies are in [Gateway middleware](gateway-middleware.md). Subscriptions
 served by a plugin are in [Provider and plugin ownership](provider-plugins.md).
 
+For automatically routed **group** requests, an upstream HTTP 429 (including
+an error event before streamed content) cools only the provider and concrete
+member model that failed; its other models and other providers remain eligible.
+[`provider_429.go`](../../internal/gateway/provider_429.go) keeps this
+process-local state across the provider's keys/accounts: consecutive 429s cool
+for 10, 20, 40, then at most 60 seconds. A success resets that pair; a run
+starts over after ten minutes without a 429. A request does not retry the
+same pair after its upstream 429 or wait through the cooldown. Other failure
+classes keep the existing account/key rest and retry policy. While a pair is
+cooling, group selection skips it; if every candidate is cooling it returns
+429 without contacting upstream. On expiry, one recovery probe is admitted;
+other concurrent requests skip the pair until the probe finishes or its
+10-second lease expires. An upstream 429 with no other candidate returns the
+original upstream error. Explicit provider routes and pinned-account requests
+retain their existing routing behavior; Friday and free OpenRouter models in
+groups retain their existing specialized rests. A stream already delivered
+to the client never transparently retries. This cooldown is not shared between
+magpie instances and does not disable a provider or parse its `Retry-After`
+for the model cooldown (a future extension).
+
 WorkBuddy and CodeBuddy Code's `X-Conversation-ID` is a native session header
 in `sessionHeaders` (`sessionOf`, `nativeSessionOf`, `conversationID` in
 [`gateway.go`](../../internal/gateway/gateway.go)). It keeps their requests

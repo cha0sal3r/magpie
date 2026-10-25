@@ -159,6 +159,17 @@ func clearRest(key string) {
 	restingUntil.Unlock()
 }
 
+// markRest rests id until r.Until, keeping a longer rest already in place.
+func markRest(id string, r Rest) {
+	restingUntil.Lock()
+	defer restingUntil.Unlock()
+	if until, ok := restingUntil.m[id]; ok && until.After(r.Until) {
+		return // resting longer already, for what another failure said
+	}
+	restingUntil.m[id] = r.Until
+	restingUntil.note[id] = r
+}
+
 // How long a candidate sits out, by why it failed.
 const (
 	creditRest  = 30 * time.Minute // out of credit: until someone tops it up
@@ -613,12 +624,14 @@ var (
 // passed over now, while it is.
 func RestOf(key string) (Rest, bool) { return restOf(key) }
 
-// Unrest lifts the rest of what rests by key — an account just verified
-// with its vendor, say — so the next request asks it again: rate limited
-// with Sink on, it is no longer sent to the back of the order either.
-// The lift is told to the Routing page (TraceState.Lifted), wherever it
-// was asked for. False when it wasn't resting.
+// Unrest lifts the ordinary rest or provider/model 429 cooldown named by
+// key — an account just verified with its vendor, say — so the next request
+// asks it again: rate limited with Sink on, it is no longer sent to the
+// back of the order either. The lift is told to the Routing page
+// (TraceState.Lifted), wherever it was asked for. False when it wasn't
+// resting.
 func (s *Server) Unrest(key string) bool {
+	cooled := provider429s.unrest(key, false) > 0
 	restingUntil.Lock()
 	_, ok := restingUntil.m[key]
 	delete(restingUntil.m, key)
@@ -627,15 +640,16 @@ func (s *Server) Unrest(key string) bool {
 	restingUntil.Unlock()
 	unsink(key)
 	s.trace.lifted()
-	return ok
+	return ok || cooled
 }
 
 // UnrestAll lifts every rest of what rests by key: its own and each of its
 // models' (restID, key/model). A key whose value was replaced (#1869) is
 // asked again for all of them. It returns how many it lifted.
 func (s *Server) UnrestAll(key string) int {
+	n := provider429s.unrest(key, true)
 	restingUntil.Lock()
-	n, now := 0, time.Now()
+	now := time.Now()
 	for k := range restingUntil.m {
 		if k == key || strings.HasPrefix(k, key+"/") {
 			delete(restingUntil.m, k)

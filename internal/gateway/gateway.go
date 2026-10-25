@@ -2350,8 +2350,41 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 	// asked: it would only refuse it. Those left out are the last resort,
 	// once every one with room is out of its allowance (small, below)
 	cands, pl, small, smallW := roomy(cands, pl, from, body)
-	// of those resting, only the one back soonest is asked (#1799); the
-	// whole list still finds a Codex account to spend a reset on
+	// A provider-model that rate limited is left out of automatic routing
+	// until its cooldown expires. One credential is reserved as its recovery
+	// probe; unrelated models and other providers remain available.
+	var rate429Leases map[providerModelKey]uint64
+	if pin == "" && isGroup {
+		var legacy []candidate
+		automatic := make([]candidate, 0, len(cands))
+		for _, c := range cands {
+			if c.p.Preset == "friday" || c.isOpenRouterFree() {
+				legacy = append(legacy, c)
+			} else {
+				automatic = append(automatic, c)
+			}
+		}
+		var earliest time.Time
+		var cooled429 bool
+		cands, rate429Leases, earliest, cooled429 = provider429s.selectForRoute(automatic, time.Now())
+		cands = append(cands, legacy...)
+		defer func() {
+			for key, token := range rate429Leases {
+				provider429s.release(key, token, time.Now())
+			}
+		}()
+		if len(cands) == 0 && cooled429 {
+			call.Status, call.Error = http.StatusTooManyRequests, "every candidate for this model is cooling down after an upstream 429"
+			if wait := time.Until(earliest); wait > 0 {
+				w.Header().Set("Retry-After", strconv.Itoa(int((wait+time.Second-1)/time.Second)))
+			}
+			writeError(w, from, call.Status, call.Error)
+			finishCapture()
+			s.record(call)
+			return
+		}
+	}
+	// Of the ordinary rests, only the one back soonest is asked (#1799).
 	all := cands
 	cands = probeOne(cands)
 	var cacheReport *Request
@@ -2485,6 +2518,23 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 	}
 	for i := 0; i < len(cands); i++ {
 		c := cands[i]
+		rateKey := providerModelOf(c)
+		rateToken := rate429Leases[rateKey]
+		if isGroup && pin == "" && c.p.Preset != "friday" && !c.isOpenRouterFree() {
+			// An expired cooldown admits one concurrent probe, even when a
+			// replan or a lane move inserted this candidate after selection.
+			if rateToken == 0 {
+				_, leases, _, _ := provider429s.selectForRoute([]candidate{c}, time.Now())
+				if len(leases) == 0 {
+					if _, blocked := provider429s.blocked(rateKey, time.Now()); blocked {
+						continue
+					}
+				} else {
+					rateToken = leases[rateKey]
+					rate429Leases[rateKey] = rateToken
+				}
+			}
+		}
 		if j := s.laneMate(cands, i, isGroup, gaveWay); j > i {
 			// its key or account is full, and another of its provider's,
 			// or of its group, has a slot free: that one is asked first,
@@ -3008,6 +3058,37 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 			continue
 		}
 		watched.attempt(call, try, c.p.ID, sent, hw, capture)
+		// A rate-limited model is isolated from its provider's sibling models
+		// and credentials for automatic group routing. Handle it before
+		// patience and same-candidate retry can synchronously ask it again.
+		if isGroup && pin == "" && c.p.Preset != "friday" && !c.isOpenRouterFree() && hw.failed() && !hw.passing && hw.code() == http.StatusTooManyRequests && failure(hw.code(), hw.errBody()) == failRate {
+			key := providerModelOf(c)
+			until, failures := provider429s.fail(key, rateToken, time.Now())
+			// The model cooldown cools the whole provider/model pair across
+			// its credentials. The candidate's own model also rests by
+			// itself (restID), so a rule's member reads as unready and
+			// Unrest lifts it, without resting the key's sibling models.
+			rest := Rest{Why: failRate, Status: http.StatusTooManyRequests, By: "model-cooldown", Failures: failures, Until: until, Key: c.restID(), Model: c.model}
+			markRest(c.restID(), rest)
+			try.Fail, try.Rest = failRate, &rest
+			delete(rate429Leases, key)
+			s.trace.update(tr, func(t *Route) { t.Tries[len(t.Tries)-1] = try })
+			skipped = append(skipped, c.label()+": "+call.Error)
+			if other == nil {
+				other = &Try{Status: call.Status, Error: call.Error}
+			}
+			// When this was the last candidate, hand the vendor's 429 back
+			// as it came, never re-asking it in the same request (#54).
+			if i < len(cands)-1 {
+				continue
+			}
+			hw.release()
+			break
+		}
+		// The probe lease is released by the deferred release below for
+		// anything but a 429 (fail resets it) or a success (success clears
+		// the whole pair): a non-429 failure keeps the cooldown's count
+		// while the request still runs, and the lease ends with it.
 		if autoPicks(c) && repicked < 2 && !hw.passing && hw.code() == http.StatusBadRequest &&
 			(provider.CopilotRefusal(hw.errBody()) || wrongEndpoint(hw.code(), hw.errBody())) {
 			// Copilot refused the model its Auto picked, and Auto has
@@ -3684,6 +3765,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 				try.Fail, try.Rest = rest.Why, &rest
 			}
 		} else if call.Status < 400 {
+			provider429s.success(providerModelOf(c), rateToken)
 			servedCandidate(c, call.Usage.Input+call.Usage.Output+call.Usage.CacheRead+call.Usage.CacheWrite)
 			// a compaction a rule sent to a model of its own leaves the
 			// conversation, and the turn's size, where they were
