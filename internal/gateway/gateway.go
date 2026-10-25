@@ -2103,9 +2103,9 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 			scope += "|" + words
 		}
 	} else {
-		if p.Preset == "friday" {
-			body = fridayPreTruncate(body)
-			cands, pl = s.planFriday(p, model, from, body)
+		if pol, rt, ok := routeFor(p); ok {
+			body = routePreTruncate(pol, body)
+			cands, pl = s.planRoute(p, rt, pol, model, from, body)
 		} else {
 			cands, pl = s.plan(p, model, from)
 		}
@@ -2363,7 +2363,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 		var legacy []candidate
 		automatic := make([]candidate, 0, len(cands))
 		for _, c := range cands {
-			if c.p.Preset == "friday" || c.isOpenRouterFree() {
+			if routeEnabled(c.p) || c.isOpenRouterFree() {
 				legacy = append(legacy, c)
 			} else {
 				automatic = append(automatic, c)
@@ -2525,7 +2525,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 		c := cands[i]
 		rateKey := providerModelOf(c)
 		rateToken := rate429Leases[rateKey]
-		if isGroup && pin == "" && c.p.Preset != "friday" && !c.isOpenRouterFree() {
+		if isGroup && pin == "" && !routeEnabled(c.p) && !c.isOpenRouterFree() {
 			// An expired cooldown admits one concurrent probe, even when a
 			// replan or a lane move inserted this candidate after selection.
 			if rateToken == 0 {
@@ -2568,7 +2568,9 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 		// a compaction's summary is held to its end, for a cut or an
 		// error halfway to go to the next candidate (#2274)
 		hw.wantWhole = wantWhole
-		hw.friday = c.p.Preset == "friday"
+		if pol, _, ok := routeFor(c.p); ok {
+			hw.route = &pol
+		}
 		// Claude's and GPT's reasoning is held for a refusal after it only
 		// while another candidate could answer instead: the last one's
 		// refusal isn't asked again, so holding it only kept a lone relay's
@@ -3067,7 +3069,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 		// A rate-limited model is isolated from its provider's sibling models
 		// and credentials for automatic group routing. Handle it before
 		// patience and same-candidate retry can synchronously ask it again.
-		if isGroup && pin == "" && c.p.Preset != "friday" && !c.isOpenRouterFree() && hw.failed() && !hw.passing && hw.code() == http.StatusTooManyRequests && failure(hw.code(), hw.errBody()) == failRate {
+		if isGroup && pin == "" && !routeEnabled(c.p) && !c.isOpenRouterFree() && hw.failed() && !hw.passing && hw.code() == http.StatusTooManyRequests && failure(hw.code(), hw.errBody()) == failRate {
 			key := providerModelOf(c)
 			until, failures := provider429s.fail(key, rateToken, time.Now())
 			// The model cooldown cools the whole provider/model pair across
@@ -3091,16 +3093,18 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 			hw.release()
 			break
 		}
-		if c.p.Preset == "friday" && hw.failed() && !hw.passing && hw.code() == http.StatusTooManyRequests {
-			// Friday's own cooldown, with its GPT and no-429 exceptions,
-			// sits beside the group cooldown above: a rate-limited model is
-			// skipped by the next request's planFriday.
-			fridayCools.cool(c.model, false, time.Now())
-		}
-		if c.p.Preset == "friday" && hw.fridayCreated0 {
-			// a created=0 reply cools as created0: aws.claude-opus-4.8, which
-			// a 429 does not cool, cools for it.
-			fridayCools.cool(c.model, true, time.Now())
+		if pol, rt, ok := routeFor(c.p); ok {
+			if hw.failed() && !hw.passing && hw.code() == http.StatusTooManyRequests {
+				// the strategy's own cooldown, with its never-cool and
+				// no-429 exceptions, sits beside the group cooldown above: a
+				// rate-limited model is skipped by the next request's plan.
+				rt.cool(pol, c.model, false, time.Now())
+			}
+			if hw.routeCreated0 {
+				// a created=0 reply cools as created0: a model a 429 does
+				// not cool still cools for it.
+				rt.cool(pol, c.model, true, time.Now())
+			}
 		}
 		// The probe lease is released by the deferred release below for
 		// anything but a 429 (fail resets it) or a success (success clears
@@ -4359,15 +4363,16 @@ func (s *Server) forwardOnce(ctx context.Context, p provider.Provider, to provid
 		// sent plain, ChatGPT answered a 1.1 MB one 503 (ylorn on X)
 		sent = provider.CodexCompressed(req, body)
 	}
-	// a Friday request shares the Router's upstream throttle: at most two in
-	// flight and 0.5s between sends, process-wide across Friday requests.
-	var fridayRelease func()
-	if p.Preset == "friday" {
+	// a routing strategy shares its upstream throttle: at most the policy's
+	// concurrency in flight and its interval between sends, across the
+	// provider's requests.
+	var routeRelease func()
+	if pol, rt, ok := routeFor(p); ok {
 		var terr error
-		if fridayRelease, terr = fridayThrottle(ctx); terr != nil {
+		if routeRelease, terr = rt.throttle(ctx, pol); terr != nil {
 			return nil, terr
 		}
-		defer fridayRelease()
+		defer routeRelease()
 	}
 	res, err := p.Do(s.client, req)
 	if err == nil && res.StatusCode >= 400 && provider.OpenCodeURL(req.URL.String()) {

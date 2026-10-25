@@ -1093,6 +1093,55 @@ func providerRoutes(mux *http.ServeMux, w Windows) {
 		}
 		writeJSON(rw, providersState())
 	})
+	// a provider's routing strategy: read as a normalized policy with whether
+	// its own file exists, saved whole. The editor's "edit the file" is this
+	// same JSON as text.
+	mux.HandleFunc("GET /api/providers/{id}/route", func(rw http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		p, err := provider.Find(id)
+		if err != nil {
+			fail(rw, err)
+			return
+		}
+		pol, _ := provider.RouteOf(*p)
+		_, hasFile := provider.LoadRoute(id)
+		if !hasFile {
+			// no strategy: hand back the default as a template, switched off.
+			pol = provider.DefaultRoute()
+			pol.Enabled = false
+		}
+		writeJSON(rw, map[string]any{"policy": pol, "hasFile": hasFile, "raw": string(provider.RouteJSON(pol))})
+	})
+	mux.HandleFunc("POST /api/providers/{id}/route", func(rw http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		p, err := provider.Find(id)
+		if err != nil {
+			fail(rw, err)
+			return
+		}
+		var pol provider.RoutePolicy
+		if err := json.NewDecoder(io.LimitReader(r.Body, 1<<20)).Decode(&pol); err != nil {
+			fail(rw, err)
+			return
+		}
+		if r.URL.Query().Get("generate") != "" {
+			// a basic family fallback from the provider's own models; the
+			// user fine-tunes it in the editor.
+			ids := p.Models
+			if len(ids) == 0 {
+				for _, m := range p.Available() {
+					ids = append(ids, m.ID)
+				}
+			}
+			pol.Family.Families = provider.GenerateFallbackFamilies(ids)
+		}
+		if err := provider.SaveRoute(id, pol); err != nil {
+			fail(rw, err)
+			return
+		}
+		saved, hasFile := provider.LoadRoute(id)
+		writeJSON(rw, map[string]any{"policy": saved, "hasFile": hasFile})
+	})
 	// a picture for a provider, picked in the editor: kept by content before
 	// the provider is saved, which then points at it. The page sends it as
 	// base64 in JSON — the app's web view hands a scheme handler no body for

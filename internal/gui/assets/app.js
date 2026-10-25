@@ -9400,6 +9400,7 @@ function drawEditor(p, presetID) {
     advIn.append(...compactField());
     if (p.carriesCompaction) advIn.append(...nativeCompactionField(() => true)[0]);
     advIn.append(...field(t("Fallback"), renderFallback(p), fallbackHint(p)));
+    advIn.append(...routeField(p));
     const proxies = el("div", "stack");
     proxies.append(proxyPicker());
     const perAccount = subOf(a.agent) ? accountProxyPicker(a) : null;
@@ -9449,7 +9450,7 @@ function drawEditor(p, presetID) {
       if (picked === false) return editorError(t("Pick at least one model for the account, or choose All models"), "warn");
       const body = { id: p.id, models: chosenIds(), noModels: noneChosen(), unlisted: draft.unlisted, fallback: draft.fallback, contexts: cx.map, outputs: ox.map, compacts: cpx.map, proxy, accountProxies: own.map, maxConcurrency, ...queue, priceRate, modelPrefs: modelPrefsOfDraft(), pinUpstream: !!draft.pinUpstream, ...(p.carriesCompaction ? { nativeCompaction: !!draft.nativeCompaction } : {}), ...routingOfDraft(p) };
       saving(saveBtn, t("Saving…"));
-      saveAccountModelsDraft(picked).then(() => savePluginOptions(subOf(a.agent))).then(() => providerAction("save", body, t("{name} saved", { name: p.name })), (e) => { doneSaving(saveBtn); editorError(e.message || String(e)); }); };
+      saveRoute(p.id).then(() => saveAccountModelsDraft(picked)).then(() => savePluginOptions(subOf(a.agent))).then(() => providerAction("save", body, t("{name} saved", { name: p.name })), (e) => { doneSaving(saveBtn); editorError(e.message || String(e)); }); };
     bar.append(cancel, saveBtn);
     ed.append(bar);
     return ed;
@@ -9868,7 +9869,10 @@ function drawEditor(p, presetID) {
       showCompaction = refresh;
     }
   }
-  if (p && !decideOnly(p)) advIn.append(...field(t("Fallback"), renderFallback(p), fallbackHint(p)));
+  if (p && !decideOnly(p)) {
+    advIn.append(...field(t("Fallback"), renderFallback(p), fallbackHint(p)));
+    advIn.append(...routeField(p));
+  }
   else if (custom) {
     const ex = input(draft.extra.join(", "), t("model ids, comma separated · e.g. gpt-5.5, claude-sonnet-5"));
     const pick = addFormModels(ex);
@@ -10123,7 +10127,7 @@ function drawEditor(p, presetID) {
     if (picked === false) return editorError(t("Pick at least one model for the account, or choose All models"), "warn");
     saving(saveBtn, t(isNew ? "Adding…" : "Saving…"));
     const okMsg = t(isNew ? "{name} added" : "{name} saved", { name: draft.name || draft.id });
-    saveAccountModelsDraft(picked).then(() => providerAction("save", body, okMsg), (e) => { doneSaving(saveBtn); editorError(e.message || String(e)); });
+    (p ? saveRoute(p.id) : Promise.resolve()).then(() => saveAccountModelsDraft(picked)).then(() => providerAction("save", body, okMsg), (e) => { doneSaving(saveBtn); editorError(e.message || String(e)); });
   };
   saveBtn.onclick = save;
   bar.append(cancel, saveBtn);
@@ -12038,6 +12042,160 @@ function renderFallback(p) {
 }
 function fallbackHint(p) {
   return t("When {name} is out of quota, rate limited or down, a request goes to these instead, top first. It only happens before any of the reply is sent, and {name} then sits out a minute.", { name: p.name });
+}
+
+// ---------- routing strategy ----------
+//
+// A provider's routing strategy (model-family fallback, per-model cooldown,
+// upstream throttle, reply classification and pre-truncation) is one JSON
+// file per provider — routes/<provider-id>.json — editable by hand or here:
+// the few numbers in the form, everything else in the file.
+
+// routeField is the Advanced field for a provider's routing strategy: the
+// switch, the number settings, and a button to edit the file itself.
+function routeField(p) {
+  const box = el("div", "route-strategy");
+  draft.route = { loading: true };
+  const id = p.id;
+  api("providers/" + id + "/route").then((r) => {
+    if (draft.id !== id) return; // the editor moved on to another provider
+    r.dirty = false;
+    draft.route = r;
+    drawRoute(box, p);
+  }).catch((e) => {
+    if (draft.id !== id) return;
+    draft.route = null;
+    box.append(el("div", "hint", t("Routing strategy couldn't be read: {err}", { err: e.message })));
+  });
+  return field(t("Routing strategy"), box, t("Fall back through model families, cool down and throttle failing models, and pre-truncate long requests. One file per provider: routes/{id}.json", { id: p.id }));
+}
+
+function drawRoute(box, p) {
+  box.replaceChildren();
+  const r = draft.route?.policy;
+  if (!r) return;
+  const [lbl, chk] = tick(t("Use the routing strategy"), !!r.enabled);
+  const edit = el("button", "text action", t("Edit the file"));
+  edit.onclick = () => routeFileEditor(box, p);
+  const head = el("div", "route-head");
+  head.append(lbl, edit);
+  box.append(head);
+  const [genLbl, genChk] = tick(t("Generate a basic fallback from the models"), !!draft.route?.generate);
+  genChk.onchange = () => { if (draft.route) { draft.route.generate = genChk.checked; touchRoute(); } };
+  const genRow = el("div", "route-head");
+  genRow.append(genLbl, genChk);
+  box.append(genRow);
+  const cfg = el("div", "route-cfg");
+  box.append(cfg);
+  drawRouteCfg(cfg, r);
+  chk.onchange = () => { touchRoute(); if (draft.route?.policy) draft.route.policy.enabled = chk.checked; drawRoute(box, p); };
+}
+
+// drawRouteCfg fills a route-cfg with the strategy's numbers; it runs on its
+// own while the file editor is open, so a JSON edit shows in the form at
+// once.
+function drawRouteCfg(cfg, r) {
+  cfg.replaceChildren();
+  if (!r || !r.enabled) return;
+  cfg.append(
+    ...routeNumber(t("Cooldown"), t("seconds a cooled model sits out"), r.cooldown.seconds, (v) => { r.cooldown.seconds = v; }),
+    ...routeNumber(t("In flight"), t("requests at once, at most"), r.throttle.maxConcurrent, (v) => { r.throttle.maxConcurrent = v; }),
+    ...routeNumber(t("Send gap"), t("ms between sends"), r.throttle.sendIntervalMs, (v) => { r.throttle.sendIntervalMs = v; }),
+    ...routeNumber(t("Trim over"), t("tokens, an estimated request is pre-truncated"), r.preTruncate.triggerTokens, (v) => { r.preTruncate.triggerTokens = v; }),
+    ...routeNumber(t("Trim to"), t("tokens, the budget it is cut to"), r.preTruncate.budgetTokens, (v) => { r.preTruncate.budgetTokens = v; }),
+  );
+}
+
+// routeNumber is one whole-number setting of the strategy, its hint said
+// under the box.
+function routeNumber(label, hint, value, set) {
+  const n = input(String(value ?? ""), "", "number");
+  n.oninput = () => { touchRoute(); set(Math.max(0, Math.floor(Number(n.value)) || 0)); };
+  const f = field(label, n, hint);
+  f[1].classList.add("route-num");
+  return f;
+}
+
+// stripJSONComments removes // and /* ... */ comments outside string
+// literals, so JSON.parse can read the strategy file (which is JSONC).
+function stripJSONComments(s) {
+  let out = "", i = 0, inStr = false;
+  while (i < s.length) {
+    const c = s[i];
+    if (inStr) {
+      out += c;
+      if (c === "\\") { out += s[i + 1] || ""; i += 2; continue; }
+      if (c === '"') inStr = false;
+      i++;
+      continue;
+    }
+    if (c === '"') { inStr = true; out += c; i++; continue; }
+    if (c === "/" && s[i + 1] === "/") { while (i < s.length && s[i] !== "\n") i++; continue; }
+    if (c === "/" && s[i + 1] === "*") {
+      i += 2;
+      while (i < s.length && !(s[i] === "*" && s[i + 1] === "/")) i++;
+      i += 2;
+      continue;
+    }
+    out += c;
+    i++;
+  }
+  return out;
+}
+
+// routeFileEditor folds out the strategy's file as JSON, to edit whole —
+// the families, aliases, classifications and lists the form doesn't show.
+function routeFileEditor(box, p) {
+  // the button toggles: fold the JSON editor away when it is open
+  const open = box.querySelector(".route-file");
+  if (open) { open.remove(); return; }
+  const area = el("textarea", "route-json");
+  area.value = draft.route.raw || JSON.stringify(draft.route.policy, null, 2);
+  area.rows = 16;
+  area.spellcheck = false;
+  const note = el("div", "hint");
+  // each edit that stays valid JSON is taken at once, so the switch and the
+  // numbers above follow it; the page's Save and Cancel keep the whole edit
+  area.oninput = () => {
+    try {
+      const pol = JSON.parse(stripJSONComments(area.value));
+      note.textContent = "";
+      touchRoute();
+      draft.route.policy = pol;
+      draft.route.raw = area.value;
+      const chk = box.querySelector(".route-head input");
+      if (chk) chk.checked = !!pol.enabled;
+      const cfg = box.querySelector(".route-cfg");
+      if (cfg) drawRouteCfg(cfg, pol);
+    } catch (e) {
+      note.textContent = t("Not valid JSON: {err}", { err: e.message });
+    }
+  };
+  const wrap = el("div", "route-file");
+  wrap.append(area, el("div", "bar", note));
+  box.append(wrap);
+  area.focus();
+}
+
+// touchRoute marks the strategy as changed, so saveRoute writes it back; a
+// provider saved without touching the strategy keeps no route file.
+function touchRoute() {
+  if (draft.route) draft.route.dirty = true;
+}
+
+// saveRoute writes the strategy back before the provider is saved, so the
+// two stay together; nothing when the field never loaded or was never
+// changed.
+function saveRoute(id) {
+  const r = draft.route;
+  if (!r || !r.policy || !r.dirty) return Promise.resolve();
+  const q = r.generate ? "?generate=1" : "";
+  return api("providers/" + id + "/route" + q, r.policy).then((res) => {
+    if (res && res.policy) { r.policy = res.policy; r.hasFile = res.hasFile; }
+    r.generate = false;
+  }).catch((e) => {
+    throw new Error(t("Routing strategy: {err}", { err: e.message }));
+  });
 }
 
 // ---------- subscriptions ----------

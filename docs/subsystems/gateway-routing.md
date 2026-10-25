@@ -25,31 +25,54 @@ cooling, group selection skips it; if every candidate is cooling it returns
 other concurrent requests skip the pair until the probe finishes or its
 10-second lease expires. An upstream 429 with no other candidate returns the
 original upstream error. Explicit provider routes and pinned-account requests
-retain their existing routing behavior; Friday and free OpenRouter models in
-groups retain their existing specialized rests. A stream already delivered
+retain their existing routing behavior; providers running a routing strategy
+and free OpenRouter models in groups retain their existing specialized rests. A stream already delivered
 to the client never transparently retries. This cooldown is not shared between
 magpie instances and does not disable a provider or parse its `Retry-After`
 for the model cooldown (a future extension).
 
-Friday (`provider.Preset == "friday"`) has an additional model-family plan in
-[`friday_fallback.go`](../../internal/gateway/friday_fallback.go). When an
-agent asks for one of Friday's family aliases or a concrete family model, the
-gateway tries that model and then only lower-priority siblings from Friday's
-model order. It intersects that order with Friday's available model list when
-known; GPT models known not to take tools are skipped on tool calls. This is
-ordinary gateway candidate fallback: only errors the gateway classifies as
-retryable move to the next model, the failed model is rested using the normal
-failure policy, and any reply already sent to the client is never replaced.
-If no candidate is known to work, magpie rejects the route without sending an
-excluded model. Friday family candidates are tried before a provider's manual
-fallback list. Non-family models and providers are unchanged. This applies to
-direct Friday routes; routing-group members retain the group's own ordering and
-fallback semantics. The separate Router's model cooldown is kept here in
-[`friday_router.go`](../../internal/gateway/friday_router.go): a 429 cools only
-the model that failed, for 60 seconds — a GPT model never cools, and
-`aws.claude-opus-4.8` is not cooled by a 429 — and the next request's plan
-skips a cooling model. Its created=0 trigger, request throttling,
-response-text classifiers and truncation retries are not added.
+A provider may run a routing strategy of its own — the model-family fallback,
+per-model cooldown, upstream throttle, reply classification and pre-truncation
+enabled and tuned per provider. The strategy is one
+JSON file per provider ([`routes/<provider-id>.json`](../../internal/provider/route.go),
+`provider.RouteOf` / `LoadRoute` / `SaveRoute`), with the generic defaults in
+`provider.DefaultRoute`. The file is JSON with comments: `SaveRoute` writes it
+with a self-documenting `//` header (`provider.RouteJSON`), and `LoadRoute`
+strips comments with `tidwall/jsonc` before parsing. A provider runs the strategy only when it has a route
+file with `enabled` on; a provider with no file runs none, whatever its
+preset. The editor exposes it under the provider's Advanced → Routing
+strategy: a switch, the few numbers, and "Edit the file" for the whole JSON.
+The strategy's five parts:
+
+- Family ([`route_fallback.go`](../../internal/gateway/route_fallback.go)): when
+  an agent asks for a family alias or a concrete family model, the gateway tries
+  that model and then only lower-priority siblings from the family's order,
+  intersected with the provider's available model list when known. The order is
+  the family's listed models first, then every model the provider serves that
+  the family did not name, newest version first, so a model the channel adds or
+  removes joins or leaves the fallback without an edit. Models listed
+  in `ToolExcluded` are skipped on tool calls. This is ordinary gateway candidate
+  fallback: only errors the gateway classifies as retryable move to the next
+  model, the failed model is rested using the normal failure policy, and any
+  reply already sent to the client is never replaced. If no candidate is known
+  to work, magpie rejects the route without sending an excluded model. Family
+  candidates are tried before a provider's manual fallback list. This applies to
+  direct routes; routing-group members retain the group's own ordering and
+  fallback semantics.
+- Cooldown ([`route_router.go`](../../internal/gateway/route_router.go)): a 429
+  cools only the model that failed, for `cooldown.seconds` (60 by default) — a
+  `neverCool` model never cools, and a `no429` model is not cooled by a 429 — and
+  the next request's plan skips a cooling model. A created=0 reply cools the
+  model too.
+- Throttle: at most `throttle.maxConcurrent` requests in flight and
+  `throttle.sendIntervalMs` between sends, per provider.
+- Classify: which error frames before any content reach the client retry on the
+  next model, from error types, keywords, status codes and `[Error] …` text.
+- PreTruncate: a request estimated at or above `triggerTokens` is trimmed to
+  `budgetTokens` before it is sent.
+
+The strategy's runtime state (cooldowns, throttle) is kept per provider, not
+global.
 
 WorkBuddy and CodeBuddy Code's `X-Conversation-ID` is a native session header
 in `sessionHeaders` (`sessionOf`, `nativeSessionOf`, `conversationID` in

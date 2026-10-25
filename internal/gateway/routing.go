@@ -1125,10 +1125,10 @@ func (s *Server) restAfterMarked(c candidate, status int, header http.Header, bo
 		r.user = provider.KeyAllowanceID(c.p)
 	}
 	id := c.restKey()
-	// Friday's built-in fallback moves between models behind one bridge. A
-	// failed model rests by itself; resting the provider would suppress all
-	// of its siblings on the next request and defeat that model-family plan.
-	if c.p.Preset == "friday" {
+	// a routing strategy moves between models behind one provider. A failed
+	// model rests by itself; resting the provider would suppress all of its
+	// siblings on the next request and defeat that model-family plan.
+	if routeEnabled(c.p) {
 		id = c.restID()
 	}
 	// OpenRouter identifies a provider's shared pool separately from its
