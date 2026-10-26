@@ -28,6 +28,12 @@ type usageSniffer struct {
 	failed string
 	// tail: what a Chat stream's chunks say of its end (chatTail)
 	tail chatTail
+	// reported: a usage block went by, so the reply's tokens came from the
+	// vendor, not an estimate
+	reported bool
+	// outText: the reply's text, kept for a Chat relay that reports no
+	// usage, so its output tokens can be estimated (token_estimate.go)
+	outText []byte
 }
 
 func newSniffer(proto provider.Protocol, contentType string) *usageSniffer {
@@ -158,6 +164,7 @@ func (s *usageSniffer) parse(b []byte) {
 			s.saw(v.ModelVersion)
 			s.u.add(Usage{ResponseID: v.ResponseID})
 			if u := v.UsageMetadata; u != nil {
+				s.reported = true
 				s.u.add(Usage{Input: max(u.Prompt-u.Cached, 0), CacheRead: u.Cached,
 					Output: u.Candidates + u.Thoughts, Reasoning: u.Thoughts})
 			}
@@ -165,10 +172,27 @@ func (s *usageSniffer) parse(b []byte) {
 	case provider.Chat:
 		s.tail.see(b)
 		var v struct {
-			ID    string  `json:"id"`
-			Error any     `json:"error"`
-			Model string  `json:"model"`
-			Usage *cUsage `json:"usage"`
+			ID      string  `json:"id"`
+			Error   any     `json:"error"`
+			Model   string  `json:"model"`
+			Usage   *cUsage `json:"usage"`
+			Choices []struct {
+				Delta struct {
+					Content          json.RawMessage `json:"content"`
+					ReasoningContent string          `json:"reasoning_content"`
+					Reasoning        string          `json:"reasoning"`
+					ToolCalls        []struct {
+						Function struct {
+							Arguments string `json:"arguments"`
+						} `json:"function"`
+					} `json:"tool_calls"`
+				} `json:"delta"`
+				Message struct {
+					Content          json.RawMessage `json:"content"`
+					ReasoningContent string          `json:"reasoning_content"`
+					Reasoning        string          `json:"reasoning"`
+				} `json:"message"`
+			} `json:"choices"`
 		}
 		if json.Unmarshal(b, &v) == nil {
 			s.saw(v.Model)
@@ -176,7 +200,37 @@ func (s *usageSniffer) parse(b []byte) {
 				s.u.add(Usage{ResponseID: v.ID})
 			}
 			if v.Usage != nil {
+				s.reported = true
 				s.u.add(v.Usage.usage())
+			}
+			for _, c := range v.Choices {
+				// a stream's deltas and a whole reply's message alike,
+				// in case a relay mixes the two
+				s.addOutText(c.Delta.ReasoningContent)
+				s.addOutText(c.Delta.Reasoning)
+				if text, think, ok := partsText(c.Delta.Content); ok {
+					s.addOutText(text)
+					s.addOutText(think)
+				} else {
+					var str string
+					if decodeJSON(c.Delta.Content, &str) == nil {
+						s.addOutText(str)
+					}
+				}
+				for _, tc := range c.Delta.ToolCalls {
+					s.addOutText(tc.Function.Arguments)
+				}
+				s.addOutText(c.Message.ReasoningContent)
+				s.addOutText(c.Message.Reasoning)
+				if text, think, ok := partsText(c.Message.Content); ok {
+					s.addOutText(text)
+					s.addOutText(think)
+				} else {
+					var str string
+					if decodeJSON(c.Message.Content, &str) == nil {
+						s.addOutText(str)
+					}
+				}
 			}
 		}
 	case provider.Responses:
@@ -200,8 +254,10 @@ func (s *usageSniffer) parse(b []byte) {
 			s.saw(v.Response.Model)
 			s.saw(v.Model)
 			if v.Response.Usage != nil {
+				s.reported = true
 				s.u.add(v.Response.Usage.usage())
 			} else if v.Usage != nil {
+				s.reported = true
 				s.u.add(v.Usage.usage())
 			}
 		}
@@ -226,9 +282,11 @@ func (s *usageSniffer) parse(b []byte) {
 			s.saw(v.Message.Model)
 			s.saw(v.Model)
 			if v.Message.Usage != nil {
+				s.reported = true
 				s.u.add(v.Message.Usage.usage())
 			}
 			if v.Usage != nil {
+				s.reported = true
 				s.u.add(v.Usage.usage())
 			}
 		}
@@ -240,6 +298,21 @@ func (s *usageSniffer) saw(model string) {
 	if model != "" {
 		s.served = model
 	}
+}
+
+// outTextCap is the most reply text kept for an output estimate; a reply
+// past it is already beyond any model's output, so the rest is not needed.
+const outTextCap = 8 << 20
+
+// addOutText keeps reply text for an output estimate, up to outTextCap.
+func (s *usageSniffer) addOutText(b string) {
+	if b == "" || len(s.outText) >= outTextCap {
+		return
+	}
+	if room := outTextCap - len(s.outText); len(b) > room {
+		b = b[:room]
+	}
+	s.outText = append(s.outText, b...)
 }
 
 // lastEvent reports whether an event of this type ends a stream.

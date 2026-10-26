@@ -5001,7 +5001,20 @@ func (s *Server) passthrough(w http.ResponseWriter, r *http.Request, p provider.
 	w.WriteHeader(res.StatusCode)
 	f, _ := w.(http.Flusher)
 	sniff := newSniffer(proto, res.Header.Get("Content-Type"))
-	defer func() { u.add(sniff.usage()) }()
+	defer func() {
+		su := sniff.usage()
+		// a Chat relay that answered without a usage block: estimate its
+		// tokens, as new-api does for such replies. A vendor's own usage
+		// (sniff.reported) always wins.
+		if proto == provider.Chat && !sniff.reported && su.ResponseID != "" {
+			m := cmp.Or(su.Served, model)
+			if req, err := parse(provider.Chat, body); err == nil {
+				su.Input = estimateTokens(req, m)
+			}
+			su.Output = countTokens(string(sniff.outText), m)
+		}
+		u.add(su)
+	}()
 	var tidy *chatTidy
 	if proto == provider.Chat && sse {
 		tidy = &chatTidy{}
