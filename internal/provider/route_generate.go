@@ -33,8 +33,10 @@ func familyStem(id string) string {
 // fallback plan: one listless family per family stem, newest family first. A
 // listless family derives its members from the provider's current list (id
 // contains the name, newest version first), so the plan stays valid as the
-// channel adds and removes models. It is a starting point the user fine-tunes
-// in the editor.
+// channel adds and removes models. The order of the families is also the
+// cross-family fallback order: a model that exhausts its own family goes on
+// to the families listed below it, never up. It is a starting point the user
+// fine-tunes in the editor.
 func GenerateFallbackFamilies(models []string) []RouteFamilyList {
 	type fam struct{ max [3]int }
 	byStem := map[string]*fam{}

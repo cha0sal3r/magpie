@@ -50,7 +50,11 @@ The strategy's five parts:
   intersected with the provider's available model list when known. The order is
   the family's listed models first, then every model the provider serves that
   the family did not name, newest version first, so a model the channel adds or
-  removes joins or leaves the fallback without an edit. Models listed
+  removes joins or leaves the fallback without an edit. Once the model's family
+  is spent, the chain goes on to the members of the families listed below it
+  (the family list order is the fallback order, newest families first when
+  generated), so a series with a single member still falls back and a model
+  never climbs to a newer family. Models listed
   in `ToolExcluded` are skipped on tool calls. This is ordinary gateway candidate
   fallback: only errors the gateway classifies as retryable move to the next
   model, the failed model is rested using the normal failure policy, and any

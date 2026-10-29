@@ -11,10 +11,13 @@ import (
 
 // routeChain is the policy's model-family fallback order. An alias starts
 // at its mapped primary; a concrete model only falls through to
-// lower-priority siblings, never upgrades. A family that names no models is
-// derived from avail, the provider's own model list, so a model the channel
-// adds later falls back without an edit. Models the policy says do not take
-// tools are omitted from a request carrying tools.
+// lower-priority siblings, never upgrades, and once its own family is spent
+// goes on to the members of the families listed below it, so a series with a
+// single member still has a fallback and a model never climbs to a newer
+// family. A family that names no models is derived from avail, the provider's
+// own model list, so a model the channel adds later falls back without an
+// edit. Models the policy says do not take tools are omitted from a request
+// carrying tools.
 func routeChain(pol provider.RoutePolicy, avail []string, model string, tools bool) []string {
 	primary := model
 	if alias := pol.Family.Aliases[model]; alias != "" {
@@ -29,17 +32,30 @@ func routeChain(pol provider.RoutePolicy, avail []string, model string, tools bo
 	if bestTarget != "" {
 		primary = bestTarget
 	}
-	var family []string
-	for _, fam := range pol.Family.Families {
-		if routeFamilyHas(fam, primary) {
-			family = routeFamilyMembers(fam, avail)
-			break
+	var out []string
+	for i, fam := range pol.Family.Families {
+		if !routeFamilyHas(fam, primary) {
+			continue
 		}
+		members := routeFamilyMembers(fam, avail)
+		if at := slices.Index(members, primary); at >= 0 {
+			out = append(out, members[at:]...)
+		} else {
+			// the family holds the model by its name alone: asked as it is,
+			// then the family's own order.
+			out = append(out, primary)
+			out = append(out, members...)
+		}
+		// never up: after its family, only the families below it, each
+		// whole, in its own order.
+		for _, rest := range pol.Family.Families[i+1:] {
+			out = append(out, routeFamilyMembers(rest, avail)...)
+		}
+		break
 	}
-	if at := slices.Index(family, primary); at >= 0 {
-		family = family[at+1:]
+	if len(out) == 0 {
+		out = []string{primary}
 	}
-	out := append([]string{primary}, family...)
 	out = slices.Compact(out)
 	if tools {
 		out = slices.DeleteFunc(out, func(m string) bool { return slices.Contains(pol.Family.ToolExcluded, m) })

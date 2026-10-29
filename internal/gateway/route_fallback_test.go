@@ -67,8 +67,11 @@ func TestRouteFallbackChains(t *testing.T) {
 	pol := testRoute()
 	gpt := familyModels(pol, "gpt")
 	kimi := familyModels(pol, "kimi")
+	sonnet := familyModels(pol, "sonnet")
 	// the provider's model list, as its /models endpoint reports it; the
-	// deepseek family names none, so it is derived from these.
+	// deepseek family names none, so it is derived from these, and it is the
+	// last family, so after a model's own family the chain goes on to the
+	// families below it (never up).
 	avail := []string{
 		"claude-opus-5", "aws.claude-opus-4.8", "aws.claude-opus-4.7", "aws.claude-opus-4.6",
 		"claude-sonnet-5", "aws.claude-sonnet-4.6", "aws.claude-sonnet-4.5",
@@ -76,19 +79,27 @@ func TestRouteFallbackChains(t *testing.T) {
 		"kimi-k3", "kimi-k2.8-preview", "kimi-k2.7-code", "kimi-k2.7-code-highspeed", "kimi-k2.6",
 		"deepseek-v4-pro", "deepseek-v4-pro-baidu", "deepseek-v4-pro-tencent",
 	}
+	ds := []string{"deepseek-v4-pro", "deepseek-v4-pro-baidu", "deepseek-v4-pro-tencent"}
+	cat := func(parts ...[]string) []string {
+		var out []string
+		for _, p := range parts {
+			out = append(out, p...)
+		}
+		return out
+	}
 	for _, tc := range []struct {
 		model string
 		tools bool
 		want  []string
 	}{
-		{"gpt", false, gpt},
-		{"gpt", true, gpt[2:]},
-		{"claude-opus-4-6", false, []string{"aws.claude-opus-4.8", "aws.claude-opus-4.7", "aws.claude-opus-4.6"}},
-		{"aws.claude-opus-4.6", false, []string{"aws.claude-opus-4.6"}},
-		{"claude-sonnet-4-6", false, []string{"aws.claude-sonnet-4.6", "aws.claude-sonnet-4.5"}},
-		{"claude-haiku-4-5", false, append([]string{"gpt-4o-mini"}, gpt...)},
-		{"kimi", false, kimi},
-		{"kimi-k2.7-code", false, kimi[3:]},
+		{"gpt", false, cat(gpt, kimi, ds)},
+		{"gpt", true, cat(gpt[2:], kimi, ds)},
+		{"claude-opus-4-6", false, cat([]string{"aws.claude-opus-4.8", "aws.claude-opus-4.7", "aws.claude-opus-4.6"}, sonnet, gpt, kimi, ds)},
+		{"aws.claude-opus-4.6", false, cat([]string{"aws.claude-opus-4.6"}, sonnet, gpt, kimi, ds)},
+		{"claude-sonnet-4-6", false, cat([]string{"aws.claude-sonnet-4.6", "aws.claude-sonnet-4.5"}, gpt, kimi, ds)},
+		{"claude-haiku-4-5", false, cat([]string{"gpt-4o-mini"}, gpt, kimi, ds)},
+		{"kimi", false, cat(kimi, ds)},
+		{"kimi-k2.7-code", false, cat(kimi[3:], ds)},
 		{"kimi-unlisted", false, []string{"kimi-unlisted"}},
 		{"deepseek-v4-pro", true, []string{"deepseek-v4-pro", "deepseek-v4-pro-baidu", "deepseek-v4-pro-tencent"}},
 	} {
@@ -115,14 +126,40 @@ func TestRouteFamilyDerivedFromAvailable(t *testing.T) {
 }
 
 // A family that lists its priority appends a model the channel has that the
-// file did not name, newest version first, as a last-resort fallback.
+// file did not name, newest version first, as a last-resort fallback, then
+// the families below it (the kimi family lists its own models even when the
+// channel serves none of them; the deepseek family derives nothing here).
 func TestRouteFamilyAppendsNewChannelModel(t *testing.T) {
 	pol := testRoute()
 	avail := []string{"gpt-6-astra", "gpt-6.1-sol", "gpt-5.5", "gpt-6-sol", "gpt-6-luna", "gpt-5.6-sol", "gpt-5.6-luna", "gpt-5.6-terra", "gpt-6.2-sol"}
 	got := routeChain(pol, avail, "gpt-6-astra", false)
-	want := []string{"gpt-6-astra", "gpt-6.1-sol", "gpt-6-sol", "gpt-6-luna", "gpt-5.6-sol", "gpt-5.6-luna", "gpt-5.6-terra", "gpt-5.5", "gpt-6.2-sol"}
+	want := append(slices.Clone([]string{"gpt-6-astra", "gpt-6.1-sol", "gpt-6-sol", "gpt-6-luna", "gpt-5.6-sol", "gpt-5.6-luna", "gpt-5.6-terra", "gpt-5.5", "gpt-6.2-sol"}), familyModels(pol, "kimi")...)
 	if !slices.Equal(got, want) {
 		t.Fatalf("routeChain = %v, want %v", got, want)
+	}
+}
+
+// A series with a single member still has a fallback: once its own family is
+// spent, the chain goes on to the families listed below it, and never climbs
+// to a newer one.
+func TestRouteChainFallsThroughFamilies(t *testing.T) {
+	pol := provider.RoutePolicy{
+		Family: provider.RouteFamily{
+			Families: []provider.RouteFamilyList{
+				{Name: "opus", Models: []string{"claude-opus-5"}},
+				{Name: "sonnet", Models: []string{"claude-sonnet-4-6", "claude-sonnet-4-5"}},
+			},
+		},
+	}
+	avail := []string{"claude-opus-5", "claude-sonnet-4-6", "claude-sonnet-4-5"}
+	if got := routeChain(pol, avail, "claude-opus-5", false); !slices.Equal(got, []string{"claude-opus-5", "claude-sonnet-4-6", "claude-sonnet-4-5"}) {
+		t.Fatalf("singleton series chain = %v, want the sonnet family below it", got)
+	}
+	if got := routeChain(pol, avail, "claude-sonnet-4-6", false); !slices.Equal(got, []string{"claude-sonnet-4-6", "claude-sonnet-4-5"}) {
+		t.Fatalf("middle series chain = %v, want no climb to opus", got)
+	}
+	if got := routeChain(pol, avail, "claude-sonnet-4-5", false); !slices.Equal(got, []string{"claude-sonnet-4-5"}) {
+		t.Fatalf("last series chain = %v, want alone", got)
 	}
 }
 
@@ -170,6 +207,75 @@ func TestRouteFallsBackWithinModelFamily(t *testing.T) {
 	}
 	if want := []string{"gpt-6-astra", "gpt-6.1-sol", "gpt-6-sol"}; !slices.Equal(seen, want) {
 		t.Fatalf("models tried %v, want %v", seen, want)
+	}
+}
+
+// A request whose whole series is spent goes on to the family below it (a
+// singleton series still has a fallback), and one in a newer family is never
+// asked for a request of an older series.
+func TestRouteFallsBackToTheNextFamily(t *testing.T) {
+	noRests()
+	t.Cleanup(noRests)
+	routeRuntimes.Delete("relay")
+	t.Cleanup(func() { routeRuntimes.Delete("relay") })
+	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
+	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+	var seen []string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var req struct {
+			Model string `json:"model"`
+		}
+		_ = json.NewDecoder(r.Body).Decode(&req)
+		seen = append(seen, req.Model)
+		w.Header().Set("Content-Type", "application/json")
+		if req.Model != "claude-sonnet-4-5" {
+			w.WriteHeader(http.StatusTooManyRequests)
+			_, _ = io.WriteString(w, `{"error":{"message":"rate limited"}}`)
+			return
+		}
+		_, _ = io.WriteString(w, `{"id":"next-family-ok","choices":[]}`)
+	}))
+	t.Cleanup(srv.Close)
+	p := provider.Provider{ID: "relay", Name: "Relay", Preset: "relay"}
+	p.Chat = srv.URL + "/v1"
+	p.Models = []string{"claude-opus-5", "claude-sonnet-4-6", "claude-sonnet-4-5"}
+	if err := provider.Save(p); err != nil {
+		t.Fatal(err)
+	}
+	if err := provider.SaveRoute("relay", provider.RoutePolicy{
+		Enabled: true,
+		Family: provider.RouteFamily{
+			Families: []provider.RouteFamilyList{
+				{Name: "opus", Models: []string{"claude-opus-5"}},
+				{Name: "sonnet", Models: []string{"claude-sonnet-4-6", "claude-sonnet-4-5"}},
+			},
+		},
+	}); err != nil {
+		t.Fatal(err)
+	}
+	// the singleton opus series is refused whole, so the request falls
+	// through the sonnet family below it and answers there.
+	seen = nil
+	code, body := post(t, "/v1/chat/completions", `{"model":"relay/claude-opus-5","messages":[{"role":"user","content":"hi"}]}`)
+	if code != http.StatusOK || !strings.Contains(body, "next-family-ok") {
+		t.Fatalf("opus request: %d %s", code, body)
+	}
+	if want := []string{"claude-opus-5", "claude-sonnet-4-6", "claude-sonnet-4-5"}; !slices.Equal(seen, want) {
+		t.Fatalf("opus request tried %v, want %v", seen, want)
+	}
+	// a newer series is never climbed to: without the first request's rests
+	// and cooldowns, the sonnet family answers within itself, opus not asked
+	// (a resting primary would be tried last either way, so the rests are
+	// cleared to show the chain alone).
+	noRests()
+	routeRuntimes.Delete("relay")
+	seen = nil
+	code, body = post(t, "/v1/chat/completions", `{"model":"relay/claude-sonnet-4-6","messages":[{"role":"user","content":"hi"}]}`)
+	if code != http.StatusOK || !strings.Contains(body, "next-family-ok") {
+		t.Fatalf("sonnet request: %d %s", code, body)
+	}
+	if want := []string{"claude-sonnet-4-6", "claude-sonnet-4-5"}; !slices.Equal(seen, want) {
+		t.Fatalf("sonnet request tried %v, want %v (opus must not be asked)", seen, want)
 	}
 }
 
