@@ -12,12 +12,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/claudecode"
-	"github.com/yetone/magpie/internal/libc"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/claudecode"
+	"github.com/cha0sal3r/magpie-friday/internal/libc"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// claudeCodeOut runs `magpie claude-code args…` and gives what it printed.
+// claudeCodeOut runs `magpie-friday claude-code args…` and gives what it printed.
 func claudeCodeOut(t *testing.T, args ...string) (string, error) {
 	t.Helper()
 	r, w, err := os.Pipe()
@@ -41,7 +41,7 @@ func claudeCodeOut(t *testing.T, args ...string) (string, error) {
 	return out.String(), err
 }
 
-// `magpie claude-code install --yes` on a machine with no Claude Code (a
+// `magpie-friday claude-code install --yes` on a machine with no Claude Code (a
 // container, Jorben on Discord) downloads the release's build, says from
 // where and to where, and the subscription then runs it.
 func TestClaudeCodeInstallDownloadsTheRelease(t *testing.T) {
@@ -74,7 +74,7 @@ func TestClaudeCodeInstallDownloadsTheRelease(t *testing.T) {
 	t.Cleanup(func() { claudecode.Base, claudeCode.own = oldBase, oldOwn; _ = claudecode.Remove() })
 
 	out, err := claudeCodeOut(t)
-	if err != nil || !strings.Contains(out, "magpie claude-code install") {
+	if err != nil || !strings.Contains(out, "magpie-friday claude-code install") {
 		t.Fatalf("status before: %q, %v", out, err)
 	}
 	out, err = claudeCodeOut(t, "install", "--yes")
@@ -92,7 +92,7 @@ func TestClaudeCodeInstallDownloadsTheRelease(t *testing.T) {
 	if out, _ := claudeCodeOut(t, "install", "--yes"); !strings.Contains(out, "downloaded already") {
 		t.Errorf("a second install: %q", out)
 	}
-	if out, _ := claudeCodeOut(t); !strings.Contains(out, "downloaded by magpie") {
+	if out, _ := claudeCodeOut(t); !strings.Contains(out, "downloaded by magpie-friday") {
 		t.Errorf("status after: %q", out)
 	}
 	if _, err := claudeCodeOut(t, "remove"); err != nil {
@@ -103,7 +103,7 @@ func TestClaudeCodeInstallDownloadsTheRelease(t *testing.T) {
 	}
 }
 
-// `magpie claude-code runs N` is the user's own bound on Claude Code
+// `magpie-friday claude-code runs N` is the user's own bound on Claude Code
 // processes (#2956), which the gateway's 503 names; auto gives it back to
 // the machine's memory, and a value that isn't a count is refused and
 // writes nothing.

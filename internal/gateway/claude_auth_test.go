@@ -12,8 +12,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // claudeRefuses has the fake Claude Code fail as Claude Code does on a
@@ -109,7 +109,7 @@ func TestClaudeAllRefusedSaysSignInAgain(t *testing.T) {
 // Another vendor saying a Claude sign-in's words (an OpenCode plugin on
 // Anthropic's OAuth: "OAuth access token has been revoked") isn't a Claude
 // account Anthropic refused: it rests as any failure does, and isn't told
-// as needing a sign-in that magpie would never try again (#716 review).
+// as needing a sign-in that magpie-friday would never try again (#716 review).
 func TestSignInWordsFromAnotherVendorRest(t *testing.T) {
 	fresh(t)
 	revoked := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
 // ARNO on Discord: 我发现是之前很多能自动推导 reasoning_efforts 列表的模型

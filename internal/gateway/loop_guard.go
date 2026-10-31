@@ -100,10 +100,10 @@ func (t loopTrip) message() string {
 		quoted = append(quoted, fmt.Sprintf("%q", u))
 	}
 	if t.runOn {
-		return fmt.Sprintf("magpie ended this reply: the model's %s was stuck in a loop, its last %d characters the same over and over without a break (%s), and would have run on to its output limit. Ask again, or set Settings › Models › Replies › Stop looping replies off",
+		return fmt.Sprintf("magpie-friday ended this reply: the model's %s was stuck in a loop, its last %d characters the same over and over without a break (%s), and would have run on to its output limit. Ask again, or set Settings › Models › Replies › Stop looping replies off",
 			what, t.window, strings.Join(quoted, " "))
 	}
-	return fmt.Sprintf("magpie ended this reply: the model's %s was stuck in a loop, its last %d lines and sentences all among the same %d (%s), and would have run on to its output limit. Ask again, or set Settings › Models › Replies › Stop looping replies off",
+	return fmt.Sprintf("magpie-friday ended this reply: the model's %s was stuck in a loop, its last %d lines and sentences all among the same %d (%s), and would have run on to its output limit. Ask again, or set Settings › Models › Replies › Stop looping replies off",
 		what, t.window, len(t.units), strings.Join(quoted, " "))
 }
 

@@ -13,7 +13,7 @@ import (
 // field with a json name is one setting, its value in the struct the
 // default. The window draws their form from the Schema made of it (Plugins
 // › Built-in, kernel.js's ui.form), and SetConfig takes only what the
-// schema allows, so the form, plugins.yml and `magpie plugin dump` can't
+// schema allows, so the form, plugins.yml and `magpie-friday plugin dump` can't
 // disagree on what a setting is.
 //
 //	type Settings struct {

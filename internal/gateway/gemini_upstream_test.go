@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A custom provider's Gemini API (#1346, NagaseMinato), behind a relay's

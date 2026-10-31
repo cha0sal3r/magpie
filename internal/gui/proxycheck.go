@@ -13,11 +13,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
 )
 
 // Settings › Proxy's Test (#2076, c4ex): whether the proxy in force is the
-// way magpie's requests leave. One request to Cloudflare's trace page goes
+// way magpie-friday's requests leave. One request to Cloudflare's trace page goes
 // as a vendor request would (the proxy Settings, *_PROXY or the system
 // names), and one goes direct; each says the address Cloudflare saw it
 // from and the country, and the request through the proxy says whether

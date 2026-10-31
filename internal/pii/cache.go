@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/redact"
+	"github.com/cha0sal3r/magpie-friday/internal/redact"
 )
 
 // What Find learned is kept on disk too, so that a restart doesn't ask the
@@ -20,7 +20,7 @@ import (
 // each other (#3682). The file holds a text's sha256, and where in it the
 // model found what, with the label: never the text. It is named for the
 // model it came from, so another model's answers are never read as this
-// one's, and lives with the model, in magpie's cache (Remove deletes it).
+// one's, and lives with the model, in magpie-friday's cache (Remove deletes it).
 
 // cacheMagic starts the file; a file that doesn't start with it, or ends
 // part way, is read as empty.

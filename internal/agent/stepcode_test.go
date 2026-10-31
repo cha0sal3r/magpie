@@ -16,11 +16,11 @@ import (
 
 	"github.com/pelletier/go-toml/v2"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 func stepcodeWriteTestFile(t *testing.T, path, content string) {
@@ -128,8 +128,8 @@ command = "node"
 	if err := toml.Unmarshal([]byte(cfgStr), &parsedCfg); err != nil {
 		t.Fatalf("config.toml invalid TOML: %v", err)
 	}
-	if parsedCfg["defaultProvider"] != "magpie" {
-		t.Errorf("defaultProvider = %v, want magpie", parsedCfg["defaultProvider"])
+	if parsedCfg["defaultProvider"] != "magpie-friday" {
+		t.Errorf("defaultProvider = %v, want magpie-friday", parsedCfg["defaultProvider"])
 	}
 
 	if stepcodeReadTestFile(t, authPath) != origAuth {
@@ -139,7 +139,7 @@ command = "node"
 		t.Errorf("unexpected settings.json created during connect")
 	}
 
-	if err := a.Apply("model", "magpie/deepseek/flash"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/flash"); err != nil {
 		t.Fatalf("Apply(model flash): %v", err)
 	}
 
@@ -177,8 +177,8 @@ command = "node"
 	if provs["anthropic"] == nil {
 		t.Errorf("native provider anthropic lost from models.json")
 	}
-	if provs["magpie"] != nil {
-		t.Errorf("magpie provider not removed on disconnect")
+	if provs["magpie-friday"] != nil {
+		t.Errorf("magpie-friday provider not removed on disconnect")
 	}
 
 	if err := a.Connect(); err != nil {
@@ -207,8 +207,8 @@ enabledModels = ["native/one"]
 
 	a := stepcode(home)
 
-	// 1. native/one -> apply magpie/pro
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	// 1. native/one -> apply magpie-friday/pro
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatalf("Apply pro: %v", err)
 	}
 
@@ -216,8 +216,8 @@ enabledModels = ["native/one"]
 	if err != nil || cfg.Scope == nil {
 		t.Fatalf("failed reading scope after pro: %v", err)
 	}
-	if !slices.Contains(*cfg.Scope, "magpie/deepseek/pro") {
-		t.Errorf("scope missing magpie/deepseek/pro: %v", *cfg.Scope)
+	if !slices.Contains(*cfg.Scope, "magpie-friday/deepseek/pro") {
+		t.Errorf("scope missing magpie-friday/deepseek/pro: %v", *cfg.Scope)
 	}
 
 	// 2. user adds native/two
@@ -231,7 +231,7 @@ enabledModels = ["native/one"]
 	}
 
 	// 3. apply flash
-	if err := a.Apply("model", "magpie/deepseek/flash"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/flash"); err != nil {
 		t.Fatalf("Apply flash: %v", err)
 	}
 
@@ -268,13 +268,13 @@ enabledModels = ["native/one"]
 defaultModel = "one"
 enabledModels = ["native/one"]
 `)
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	if err := edit.DelTOMLTop(configPath, "enabledModels"); err != nil {
 		t.Fatal(err)
 	}
-	if err := a.Apply("model", "magpie/deepseek/flash"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
 	if err := a.Disconnect(); err != nil {
@@ -297,13 +297,13 @@ func TestStepCodeScopeWildcardMatch(t *testing.T) {
 
 	initialTOML := `defaultProvider = "native"
 defaultModel = "one"
-enabledModels = ["magpie/*/*"]
+enabledModels = ["magpie-friday/*/*"]
 `
 	stepcodeWriteTestFile(t, configPath, initialTOML)
 	stepcodeWriteTestFile(t, modelsPath, `{"providers":{"native":{"name":"Native","models":[{"id":"one"}]}}}`)
 
 	a := stepcode(home)
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 
@@ -311,7 +311,7 @@ enabledModels = ["magpie/*/*"]
 	if err != nil || cfg.Scope == nil {
 		t.Fatal(err)
 	}
-	if len(*cfg.Scope) != 1 || (*cfg.Scope)[0] != "magpie/*/*" {
+	if len(*cfg.Scope) != 1 || (*cfg.Scope)[0] != "magpie-friday/*/*" {
 		t.Errorf("wildcard scope modified: %v", *cfg.Scope)
 	}
 }
@@ -323,10 +323,10 @@ func TestStepCodeNativeChangedAndPreexisting(t *testing.T) {
 	modelsPath := filepath.Join(dir, "models.json")
 
 	stepcodeWriteTestFile(t, configPath, "defaultProvider = \"anthropic\"\ndefaultModel = \"claude-3-5\"\ncustom_opt = \"keep-me\"\n")
-	stepcodeWriteTestFile(t, modelsPath, "{\n  \"providers\": {\n    \"magpie\": {\n      \"name\": \"my-preexisting-magpie\",\n      \"baseUrl\": \"https://custom.endpoint/v1\",\n      \"customKey\": \"keep-me-too\"\n    }\n  }\n}\n")
+	stepcodeWriteTestFile(t, modelsPath, "{\n  \"providers\": {\n    \"magpie-friday\": {\n      \"name\": \"my-preexisting-magpie-friday\",\n      \"baseUrl\": \"https://custom.endpoint/v1\",\n      \"customKey\": \"keep-me-too\"\n    }\n  }\n}\n")
 
 	a := stepcode(home)
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 
@@ -354,9 +354,9 @@ func TestStepCodeNativeChangedAndPreexisting(t *testing.T) {
 		t.Fatal(err)
 	}
 	provs := parsedModels["providers"].(map[string]any)
-	magpieProv := provs["magpie"].(map[string]any)
-	if magpieProv["name"] != "my-preexisting-magpie" || magpieProv["customKey"] != "keep-me-too" {
-		t.Errorf("preexisting providers.magpie was not restored: %v", magpieProv)
+	magpieProv := provs["magpie-friday"].(map[string]any)
+	if magpieProv["name"] != "my-preexisting-magpie-friday" || magpieProv["customKey"] != "keep-me-too" {
+		t.Errorf("preexisting providers.magpie-friday was not restored: %v", magpieProv)
 	}
 
 	if err := a.Unwire(); err != nil {
@@ -375,7 +375,7 @@ func TestStepCodeNativeChangedAndPreexisting(t *testing.T) {
 	t.Setenv("HOME", emptyHome)
 	t.Setenv("USERPROFILE", emptyHome)
 	aEmpty := stepcode(emptyHome)
-	if err := aEmpty.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := aEmpty.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	emptyConfig := filepath.Join(emptyHome, ".stepcode", "config.toml")
@@ -419,7 +419,7 @@ func TestStepCodeJSONCCommentsAndTrailingComma(t *testing.T) {
 	stepcodeWriteTestFile(t, modelsPath, jsoncModels)
 
 	a := stepcode(home)
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatalf("Apply on JSONC models.json failed: %v", err)
 	}
 
@@ -441,7 +441,7 @@ func TestStepCodeJSONCCommentsAndTrailingComma(t *testing.T) {
 func TestStepCodeSyncAndDrift(t *testing.T) {
 	home, _ := museHome(t)
 	a := stepcode(home)
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 
@@ -452,7 +452,7 @@ func TestStepCodeSyncAndDrift(t *testing.T) {
 	if err := json.Unmarshal([]byte(modelsContent), &parsed); err != nil {
 		t.Fatal(err)
 	}
-	magpieProv := parsed["providers"].(map[string]any)["magpie"].(map[string]any)
+	magpieProv := parsed["providers"].(map[string]any)["magpie-friday"].(map[string]any)
 	magpieProv["customUnknownKey"] = "keep-this"
 	b, err := json.MarshalIndent(parsed, "", "  ")
 	if err != nil {
@@ -468,9 +468,9 @@ func TestStepCodeSyncAndDrift(t *testing.T) {
 	if err := json.Unmarshal([]byte(modelsContent), &parsed); err != nil {
 		t.Fatal(err)
 	}
-	magpieProv = parsed["providers"].(map[string]any)["magpie"].(map[string]any)
+	magpieProv = parsed["providers"].(map[string]any)["magpie-friday"].(map[string]any)
 	if magpieProv["customUnknownKey"] != "keep-this" {
-		t.Errorf("Sync dropped unknown key in providers.magpie: %v", magpieProv)
+		t.Errorf("Sync dropped unknown key in providers.magpie-friday: %v", magpieProv)
 	}
 
 	fixedTime := time.Date(2025, 1, 1, 12, 0, 0, 0, time.UTC)
@@ -521,7 +521,7 @@ func TestStepCodeSyncAndDrift(t *testing.T) {
 func TestStepCodeCatalogUpdateSync(t *testing.T) {
 	home, _ := museHome(t)
 	a := stepcode(home)
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 
@@ -576,7 +576,7 @@ func TestStepCodeMetadataAndLANKey(t *testing.T) {
 		t.Fatal(err)
 	}
 	a := stepcode(home)
-	if err := a.Apply("model", "magpie/resp-prov/resp-mod"); err != nil {
+	if err := a.Apply("model", "magpie-friday/resp-prov/resp-mod"); err != nil {
 		t.Fatal(err)
 	}
 
@@ -585,7 +585,7 @@ func TestStepCodeMetadataAndLANKey(t *testing.T) {
 	if err := json.Unmarshal([]byte(stepcodeReadTestFile(t, modelsPath)), &parsed); err != nil {
 		t.Fatal(err)
 	}
-	magpieProv := parsed["providers"].(map[string]any)["magpie"].(map[string]any)
+	magpieProv := parsed["providers"].(map[string]any)["magpie-friday"].(map[string]any)
 	if magpieProv["api"] != "openai-completions" {
 		t.Errorf("api = %v, want openai-completions", magpieProv["api"])
 	}
@@ -624,7 +624,7 @@ func TestStepCodeMetadataAndLANKey(t *testing.T) {
 	wslHome := t.TempDir()
 	wslPl := place{home: wslHome, spell: func(s string) string { return s }, base: func() string { return wslAddr }}
 	wslAgent := stepcodeIn(wslPl)
-	if err := wslAgent.Apply("model", "magpie/resp-prov/resp-mod"); err != nil {
+	if err := wslAgent.Apply("model", "magpie-friday/resp-prov/resp-mod"); err != nil {
 		t.Fatalf("wslAgent.Apply: %v", err)
 	}
 
@@ -633,7 +633,7 @@ func TestStepCodeMetadataAndLANKey(t *testing.T) {
 	if err := json.Unmarshal([]byte(stepcodeReadTestFile(t, wslModelsPath)), &wslParsed); err != nil {
 		t.Fatal(err)
 	}
-	wslMagpieProv := wslParsed["providers"].(map[string]any)["magpie"].(map[string]any)
+	wslMagpieProv := wslParsed["providers"].(map[string]any)["magpie-friday"].(map[string]any)
 	if wslMagpieProv["baseUrl"] != wslAddr+"/v1" {
 		t.Errorf("wsl baseUrl = %v, want %v", wslMagpieProv["baseUrl"], wslAddr+"/v1")
 	}
@@ -653,7 +653,7 @@ func TestStepCodeStrictValidationAndRollback(t *testing.T) {
 
 	stepcodeWriteTestFile(t, configPath, "bad toml [[ [")
 	a := stepcode(home)
-	if err := a.Apply("model", "magpie/deepseek/pro"); err == nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err == nil {
 		t.Errorf("expected error applying on malformed TOML")
 	}
 	if a.Check() == "" {
@@ -661,33 +661,33 @@ func TestStepCodeStrictValidationAndRollback(t *testing.T) {
 	}
 
 	stepcodeWriteTestFile(t, configPath, "defaultProvider = 12345\n")
-	if err := a.Apply("model", "magpie/deepseek/pro"); err == nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err == nil {
 		t.Errorf("expected error on non-string defaultProvider")
 	}
 
 	stepcodeWriteTestFile(t, configPath, "enabledModels = \"not-a-list\"\n")
-	if err := a.Apply("model", "magpie/deepseek/pro"); err == nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err == nil {
 		t.Errorf("expected error on non-array enabledModels")
 	}
 
 	stepcodeWriteTestFile(t, configPath, "defaultProvider = \"anthropic\"\ndefaultModel = \"claude\"\n")
 	stepcodeWriteTestFile(t, modelsPath, "not valid json {")
-	if err := a.Apply("model", "magpie/deepseek/pro"); err == nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err == nil {
 		t.Errorf("expected error applying on malformed models.json")
 	}
 
 	stepcodeWriteTestFile(t, modelsPath, `{"providers": 12345}`)
-	if err := a.Apply("model", "magpie/deepseek/pro"); err == nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err == nil {
 		t.Errorf("expected error applying on non-object providers in models.json")
 	}
-	stepcodeWriteTestFile(t, modelsPath, `{"providers": {"magpie": "not-an-object"}}`)
-	if err := a.Apply("model", "magpie/deepseek/pro"); err == nil {
-		t.Errorf("expected error applying on non-object providers.magpie in models.json")
+	stepcodeWriteTestFile(t, modelsPath, `{"providers": {"magpie-friday": "not-an-object"}}`)
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err == nil {
+		t.Errorf("expected error applying on non-object providers.magpie-friday in models.json")
 	}
 
 	stepcodeWriteTestFile(t, configPath, "defaultProvider = \"\"\ndefaultModel = \"\"\n")
 	stepcodeWriteTestFile(t, modelsPath, `{"providers": {}}`)
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatalf("Apply: %v", err)
 	}
 	if err := a.Disconnect(); err != nil {
@@ -726,7 +726,7 @@ func TestStepCodeStashSafety(t *testing.T) {
 			stepcodeWriteTestFile(t, stashPath(), tc.raw)
 
 			a := stepcode(home)
-			err := a.Field("model").Set("magpie/deepseek/pro")
+			err := a.Field("model").Set("magpie-friday/deepseek/pro")
 			if err == nil {
 				t.Fatalf("expected error with corrupted stash %s", tc.raw)
 			}
@@ -754,7 +754,7 @@ func TestStepCodeStashSafety(t *testing.T) {
 		_ = os.Remove(stashPath())
 
 		a := stepcode(home)
-		if err := a.Field("model").Set("magpie/deepseek/pro"); err != nil {
+		if err := a.Field("model").Set("magpie-friday/deepseek/pro"); err != nil {
 			t.Fatalf("Field.Set failed: %v", err)
 		}
 
@@ -796,7 +796,7 @@ func TestStepCodeStashSafety(t *testing.T) {
 		defer func() { _ = os.Chmod(stashDir, 0o755) }()
 
 		a := stepcode(home)
-		err := a.Field("model").Set("magpie/deepseek/pro")
+		err := a.Field("model").Set("magpie-friday/deepseek/pro")
 		if err == nil {
 			t.Fatalf("expected error with unwritable stash directory")
 		}
@@ -850,7 +850,7 @@ func TestStepCodeAtomicRollbackOnSecondFileFailure(t *testing.T) {
 	}()
 
 	a := stepcode(home)
-	err := a.Apply("model", "magpie/deepseek/pro")
+	err := a.Apply("model", "magpie-friday/deepseek/pro")
 	if err == nil {
 		t.Fatalf("expected error writing to read-only symlink target")
 	}
@@ -963,7 +963,7 @@ func TestStepCodeRealCLISandbox(t *testing.T) {
 	stepcodeWriteTestFile(t, filepath.Join(home, ".stepcode", "config.toml"), "[telemetry]\nenabled = false\n")
 
 	a := stepcode(home)
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatalf("Apply: %v", err)
 	}
 
@@ -1010,7 +1010,7 @@ func TestStepCodeRealCLISandbox(t *testing.T) {
 	listStr := string(outList)
 	t.Logf("step --list-models output:\n%s", listStr)
 	if !stepcodeListsMagpie(listStr) || !strings.Contains(listStr, "deepseek/pro") {
-		t.Errorf("step --list-models did not list magpie/deepseek/pro:\n%s", listStr)
+		t.Errorf("step --list-models did not list magpie-friday/deepseek/pro:\n%s", listStr)
 	}
 
 	if err := a.Disconnect(); err != nil {
@@ -1025,17 +1025,17 @@ func TestStepCodeRealCLISandbox(t *testing.T) {
 		t.Fatalf("step --list-models after disconnect failed: %v, output:\n%s", err, string(outListAfter))
 	}
 	// a row of the list is "<provider> <model> …"; the folder step prints
-	// its docs from may itself have "magpie" in it, so only a row counts
+	// its docs from may itself have "magpie-friday" in it, so only a row counts
 	if stepcodeListsMagpie(string(outListAfter)) {
-		t.Errorf("step --list-models still lists magpie after Disconnect:\n%s", string(outListAfter))
+		t.Errorf("step --list-models still lists magpie-friday after Disconnect:\n%s", string(outListAfter))
 	}
 }
 
-// A provider renamed moves StepCode's magpie/<old>/ entries in enabledModels
+// A provider renamed moves StepCode's magpie-friday/<old>/ entries in enabledModels
 // onto the new id, once: the model it is on, another of that provider's the
 // user listed, and a glob. The user's own entries stay, a name that only
 // shares a prefix stays, and Disconnect still puts the user's scope back
-// (those entries renamed) and takes out the one magpie appended.
+// (those entries renamed) and takes out the one magpie-friday appended.
 func TestStepCodeEnabledModelsFollowRename(t *testing.T) {
 	home, _ := museHome(t)
 	// a provider whose id only shares a prefix; its model is offered, so
@@ -1052,13 +1052,13 @@ func TestStepCodeEnabledModelsFollowRename(t *testing.T) {
 theme = "dark"
 defaultProvider = "anthropic"
 defaultModel = "claude"
-enabledModels = ["anthropic/*", "custom/fast", "magpie/deepseek/flash", "magpie/deepseek/*", "magpie/deepseekx/flash"]
+enabledModels = ["anthropic/*", "custom/fast", "magpie-friday/deepseek/flash", "magpie-friday/deepseek/*", "magpie-friday/deepseekx/flash"]
 `
 	stepcodeWriteTestFile(t, configPath, before)
 	stepcodeWriteTestFile(t, modelsPath, `{"providers":{"anthropic":{"name":"Anthropic"}}}`)
 
 	a := stepcode(home)
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := RenameProvider("deepseek", "ds"); err != nil {
@@ -1069,8 +1069,8 @@ enabledModels = ["anthropic/*", "custom/fast", "magpie/deepseek/flash", "magpie/
 	if err != nil || cfg.Scope == nil {
 		t.Fatalf("scope: %v\n%s", err, raw)
 	}
-	want := []string{"anthropic/*", "custom/fast", "magpie/ds/flash", "magpie/ds/*", "magpie/deepseekx/flash", "magpie/ds/pro"}
-	if !slices.Equal(*cfg.Scope, want) || strings.Contains(raw, "magpie/deepseek/") ||
+	want := []string{"anthropic/*", "custom/fast", "magpie-friday/ds/flash", "magpie-friday/ds/*", "magpie-friday/deepseekx/flash", "magpie-friday/ds/pro"}
+	if !slices.Equal(*cfg.Scope, want) || strings.Contains(raw, "magpie-friday/deepseek/") ||
 		!strings.Contains(raw, "# mine") || !strings.Contains(raw, `theme = "dark"`) ||
 		stepcodeValue(cfg.Provider) != magpieID || stepcodeValue(cfg.Model) != "ds/pro" {
 		t.Fatalf("renamed scope = %v\nprovider %q model %q\n%s", *cfg.Scope, stepcodeValue(cfg.Provider), stepcodeValue(cfg.Model), raw)
@@ -1084,8 +1084,8 @@ enabledModels = ["anthropic/*", "custom/fast", "magpie/deepseek/flash", "magpie/
 	if err != nil || cfg.Scope == nil {
 		t.Fatalf("restored scope: %v\n%s", err, raw)
 	}
-	restored := []string{"anthropic/*", "custom/fast", "magpie/ds/flash", "magpie/ds/*", "magpie/deepseekx/flash"}
-	if !slices.Equal(*cfg.Scope, restored) || strings.Contains(raw, "magpie/deepseek/") || strings.Contains(raw, "magpie/ds/pro") ||
+	restored := []string{"anthropic/*", "custom/fast", "magpie-friday/ds/flash", "magpie-friday/ds/*", "magpie-friday/deepseekx/flash"}
+	if !slices.Equal(*cfg.Scope, restored) || strings.Contains(raw, "magpie-friday/deepseek/") || strings.Contains(raw, "magpie-friday/ds/pro") ||
 		!strings.Contains(raw, "# mine") || !strings.Contains(raw, `theme = "dark"`) ||
 		stepcodeValue(cfg.Provider) != "anthropic" || stepcodeValue(cfg.Model) != "claude" {
 		t.Fatalf("disconnect scope = %v\nprovider %q model %q\n%s", *cfg.Scope, stepcodeValue(cfg.Provider), stepcodeValue(cfg.Model), raw)
@@ -1125,10 +1125,10 @@ enabledModels = ["anthropic/*", "custom/fast", "custom/fast"]
 }
 
 // stepcodeListsMagpie is whether step --list-models has a row under the
-// magpie provider.
+// magpie-friday provider.
 func stepcodeListsMagpie(out string) bool {
 	for _, line := range strings.Split(out, "\n") {
-		if f := strings.Fields(line); len(f) > 0 && f[0] == "magpie" {
+		if f := strings.Fields(line); len(f) > 0 && f[0] == "magpie-friday" {
 			return true
 		}
 	}

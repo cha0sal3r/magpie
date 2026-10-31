@@ -4,10 +4,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// magpie model alias counts a model's usage under another id, shows it,
+// magpie-friday model alias counts a model's usage under another id, shows it,
 // lists it under aliases and takes it off with --reset; it refuses a
 // model aliased to itself, a loop, and a flag taken as a model id.
 func TestModelAliasCmd(t *testing.T) {
@@ -37,7 +37,7 @@ func TestModelAliasCmd(t *testing.T) {
 			t.Fatalf("took %v", bad)
 		}
 	}
-	if out, err = runOut(t, "model", "alias", "--help"); err != nil || !strings.Contains(out, "magpie model alias <model> <name>") {
+	if out, err = runOut(t, "model", "alias", "--help"); err != nil || !strings.Contains(out, "magpie-friday model alias <model> <name>") {
 		t.Fatalf("--help: %q %v", out, err)
 	}
 	if got := settings.Load().UsageAliases; len(got) != 1 {

@@ -10,14 +10,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// DeepSeek Harness's own DeepSeek models, beside magpie's in its picker,
+// DeepSeek Harness's own DeepSeek models, beside magpie-friday's in its picker,
 // can be left out (MizuIro-H, #1642): the agent's model list has a switch
-// for them, its pickers then offer magpie's alone, the model it is set to
+// for them, its pickers then offer magpie-friday's alone, the model it is set to
 // stays, and another agent's pickers are as they were.
 func TestAgentOwnModelsHidden(t *testing.T) {
 	home := t.TempDir()
@@ -70,7 +70,7 @@ func TestAgentOwnModelsHidden(t *testing.T) {
 		t.Fatalf("dsh's list: %+v, want its own models there and shown", got)
 	}
 	if own, magpie := values(dsh, map[string]string{}); !slices.Equal(own, all) || len(magpie) == 0 {
-		t.Fatalf("before: own %v, magpie's %v", own, magpie)
+		t.Fatalf("before: own %v, magpie-friday's %v", own, magpie)
 	}
 
 	if got := call("POST", `{"ownHidden":true}`); !got.OwnHidden {
@@ -83,8 +83,8 @@ func TestAgentOwnModelsHidden(t *testing.T) {
 		t.Fatalf("dsh's list after: %+v", got)
 	}
 	own, magpie := values(dsh, map[string]string{})
-	if len(own) != 0 || !slices.Contains(magpie, "magpie/relay/m1") {
-		t.Fatalf("hidden: own %v left, magpie's %v", own, magpie)
+	if len(own) != 0 || !slices.Contains(magpie, "magpie-friday/relay/m1") {
+		t.Fatalf("hidden: own %v left, magpie-friday's %v", own, magpie)
 	}
 	// the one it is set to stays, the others go
 	if own, _ := values(dsh, map[string]string{"model": "deepseek-v4-pro"}); !slices.Equal(own, []string{"deepseek-v4-pro"}) {
@@ -94,7 +94,7 @@ func TestAgentOwnModelsHidden(t *testing.T) {
 	if provider.OwnModelsHidden("codex") {
 		t.Fatal("codex hides its own too")
 	}
-	// the effort field, not a picker of magpie's models, keeps every level
+	// the effort field, not a picker of magpie-friday's models, keeps every level
 	for _, f := range agentFields(dsh, map[string]string{}) {
 		if f.Key == "effort" && len(f.Options) == 0 {
 			t.Fatal("effort lost its levels")

@@ -32,7 +32,7 @@ func init() {
 	const tok = "0123456789abcdef0123456789abcdef"
 	seen := make(chan string, 1)
 	app := application.New(application.Options{
-		Name: "magpie plugin page regression",
+		Name: "magpie-friday plugin page regression",
 		Mac:  application.MacOptions{ActivationPolicy: application.ActivationPolicyProhibited},
 		Assets: application.AssetOptions{Handler: ownWindow(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			switch r.URL.Path {

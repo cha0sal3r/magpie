@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // hits counts the requests each upstream took, and fails them all as out

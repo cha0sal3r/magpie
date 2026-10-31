@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // stepShape lists a Responses input's items by type, a reasoning item with
@@ -35,7 +35,7 @@ func stepShape(input []map[string]any) string {
 // TestDeepSeekStepSaysBeforeItsCall (#1822, Codex → OpenCode Go's DeepSeek;
 // #1592 and #1687 on DeepSeek's own API): a step of Codex's history that
 // said something and then made a call, with no reasoning item (another
-// model's turn), was sent [message, reasoning " ", call]: magpie put the
+// model's turn), was sent [message, reasoning " ", call]: magpie-friday put the
 // reasoning it made up right before the call. DeepSeek reads a step as one
 // assistant message whose thinking is the item it starts with, so it
 // refused the request with "The `reasoning_text` in the thinking mode must

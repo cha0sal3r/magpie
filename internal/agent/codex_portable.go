@@ -6,16 +6,16 @@ import (
 	"os"
 	"time"
 
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
 )
 
-// A Codex conversation magpie compacted can't go on once Codex talks to
+// A Codex conversation magpie-friday compacted can't go on once Codex talks to
 // OpenAI itself, unless its rollout is written portable
-// (sessions.PortCodexRollouts, LukeMa on X): done while magpie runs, for
-// the threads no Codex has open, and again as magpie lets Codex go (quit,
+// (sessions.PortCodexRollouts, LukeMa on X): done while magpie-friday runs, for
+// the threads no Codex has open, and again as magpie-friday lets Codex go (quit,
 // Disconnect), for those it has just let go.
 
-// codexPortEvery is how often a running magpie makes the rollouts written
+// codexPortEvery is how often a running magpie-friday makes the rollouts written
 // since portable; codexPortAfter how long after it starts it first does.
 var codexPortEvery, codexPortAfter = 10 * time.Minute, 2 * time.Minute
 
@@ -38,7 +38,7 @@ func portCodexHome(dir string, d time.Duration) {
 }
 
 // PortCodexRollouts makes this machine's Codex rollouts portable, for up
-// to d: as magpie quits.
+// to d: as magpie-friday quits.
 func PortCodexRollouts(d time.Duration) {
 	if home, err := os.UserHomeDir(); err == nil {
 		portCodexHome(here(home).codexHome(), d)

@@ -4,7 +4,7 @@ package provider
 // A Codex window starts at the account's first request after it resets, not
 // at the reset: an account that sits idle for a day after its week ends has
 // its next week end a day later too. So, while the setting is on, whichever
-// magpie runs the gateway looks at each account's windows every few minutes
+// magpie-friday runs the gateway looks at each account's windows every few minutes
 // and, when one has started over — its reset time passed, or its use fell
 // back (OpenAI resetting everyone's limits early), or, unused, it is no
 // longer started and resets later than it ran to (a reset that follows a
@@ -33,8 +33,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 const (
@@ -54,7 +54,7 @@ const (
 	warmKickEvery = 10 * time.Minute
 )
 
-// warmWindow is one window of an account as last seen, and when magpie
+// warmWindow is one window of an account as last seen, and when magpie-friday
 // last started it.
 type warmWindow struct {
 	ResetsAt time.Time `json:"resetsAt,omitzero"`
@@ -351,7 +351,7 @@ func warmDue(p warmWindow, seen bool, cur QuotaWindow, now time.Time) bool {
 }
 
 // movedOn says whether a window seen as p now resets (cur) later than
-// both the reset it was seen running to and the end of a window magpie's
+// both the reset it was seen running to and the end of a window magpie-friday's
 // last warm-up started: one that has started over since. A window left
 // out of the read, or with no reset, hasn't started at all.
 func movedOn(p warmWindow, cur QuotaWindow) bool {
@@ -488,7 +488,7 @@ func warmCodex(ctx context.Context, sign func(context.Context, *http.Request, []
 	return err
 }
 
-// CodexWarmed is when magpie last started a window of each ChatGPT
+// CodexWarmed is when magpie-friday last started a window of each ChatGPT
 // account, by user as kept (lower-cased).
 func CodexWarmed() map[string]time.Time { return codexWarmedIn(codexWarmPath()) }
 

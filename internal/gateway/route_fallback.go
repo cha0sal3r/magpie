@@ -6,18 +6,17 @@ import (
 	"time"
 
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // routeChain is the policy's model-family fallback order. An alias starts
 // at its mapped primary; a concrete model only falls through to
-// lower-priority siblings, never upgrades, and once its own family is spent
-// goes on to the members of the families listed below it, so a series with a
-// single member still has a fallback and a model never climbs to a newer
-// family. A family that names no models is derived from avail, the provider's
-// own model list, so a model the channel adds later falls back without an
-// edit. Models the policy says do not take tools are omitted from a request
-// carrying tools.
+// lower-priority siblings of its own family, never upgrades and never moves
+// on to another family: each family falls back within itself alone, so a
+// series with a single member has no fallback beyond itself. A family that
+// names no models is derived from avail, the provider's own model list, so a
+// model the channel adds later falls back without an edit. Models the policy
+// says do not take tools are omitted from a request carrying tools.
 func routeChain(pol provider.RoutePolicy, avail []string, model string, tools bool) []string {
 	primary := model
 	if alias := pol.Family.Aliases[model]; alias != "" {
@@ -33,7 +32,7 @@ func routeChain(pol provider.RoutePolicy, avail []string, model string, tools bo
 		primary = bestTarget
 	}
 	var out []string
-	for i, fam := range pol.Family.Families {
+	for _, fam := range pol.Family.Families {
 		if !routeFamilyHas(fam, primary) {
 			continue
 		}
@@ -45,11 +44,6 @@ func routeChain(pol provider.RoutePolicy, avail []string, model string, tools bo
 			// then the family's own order.
 			out = append(out, primary)
 			out = append(out, members...)
-		}
-		// never up: after its family, only the families below it, each
-		// whole, in its own order.
-		for _, rest := range pol.Family.Families[i+1:] {
-			out = append(out, routeFamilyMembers(rest, avail)...)
 		}
 		break
 	}

@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // fakeReach answers reachProbe from answers (a base missing is down), and
@@ -61,7 +61,7 @@ func driftSettled(t *testing.T, a *Agent) *Drift {
 }
 
 // codexAt is this machine's Codex connected on fake/m1, its config then
-// pointed at magpie by base as the user wrote it (#816).
+// pointed at magpie-friday by base as the user wrote it (#816).
 func codexAt(t *testing.T, base string) (string, func() string) {
 	t.Helper()
 	home, read := codexHome(t, `{"OPENAI_API_KEY":"sk-x"}`, "")
@@ -85,11 +85,11 @@ func codexAt(t *testing.T, base string) (string, func() string) {
 }
 
 // #1013 (cjyrainbow): Codex on Windows, its WSL agent reading Windows'
-// config, pointed at magpie by Windows' address as WSL sees it and a
+// config, pointed at magpie-friday by Windows' address as WSL sees it and a
 // portproxy of the user's to 127.0.0.1. After a reboot the portproxy
 // listened no more, and the Agents page still said connected: the config
 // was right. Now the address is tried, and one where nothing answers
-// while magpie does on loopback is told, with what has to listen there.
+// while magpie-friday does on loopback is told, with what has to listen there.
 func TestKeptAddressNotAnswering(t *testing.T) {
 	kept := "http://172.28.96.1:" + gateway.Port()
 	answers := map[string]bool{gateway.URL(): true}
@@ -113,7 +113,7 @@ func TestKeptAddressNotAnswering(t *testing.T) {
 		t.Fatalf("answering, still %+v", d)
 	}
 
-	// magpie's gateway itself down: nothing answers anywhere, which is no
+	// magpie-friday's gateway itself down: nothing answers anywhere, which is no
 	// fault of the address
 	mu.Lock()
 	answers[kept], answers[gateway.URL()] = false, false

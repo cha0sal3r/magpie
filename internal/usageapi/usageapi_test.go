@@ -4,18 +4,18 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 func TestMain(m *testing.M) { testenv.Main(m) }
 
 // A provider the usage log names but that isn't set up now is still named
-// as magpie knows it (@ByronVon1 on X): the Claude Code subscription,
+// as magpie-friday knows it (@ByronVon1 on X): the Claude Code subscription,
 // signed out of since, showed as "claude" in the Requests page's Provider
 // filter, between providers named by their names. A preset's removed
-// since is named by the preset; a custom one magpie can't know stays its
+// since is named by the preset; a custom one magpie-friday can't know stays its
 // id. Every place the page names a provider from the log says the same:
 // the filter, each row, the split-by legends, and the summary's models
 // and accounts.

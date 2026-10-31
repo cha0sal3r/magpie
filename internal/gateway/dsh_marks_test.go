@@ -9,14 +9,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // #2505 (h4rk8s): DSH names its session in x-deepseek-harness-session-id
 // and marks a request compacting its context with
 // x-deepseek-harness-compact. A call is recorded under that session and as
-// a compaction ("compact", the Requests list's Compaction), on this magpie
+// a compaction ("compact", the Requests list's Compaction), on this magpie-friday
 // and on a remote one it is passed on to; a request without the mark is
 // never taken for one by what its prompt says. The vendor is sent neither
 // header.
@@ -93,7 +93,7 @@ func TestDshMarksSessionAndCompaction(t *testing.T) {
 			got := arrived[len(arrived)-1]
 			mu.Unlock()
 			if got.Get("x-deepseek-harness-session-id") != "dsh-session-A" || got.Get("x-deepseek-harness-compact") != tc.compact {
-				t.Errorf("%d: the remote magpie was sent session %q compact %q", i, got.Get("x-deepseek-harness-session-id"), got.Get("x-deepseek-harness-compact"))
+				t.Errorf("%d: the remote magpie-friday was sent session %q compact %q", i, got.Get("x-deepseek-harness-session-id"), got.Get("x-deepseek-harness-compact"))
 			}
 		}
 		rs := records(i + 1)
@@ -116,7 +116,7 @@ func TestDshMarksSessionAndCompaction(t *testing.T) {
 	}
 }
 
-// #3298 (tom047784): dsh's own DeepSeek row (llm-deepseek) pointed at magpie
+// #3298 (tom047784): dsh's own DeepSeek row (llm-deepseek) pointed at magpie-friday
 // by hand calls /v1/messages, and dsh's pi-ai routes reach /v1/responses
 // too. Each route records dsh's session and compaction as Chat Completions
 // does above, and the vendor is sent no x-deepseek-harness-* header, the

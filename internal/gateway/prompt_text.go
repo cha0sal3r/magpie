@@ -8,7 +8,7 @@ package gateway
 // read again from the request's body, which the trace holds for the last
 // few requests: in memory only, never written to disk or sent anywhere,
 // and masked as the vendor got it (redacted), the same body the Recent
-// calls keep. When magpie quits, or a request is older than the last
+// calls keep. When magpie-friday quits, or a request is older than the last
 // promptBodies, its text is gone.
 
 import (
@@ -18,7 +18,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 const (

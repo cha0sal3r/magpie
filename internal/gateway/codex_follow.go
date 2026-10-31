@@ -6,23 +6,23 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // Codex's side calls ask for one of Codex's own models by its bare name,
 // whatever the conversation is on: a subagent goes on the model its lead
 // names in spawn_agent (Codex lists its own first), its memories are
 // written on gpt-5.6-luna and gpt-5.6-terra, its auto-review runs on
-// codex-auto-review. With the conversation on one of magpie's models
+// codex-auto-review. With the conversation on one of magpie-friday's models
 // beside Codex's ChatGPT sign-in, each of those went to that ChatGPT
 // account rather than where the user had routed Codex (cybercaius on
 // Discord). With nothing set for them, a subagent and the memories follow
 // the session: they go on the model the conversation's own turns go on,
-// when that is one of magpie's. The auto-review follows it when set to
+// when that is one of magpie-friday's. The auto-review follows it when set to
 // (settings.CodexAutoReviewSession, which codexcat writes into each of
-// magpie's entries); left to Codex it stays on codex-auto-review, which a
+// magpie-friday's entries); left to Codex it stays on codex-auto-review, which a
 // ChatGPT sign-in runs free (#1593).
 
 // CodexSideSet says whether Codex's own config names the model for a side
@@ -96,9 +96,9 @@ func (l *codexLeads) of(r *http.Request, body []byte) string {
 
 // codexFollowTo is the model a Codex side call that asked for one of
 // Codex's own models goes on instead: the session's, when it is one of
-// magpie's and nothing is set for that call. "" leaves the call as it
-// came: another call, a model of magpie's asked for, a model set for it, a
-// conversation on one of Codex's own models, or a session model magpie
+// magpie-friday's and nothing is set for that call. "" leaves the call as it
+// came: another call, a model of magpie-friday's asked for, a model set for it, a
+// conversation on one of Codex's own models, or a session model magpie-friday
 // can't serve it on now.
 func (s *Server) codexFollowTo(r *http.Request, agent, kind, asked string, body []byte) string {
 	if agent != "codex" && !fromCodex(r.Header) || asked == "" || strings.Contains(asked, "/") {

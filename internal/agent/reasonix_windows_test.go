@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 	"golang.org/x/sys/windows"
 )
 
@@ -34,7 +34,7 @@ func TestReasonixLockedCredentialRollsBackAllFiles(t *testing.T) {
 		t.Run(map[bool]string{false: "select", true: "restore"}[restore], func(t *testing.T) {
 			a, env := reasonixFixture(t, reasonixNativeConfig)
 			if restore {
-				if err := a.Field("model").Set("magpie/a/pro"); err != nil {
+				if err := a.Field("model").Set("magpie-friday/a/pro"); err != nil {
 					t.Fatal(err)
 				}
 			}
@@ -50,7 +50,7 @@ func TestReasonixLockedCredentialRollsBackAllFiles(t *testing.T) {
 				t.Fatal(err)
 			}
 			defer windows.CloseHandle(h)
-			value := "magpie/a/pro"
+			value := "magpie-friday/a/pro"
 			if restore {
 				value = ""
 			}

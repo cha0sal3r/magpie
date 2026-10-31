@@ -9,7 +9,7 @@
 // grid are the ones that were there, patched, and the grid and its box
 // keep their height on every frame between. In Chromium and WebKit, at a
 // phone's width and a desk's; with the card open, and folded to its head
-// (magpie.ctxShut), whose nodes, bar and height stay the same too.
+// (magpie-friday.ctxShut), whose nodes, bar and height stay the same too.
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");

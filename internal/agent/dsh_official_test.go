@@ -54,7 +54,7 @@ func dshOfficialHome(t *testing.T) (home, dir, apps string, reg map[string][2]st
 // WuSix on Discord (Windows 11): DeepSeek's desktop app is
 // github.com/deepseek-ai/deepseek-harness's DeepSeek Harness, not the
 // community "DeepSeek Hermes" (motongv/deepseek-hermes-desktop) v0.1.1337
-// took it for. That one is not dsh's app: magpie doesn't list dsh for it,
+// took it for. That one is not dsh's app: magpie-friday doesn't list dsh for it,
 // nor write a profile or key for it. The official app still is.
 func TestDshOnlyTheOfficialApp(t *testing.T) {
 	judgeFor(t, "darwin")
@@ -76,7 +76,7 @@ func TestDshOnlyTheOfficialApp(t *testing.T) {
 
 	installApp(t, apps, "DeepSeek Harness.app", dshOfficialPlist)
 	a := dsh(home)
-	a.Bin = "magpie-test-gone-dsh"
+	a.Bin = "magpie-friday-test-gone-dsh"
 	if !a.Detected() || a.CLIMissing() || !a.HasApp() {
 		t.Fatalf("DeepSeek Harness 0.2.1-rc.2: detected %v, CLI missing %v, app %v", a.Detected(), a.CLIMissing(), a.HasApp())
 	}

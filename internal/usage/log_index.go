@@ -43,12 +43,12 @@ type logSnapshot struct {
 	version uint64
 	blocks  []*rowChunk
 	first   time.Time
-	// firstOwn is the first call magpie carried itself, leaving out what
+	// firstOwn is the first call magpie-friday carried itself, leaving out what
 	// apps reported (#1874): a backfill reaching back doesn't make the log
 	// reach back to a subscription window's start.
 	firstOwn     time.Time
 	keyProviders map[string]bool
-	// probes are the requests magpie sent on its own (SourceProbe), kept
+	// probes are the requests magpie-friday sent on its own (SourceProbe), kept
 	// out of blocks: every reader of those counts what it reads, and the
 	// request log alone lists these (queryPage)
 	probes []probeRow

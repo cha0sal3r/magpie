@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // priceHome keeps a test off the machine's own settings, providers and
@@ -260,7 +260,7 @@ func TestEffectivePriceResolvesAnIDARenamedFrom(t *testing.T) {
 }
 
 // What a call costs is not what an agent picks a model by, and the model
-// lists magpie keeps in the agents' own files are not rewritten over a
+// lists magpie-friday keeps in the agents' own files are not rewritten over a
 // number in a cost report. Unlike a name, a window or a reply limit, a
 // price is not told to anybody; the counter that hears a name below is one
 // that could have heard it.
@@ -298,7 +298,7 @@ func TestSetModelPriceTellsNoAgent(t *testing.T) {
 // A price for a model the provider does not serve never applies, and nothing
 // says so afterwards: the entry is simply there, and the model is counted at
 // the catalogue's price as if the user had never said anything. Refused at the
-// point of writing, the way `magpie model name` refuses the same id. A removal
+// point of writing, the way `magpie-friday model name` refuses the same id. A removal
 // is exempt, so an entry left for a model that has since gone can be cleared.
 func TestSetModelPriceRefusesAModelTheProviderDoesNotServe(t *testing.T) {
 	priceHome(t)

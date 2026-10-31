@@ -5,16 +5,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A key held to a budget, models or accounts is told none of this
-// magpie's quotas (#1981), unless the key's owner lets it be told those
+// magpie-friday's quotas (#1981), unless the key's owner lets it be told those
 // of what it may use (access.Key.Quotas, Kenoia, #2216). It is then told
 // a card only when:
 //
-//   - the card's provider is one of this magpie's, in the catalog, and
+//   - the card's provider is one of this magpie-friday's, in the catalog, and
 //     the key may use every model the catalog lists of it: a key held to
 //     some of a provider's models is told nothing of the provider, since
 //     its quota is spent by the models the key may not use as well; and
@@ -24,9 +24,9 @@ import (
 //     name; a card no account of the provider is known by is told to no
 //     such key.
 //
-// The quotas, their kept report, their history, the cards another magpie
+// The quotas, their kept report, their history, the cards another magpie-friday
 // reads and a card's refresh all go through it. The accounts' lanes
-// (/v1/magpie/concurrency) and the usage summary are still refused.
+// (/v1/magpie-friday/concurrency) and the usage summary are still refused.
 
 // quotaScope is what a held key with Quotas set may be told; nil is
 // everything, for a key held to nothing and this machine's owner.
@@ -132,8 +132,8 @@ func (s *quotaScope) cards(cs []provider.SubscriptionQuota) []provider.Subscript
 	return out
 }
 
-// writeCards answers another magpie the cards the key may be told. A key
-// told none of the cards here is answered as held: the other magpie then
+// writeCards answers another magpie-friday the cards the key may be told. A key
+// told none of the cards here is answered as held: the other magpie-friday then
 // shows the key's own limit, not that nothing was read here, which a
 // refresh wouldn't change.
 func writeCards(w http.ResponseWriter, r *http.Request, s *quotaScope) {

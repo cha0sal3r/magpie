@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
 )
 
-// #1938 (kensenzhao): two Claude accounts, each with its own proxy. magpie
+// #1938 (kensenzhao): two Claude accounts, each with its own proxy. magpie-friday
 // switches Claude Code to max, and a Claude Code started on pro writes
 // pro's profile after. Claude Code's sign-in is max's, so its /usage goes
 // through max's proxy and is max's reading, not through pro's and shown

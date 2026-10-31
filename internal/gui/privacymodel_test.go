@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/pii"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/pii"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // The local masking model is on only once it is on disk: turned on where

@@ -1,8 +1,8 @@
 <div align="center">
 
-<a href="https://usemagpie.ai"><img src="site/public/img/icon-256.png" width="112" alt="magpie"></a>
+<a href="https://usemagpie.ai"><img src="site/public/img/icon-256.png" width="112" alt="magpie-friday"></a>
 
-# magpie
+# magpie-friday
 
 ### Every agent's model. One place.
 
@@ -10,7 +10,7 @@
 Switch any of them from the menu bar. One local gateway serves them all,<br>
 and when a quota runs out, it quietly moves on to your next account.
 
-[![Release](https://img.shields.io/github/v/release/yetone/magpie-releases?label=release&color=111111)](https://github.com/yetone/magpie-releases/releases/latest) [![Stars](https://img.shields.io/github/stars/yetone/magpie?style=flat&color=111111)](https://github.com/yetone/magpie/stargazers) [![Discord](https://img.shields.io/badge/Discord-join-5865F2?logo=discord&logoColor=white)](https://discord.gg/vGSnD3ZKQF) [![License](https://img.shields.io/badge/license-MIT-111111)](LICENSE)<br>
+[![Release](https://img.shields.io/github/v/release/cha0sal3r/magpie-friday-releases?label=release&color=111111)](https://github.com/cha0sal3r/magpie-friday-releases/releases/latest) [![Stars](https://img.shields.io/github/stars/cha0sal3r/magpie-friday?style=flat&color=111111)](https://github.com/cha0sal3r/magpie-friday/stargazers) [![Discord](https://img.shields.io/badge/Discord-join-5865F2?logo=discord&logoColor=white)](https://discord.gg/vGSnD3ZKQF) [![License](https://img.shields.io/badge/license-MIT-111111)](LICENSE)<br>
 ![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white) ![Windows](https://img.shields.io/badge/Windows-0078D4?logo=windows&logoColor=white) ![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black) ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white) ![Termux](https://img.shields.io/badge/Termux-000000?logo=android&logoColor=white)
 
 <sub>Sponsors</sub>
@@ -23,18 +23,18 @@ and when a quota runs out, it quietly moves on to your next account.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="site/public/img/agents-dark.png">
-  <img src="site/public/img/agents-light.png" width="900" alt="magpie's Agents page: Claude Code on Kimi K3, Codex on DeepSeek V4 Pro, Gemini CLI on GLM-5.3, each picked from one list">
+  <img src="site/public/img/agents-light.png" width="900" alt="magpie-friday's Agents page: Claude Code on Kimi K3, Codex on DeepSeek V4 Pro, Gemini CLI on GLM-5.3, each picked from one list">
 </picture>
 
 </div>
 
 <br>
 
-## Is magpie for you?
+## Is magpie-friday for you?
 
-Each agent keeps its model in its own file, in its own format, with its own keys and base URLs. A subscription you pay for works in one agent and nowhere else. magpie puts all of that behind one app and one local gateway:
+Each agent keeps its model in its own file, in its own format, with its own keys and base URLs. A subscription you pay for works in one agent and nowhere else. magpie-friday puts all of that behind one app and one local gateway:
 
-- **Pick any model for any agent** from one list. magpie edits the one key that matters in the agent's own config.
+- **Pick any model for any agent** from one list. magpie-friday edits the one key that matters in the agent's own config.
 - **Use one provider everywhere**: an API key, a local model, or the Claude, ChatGPT, Copilot, Gemini or Grok plan you're signed in to.
 - **Keep going when a quota runs out**: a provider's next account takes over, and a routing group moves on to another model or provider, so the agent never sees the error. With one account and no group there is nothing to move to, and the error reaches the agent.
 - **Keep your secrets off the vendor's servers**: once you turn masking on in **Settings → Privacy** (it's off by default), keys, passwords and emails in a prompt are masked on your computer before the request leaves it, and put back in the reply.
@@ -51,26 +51,26 @@ Runs on macOS, Windows and Linux (menu bar app, window, TUI, web UI and CLI), in
 curl -fsSL https://usemagpie.ai/install.sh | sh
 ```
 
-<sub>Mac builds are signed and notarised, and every build updates itself. Behind a firewall, use `--proxy` or `--mirror`. Or `go install github.com/yetone/magpie@latest`, or the [Docker image](https://usemagpie.ai/docs/docker).</sub>
+<sub>Mac builds are signed and notarised, and every build updates itself. Behind a firewall, use `--proxy` or `--mirror`. Or `go install github.com/cha0sal3r/magpie-friday@latest`, or the [Docker image](https://usemagpie.ai/docs/docker).</sub>
 
-**2 · Add a provider.** Open magpie and go to **Providers → Add provider**. Pick a preset and paste a key, or sign in with a subscription.
+**2 · Add a provider.** Open magpie-friday and go to **Providers → Add provider**. Pick a preset and paste a key, or sign in with a subscription.
 
 **3 · Pick a model** for each agent on the **Agents** page. Start a new session and it's on the new model.
 
 Or do it all from the terminal:
 
 ```sh
-magpie provider add deepseek sk-…              # a preset needs only the key
-magpie claude deepseek/deepseek-v4-pro          # Claude Code on DeepSeek
-magpie codex moonshot/kimi-k2.5                 # Codex on Kimi
-magpie group add "Opus anywhere" models=claude/claude-opus-5-5,copilot/claude-opus-5.5 routing=smart
-magpie claude group/opus-anywhere               # fails over between subscriptions
-magpie save work && magpie use work             # profiles
-magpie quota                                    # what's left on every plan
-magpie tui                                      # the whole thing, in a terminal
+magpie-friday provider add deepseek sk-…              # a preset needs only the key
+magpie-friday claude deepseek/deepseek-v4-pro          # Claude Code on DeepSeek
+magpie-friday codex moonshot/kimi-k2.5                 # Codex on Kimi
+magpie-friday group add "Opus anywhere" models=claude/claude-opus-5-5,copilot/claude-opus-5.5 routing=smart
+magpie-friday claude group/opus-anywhere               # fails over between subscriptions
+magpie-friday save work && magpie-friday use work             # profiles
+magpie-friday quota                                    # what's left on every plan
+magpie-friday tui                                      # the whole thing, in a terminal
 ```
 
-magpie finds the subscriptions your agents are signed in to by reading their sign-ins (Claude Code's and Codex's files, the Keychain). To keep it from reading them, turn off Settings → Privacy → *Subscription accounts*, or run `magpie accounts discovery off` (`on` turns it back on). `MAGPIE_NO_ACCOUNTS=1` turns it off for one run without changing the saved setting. API-key providers work either way.
+magpie-friday finds the subscriptions your agents are signed in to by reading their sign-ins (Claude Code's and Codex's files, the Keychain). To keep it from reading them, turn off Settings → Privacy → *Subscription accounts*, or run `magpie-friday accounts discovery off` (`on` turns it back on). `MAGPIE_NO_ACCOUNTS=1` turns it off for one run without changing the saved setting. API-key providers work either way.
 
 ## Supported agents
 
@@ -82,12 +82,12 @@ Claude Code · Claude Desktop · Claude Science · Codex · Gemini CLI · Antigr
 </td></tr>
 </table>
 
-magpie shows only the agents installed on your machine; setup notes for some of them are in the [reference](docs/reference.md#notes-on-some-agents). Anything else that takes a base URL can use the gateway too:
+magpie-friday shows only the agents installed on your machine; setup notes for some of them are in the [reference](docs/reference.md#notes-on-some-agents). Anything else that takes a base URL can use the gateway too:
 
 ```sh
-export OPENAI_BASE_URL=http://127.0.0.1:3425/v1     OPENAI_API_KEY=magpie
-export ANTHROPIC_BASE_URL=http://127.0.0.1:3425     ANTHROPIC_API_KEY=magpie
-export GOOGLE_GEMINI_BASE_URL=http://127.0.0.1:3425 GEMINI_API_KEY=magpie
+export OPENAI_BASE_URL=http://127.0.0.1:3425/v1     OPENAI_API_KEY=magpie-friday
+export ANTHROPIC_BASE_URL=http://127.0.0.1:3425     ANTHROPIC_API_KEY=magpie-friday
+export GOOGLE_GEMINI_BASE_URL=http://127.0.0.1:3425 GEMINI_API_KEY=magpie-friday
 ```
 
 ## How it fits together
@@ -96,7 +96,7 @@ The gateway at `127.0.0.1:3425` speaks OpenAI Chat, OpenAI Responses, Anthropic 
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="site/public/img/architecture-dark.svg">
-  <img src="site/public/img/architecture.svg" alt="How magpie fits together: your agents send requests to the magpie gateway at 127.0.0.1:3425, which routes them through routing groups and plugins to your API keys, subscriptions and local models.">
+  <img src="site/public/img/architecture.svg" alt="How magpie-friday fits together: your agents send requests to the magpie-friday gateway at 127.0.0.1:3425, which routes them through routing groups and plugins to your API keys, subscriptions and local models.">
 </picture>
 
 
@@ -125,11 +125,11 @@ Click a value and a searchable list opens: every model of every provider you add
 
 ### Privacy masking
 
-Agents put what they read into the prompt: an `.env`, a config file, a log with a token in it. With masking on, magpie swaps those values for placeholders on your computer before a request leaves it, and swaps them back in the reply. Your agent and your files keep the real values; the vendor never sees them.
+Agents put what they read into the prompt: an `.env`, a config file, a log with a token in it. With masking on, magpie-friday swaps those values for placeholders on your computer before a request leaves it, and swaps them back in the reply. Your agent and your files keep the real values; the vendor never sees them.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="site/public/img/masking-dark.png">
-  <img src="site/public/img/masking-light.png" width="900" alt="Insights › Masking: 5,812 values kept from vendors in 7 days, flowing from Claude Code and Codex through magpie to OpenAI, Kimi and DeepSeek, and each request's masked values">
+  <img src="site/public/img/masking-light.png" width="900" alt="Insights › Masking: 5,812 values kept from vendors in 7 days, flowing from Claude Code and Codex through magpie-friday to OpenAI, Kimi and DeepSeek, and each request's masked values">
 </picture>
 
 | | |
@@ -149,7 +149,7 @@ Pick a preset, paste a key. Model lists come from the vendor, with names and rea
 
 > **Presets include** Anthropic · OpenAI · Google Gemini · Google Vertex AI · Amazon Bedrock (runtime and Mantle) · DeepSeek · Kimi · Zhipu GLM · MiniMax · StepFun · Qwen · Baidu Qianfan · Tencent Cloud · Huawei Cloud MaaS · Volcengine Ark · Mistral · Groq · Nous Portal · xAI · OpenRouter · Together · Fireworks · SiliconFlow · NVIDIA NIM · ModelScope · Ollama · LM Studio … and any OpenAI- or Anthropic-compatible URL.
 
-**Import** brings in the providers from CC Switch, Claude Code, Codex and Alma. **[Add to magpie](https://usemagpie.ai/docs/import)** links let a provider's website hand its config to magpie in one click. Each key and each account can go through a proxy of its own.
+**Import** brings in the providers from CC Switch, Claude Code, Codex and Alma. **[Add to magpie-friday](https://usemagpie.ai/docs/import)** links let a provider's website hand its config to magpie-friday in one click. Each key and each account can go through a proxy of its own.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="site/public/img/add-dark.png">
@@ -158,7 +158,7 @@ Pick a preset, paste a key. Model lists come from the vendor, with names and rea
 
 ### Subscriptions
 
-An agent you're signed in to is a subscription with models behind it, so magpie offers it as a provider to every other agent. Add several accounts per subscription and magpie fails over between them.
+An agent you're signed in to is a subscription with models behind it, so magpie-friday offers it as a provider to every other agent. Add several accounts per subscription and magpie-friday fails over between them.
 
 - **Claude**: drives the real local `claude` binary and bridges your agent's tools over MCP
 - **Codex / ChatGPT**: your ChatGPT plan's models, in every other agent
@@ -183,7 +183,7 @@ A conversation **stays with the account that answered it** while the vendor's pr
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="site/public/img/routing-dark.png">
-  <img width="760" src="site/public/img/routing-light.png" alt="The Routing view: four agents through magpie to seven providers, live">
+  <img width="760" src="site/public/img/routing-light.png" alt="The Routing view: four agents through magpie-friday to seven providers, live">
 </picture>
 
 <table>
@@ -206,9 +206,9 @@ A conversation **stays with the account that answered it** while the vendor's pr
 ### Plugins
 
 ```sh
-magpie plugin add opencode-gemini-auth   # an OpenCode plugin from npm
-magpie plugin add pi-antigravity         # a pi package, the same way
-magpie plugin login google-plugin        # its own sign-in flow, in magpie
+magpie-friday plugin add opencode-gemini-auth   # an OpenCode plugin from npm
+magpie-friday plugin add pi-antigravity         # a pi package, the same way
+magpie-friday plugin login google-plugin        # its own sign-in flow, in magpie-friday
 ```
 
 Plugins run on [Bun](https://bun.sh), downloaded the first time one needs it. A plugin signs in, lists its models and makes each request; agents use those models like any other provider's. Browse **[magpie-community/plugins](https://github.com/magpie-community/plugins)**, or [write your own](https://usemagpie.ai/docs/plugins).
@@ -216,7 +216,7 @@ Plugins run on [Bun](https://bun.sh), downloaded the first time one needs it. A 
 A plugin can also be **gateway middleware**: JavaScript that sees what every agent sends and gets back. `onRequest` can rewrite a request or turn it away, `onEvent` sees each streamed event, `onResponse` the whole reply. A hook that throws or runs too long leaves the request as it was.
 
 ```js
-// alias.middleware.js — magpie plugin add ./alias.middleware.js
+// alias.middleware.js — magpie-friday plugin add ./alias.middleware.js
 export function onRequest(body, ctx) {
   if (body.model === "fast") return { ...body, model: "deepseek/deepseek-chat" };
 }
@@ -236,8 +236,8 @@ export function onRequest(body, ctx) {
 | `think-tags` | Take `<think>…</think>` out of replies, or put `reasoning_content` into them |
 
 ```sh
-magpie plugin add @magpie-community/middleware-model-map
-magpie plugin options model-map '{"mapping": {"fast": "deepseek/deepseek-chat"}}'
+magpie-friday plugin add @magpie-community/middleware-model-map
+magpie-friday plugin options model-map '{"mapping": {"fast": "deepseek/deepseek-chat"}}'
 ```
 
 Find them under Plugins › Discover › Gateway middleware. See [Gateway middleware](https://usemagpie.ai/docs/plugins#middleware).
@@ -254,7 +254,7 @@ Find them under Plugins › Discover › Gateway middleware. See [Gateway middle
 | | |
 | :-- | :-- |
 | **Tokens and cost** | Tokens, cache reads and writes, reasoning and calls, with cost at list price in dollars or yuan; set your own price for any model |
-| **Quota** | Balances and quota windows for every key, plan and account (`magpie quota`), and a reminder before a window renews with much of it unused |
+| **Quota** | Balances and quota windows for every key, plan and account (`magpie-friday quota`), and a reminder before a window renews with much of it unused |
 | **Sessions** | Every agent conversation with its cost and title, reopened in your terminal with one click |
 | **Context** | How full each request's context window is, how much came from the cache, and what fills it |
 | **Bills** | By account and by upstream key, and OTLP export to your own observability stack |
@@ -264,14 +264,14 @@ Find them under Plugins › Discover › Gateway middleware. See [Gateway middle
 | | |
 | :-- | :-- |
 | **Local network** | Turn on *Share on local network* and give each client a named gateway key with its own daily, weekly or monthly token and cost limit |
-| **[Remote magpie](https://usemagpie.ai/docs/remote)** | A laptop uses the providers, accounts and groups of the magpie on your desktop, and still wires its own agents |
-| **[Docker](https://usemagpie.ai/docs/docker)** | Run `ghcr.io/yetone/magpie` on a server or a NAS and manage it from the web UI |
+| **[Remote magpie-friday](https://usemagpie.ai/docs/remote)** | A laptop uses the providers, accounts and groups of the magpie-friday on your desktop, and still wires its own agents |
+| **[Docker](https://usemagpie.ai/docs/docker)** | Run `ghcr.io/cha0sal3r/magpie-friday` on a server or a NAS and manage it from the web UI |
 | **Sync** | Back up to a file, or sync machines over WebDAV (Nutstore, Nextcloud…), S3, or an encrypted GitHub repository backup |
 
 ### Also
 
-- **Library**: write instructions, MCP servers, skills and subagents once; magpie writes them into each agent's files in its format, and removes only what it wrote.
-- **Web search for any model**: a model that can't search gets magpie's search: a provider that can, or search APIs (Tavily, Brave, Exa, Firecrawl, You.com, DeepSeek, SearXNG), asked in the order you drag them into, each one able to be switched off without losing its key. An API can hold several keys: searches take turns over them (or use them in order with `pick=order`), a key refused lately is asked last, and Tavily keys show what each has used of its limit, in Settings and in `magpie search`. Any agent can mount the same search as an MCP server, with a `web_search` tool and a `web_fetch` tool that reads a page by its URL.
+- **Library**: write instructions, MCP servers, skills and subagents once; magpie-friday writes them into each agent's files in its format, and removes only what it wrote.
+- **Web search for any model**: a model that can't search gets magpie-friday's search: a provider that can, or search APIs (Tavily, Brave, Exa, Firecrawl, You.com, DeepSeek, SearXNG), asked in the order you drag them into, each one able to be switched off without losing its key. An API can hold several keys: searches take turns over them (or use them in order with `pick=order`), a key refused lately is asked last, and Tavily keys show what each has used of its limit, in Settings and in `magpie-friday search`. Any agent can mount the same search as an MCP server, with a `web_search` tool and a `web_fetch` tool that reads a page by its URL.
 - **Images and video**: an image tool for any agent over MCP, with the model you choose, and videos with a Grok subscription.
 - **Agents kept current**: the Agents page shows each CLI's version, updates it the way it was installed, and gives the commands for the ones you don't have.
 - **WSL**: on Windows, agents inside WSL distros are wired too, and their sessions counted.
@@ -285,13 +285,13 @@ Find them under Plugins › Discover › Gateway middleware. See [Gateway middle
 | **[Reference](docs/reference.md)** | Every agent, provider option, gateway endpoint, CLI command and file |
 | **[Plugins](https://usemagpie.ai/docs/plugins)** | Use plugins and write your own |
 | **[Intent routing](https://usemagpie.ai/docs/intent)** | Route each turn by what it asks for |
-| **[Import links](https://usemagpie.ai/docs/import)** | "Add to magpie" buttons for provider websites |
-| **[Remote magpie](https://usemagpie.ai/docs/remote)** | Use one magpie's providers and groups from your other computers |
-| **[Docker](https://usemagpie.ai/docs/docker)** | Run magpie on a server or a NAS |
+| **[Import links](https://usemagpie.ai/docs/import)** | "Add to magpie-friday" buttons for provider websites |
+| **[Remote magpie-friday](https://usemagpie.ai/docs/remote)** | Use one magpie-friday's providers and groups from your other computers |
+| **[Docker](https://usemagpie.ai/docs/docker)** | Run magpie-friday on a server or a NAS |
 
 ## Privacy
 
-Your prompts, replies, keys and accounts go only to the providers you use, and with [privacy masking](#privacy-masking) on, the secrets in them don't go even there. Once a day a released magpie tells us it is in use: a random id, its version and system, and which agents, providers and models it is used with, by magpie's own ids (a provider you added yourself is only `custom`), and for each partner listed first in the add sheet, how many times a day it was shown, opened and added (counts only). No names, URLs, accounts, keys, prompts or usage. Turn part or all of it off in **Settings → Privacy**, or with `DO_NOT_TRACK=1`. A partner's website and key links go through `usemagpie.ai/go/…`, which counts the click, and usemagpie.ai counts fetches of the partner list; the server sees these whatever the settings, and keeps no id or address. Icons named by a plugin, an import link or the library are fetched through `usemagpie.ai/api/icon`, so their hosts see Cloudflare's address, not yours; the server only passes the picture on, and counts and keeps nothing. The [Privacy page](https://usemagpie.ai/docs/privacy) lists everything magpie sends by itself, with an example and every switch; the [reference](docs/reference.md#counting-users) has the rules.
+Your prompts, replies, keys and accounts go only to the providers you use, and with [privacy masking](#privacy-masking) on, the secrets in them don't go even there. Once a day a released magpie-friday tells us it is in use: a random id, its version and system, and which agents, providers and models it is used with, by magpie-friday's own ids (a provider you added yourself is only `custom`), and for each partner listed first in the add sheet, how many times a day it was shown, opened and added (counts only). No names, URLs, accounts, keys, prompts or usage. Turn part or all of it off in **Settings → Privacy**, or with `DO_NOT_TRACK=1`. A partner's website and key links go through `usemagpie.ai/go/…`, which counts the click, and usemagpie.ai counts fetches of the partner list; the server sees these whatever the settings, and keeps no id or address. Icons named by a plugin, an import link or the library are fetched through `usemagpie.ai/api/icon`, so their hosts see Cloudflare's address, not yours; the server only passes the picture on, and counts and keeps nothing. The [Privacy page](https://usemagpie.ai/docs/privacy) lists everything magpie-friday sends by itself, with an example and every switch; the [reference](docs/reference.md#counting-users) has the rules.
 
 ## Community
 
@@ -299,12 +299,12 @@ Questions, ideas, or a model that won't show up? Tell us on **[Discord](https://
 
 **This repository doesn't take pull requests.** Only maintainers can open them. If you'd like a fix or a feature, describe it on Discord and we'll build it.
 
-If magpie saved you from editing one more config file, **a ⭐ helps others find it.**
+If magpie-friday saved you from editing one more config file, **a ⭐ helps others find it.**
 
-<a href="https://star-history.com/#yetone/magpie&Date">
+<a href="https://star-history.com/#cha0sal3r/magpie-friday&Date">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=yetone/magpie&type=Date&theme=dark">
-    <img src="https://api.star-history.com/svg?repos=yetone/magpie&type=Date" width="600" alt="Star history">
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=cha0sal3r/magpie-friday&type=Date&theme=dark">
+    <img src="https://api.star-history.com/svg?repos=cha0sal3r/magpie-friday&type=Date" width="600" alt="Star history">
   </picture>
 </a>
 

@@ -11,8 +11,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // codexModelInfo is what codex-rs's ModelInfo can't do without
@@ -35,8 +35,8 @@ type codexModelInfo struct {
 	Tools *[]string `json:"experimental_supported_tools"`
 }
 
-// A Codex on another computer that names magpie its model_provider, with a
-// gateway key (#1281), reads magpie's models from /v1/codex/models in
+// A Codex on another computer that names magpie-friday its model_provider, with a
+// gateway key (#1281), reads magpie-friday's models from /v1/codex/models in
 // Codex's own shape — through the server as it runs, lanGuard and all —
 // and sees only the models its key may use; another computer without a key
 // gets nothing, and /v1/models stays OpenAI's list.

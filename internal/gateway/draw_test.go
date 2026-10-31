@@ -16,9 +16,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 var pngBytes = []byte("\x89PNG\r\n\x1a\n fake")
@@ -111,7 +111,7 @@ func postImages(t *testing.T, s *Server, path, ct, body string) (int, imagesAnsw
 
 func TestImagesAPIModelDraws(t *testing.T) {
 	s, e := easeled(t)
-	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"art/gpt-image-1","prompt":"a magpie","size":"1024x1024","n":2}`)
+	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"art/gpt-image-1","prompt":"a magpie-friday","size":"1024x1024","n":2}`)
 	if code != 200 || len(a.Data) != 1 || a.Usage.Output != 100 {
 		t.Fatalf("%d %s", code, raw)
 	}
@@ -126,7 +126,7 @@ func TestImagesAPIModelDraws(t *testing.T) {
 
 func TestChatModelDrawsWithModalities(t *testing.T) {
 	s, e := easeled(t)
-	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"art/painter-image-preview","prompt":"a magpie","size":"1536x1024","n":2}`)
+	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"art/painter-image-preview","prompt":"a magpie-friday","size":"1536x1024","n":2}`)
 	if code != 200 || len(a.Data) != 2 || a.Text != "Here it is." || a.Usage.Input != 6 {
 		t.Fatalf("%d %s", code, raw)
 	}
@@ -138,7 +138,7 @@ func TestChatModelDrawsWithModalities(t *testing.T) {
 
 func TestChatModelsGeminiPartsAreImages(t *testing.T) {
 	s, _ := easeled(t)
-	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"art/gemini-2.5-flash-image","prompt":"a magpie"}`)
+	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"art/gemini-2.5-flash-image","prompt":"a magpie-friday"}`)
 	if code != 200 || len(a.Data) != 1 || a.Text != "Here you go!" {
 		t.Fatalf("%d %s", code, raw)
 	}
@@ -201,7 +201,7 @@ func TestDrawCappedSaysWhenItIsBack(t *testing.T) {
 
 func TestDrawerIsTheSettingOrAutomatic(t *testing.T) {
 	s, e := easeled(t)
-	// no model named: magpie picks one the provider can draw with
+	// no model named: magpie-friday picks one the provider can draw with
 	if m, ok := drawer(); !ok || !strings.HasPrefix(m, "art/") {
 		t.Fatalf("drawer = %q %v", m, ok)
 	}
@@ -210,13 +210,13 @@ func TestDrawerIsTheSettingOrAutomatic(t *testing.T) {
 	if err := settings.Save(st); err != nil {
 		t.Fatal(err)
 	}
-	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"prompt":"a magpie"}`)
+	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"prompt":"a magpie-friday"}`)
 	if code != 200 || a.Model != "art/painter-image-preview" || len(e.got("/v1/chat/completions")) != 1 {
 		t.Fatalf("%d %s", code, raw)
 	}
 	st.ImageGen = "off"
 	settings.Save(st)
-	if code, _, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"prompt":"a magpie"}`); code != 400 || !strings.Contains(raw, "Image generation") {
+	if code, _, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"prompt":"a magpie-friday"}`); code != 400 || !strings.Contains(raw, "Image generation") {
 		t.Fatalf("off: %d %s", code, raw)
 	}
 }
@@ -226,7 +226,7 @@ func TestVendorFailureIsSaid(t *testing.T) {
 	p, _ := provider.Find("art")
 	p.Key = "wrong"
 	provider.Save(*p)
-	code, _, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"art/gpt-image-1","prompt":"a magpie"}`)
+	code, _, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"art/gpt-image-1","prompt":"a magpie-friday"}`)
 	if code != 401 || !strings.Contains(raw, "401") {
 		t.Fatalf("%d %s", code, raw)
 	}
@@ -272,7 +272,7 @@ func TestOpenRouterImagesAPIDrawsImageModels(t *testing.T) {
 		return &http.Response{StatusCode: http.StatusOK, Header: http.Header{"Content-Type": {"application/json"}}, Body: io.NopCloser(strings.NewReader(response))}, nil
 	})}
 	ref := "data:image/png;base64," + base64.StdEncoding.EncodeToString(pngBytes)
-	code, answer, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"openrouter/openai/gpt-image-2","prompt":"a magpie","images":["`+ref+`"]}`)
+	code, answer, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"openrouter/openai/gpt-image-2","prompt":"a magpie-friday","images":["`+ref+`"]}`)
 	if code != http.StatusOK || len(answer.Data) != 1 || answer.Usage.Input != 3 || answer.Usage.Output != 7 {
 		t.Fatalf("%d %s", code, raw)
 	}
@@ -292,7 +292,7 @@ func TestOpenRouterImagesAPIDrawsImageModels(t *testing.T) {
 	if err := json.Unmarshal([]byte(requestBody), &got); err != nil {
 		t.Fatal(err)
 	}
-	if got.Model != "openai/gpt-image-2" || got.Prompt != "a magpie" || len(got.InputReferences) != 1 || got.InputReferences[0].Type != "image_url" || got.InputReferences[0].ImageURL.URL != ref {
+	if got.Model != "openai/gpt-image-2" || got.Prompt != "a magpie-friday" || len(got.InputReferences) != 1 || got.InputReferences[0].Type != "image_url" || got.InputReferences[0].ImageURL.URL != ref {
 		t.Fatalf("OpenRouter request: %s", requestBody)
 	}
 }
@@ -309,7 +309,7 @@ func TestOpenRouterImagesAPIFailureIsReturnedWithoutChatRetry(t *testing.T) {
 		message := `{"error":{"message":"image model is unavailable on the images endpoint"}}`
 		return &http.Response{StatusCode: http.StatusNotFound, Header: http.Header{"Content-Type": {"application/json"}}, Body: io.NopCloser(strings.NewReader(message))}, nil
 	})}
-	code, _, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"openrouter/openai/gpt-image-2","prompt":"a magpie"}`)
+	code, _, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"openrouter/openai/gpt-image-2","prompt":"a magpie-friday"}`)
 	if code != http.StatusNotFound || !strings.Contains(raw, "images endpoint") {
 		t.Fatalf("%d %s", code, raw)
 	}
@@ -414,7 +414,7 @@ func TestCodexAccountDraws(t *testing.T) {
 		t.Fatalf("drawer = %q %v", m, ok)
 	}
 	s := New()
-	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"codex/gpt-image-2","prompt":"a magpie","size":"1024x1024"}`)
+	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"codex/gpt-image-2","prompt":"a magpie-friday","size":"1024x1024"}`)
 	if code != 200 || len(a.Data) != 1 || a.Usage.Output != 196 {
 		t.Fatalf("%d %s", code, raw)
 	}
@@ -453,7 +453,7 @@ func TestCodexDrawRefused(t *testing.T) {
 	was := provider.CodexBase
 	provider.CodexBase = up.URL + "/backend-api/codex"
 	defer func() { provider.CodexBase = was }()
-	code, _, raw := postImages(t, New(), "/v1/images/generations", "application/json", `{"prompt":"a magpie"}`)
+	code, _, raw := postImages(t, New(), "/v1/images/generations", "application/json", `{"prompt":"a magpie-friday"}`)
 	if code != 403 || !strings.Contains(raw, "Forbidden") || !strings.Contains(raw, "plan or workspace may not draw") {
 		t.Fatalf("%d %s", code, raw)
 	}
@@ -488,7 +488,7 @@ func TestCodexDrawMovesToNextAccount(t *testing.T) {
 	provider.CodexBase = up.URL + "/backend-api/codex"
 	defer func() { provider.CodexBase = was }()
 	s := New()
-	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"prompt":"a magpie"}`)
+	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"prompt":"a magpie-friday"}`)
 	if code != 200 || len(a.Data) != 1 {
 		t.Fatalf("%d %s", code, raw)
 	}
@@ -504,7 +504,7 @@ func TestCodexDrawMovesToNextAccount(t *testing.T) {
 	if rests != 0 {
 		t.Fatalf("%d accounts rest after a drawing was refused", rests)
 	}
-	postImages(t, s, "/v1/images/generations", "application/json", `{"prompt":"a magpie"}`)
+	postImages(t, s, "/v1/images/generations", "application/json", `{"prompt":"a magpie-friday"}`)
 	mu.Lock()
 	defer mu.Unlock()
 	if strings.Join(tried, ",") != "acct-1,acct-2" {
@@ -570,7 +570,7 @@ func TestGrokAccountDraws(t *testing.T) {
 		t.Fatalf("drawer = %q %v", m, ok)
 	}
 	s := New()
-	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"grok/grok-imagine-image","prompt":"a magpie","size":"1792x1024"}`)
+	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"grok/grok-imagine-image","prompt":"a magpie-friday","size":"1792x1024"}`)
 	if code != 200 || len(a.Data) != 1 {
 		t.Fatalf("%d %s", code, raw)
 	}
@@ -653,7 +653,7 @@ func TestGrokVendorFailuresAreSaid(t *testing.T) {
 }
 
 // #1857: grok-imagine-image-2.0 named bare, as the vendor names it, drew
-// nothing ("magpie knows no model ... to draw with") while
+// nothing ("magpie-friday knows no model ... to draw with") while
 // grok/grok-imagine-image-2.0 drew: the bare name was looked up in
 // grokDrawers alone. Any grok-imagine-image* goes to the Grok subscription
 // now, as any grok-imagine-video* does for videos; a name of no image
@@ -675,8 +675,8 @@ func TestGrokDrawsANewerModelByItsBareName(t *testing.T) {
 	}
 }
 
-// The ChatGPT account's sibling of #1857: a gpt-image-* magpie doesn't list
-// yet, named bare, is asked of the account, not turned away by magpie.
+// The ChatGPT account's sibling of #1857: a gpt-image-* magpie-friday doesn't list
+// yet, named bare, is asked of the account, not turned away by magpie-friday.
 func TestCodexDrawsANewerModelByItsBareName(t *testing.T) {
 	codexSignedIn(t)
 	var mu sync.Mutex
@@ -693,7 +693,7 @@ func TestCodexDrawsANewerModelByItsBareName(t *testing.T) {
 	was := provider.CodexBase
 	provider.CodexBase = up.URL + "/backend-api/codex"
 	defer func() { provider.CodexBase = was }()
-	code, a, raw := postImages(t, New(), "/v1/images/generations", "application/json", `{"model":"gpt-image-3","prompt":"a magpie"}`)
+	code, a, raw := postImages(t, New(), "/v1/images/generations", "application/json", `{"model":"gpt-image-3","prompt":"a magpie-friday"}`)
 	if code != 200 || len(a.Data) != 1 {
 		t.Fatalf("%d %s", code, raw)
 	}
@@ -707,7 +707,7 @@ func TestCodexDrawsANewerModelByItsBareName(t *testing.T) {
 // #1837: Agnes answers its image model on chat completions with 400 "is an
 // image model. Use /v1/images/generations" (the reporter's words, as omp
 // showed them). Its name reads like gemini's -flash image models, which
-// chat, so magpie asks chat first; the vendor's refusal sends it to the
+// chat, so magpie-friday asks chat first; the vendor's refusal sends it to the
 // images API, where it draws. The other way round, a refusal on the images
 // API naming chat completions sends it to chat.
 func TestDrawGoesWhereTheVendorPointsIt(t *testing.T) {
@@ -756,7 +756,7 @@ func TestDrawGoesWhereTheVendorPointsIt(t *testing.T) {
 		mu.Lock()
 		paths = nil
 		mu.Unlock()
-		code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"`+tc.model+`","prompt":"a magpie"}`)
+		code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"`+tc.model+`","prompt":"a magpie-friday"}`)
 		if code != 200 || len(a.Data) != 1 {
 			t.Fatalf("%s: %d %s", tc.model, code, raw)
 		}
@@ -797,7 +797,7 @@ func TestCodexDrawsPastAccountModelLists(t *testing.T) {
 	}
 	s := New()
 	for _, model := range []string{"codex/gpt-image-2", "codex/gpt-image-2.5"} {
-		code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"`+model+`","prompt":"a magpie"}`)
+		code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"`+model+`","prompt":"a magpie-friday"}`)
 		if code != 200 || len(a.Data) != 1 {
 			t.Fatalf("%s: %d %s", model, code, raw)
 		}

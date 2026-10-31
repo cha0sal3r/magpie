@@ -9,8 +9,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // A Kimi Code plan searches the web with its own key, as kimi-cli's
@@ -25,7 +25,7 @@ import (
 //
 // No model is asked. A model served by a Kimi Code plan has its searches
 // done there first, so a Kimi user's searches stay on Kimi, as a provider
-// that searches by itself does; failing, the searcher magpie picks or
+// that searches by itself does; failing, the searcher magpie-friday picks or
 // Settings names comes next. For other providers' models a plan searches
 // only when Settings names it: picking it by itself would spend the plan's
 // allowance on them, and change the searcher users have now.
@@ -42,7 +42,7 @@ type searchOnKey struct{}
 // kimi-cli sends as X-Msh-Tool-Call-Id.
 type searchCallKey struct{}
 
-// canSearchFor is whether a model of p that can't search is given magpie's
+// canSearchFor is whether a model of p that can't search is given magpie-friday's
 // search: one of p's own (a Kimi Code plan, a Google sign-in), or
 // canSearch.
 func canSearchFor(p provider.Provider) bool {

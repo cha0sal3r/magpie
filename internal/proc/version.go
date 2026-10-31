@@ -18,7 +18,7 @@ import (
 // it says nothing. A run that fails other than by taking too long isn't
 // made again until the binary changes (#864): macOS stops a program XProtect flags with
 // a "contains malware" alert on each start, and a CLI asked its version
-// every few minutes put one up every time magpie's window opened. An npm
+// every few minutes put one up every time magpie-friday's window opened. An npm
 // CLI isn't run at all: its package says the version its --version would.
 func Version(bin string) string {
 	real, err := RealPath(bin)

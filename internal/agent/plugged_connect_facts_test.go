@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // An agent plugin's connect is told, of each model in models and of
@@ -30,7 +30,7 @@ export function connect({ gateway, model, models }) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := a.Field("model").Set("magpie/deepseek/pro"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	b, err := os.ReadFile(filepath.Join(home, ".facts.json"))

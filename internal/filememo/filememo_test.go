@@ -53,7 +53,7 @@ func TestReadSameSizeSameTick(t *testing.T) {
 
 // While a request holds what was read, a file found unchanged is not looked
 // at again (the GUI's state looked a few thousand times, seconds on a slow
-// disk); a write magpie makes (Forget), a second gone by or the release has
+// disk); a write magpie-friday makes (Forget), a second gone by or the release has
 // it looked at, and a file just written is always read again.
 func TestHold(t *testing.T) {
 	p := filepath.Join(t.TempDir(), "f")
@@ -76,7 +76,7 @@ func TestHold(t *testing.T) {
 	}
 	Forget()
 	if v, _ := Read("hold", p, parse); v != "bb" {
-		t.Fatalf("after a write magpie made: %q", v)
+		t.Fatalf("after a write magpie-friday made: %q", v)
 	}
 	write("ccc")
 	release()
@@ -100,7 +100,7 @@ func TestHold(t *testing.T) {
 // A file not there is, while a request holds what was read, taken as
 // still not there as a file found unchanged is: a provider with no list
 // fetched was a look at the disk for each of its models, each request. A
-// write magpie makes (Forget), another's (Look), or the hold's end has it
+// write magpie-friday makes (Forget), another's (Look), or the hold's end has it
 // looked at again; unheld, every read looks.
 func TestHoldMissing(t *testing.T) {
 	p := filepath.Join(t.TempDir(), "none")
@@ -126,7 +126,7 @@ func TestHoldMissing(t *testing.T) {
 	}
 	Forget()
 	if v, err := Read("missing", p, parse); v != "a" || err != nil {
-		t.Fatalf("after a write magpie made: %q %v", v, err)
+		t.Fatalf("after a write magpie-friday made: %q %v", v, err)
 	}
 	os.Remove(p)
 	Read("missing", p, parse)

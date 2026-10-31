@@ -15,10 +15,10 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// When no provider can search, magpie's web_search tool is answered by a
+// When no provider can search, magpie-friday's web_search tool is answered by a
 // search API the user gave a key to (#419): what it found goes to the
 // model as it came, each page's title, address and what it says, with no
 // model asked to read it first.
@@ -35,7 +35,7 @@ type foundPage struct {
 	Age              string // how old the search said it is, "" when it didn't
 }
 
-// canSearch is whether magpie can answer its web_search tool: plugins/search
+// canSearch is whether magpie-friday can answer its web_search tool: plugins/search
 // is on (searchServed), and a provider searches for it, or a search API
 // does.
 func canSearch() bool {
@@ -52,7 +52,7 @@ func canSearch() bool {
 // server tool asked of any model here is answered.
 func CanSearch() bool { return canSearch() }
 
-// Searcher names the provider and model magpie searches with for a model
+// Searcher names the provider and model magpie-friday searches with for a model
 // that can't, "" when none can.
 func Searcher() string {
 	if p, m, ok := searcher(); ok {
@@ -73,7 +73,7 @@ func searcherName(p provider.Provider, model string) string {
 	return p.Name + " · " + model
 }
 
-// AutoSearcher names the provider and model magpie picks to search with
+// AutoSearcher names the provider and model magpie-friday picks to search with
 // when Settings names none, "" when none can.
 func AutoSearcher() string {
 	if p, m, ok := autoSearcher(); ok {
@@ -243,7 +243,7 @@ func (s *Server) askSearchAPI(ctx context.Context, a provider.SearchAPI, query s
 			getAt(provider.YouFreeSearch, url.Values{"query": {query}, "count": {fmt.Sprint(searchHits)}})
 		}
 	default:
-		return nil, fmt.Errorf("magpie can't ask %q", a.Vendor)
+		return nil, fmt.Errorf("magpie-friday can't ask %q", a.Vendor)
 	}
 	if err != nil {
 		return nil, err
@@ -251,8 +251,8 @@ func (s *Server) askSearchAPI(ctx context.Context, a provider.SearchAPI, query s
 	r.Header.Set("Accept", "application/json")
 	r.Header.Set("User-Agent", SearchAgent)
 	if a.Vendor == "you" {
-		// the tag You.com asked for, to tell magpie's searches apart (#1626)
-		r.Header.Set("User-Agent", SearchAgent+" youdotcom-integration/yetone-magpie")
+		// the tag You.com asked for, to tell magpie-friday's searches apart (#1626)
+		r.Header.Set("User-Agent", SearchAgent+" youdotcom-integration/cha0sal3r-magpie-friday")
 	}
 	if a.Key != "" {
 		switch a.Vendor {
@@ -301,7 +301,7 @@ func (s *Server) askSearchAPI(ctx context.Context, a provider.SearchAPI, query s
 			}
 		}
 		// an API that says the key back in its error doesn't get it into
-		// magpie's logs or the model's turn
+		// magpie-friday's logs or the model's turn
 		if a.Key != "" {
 			msg = strings.ReplaceAll(msg, a.Key, provider.MaskSearchKey(a.Key))
 		}

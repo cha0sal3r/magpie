@@ -28,7 +28,7 @@ func fakeRename(t *testing.T, n int, err error) *int {
 // Something holding the running exe open for a moment (an antivirus scan,
 // OneDrive) doesn't fail the update: moving it aside is tried again.
 func TestMoveAsideTriesAgain(t *testing.T) {
-	exe := filepath.Join(t.TempDir(), "magpie-windows-amd64.exe")
+	exe := filepath.Join(t.TempDir(), "magpie-friday-windows-amd64.exe")
 	os.WriteFile(exe, []byte("v1"), 0o755)
 	calls := fakeRename(t, 2, errSharingViolation)
 	if _, err := moveAside(exe); err != nil {
@@ -45,7 +45,7 @@ func TestMoveAsideTriesAgain(t *testing.T) {
 // One that keeps it says why and what to do, without the paths the
 // version row has no room for.
 func TestMoveAsideSaysWhy(t *testing.T) {
-	exe := filepath.Join(t.TempDir(), "magpie-windows-amd64.exe")
+	exe := filepath.Join(t.TempDir(), "magpie-friday-windows-amd64.exe")
 	os.WriteFile(exe, []byte("v1"), 0o755)
 	calls := fakeRename(t, 100, errSharingViolation)
 	_, err := moveAside(exe)
@@ -56,7 +56,7 @@ func TestMoveAsideSaysWhy(t *testing.T) {
 		t.Fatalf("%d tries, want 4", *calls)
 	}
 	msg := err.Error()
-	for _, want := range []string{"couldn't move magpie-windows-amd64.exe aside", strings.TrimRight(errSharingViolation.Error(), ". 。"), "another program has it open", "download the new version"} {
+	for _, want := range []string{"couldn't move magpie-friday-windows-amd64.exe aside", strings.TrimRight(errSharingViolation.Error(), ". 。"), "another program has it open", "download the new version"} {
 		if !strings.Contains(msg, want) {
 			t.Errorf("%q lacks %q", msg, want)
 		}
@@ -65,10 +65,10 @@ func TestMoveAsideSaysWhy(t *testing.T) {
 		t.Errorf("%q has the path", msg)
 	}
 
-	// a folder magpie may not change says so
+	// a folder magpie-friday may not change says so
 	fakeRename(t, 100, os.ErrPermission)
 	_, err = moveAside(exe)
-	if msg := err.Error(); !strings.Contains(msg, "doesn't let magpie change files in "+filepath.Dir(exe)) {
+	if msg := err.Error(); !strings.Contains(msg, "doesn't let magpie-friday change files in "+filepath.Dir(exe)) {
 		t.Errorf("%q", msg)
 	}
 
@@ -85,7 +85,7 @@ func TestMoveAsideSaysWhy(t *testing.T) {
 // file held open is waited for on, up to heldFor, rather than given up on
 // after three seconds.
 func TestMoveAsideWaitsOutALongHold(t *testing.T) {
-	exe := filepath.Join(t.TempDir(), "magpie-windows-amd64.exe")
+	exe := filepath.Join(t.TempDir(), "magpie-friday-windows-amd64.exe")
 	os.WriteFile(exe, []byte("v1"), 0o755)
 	calls := fakeRename(t, 10, errSharingViolation)
 	heldFor = 5 * time.Second

@@ -7,9 +7,9 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // specHome is a sandbox with a custom relay whose models no list knows
@@ -35,7 +35,7 @@ func specFiles(t *testing.T) string {
 }
 
 // A custom provider's model with nothing known takes a whole spec at once,
-// the catalog entry every reader goes by carries it, `magpie model specs`
+// the catalog entry every reader goes by carries it, `magpie-friday model specs`
 // lists it, and a reset leaves the model as it was before, unknown on
 // every part. The agents are told once for a change that writes both files.
 func TestModelSpecSetListReset(t *testing.T) {

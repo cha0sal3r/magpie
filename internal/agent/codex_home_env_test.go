@@ -9,9 +9,9 @@ import (
 
 // With CODEX_HOME set, a model picked for Codex goes to
 // $CODEX_HOME/config.toml, the file Codex reads, and its catalog beside it;
-// nothing is written under ~/.codex, and what magpie shows as applied is
+// nothing is written under ~/.codex, and what magpie-friday shows as applied is
 // read back from there (Wakkana on Discord, Codex 0.162.1: the pick went to
-// ~/.codex/config.toml, Codex never saw it, and magpie showed it applied).
+// ~/.codex/config.toml, Codex never saw it, and magpie-friday showed it applied).
 func TestCodexHomeEnvTakesThePick(t *testing.T) {
 	home, _ := codexHome(t, "", "")
 	if err := os.RemoveAll(filepath.Join(home, ".codex")); err != nil {
@@ -30,14 +30,14 @@ func TestCodexHomeEnvTakesThePick(t *testing.T) {
 		t.Fatal(err)
 	}
 	b, _ := os.ReadFile(filepath.Join(ch, "config.toml"))
-	if cfg := string(b); !strings.Contains(cfg, `model = "fake/m1"`) || !strings.Contains(cfg, "magpie-models.json") {
+	if cfg := string(b); !strings.Contains(cfg, `model = "fake/m1"`) || !strings.Contains(cfg, "magpie-friday-models.json") {
 		t.Fatalf("$CODEX_HOME/config.toml doesn't have the pick:\n%s", cfg)
 	}
-	if _, err := os.Stat(filepath.Join(ch, "magpie-models.json")); err != nil {
+	if _, err := os.Stat(filepath.Join(ch, "magpie-friday-models.json")); err != nil {
 		t.Fatalf("the catalog isn't beside it: %v", err)
 	}
 	if got := codex(home).Fields[0].Get(); got != "fake/m1" {
-		t.Fatalf("magpie reads the pick back as %q", got)
+		t.Fatalf("magpie-friday reads the pick back as %q", got)
 	}
 	if m := StandIn("codex", "gpt-5"); m != "fake/m1" {
 		t.Fatalf("the gateway's stand-in for Codex is %q, read from somewhere else", m)

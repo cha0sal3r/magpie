@@ -5,7 +5,7 @@ package gateway
 // at all: the group's own model is a member's, and its levels are the ones
 // the members share. Asking such a member anyway is what #950 is about:
 // some vendors turn a reasoning ask away with a 400 on a model that can't
-// think, where magpie knows from the model's own list that it can't.
+// think, where magpie-friday knows from the model's own list that it can't.
 //
 // The gateway sends such a member no reasoning ask: the effort is for the
 // members that take it, and a member known not to think is sent the
@@ -17,16 +17,16 @@ package gateway
 // effort, #189): that is the user saying this model does think, over a
 // catalog that may be wrong about it — the Trae plugin's own model, whose
 // plugin gave no capabilities, is what #950 was reported about — so the
-// user's word goes as it is, and magpie's default doesn't override it.
+// user's word goes as it is, and magpie-friday's default doesn't override it.
 
 import (
 	"bytes"
 	"encoding/json"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// quietTo is whether pid/model is known not to think: magpie has a word on
+// quietTo is whether pid/model is known not to think: magpie-friday has a word on
 // it, and that word says no reasoning. Like blindTo, it asks the served
 // entry, so a provider kept unlisted still answers.
 func quietTo(pid, model string) bool {

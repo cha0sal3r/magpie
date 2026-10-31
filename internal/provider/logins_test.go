@@ -125,7 +125,7 @@ func TestSideLoginsNotCollapsed(t *testing.T) {
 		t.Fatal(err)
 	}
 	if got := readLogins(); len(got) != 2 || got[0].Home != "/grok/me" {
-		t.Fatalf("a Grok account magpie signed in was folded into the CLI's own: %+v", got)
+		t.Fatalf("a Grok account magpie-friday signed in was folded into the CLI's own: %+v", got)
 	}
 }
 

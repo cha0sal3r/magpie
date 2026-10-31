@@ -11,20 +11,20 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/desktopdir"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/desktopdir"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// Claude Desktop and WorkBuddy read what magpie writes for them as they
+// Claude Desktop and WorkBuddy read what magpie-friday writes for them as they
 // start (微雨南山 and stones on Discord, 10-24: a provider added showed up
 // there only after a restart). Claude Desktop asks the gateway for its
 // models once, at start. WorkBuddy 5.6's app.asar watches models.json only
 // when the file was there at start, and the watch is on the file itself,
 // so a rewrite by rename leaves it watching the old one. While such an app
-// runs on what it read before magpie's last change, its Agents row offers
-// a Restart. magpie never restarts one unasked: the button asks first, in
-// magpie's own dialog, and only then quits the app as its own Quit does
+// runs on what it read before magpie-friday's last change, its Agents row offers
+// a Restart. magpie-friday never restarts one unasked: the button asks first, in
+// magpie-friday's own dialog, and only then quits the app as its own Quit does
 // and opens it again. The Codex app on macOS has its own Restart on its
 // stale-copy line (codex_app.go), behind the same question.
 
@@ -180,17 +180,17 @@ func bundleExecutable(b, id string) string {
 	return strings.TrimSpace(string(exe[1]))
 }
 
-// AppRun is a desktop app running on what it read before magpie's last
+// AppRun is a desktop app running on what it read before magpie-friday's last
 // change to it: when it started, for the row to offer a Restart.
 type AppRun struct {
 	Since time.Time `json:"since"`
 }
 
 // AppBehind is the agent's desktop app when it runs here and started
-// before magpie last changed what it reads at start; nil when it isn't
-// running, has started since, or magpie doesn't restart it here. Only for
-// an agent connected to magpie, or one disconnected from it in magpie:
-// those are the changes magpie made.
+// before magpie-friday last changed what it reads at start; nil when it isn't
+// running, has started since, or magpie-friday doesn't restart it here. Only for
+// an agent connected to magpie-friday, or one disconnected from it in magpie-friday:
+// those are the changes magpie-friday made.
 func (a *Agent) AppBehind() *AppRun {
 	r, ok := restartApps[a.ID]
 	if !ok || a.WSL != "" {
@@ -214,10 +214,10 @@ func (a *Agent) AppBehind() *AppRun {
 	return &AppRun{Since: c.since}
 }
 
-// appReads are the files the agent's desktop app reads magpie's part from
+// appReads are the files the agent's desktop app reads magpie-friday's part from
 // at start, and that part. Claude Desktop: deploymentMode, the profile
-// applied and magpie's profile, with the models the gateway lists it.
-// WorkBuddy: magpie's models in its models.json (workbuddyPart).
+// applied and magpie-friday's profile, with the models the gateway lists it.
+// WorkBuddy: magpie-friday's models in its models.json (workbuddyPart).
 func (a *Agent) appReads() (files []string, reads func() string) {
 	switch a.ID {
 	case "claude-desktop":
@@ -262,9 +262,9 @@ var restarting sync.Map
 // (tNotice): an app not on the old settings any more was quit or
 // restarted meanwhile.
 var (
-	noticeRestartNotHere    = newNotice("magpie doesn't restart {agent} on this computer.")
+	noticeRestartNotHere    = newNotice("magpie-friday doesn't restart {agent} on this computer.")
 	noticeRestartCurrent    = newNotice("{agent} isn't running on the old settings any more.")
-	noticeRestartAsk        = newNotice("magpie couldn't ask {agent} to quit. Quit it yourself, then open it again.")
+	noticeRestartAsk        = newNotice("magpie-friday couldn't ask {agent} to quit. Quit it yourself, then open it again.")
 	noticeRestartStillOpen  = newNotice("{agent} is still open; it may be asking something in its window. Answer it there, or quit it, then open it again.")
 	noticeRestartStillThere = newNotice("{agent} is still running. Quit it, then open it again.")
 	noticeRestartNoOpen     = newNotice("{agent} quit, but didn't open again. Open it yourself.")
@@ -273,7 +273,7 @@ var (
 func restartErr(n notice, a *Agent) error { return errors.New(n.say("agent", a.Name)) }
 
 // RestartApp quits the agent's desktop app and opens it again, so it reads
-// what magpie wrote. Only the Agents row's Restart calls it, after the
+// what magpie-friday wrote. Only the Agents row's Restart calls it, after the
 // user confirmed, and only an app AppBehind lists is quit. macOS: asked to
 // quit as ⌘Q does, every process of its bundle waited for; one still open
 // then (it may be asking something) is left, never forced, and not opened

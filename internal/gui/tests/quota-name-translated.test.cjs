@@ -1,9 +1,9 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// A window's name is what magpie translates; its display is shown as it came
+// A window's name is what magpie-friday translates; its display is shown as it came
 // (quotaCount returns w.display for a window with no limit). A plugin that
 // puts its sentence in the display instead keeps the card English whatever
 // the interface's language is — the ZCode plugin's claim line was one
-// ("1 to claim · claim it in the ZCode app", yetone/magpie#1001), and the
+// ("1 to claim · claim it in the ZCode app", yetone/magpie-friday#1001), and the
 // plugin now names the window "Gift plans to claim in the ZCode app" and
 // leaves the count and the plan's own name to the display, which are data.
 //
@@ -25,7 +25,7 @@ const quotas = [
     provider: "zcode", name: "ZCode", icon: "zcode", plan: "GLM Coding Pro", user: "ada@example.com",
     windows: [
       { name: "5 hours", used: 25, resetsAt: new Date(Date.now() + 36e5).toISOString() },
-      // the plugin's line: a sentence magpie knows, and a display of its own
+      // the plugin's line: a sentence magpie-friday knows, and a display of its own
       { name: CLAIM, used: 0, aside: true, display: "1 · ZCode Trust Build" },
     ],
   },
@@ -52,7 +52,7 @@ function serve(lang) {
   };
 }
 
-// what each language's name reads as; every language magpie has, so a long
+// what each language's name reads as; every language magpie-friday has, so a long
 // one can't be added later without this failing
 const words = {
   en: CLAIM,

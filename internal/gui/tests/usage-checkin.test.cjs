@@ -190,7 +190,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       assert.deepEqual(errors, []);
     });
 
-    // #808: Trae CN answers a claim from magpie 9074 for the day; the card
+    // #808: Trae CN answers a claim from magpie-friday 9074 for the day; the card
     // says Trae CN refused it, in Trae's words, and to check in in the
     // Trae CN app, not that Trae pays only its app (#1920). It offers no
     // Check in now, and the Settings tab's line says the same.

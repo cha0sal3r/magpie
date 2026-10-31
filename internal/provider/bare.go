@@ -3,7 +3,7 @@ package provider
 import (
 	"strings"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // Model ids without the provider (settings.BareModelIDs; love1sbug on X):
@@ -15,7 +15,7 @@ import (
 // nobody asked to grow keeps its ids.
 //
 // A bare id is listed only where a request for it goes, as the gateway
-// routes it: two providers' gpt-5.6-sol is one row, the routing group magpie
+// routes it: two providers' gpt-5.6-sol is one row, the routing group magpie-friday
 // found for it (its members in the Providers order, failed over between),
 // or with found groups off the first provider in the Providers order. A
 // bare id that is a catalog id already, or that the gateway would take to

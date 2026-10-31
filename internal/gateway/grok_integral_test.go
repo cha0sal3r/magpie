@@ -14,7 +14,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // codexShellTools are Codex's exec_command and write_stdin as it offers
@@ -559,7 +559,7 @@ func TestGrokCallsGiveCodexIntegers(t *testing.T) {
 }
 
 // A relay with only Chat for grok-4.6 is translated for: Codex reads the
-// same integers in the Responses reply magpie writes.
+// same integers in the Responses reply magpie-friday writes.
 func TestGrokCallsGiveCodexIntegersTranslated(t *testing.T) {
 	for _, c := range integralCases(t) {
 		for cut, pieces := range someCuts(c.args) {
@@ -623,7 +623,7 @@ func TestGrokCallsGiveIntegersOnEveryProtocol(t *testing.T) {
 	}
 }
 
-// A model magpie names otherwise but sends upstream as a Grok model is
+// A model magpie-friday names otherwise but sends upstream as a Grok model is
 // Grok's too.
 func TestGrokCallsByUpstreamName(t *testing.T) {
 	c := integralCases(t)[0]

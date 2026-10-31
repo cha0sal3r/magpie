@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// GET /v1/magpie/quotas/history is each account's windows over time
+// GET /v1/magpie-friday/quotas/history is each account's windows over time
 // (#651): the points of the last ?days=, ?provider= and ?user= picking
 // one account's, and another machine without the shared key gets nothing.
 func TestQuotasHistory(t *testing.T) {
@@ -26,7 +26,7 @@ func TestQuotasHistory(t *testing.T) {
 	}
 	h := lanGuard(New().Handler())
 	get := func(from, q string) (int, []provider.QuotaHistory) {
-		r := httptest.NewRequest("GET", "/v1/magpie/quotas/history"+q, nil)
+		r := httptest.NewRequest("GET", "/v1/magpie-friday/quotas/history"+q, nil)
 		r.RemoteAddr = from
 		w := httptest.NewRecorder()
 		h.ServeHTTP(w, r)

@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // Aside keeps one folder per account, ~/.aside/u/<id>, each with its own
@@ -22,8 +22,8 @@ import (
 //	  {"id": 0, "provider": "anonymous", "mode": "local"}, ...],
 //	 "profileAccountBindings": {...}}
 //
-// magpie configures the account picked on magpie (the Aside row's account
-// field, `magpie aside account u1`), else the one Aside has active, else u0:
+// magpie-friday configures the account picked on magpie-friday (the Aside row's account
+// field, `magpie-friday aside account u1`), else the one Aside has active, else u0:
 // a missing or unreadable accounts.json says nothing about which account is
 // active, so it is u0, as before there was a choice — never "no accounts".
 
@@ -95,11 +95,11 @@ func asideAccountDir(at place, id int) string {
 
 func asideAccountName(id int) string { return "u" + strconv.Itoa(id) }
 
-// asidePickPath is where magpie keeps the account picked on magpie: its
+// asidePickPath is where magpie-friday keeps the account picked on magpie-friday: its
 // own file, beside its record of Aside's settings.
 func asidePickPath() string { return filepath.Join(filepath.Dir(stashPath()), "aside-account.json") }
 
-// asidePicked is the account picked on magpie; false when none was (or the
+// asidePicked is the account picked on magpie-friday; false when none was (or the
 // file can't be read, which then follows Aside rather than guessing).
 func asidePicked() (int, bool) {
 	b, err := os.ReadFile(asidePickPath())
@@ -115,9 +115,9 @@ func asidePicked() (int, bool) {
 	return asideID(f.Account)
 }
 
-// asideChoice is the account magpie configures: the one picked on magpie,
+// asideChoice is the account magpie-friday configures: the one picked on magpie-friday,
 // else the one Aside has active, else u0. An account whose folder isn't
-// there is passed over, so magpie never makes one up.
+// there is passed over, so magpie-friday never makes one up.
 func asideChoice(at place) int {
 	if id, ok := asidePicked(); ok && at.isDir(asideAccountDir(at, id)) {
 		return id
@@ -151,9 +151,9 @@ func asideAccountOptions(at place, cur string) []Option {
 	return out
 }
 
-// pickAccount keeps the account picked on magpie; "" follows Aside's own
+// pickAccount keeps the account picked on magpie-friday; "" follows Aside's own
 // again. It changes nothing in Aside: each account's settings and what
-// magpie remembers of them stay with that account.
+// magpie-friday remembers of them stay with that account.
 func (c *asideConnection) pickAccount(v string) error {
 	asideMu.Lock()
 	defer asideMu.Unlock()

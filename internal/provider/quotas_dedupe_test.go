@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
 )
 
 // A reset shared by unrelated vendors is not evidence of a shared account.
@@ -104,7 +104,7 @@ func TestPlanLeftOutOfACopy(t *testing.T) {
 	}
 }
 
-// magpie quota, its --json and the gateway show a pool's own windows in
+// magpie-friday quota, its --json and the gateway show a pool's own windows in
 // place of the models' drawing on it (the shapes TestAntigravityQuotaPools
 // records): one span per pool window, the pool in its name.
 func TestQuotaReportPoolsAntigravity(t *testing.T) {

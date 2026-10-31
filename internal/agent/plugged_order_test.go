@@ -11,13 +11,13 @@ import (
 // provider block whose models' effort variants go weakest first, the order
 // Kilo lists them in.
 const kiloSrc = `
-export const agent = { id: "kilo", name: "Kilo Code", config: "~/.config/kilo/kilo.jsonc", format: "json", model: "model", prefix: "magpie/" };
+export const agent = { id: "kilo", name: "Kilo Code", config: "~/.config/kilo/kilo.jsonc", format: "json", model: "model", prefix: "magpie-friday/" };
 export function connect({ gateway, models }) {
   const catalog = {};
   for (const m of models) {
     catalog[m.id] = { name: m.name ?? m.id, variants: { low: { reasoningEffort: "low" }, medium: { reasoningEffort: "medium" }, high: { reasoningEffort: "high" } } };
   }
-  return { "provider.magpie": { name: "magpie", npm: "@ai-sdk/openai-compatible", options: { baseURL: gateway.v1, apiKey: gateway.key }, models: catalog } };
+  return { "provider.magpie-friday": { name: "magpie-friday", npm: "@ai-sdk/openai-compatible", options: { baseURL: gateway.v1, apiKey: gateway.key }, models: catalog } };
 }
 `
 
@@ -56,14 +56,14 @@ func TestPluggedKeepsPluginOrder(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := a.Field("model").Set("magpie/deepseek/pro"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	b, _ := os.ReadFile(path)
 	s := string(b)
 	inOrder(t, s, `"$schema"`, "// mine", `"theme": "tokyonight"`, `"provider"`, `"zeta": 1`, `"alpha": 2`, `"autoupdate": false`)
-	inOrder(t, s, `"magpie"`, `"name": "magpie"`, `"npm"`, `"options"`, `"baseURL"`, `"apiKey"`, `"models"`)
-	// magpie's catalog order, then each model's variants weakest first
+	inOrder(t, s, `"magpie-friday"`, `"name": "magpie-friday"`, `"npm"`, `"options"`, `"baseURL"`, `"apiKey"`, `"models"`)
+	// magpie-friday's catalog order, then each model's variants weakest first
 	inOrder(t, s, `"deepseek/pro"`, `"low"`, `"medium"`, `"high"`, `"deepseek/flash"`, `"low"`, `"medium"`, `"high"`)
 
 	// its own model puts the file back as it was
@@ -71,7 +71,7 @@ func TestPluggedKeepsPluginOrder(t *testing.T) {
 		t.Fatal(err)
 	}
 	b, _ = os.ReadFile(path)
-	if s := string(b); strings.Contains(s, `"magpie"`) || !strings.Contains(s, `"mine": { "zeta": 1, "alpha": 2 }`) || !strings.Contains(s, "// mine") {
+	if s := string(b); strings.Contains(s, `"magpie-friday"`) || !strings.Contains(s, `"mine": { "zeta": 1, "alpha": 2 }`) || !strings.Contains(s, "// mine") {
 		t.Fatalf("own:\n%s", s)
 	}
 }
@@ -94,7 +94,7 @@ export function connect() {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := y.Field("model").Set("magpie/deepseek/pro"); err != nil {
+	if err := y.Field("model").Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	b, _ := os.ReadFile(yml)
@@ -107,7 +107,7 @@ export function connect() {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := e.Field("model").Set("magpie/deepseek/pro"); err != nil {
+	if err := e.Field("model").Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	b, _ = os.ReadFile(filepath.Join(home, ".envy"))

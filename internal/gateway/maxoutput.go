@@ -8,7 +8,7 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // outputLimit is the most a reply of a provider's model may hold, where
@@ -26,7 +26,7 @@ func outputLimit(p provider.Provider, model string) int {
 // userOutput is the Max output the user set for p's model (provider ›
 // model, or the provider's "*"), 0 when they set none. A request asking
 // for more is lowered to it on any route, not only in a group: Claude Code
-// asks claude-* models for their full 128000 and isn't told magpie's
+// asks claude-* models for their full 128000 and isn't told magpie-friday's
 // figure for them (claudeOutput), so a key whose quota is held per request
 // as max_tokens times the price turned every turn away, and the field the
 // editor says caps max_tokens did nothing (YaCo on Discord).
@@ -158,7 +158,7 @@ const leastReplyLeft = 8192
 // withReplyCap is body asking for a reply of at most limit tokens, in
 // proto's words, whether or not it named a limit before: a request that
 // named none was given the vendor's own, which was too large. false when
-// it asked for no more already, or proto keeps no such field magpie sets.
+// it asked for no more already, or proto keeps no such field magpie-friday sets.
 func withReplyCap(proto provider.Protocol, body []byte, limit int) ([]byte, bool) {
 	if limit <= 0 {
 		return nil, false

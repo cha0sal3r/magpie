@@ -7,12 +7,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // droidUser is a settings.json as droid leaves it for someone with a BYOK
-// model of their own on a Factory model, and settings magpie has nothing
+// model of their own on a Factory model, and settings magpie-friday has nothing
 // to do with.
 const droidUser = `{
   "customModels": [
@@ -86,20 +86,20 @@ func TestDroid(t *testing.T) {
 		t.Fatalf("model: %q", got)
 	}
 	// the picker: the user's own BYOK model by the id droid knows it by,
-	// the Factory model they're on, then magpie's catalog
+	// the Factory model they're on, then magpie-friday's catalog
 	opts := a.Field("model").Options(a.Values())
 	if opts[0].Value != "claude-opus-4-7" || opts[1].Value != "custom:Kimi-K2-[Groq]-0" || opts[1].Label != "Kimi K2 [Groq]" || opts[1].Group != "Droid" {
 		t.Fatalf("own options: %+v", opts[:2])
 	}
 	var via bool
 	for _, o := range opts {
-		via = via || o.Value == "magpie/deepseek/pro"
+		via = via || o.Value == "magpie-friday/deepseek/pro"
 	}
 	if !via {
-		t.Fatalf("no magpie/deepseek/pro in %+v", opts)
+		t.Fatalf("no magpie-friday/deepseek/pro in %+v", opts)
 	}
 
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	ms, order, f := droidFile(t, path)
@@ -111,18 +111,18 @@ func TestDroid(t *testing.T) {
 		t.Fatalf("user's entry rewritten:\n%s", readFile(path))
 	}
 	sd := f["sessionDefaultSettings"].(map[string]any)
-	if sd["model"] != "custom:magpie/deepseek/pro" || sd["autonomyLevel"] != "low" || f["diffMode"] != "unified" {
+	if sd["model"] != "custom:magpie-friday/deepseek/pro" || sd["autonomyLevel"] != "low" || f["diffMode"] != "unified" {
 		t.Fatalf("settings: %v", f)
 	}
-	if got := a.Values()["model"]; got != "magpie/deepseek/pro" {
+	if got := a.Values()["model"]; got != "magpie-friday/deepseek/pro" {
 		t.Fatalf("model read back: %q", got)
 	}
 	// each on the API its provider speaks, so the gateway relays it as it is
 	for id, want := range map[string][2]string{
-		"custom:magpie/deepseek/pro":         {"generic-chat-completion-api", gatewayV1()},
-		"custom:magpie/deepseek/flash":       {"generic-chat-completion-api", gatewayV1()},
-		"custom:magpie/resp/grok-5":          {"openai", gatewayV1()},
-		"custom:magpie/anth/claude-sonnet-5": {"anthropic", gateway.URL()},
+		"custom:magpie-friday/deepseek/pro":         {"generic-chat-completion-api", gatewayV1()},
+		"custom:magpie-friday/deepseek/flash":       {"generic-chat-completion-api", gatewayV1()},
+		"custom:magpie-friday/resp/grok-5":          {"openai", gatewayV1()},
+		"custom:magpie-friday/anth/claude-sonnet-5": {"anthropic", gateway.URL()},
 	} {
 		e := ms[id]
 		if e == nil {
@@ -135,18 +135,18 @@ func TestDroid(t *testing.T) {
 		if _, ok := e["noImageSupport"]; !ok {
 			t.Errorf("%s: noImageSupport left to droid's default: %v", id, e)
 		}
-		if m := strings.TrimPrefix(id, "custom:magpie/"); e["model"] != m {
+		if m := strings.TrimPrefix(id, "custom:magpie-friday/"); e["model"] != m {
 			t.Errorf("%s: model %v", id, e["model"])
 		}
 	}
-	if n := ms["custom:magpie/deepseek/pro"]["displayName"]; n != "pro · DeepSeek" {
+	if n := ms["custom:magpie-friday/deepseek/pro"]["displayName"]; n != "pro · DeepSeek" {
 		t.Errorf("displayName %v", n)
 	}
 	if d := a.Check(); d != "" {
 		t.Fatalf("check: %s", d)
 	}
-	// another of magpie's: the stash keeps the user's own
-	if err := a.Apply("model", "magpie/resp/grok-5"); err != nil {
+	// another of magpie-friday's: the stash keeps the user's own
+	if err := a.Apply("model", "magpie-friday/resp/grok-5"); err != nil {
 		t.Fatal(err)
 	}
 	// a provider added since joins the picker on Sync
@@ -154,12 +154,12 @@ func TestDroid(t *testing.T) {
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	if ms, _, _ = droidFile(t, path); ms["custom:magpie/later/m1"] == nil {
+	if ms, _, _ = droidFile(t, path); ms["custom:magpie-friday/later/m1"] == nil {
 		t.Fatalf("sync: %v", ms)
 	}
-	// something else rewrote magpie's entry
+	// something else rewrote magpie-friday's entry
 	cur := readFile(path)
-	at := strings.Index(cur, `"custom:magpie/resp/grok-5"`)
+	at := strings.Index(cur, `"custom:magpie-friday/resp/grok-5"`)
 	edited := cur[:at] + strings.Replace(cur[at:], gatewayV1(), "http://127.0.0.1:9/v1", 1)
 	os.WriteFile(path, []byte(edited), 0o644)
 	if d := a.Check(); !strings.Contains(d, "baseUrl") {
@@ -170,7 +170,7 @@ func TestDroid(t *testing.T) {
 		t.Fatalf("check after sync: %s", d)
 	}
 
-	// reset: the user's model back, magpie's entries gone, the rest as it was
+	// reset: the user's model back, magpie-friday's entries gone, the rest as it was
 	if err := a.Apply("model", ""); err != nil {
 		t.Fatal(err)
 	}
@@ -180,12 +180,12 @@ func TestDroid(t *testing.T) {
 	_ = home
 }
 
-// Picking one of the user's own models while on magpie's takes magpie out.
+// Picking one of the user's own models while on magpie-friday's takes magpie-friday out.
 func TestDroidOwnModel(t *testing.T) {
 	_, path := droidHome(t)
 	os.WriteFile(path, []byte(droidUser), 0o644)
 	a := droid(os.Getenv("HOME"))
-	if err := a.Apply("model", "magpie/anth/claude-sonnet-5"); err != nil {
+	if err := a.Apply("model", "magpie-friday/anth/claude-sonnet-5"); err != nil {
 		t.Fatal(err)
 	}
 	if err := a.Apply("model", "custom:Kimi-K2-[Groq]-0"); err != nil {
@@ -199,7 +199,7 @@ func TestDroidOwnModel(t *testing.T) {
 		t.Fatalf("model: %v", got)
 	}
 	// and a reset after that leaves the user's choice, not the stash
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	a.Apply("model", "")
@@ -209,14 +209,14 @@ func TestDroidOwnModel(t *testing.T) {
 }
 
 // No settings.json at all, or one with droid's documented top-level
-// "model": magpie adds only its own, and a reset leaves the file as it was.
+// "model": magpie-friday adds only its own, and a reset leaves the file as it was.
 func TestDroidFresh(t *testing.T) {
 	home, path := droidHome(t)
 	a := droid(home)
 	if a.Values()["model"] != "" {
 		t.Fatal("model without a file")
 	}
-	if err := a.Apply("model", "magpie/deepseek/flash"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
 	if _, order, _ := droidFile(t, path); len(order) != 5 {
@@ -234,11 +234,11 @@ func TestDroidFresh(t *testing.T) {
 	if a.Values()["model"] != "gpt-5.5" {
 		t.Fatalf("top-level model: %q", a.Values()["model"])
 	}
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	// droid reads sessionDefaultSettings.model before the top-level one
-	if _, _, f := droidFile(t, path); f["model"] != "gpt-5.5" || f["sessionDefaultSettings"].(map[string]any)["model"] != "custom:magpie/deepseek/pro" {
+	if _, _, f := droidFile(t, path); f["model"] != "gpt-5.5" || f["sessionDefaultSettings"].(map[string]any)["model"] != "custom:magpie-friday/deepseek/pro" {
 		t.Fatalf("settings: %v", f)
 	}
 	if err := a.Apply("model", ""); err != nil {
@@ -272,7 +272,7 @@ func TestDroidOverrideAndLegacy(t *testing.T) {
 	if strings.Join(got, ",") != "custom:Local-Qwen-0,custom:Local-Qwen-1" {
 		t.Fatalf("legacy options: %v", got)
 	}
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	if readFile(legacy) != cfg {

@@ -2,9 +2,9 @@
 // Codex's /model in the user's order (M3chD09, #855): its model list's
 // "Order" lists the models shown as Codex does, the account's own first,
 // and a drag or Alt+↑/↓ puts one elsewhere, saved at once; "Default order"
-// puts magpie's back. The hidden stay out, and nothing scrolls the page.
+// puts magpie-friday's back. The hidden stay out, and nothing scrolls the page.
 // Every agent's list has the Order (#1052): Claude Code's, which had none,
-// orders and saves the same way, saying it is the order magpie hands it.
+// orders and saves the same way, saying it is the order magpie-friday hands it.
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
@@ -12,7 +12,7 @@ const { test } = require("node:test");
 const { chromium, webkit } = require("playwright");
 
 const assets = path.resolve(__dirname, "../assets");
-// magpie's first, as the catalog has them; Codex's own after
+// magpie-friday's first, as the catalog has them; Codex's own after
 const models = () => [
   { id: "relay/claude-opus-5.5", name: "claude-opus-5.5", group: "Relay", icon: "anthropic" },
   { id: "relay/claude-sonnet-4-5", name: "claude-sonnet-4-5", group: "Relay", icon: "anthropic" },
@@ -63,8 +63,8 @@ function fixture(lang, agent = { id: "codex", name: "Codex", icon: "codex-color"
 }
 
 const W = {
-  en: { entry: "1 hidden", order: "Order", unorder: "Default order", note: "Drag to put them in the order Codex lists them; new models go last", handed: "Drag to put them in the order magpie hands them to Claude Code; new models go last" },
-  zh: { entry: "已隐藏 1 个", order: "排序", unorder: "恢复默认顺序", note: "拖动排列 Codex 列表中的顺序；新模型排在最后", handed: "拖动排列 magpie 交给 Claude Code 的模型顺序；新模型排在最后" },
+  en: { entry: "1 hidden", order: "Order", unorder: "Default order", note: "Drag to put them in the order Codex lists them; new models go last", handed: "Drag to put them in the order magpie-friday hands them to Claude Code; new models go last" },
+  zh: { entry: "已隐藏 1 个", order: "排序", unorder: "恢复默认顺序", note: "拖动排列 Codex 列表中的顺序；新模型排在最后", handed: "拖动排列 magpie-friday 交给 Claude Code 的模型顺序；新模型排在最后" },
 };
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
@@ -142,7 +142,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       await seg.click();
       assert.deepEqual(await names(), ["claude-sonnet-4-5", "gpt-5-codex", "gpt-5.5", "claude-opus-5.5"]);
 
-      // Default order puts magpie's back
+      // Default order puts magpie-friday's back
       await unorder.click();
       await page.waitForTimeout(150);
       assert.deepEqual(fx.posts.at(-1), []);

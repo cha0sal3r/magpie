@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // Run the public command in a fresh process, with only a fake account,
@@ -36,7 +36,7 @@ func TestAccountsCachedReading(t *testing.T) {
 	for _, mode := range []string{"cached-text", "cached-json", "fresh-text", "fresh-json"} {
 		t.Run(mode, func(t *testing.T) {
 			home := t.TempDir()
-			config := filepath.Join(home, ".config", "magpie")
+			config := filepath.Join(home, ".config", "magpie-friday")
 			at := time.Now().Add(-2 * time.Hour).UTC().Truncate(time.Second)
 			reset := at.Add(time.Hour)
 			write := func(path string, value any) {
@@ -69,7 +69,7 @@ func TestAccountsCachedReading(t *testing.T) {
 			cmd.Env = []string{"MAGPIE_TEST_ACCOUNTS_READING=" + mode, "HOME=" + home, "USERPROFILE=" + home,
 				"XDG_CONFIG_HOME=" + filepath.Dir(config), "XDG_CACHE_HOME=" + filepath.Join(home, ".cache"),
 				"CLAUDE_CONFIG_DIR=" + filepath.Join(home, ".claude"), "CODEX_HOME=" + filepath.Join(home, ".codex"), "PATH=" + home,
-				"SystemRoot=" + os.Getenv("SystemRoot"), "USER=magpie-test", "NO_COLOR=1",
+				"SystemRoot=" + os.Getenv("SystemRoot"), "USER=magpie-friday-test", "NO_COLOR=1",
 				// so that the binary keeps this home instead of a sandbox of its own
 				testenv.Marker + "=" + os.Getenv(testenv.Marker),
 				"TMP=" + os.Getenv("TMP"), "TEMP=" + os.Getenv("TEMP"), "TMPDIR=" + os.Getenv("TMPDIR")}
@@ -189,7 +189,7 @@ func TestAccountRowsPoolsAntigravity(t *testing.T) {
 }
 
 // A ChatGPT account's credits are in its row beside its windows, as on the
-// usage page and in magpie quota.
+// usage page and in magpie-friday quota.
 func TestAccountRowsTellCredits(t *testing.T) {
 	now := time.Date(2026, 10, 1, 9, 0, 0, 0, time.UTC)
 	provider.LoginUsageVia(func(context.Context, string) map[string]provider.SubscriptionQuota {

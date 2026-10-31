@@ -4,7 +4,7 @@ package gui
 
 import "github.com/wailsapp/wails/v3/pkg/application"
 
-// The Dock is the Mac's; elsewhere magpie stays in the tray.
+// The Dock is the Mac's; elsewhere magpie-friday stays in the tray.
 func dockPolicy(bool) application.ActivationPolicy { return application.ActivationPolicyAccessory }
 func setDock(bool, bool)                           {}
 func dockOnFullscreen()                            {}

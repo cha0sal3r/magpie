@@ -2,7 +2,7 @@ package gui
 
 import "testing"
 
-// Joining the Dock to the front is activated by way of the Dock, so magpie
+// Joining the Dock to the front is activated by way of the Dock, so magpie-friday
 // leads Command-Tab's order (#1381), whether NSApp says it is active yet or
 // not (#1651); anything else is as before.
 func TestDockStep(t *testing.T) {
@@ -13,7 +13,7 @@ func TestDockStep(t *testing.T) {
 		// already where it should be: nothing
 		{true, true, true, dockMove{}},
 		{false, false, true, dockMove{}},
-		// the window opens (the panel, the tray's Open, a second magpie):
+		// the window opens (the panel, the tray's Open, a second magpie-friday):
 		// joins, activated by way of the Dock
 		{false, true, true, dockMove{policy: true, again: true, front: true}},
 		// joins for another reason, not to the front: not activated

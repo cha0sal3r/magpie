@@ -1,6 +1,6 @@
 // The add sheet's Partners: the services that pay to be listed first in
-// magpie's "Add provider" sheet, under a heading that says they sponsor
-// magpie. The app fetches this list from /api/partners every six hours and
+// magpie-friday's "Add provider" sheet, under a heading that says they sponsor
+// magpie-friday. The app fetches this list from /api/partners every six hours and
 // keeps it (internal/provider/partners.go), so a change here reaches users
 // with `npx wrangler deploy`, no release. At most 12 whose term hasn't
 // ended are listed, in this order.
@@ -38,14 +38,14 @@ export const PARTNERS = [
     name: "Kimi Code",
     regionLabel: "Plan",
     regions: [
-      { id: "cn", name: "China", chat: "https://api.kimi.com/coding/v1", anthropic: "https://api.kimi.com/coding", catalog: "kimi-code-plan-cn", keysUrl: "https://www.kimi.com/code?aff=magpie", website: "https://www.kimi.com/code?aff=magpie" },
-      { id: "global", name: "Global", chat: "https://api.kimi.ai/coding/v1", anthropic: "https://api.kimi.ai/coding", catalog: "kimi-code-plan-global", keysUrl: "https://www.kimi.ai/code?aff=magpie", website: "https://www.kimi.ai/code?aff=magpie" },
-      { id: "api-cn", name: "Pay as you go · China", chat: "https://api.moonshot.cn/v1", anthropic: "https://api.moonshot.cn/anthropic", catalog: "moonshotai", keysUrl: "https://platform.kimi.com?aff=magpie", website: "https://platform.kimi.com?aff=magpie" },
-      { id: "api", name: "Pay as you go · Global", chat: "https://api.moonshot.ai/v1", anthropic: "https://api.moonshot.ai/anthropic", catalog: "moonshotai", keysUrl: "https://platform.kimi.ai?aff=magpie", website: "https://platform.kimi.ai?aff=magpie" },
+      { id: "cn", name: "China", chat: "https://api.kimi.com/coding/v1", anthropic: "https://api.kimi.com/coding", catalog: "kimi-code-plan-cn", keysUrl: "https://www.kimi.com/code?aff=magpie-friday", website: "https://www.kimi.com/code?aff=magpie-friday" },
+      { id: "global", name: "Global", chat: "https://api.kimi.ai/coding/v1", anthropic: "https://api.kimi.ai/coding", catalog: "kimi-code-plan-global", keysUrl: "https://www.kimi.ai/code?aff=magpie-friday", website: "https://www.kimi.ai/code?aff=magpie-friday" },
+      { id: "api-cn", name: "Pay as you go · China", chat: "https://api.moonshot.cn/v1", anthropic: "https://api.moonshot.cn/anthropic", catalog: "moonshotai", keysUrl: "https://platform.kimi.com?aff=magpie-friday", website: "https://platform.kimi.com?aff=magpie-friday" },
+      { id: "api", name: "Pay as you go · Global", chat: "https://api.moonshot.ai/v1", anthropic: "https://api.moonshot.ai/anthropic", catalog: "moonshotai", keysUrl: "https://platform.kimi.ai?aff=magpie-friday", website: "https://platform.kimi.ai?aff=magpie-friday" },
     ],
     catalog: "kimi-code-plan-cn",
-    keysUrl: "https://www.kimi.com/code?aff=magpie",
-    website: "https://www.kimi.com/code?aff=magpie",
+    keysUrl: "https://www.kimi.com/code?aff=magpie-friday",
+    website: "https://www.kimi.com/code?aff=magpie-friday",
     iconUrl: "https://usemagpie.ai/img/partner-kimi.png",
     notes: {
       en: "One subscription, one K3 quota shared by every agent",
@@ -66,8 +66,8 @@ export const PARTNERS = [
     chat: "https://api.apikey.fan/v1",
     responses: "https://api.apikey.fan/v1",
     anthropic: "https://api.apikey.fan",
-    keysUrl: "https://apikey.fan/?aff=magpie",
-    website: "https://apikey.fan/?aff=magpie",
+    keysUrl: "https://apikey.fan/?aff=magpie-friday",
+    website: "https://apikey.fan/?aff=magpie-friday",
     iconUrl: "https://usemagpie.ai/img/partner-apikeyfan.png",
     notes: {
       en: "Enterprise-grade AI API gateway to the world's leading models",
@@ -84,7 +84,7 @@ export const PARTNERS = [
     chat: "https://api.wandapi.ai/v1",
     responses: "https://api.wandapi.ai/v1",
     anthropic: "https://api.wandapi.ai",
-    keysUrl: "https://wandapi.ai/r/magpieapp",
+    keysUrl: "https://wandapi.ai/r/magpie-fridayapp",
     website: "https://wandapi.ai",
     iconUrl: "https://usemagpie.ai/img/partner-wandapi.png",
     notes: {

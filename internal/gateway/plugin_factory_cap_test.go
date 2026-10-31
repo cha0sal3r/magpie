@@ -16,9 +16,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // factoryCore is the Droid Core models Factory's plugin gives its Core
@@ -194,7 +194,7 @@ func TestPluginFactoryStandardOnlyCaps(t *testing.T) {
 		t.Fatalf("accounts %+v", ls)
 	}
 	// A then B, each at 99% of each window, as the user set them with
-	// magpie provider account-cap factory <account> 99
+	// magpie-friday provider account-cap factory <account> 99
 	if err := provider.SwitchLogin("factory", "a@fake"); err != nil {
 		t.Fatal(err)
 	}

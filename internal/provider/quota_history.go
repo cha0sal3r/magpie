@@ -1,7 +1,7 @@
 package provider
 
 // What was left of each window over time (#651): each reading of an
-// account's windows that magpie makes anyway (the subscriptions', a minute
+// account's windows that magpie-friday makes anyway (the subscriptions', a minute
 // apart at most while something asks; the plans' bought with a key) is kept
 // as a point — when it was read, the percent left, when the window started
 // and when it starts again — so the Usage page can draw the cycle's curve
@@ -35,8 +35,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/filememo"
-	"github.com/yetone/magpie/internal/lastgood"
+	"github.com/cha0sal3r/magpie-friday/internal/filememo"
+	"github.com/cha0sal3r/magpie-friday/internal/lastgood"
 )
 
 const (

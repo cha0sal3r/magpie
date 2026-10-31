@@ -4,13 +4,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// An agent left on a group magpie found, or a session begun on one, keeps
+// An agent left on a group magpie-friday found, or a session begun on one, keeps
 // working once the user turns found groups off (蓝猫 on Discord): its
 // request goes to the model from the first provider that serves it, as a
-// model of one provider — not refused as a model magpie doesn't know.
+// model of one provider — not refused as a model magpie-friday doesn't know.
 func TestFoundGroupOff(t *testing.T) {
 	fresh(t)
 	a, b := &keyed{}, &keyed{}
@@ -43,9 +43,9 @@ func TestFoundGroupOff(t *testing.T) {
 	}
 }
 
-// An agent set to a group magpie found keeps it while the user switches
+// An agent set to a group magpie-friday found keeps it while the user switches
 // one of its two providers off for a while: the request is the group's,
-// answered by the provider still on, not refused as a model magpie
+// answered by the provider still on, not refused as a model magpie-friday
 // doesn't know, and the other is asked again once it is back on.
 func TestFoundGroupWithAProviderOff(t *testing.T) {
 	fresh(t)

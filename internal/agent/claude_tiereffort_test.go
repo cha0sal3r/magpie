@@ -5,14 +5,14 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Claude Code's tiers and its subagents can each run at an effort of their
 // own (#536): the model the tier is given is "<model>:<level>" (before its
-// [1m] mark), which magpie's gateway sends that model at that level. The
+// [1m] mark), which magpie-friday's gateway sends that model at that level. The
 // effort stays with the tier through a model of its own, back to the main
 // model, and a new main model; the main model's effort is untouched.
 func TestClaudeTierEffort(t *testing.T) {
@@ -136,7 +136,7 @@ func TestClaudeTierEffort(t *testing.T) {
 		t.Fatalf("subagents on flash, effort cleared: %v", a.Values())
 	}
 	set("subagent", "")
-	// back to Claude Code as installed: nothing of magpie's left
+	// back to Claude Code as installed: nothing of magpie-friday's left
 	set("model", "")
 	for _, k := range claudeEnv {
 		if env(k) != "" {

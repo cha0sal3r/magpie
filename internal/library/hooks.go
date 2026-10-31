@@ -16,7 +16,7 @@ import (
 	"github.com/pelletier/go-toml/v2"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/jsonc"
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // Hooks (#1790) are commands an agent runs at a point of its turn: when
@@ -31,8 +31,8 @@ import (
 //
 // A portable event ("turn-end") is the same moment in each agent, under
 // each one's own name; an agent's own event ("codex:PermissionRequest")
-// is given to that agent alone. What magpie wrote is recorded entry by
-// entry (Applied.Hooks), and only an entry still exactly as magpie wrote
+// is given to that agent alone. What magpie-friday wrote is recorded entry by
+// entry (Applied.Hooks), and only an entry still exactly as magpie-friday wrote
 // it is ever taken out: one the user changed is theirs from then on, and
 // the user's own hooks around it stay as they are.
 
@@ -55,7 +55,7 @@ type Hook struct {
 	Agents  []string `json:"agents"`
 }
 
-// HookEntry is one entry magpie wrote into an agent's hooks: the hook it
+// HookEntry is one entry magpie-friday wrote into an agent's hooks: the hook it
 // is of, the agent's event it is under, and the entry exactly as written.
 type HookEntry struct {
 	Name  string          `json:"name"`
@@ -80,11 +80,11 @@ type hookSpec struct {
 	toml   bool              // Grok: hooks are [[hooks.<Event>]] tables in config.toml, not JSON
 }
 
-// hookAgents are the agents magpie can give hooks to.
+// hookAgents are the agents magpie-friday can give hooks to.
 var hookAgents = []string{"claude", "codex", "cursor", "gemini", "grok", "grok-app"}
 
 // grokHookEvents are the events the Grok CLI fires (docs/user-guide/10-hooks.md),
-// shared by Grok Build and the Grok App that runs it. Only the ones magpie
+// shared by Grok Build and the Grok App that runs it. Only the ones magpie-friday
 // maps a portable event to, plus an agent's own ("grok:Stop"), are offered;
 // the rest are listed so an own-event hook can name any of them.
 var grokHookEvents = []string{"SessionStart", "SessionEnd", "UserPromptSubmit", "PreToolUse", "PostToolUse",
@@ -119,7 +119,7 @@ func grokHookSpec(path string) *hookSpec {
 // toolEvents are the portable events that take a matcher.
 var toolEvents = []string{"after-tool", "before-tool"}
 
-// hookSpecOf is how t keeps its hooks, or why magpie can't give it any.
+// hookSpecOf is how t keeps its hooks, or why magpie-friday can't give it any.
 // claudeHookEvents are every hook event Claude Code has, in its own order:
 // the HOOK_EVENTS enum in claude 2.1.296. A settings.json hook under any
 // other name is one Claude Code never runs (#2020, emo172).
@@ -132,7 +132,7 @@ var claudeHookEvents = []string{"PreToolUse", "PostToolUse", "PostToolUseFailure
 
 func hookSpecOf(t *Target) (*hookSpec, string) {
 	if t.Agent.WSL != "" {
-		return nil, fmt.Sprintf("magpie gives hooks only to agents on this computer, not yet to %s in WSL", t.Agent.Name)
+		return nil, fmt.Sprintf("magpie-friday gives hooks only to agents on this computer, not yet to %s in WSL", t.Agent.Name)
 	}
 	switch t.Agent.ID {
 	case "claude":
@@ -184,7 +184,7 @@ func hookSpecOf(t *Target) (*hookSpec, string) {
 		// agent-home/config.toml, the same [[hooks.<Event>]] shape
 		return grokHookSpec(t.MCP.Path), ""
 	}
-	return nil, fmt.Sprintf("%s has no hooks magpie can write", t.Agent.Name)
+	return nil, fmt.Sprintf("%s has no hooks magpie-friday can write", t.Agent.Name)
 }
 
 // event is the agent's own name for h's event, or why it has none.
@@ -356,7 +356,7 @@ func readHooksFile(path string) ([]byte, error) {
 	}
 	j := jsonc.ToJSON(raw)
 	if !json.Valid(j) {
-		return nil, fmt.Errorf("%s isn't JSON magpie can read: it is left as it is", path)
+		return nil, fmt.Errorf("%s isn't JSON magpie-friday can read: it is left as it is", path)
 	}
 	if !gjson.ParseBytes(j).IsObject() {
 		return nil, fmt.Errorf("%s isn't a JSON object: it is left as it is", path)
@@ -519,7 +519,7 @@ func grokArrayEvent(line string) (string, bool) {
 }
 
 // syncHooks writes into t the hooks the library gives it and takes out the
-// ones it no longer does: only entries exactly as magpie wrote them, the
+// ones it no longer does: only entries exactly as magpie-friday wrote them, the
 // user's own hooks, before and after them, left where they are.
 func (l *Library) syncHooks(t *Target, b *backups, res *Result) {
 	id := t.Agent.ID
@@ -593,7 +593,7 @@ func (l *Library) syncHooks(t *Target, b *backups, res *Result) {
 		}
 		ws = append(ws, &wanted{h: h, ev: ev, entry: sp.entry(h, ev)})
 	}
-	claimed := map[string]map[int]bool{} // event → the entries magpie's records found
+	claimed := map[string]map[int]bool{} // event → the entries magpie-friday's records found
 	find := func(ev string, entry json.RawMessage) int {
 		c := canonical(entry)
 		for i, e := range lists[ev] {
@@ -641,7 +641,7 @@ func (l *Library) syncHooks(t *Target, b *backups, res *Result) {
 			continue
 		}
 		// the same entry of the user's own already runs: it isn't written
-		// twice, nor taken as magpie's
+		// twice, nor taken as magpie-friday's
 		if i := find(w.ev, w.entry); i >= 0 {
 			continue
 		}
@@ -758,7 +758,7 @@ func (l *Library) syncHooks(t *Target, b *backups, res *Result) {
 	}
 	out, err := edit.PatchJSON(raw, set, del)
 	if err == nil && len(del) > 0 && len(set) == 0 {
-		// a hooks object left empty by magpie goes with what it held
+		// a hooks object left empty by magpie-friday goes with what it held
 		if h := gjson.GetBytes(jsonc.ToJSON(edit.TrimBOM(out)), "hooks"); h.IsObject() && len(h.Map()) == 0 {
 			out, err = edit.PatchJSON(out, nil, []string{"hooks"})
 		}
@@ -865,7 +865,7 @@ func codexRekey(cfg, hooksPath string, moved map[string]map[int]int) (func() err
 		n, in := m[g]
 		if !in {
 			// a record of a group past the end of the list, whose place
-			// an entry magpie adds takes: it goes
+			// an entry magpie-friday adds takes: it goes
 			return "", g >= len(m)
 		}
 		if n == g {
@@ -917,7 +917,7 @@ func codexRekey(cfg, hooksPath string, moved map[string]map[int]int) (func() err
 	}
 	for k := range need {
 		if !slices.ContainsFunc(spans, func(s span) bool { return s.key == k }) {
-			return nil, fmt.Errorf("%s keeps Codex's trust of %s in a way magpie can't move: take the hook out in Codex's /hooks instead", cfg, k)
+			return nil, fmt.Errorf("%s keeps Codex's trust of %s in a way magpie-friday can't move: take the hook out in Codex's /hooks instead", cfg, k)
 		}
 	}
 	return func() error {
@@ -1055,7 +1055,7 @@ func hookTakes(h *Hook, a string) bool {
 	return slices.Contains(hookAgents, a)
 }
 
-// RemoveHooks takes the hooks named out of the library, and what magpie
+// RemoveHooks takes the hooks named out of the library, and what magpie-friday
 // wrote of them out of every agent. A name the library hasn't is said in
 // Unremoved, the others gone all the same.
 func RemoveHooks(names []string) (*Result, error) {
@@ -1097,10 +1097,10 @@ type HookView struct {
 // HookAgentView is an agent the Hooks tab lists.
 type HookAgentView struct {
 	ID string `json:"id"`
-	// File is where its hooks are; No is why magpie can't give it any
+	// File is where its hooks are; No is why magpie-friday can't give it any
 	File string `json:"file,omitempty"`
 	No   string `json:"no,omitempty"`
-	// WSL: No is that it runs in WSL, which magpie gives no hooks yet
+	// WSL: No is that it runs in WSL, which magpie-friday gives no hooks yet
 	WSL bool `json:"wsl,omitempty"`
 	// Off: it has every hook turned off in its settings
 	Off bool `json:"off,omitempty"`

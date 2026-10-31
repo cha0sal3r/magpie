@@ -7,7 +7,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // A model's specs — its context window, its reply limit, whether it takes
@@ -16,7 +16,7 @@ import (
 // of them known, and the GUI shows it with no badges, the gateway routes
 // it with no window and agents are told nothing of it (Dani Ariyanto on
 // Discord: kenari/*:free, experiential-labs/deepseek-v4.1-flash-uncensored).
-// `magpie model spec` says them all at once, over every one of those
+// `magpie-friday model spec` says them all at once, over every one of those
 // sources. Each part is kept where the setting of its own already keeps
 // it, so there is one value per part, which every reader already goes by
 // (entryFor and the helpers it uses): the window in the provider's own
@@ -24,7 +24,7 @@ import (
 // ModelOutputs, vision in ModelImages and the levels in ModelEfforts and
 // ModelReasonless. None of them is touched by a catalog sync.
 
-// SpecChange is what `magpie model spec` changes of one model. Each part
+// SpecChange is what `magpie-friday model spec` changes of one model. Each part
 // left nil stays as it is.
 type SpecChange struct {
 	// Context and Output are numbers of tokens; 0 takes the user's away.
@@ -113,14 +113,14 @@ func (p Provider) ParseLevels(model, v string) (levels []string, off bool, err e
 
 // SetModelSpec makes the changes c says to a provider's model, spelt
 // "provider/model", or "provider/*" for every model of that provider (the
-// window and the reply limit only, as `magpie model context` and `output`
+// window and the reply limit only, as `magpie-friday model context` and `output`
 // take it). Every part is checked before anything is written, so a bad
 // one writes nothing; the agents are told once, after them all.
 func SetModelSpec(ref string, c SpecChange) error {
 	if c.Empty() {
 		return errors.New("say what to change: --context, --output, --vision or --reasoning")
 	}
-	r := strings.TrimPrefix(strings.TrimSpace(ref), "magpie/")
+	r := strings.TrimPrefix(strings.TrimSpace(ref), "magpie-friday/")
 	if strings.HasPrefix(r, settings.AnyProvider) {
 		// a window or a vision answer is one provider's serving of a
 		// model, not the model's own: two relays serve one model at two
@@ -143,7 +143,7 @@ func SetModelSpec(ref string, c SpecChange) error {
 	setting := c.Context != nil && *c.Context > 0 || c.Output != nil && *c.Output > 0 ||
 		c.Vision != nil && !isAuto(*c.Vision) || c.Reasoning != nil && !isAuto(*c.Reasoning)
 	if setting && !every && !p.serves(model) {
-		return fmt.Errorf("%s has no model %s (magpie provider %s lists them)", p.ID, model, p.ID)
+		return fmt.Errorf("%s has no model %s (magpie-friday provider %s lists them)", p.ID, model, p.ID)
 	}
 	key := p.ID + "/" + model
 	if c.Output != nil {
@@ -248,10 +248,10 @@ func setOutput(key string, n int) (bool, error) {
 // and reply limit given every model of the provider. It reports what it
 // took away, by part ("context", "output", "vision", "reasoning"). A
 // provider that has gone still has its settings' parts taken away, under
-// the key as typed: a spec outlives the provider it was set for, and `magpie
+// the key as typed: a spec outlives the provider it was set for, and `magpie-friday
 // model specs` still lists it.
 func ResetModelSpec(ref string) ([]string, error) {
-	r := strings.TrimPrefix(strings.TrimSpace(ref), "magpie/")
+	r := strings.TrimPrefix(strings.TrimSpace(ref), "magpie-friday/")
 	if IsGroupRef(r) {
 		return nil, errors.New("that is a routing group, not a provider's model")
 	}
@@ -306,7 +306,7 @@ type SpecPart struct {
 	From  string
 }
 
-// Spec is a model's spec as magpie goes by it: the entry the gateway routes
+// Spec is a model's spec as magpie-friday goes by it: the entry the gateway routes
 // and the GUI and agents are shown, with where each part came from.
 type Spec struct {
 	Context, Output, Vision, Reasoning SpecPart
@@ -367,7 +367,7 @@ func SpecOf(ref string) (Spec, bool) {
 	return sp, true
 }
 
-// SpecRow is one model the user gave a spec, as `magpie model specs` lists
+// SpecRow is one model the user gave a spec, as `magpie-friday model specs` lists
 // it: each part as they set it, "" where they set none.
 type SpecRow struct {
 	Key                                string

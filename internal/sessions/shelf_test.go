@@ -54,7 +54,7 @@ func TestShelfFullKeepsTheLarger(t *testing.T) {
 	}
 }
 
-// An idle magpie holds nothing on a shelf.
+// An idle magpie-friday holds nothing on a shelf.
 func TestShelfLetsGoWhenIdle(t *testing.T) {
 	s := shelf[int]{idleFor: 20 * time.Millisecond}
 	s.give(1, nil)

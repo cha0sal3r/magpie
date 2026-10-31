@@ -6,13 +6,13 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
 )
 
 // ReadRTK says which agents can be given rtk, and which of those have its
 // hook: two passes over the agents on this machine, one for those rtk has a
 // hook for, one for those it has none. Detecting the agents asks each of the
-// ~47 magpie knows of whether it is here — its folder, its settings, its
+// ~47 magpie-friday knows of whether it is here — its folder, its settings, its
 // command on the PATH — which on a machine with many of them installed is a
 // few hundred milliseconds. Asked once per pass, it doubles, and the RTK tab
 // waits for it: the tab reads afresh each time the page is opened (an agent

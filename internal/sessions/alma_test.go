@@ -11,7 +11,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// almaSchema is Alma's tables as far as magpie reads them, with the
+// almaSchema is Alma's tables as far as magpie-friday reads them, with the
 // columns of chat_threads.db that matter here.
 const almaSchema = `
 CREATE TABLE workspaces (id TEXT PRIMARY KEY, path TEXT NOT NULL, name TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL);

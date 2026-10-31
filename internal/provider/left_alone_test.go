@@ -8,12 +8,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/claudecode"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/claudecode"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
-// A provider switched off, or whose account was removed from magpie, gets
-// no request from magpie in the background: its CLI isn't asked who is
+// A provider switched off, or whose account was removed from magpie-friday, gets
+// no request from magpie-friday in the background: its CLI isn't asked who is
 // signed in, its allowance isn't read, its sign-in isn't renewed or
 // switched, its list isn't fetched (Riko on Discord: with Claude switched
 // off, Surge showed `claude auth status --json` every minute). Fake

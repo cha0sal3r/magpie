@@ -11,8 +11,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // openCodeGoCatalog is models.dev's opencode-go as it lists the models of
@@ -45,7 +45,7 @@ func writeCatalog(t *testing.T, data string) {
 // /zen/go/v1/chat/completions, and Go answers GPT, Grok, Muse Spark and
 // MiniMax there with 400 "Model does not support this protocol." whatever
 // API the client spoke. Each model now goes on the API Go serves it on,
-// as models.dev's opencode-go says, from all three of magpie's APIs; GLM
+// as models.dev's opencode-go says, from all three of magpie-friday's APIs; GLM
 // keeps going on the client's own.
 func TestOpenCodeGoModelsGoOnTheirOwnAPI(t *testing.T) {
 	fresh(t)

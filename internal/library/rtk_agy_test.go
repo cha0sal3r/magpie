@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // fakeRTKAgy acts as rtk 0.51's rtk init -g --agent antigravity does
@@ -48,7 +48,7 @@ echo '{"name": "rtk", "version": "1.0.0"}' > "$d/plugin.json"
 
 // #2202 (Chichengmo): Antigravity CLI wasn't on the RTK page at all,
 // though rtk 0.51 has an Antigravity agent. It is listed, switched on with
-// rtk's installer, switched off by magpie taking rtk's plugin out (and only
+// rtk's installer, switched off by magpie-friday taking rtk's plugin out (and only
 // it), and an rtk before 0.51, which has no such agent, isn't run for it.
 func TestRTKAntigravity(t *testing.T) {
 	if runtime.GOOS == "windows" {

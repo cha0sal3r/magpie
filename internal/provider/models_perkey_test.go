@@ -11,7 +11,7 @@ import (
 // #1598 (wuwei0727): five keys, the first in key/keyName and four in
 // keys. The vendor's list didn't answer the first key, the other four
 // listed every model, so the first was taken to see none of them and was
-// left out of every request as unlisted. A key whose list magpie doesn't
+// left out of every request as unlisted. A key whose list magpie-friday doesn't
 // have is unknown, not "sees nothing": it serves until a list says it
 // doesn't. A key whose list did answer still serves only that list.
 func TestKeyWithNoListStillServes(t *testing.T) {

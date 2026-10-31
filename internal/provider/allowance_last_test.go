@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// While the first reading of the accounts' allowances since magpie started
+// While the first reading of the accounts' allowances since magpie-friday started
 // is still out, routing goes by what each said last, kept on disk — not by
 // none, which counts every account unused and put the first in order
 // first, until the reading came back and put the other first again

@@ -11,13 +11,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
-// magpie accounts add, signing in to a plugin's provider removed from
-// magpie, brings it back, as the window's sign-in and a built-in's do.
+// magpie-friday accounts add, signing in to a plugin's provider removed from
+// magpie-friday, brings it back, as the window's sign-in and a built-in's do.
 func TestAccountsAddBringsBackARemovedPlugin(t *testing.T) {
 	ctx := fakeCoHome(t)
 	if _, err := provider.PluginAPIKey(ctx, "fakeco", 0, nil, "sk-one-key-1111"); err != nil {
@@ -39,7 +39,7 @@ func TestAccountsAddBringsBackARemovedPlugin(t *testing.T) {
 	}
 }
 
-// magpie plugin login, signing in again to an account whose sign-in the
+// magpie-friday plugin login, signing in again to an account whose sign-in the
 // vendor turned away, takes its lapsed mark off, as the window's sign-in
 // does, rather than the account saying "sign in again" until a request or
 // a usage read goes through.
@@ -123,7 +123,7 @@ func fakeCoHome(t *testing.T) context.Context {
 	return ctx
 }
 
-// noBrowser has the sign-in pages magpie opens go nowhere. It swaps the
+// noBrowser has the sign-in pages magpie-friday opens go nowhere. It swaps the
 // opener rather than putting a do-nothing open first on PATH: a script
 // written now is a program macOS checks on its first run, which took 25 to
 // 55 seconds while other test binaries ran, and ate the minute the plugin
@@ -135,10 +135,10 @@ func noBrowser(t *testing.T) {
 	t.Cleanup(func() { openInBrowser = old })
 }
 
-// magpie plugin login installs the CLI a plugin signs in through before
+// magpie-friday plugin login installs the CLI a plugin signs in through before
 // the sign-in, as the window's does, and a failed install stops it there
 // rather than the plugin saying "install Grok Build first: curl … | bash",
-// which magpie's Docker image has no curl to run (#2223, evier12345).
+// which magpie-friday's Docker image has no curl to run (#2223, evier12345).
 func TestPluginLoginInstallsItsCLIFirst(t *testing.T) {
 	fakeCoHome(t)
 	noBrowser(t)
@@ -189,7 +189,7 @@ func TestPluginLoginInstallsItsCLIFirst(t *testing.T) {
 // A sign-in to a provider the user switched off keeps it off, and says so
 // with the command that turns it on (Atlas: WorkBuddy AI signed in, then
 // "○ switched off" with nothing saying why or how). One that is on says
-// nothing of it. magpie providers says the same command beside the row.
+// nothing of it. magpie-friday providers says the same command beside the row.
 func TestPluginLoginSaysItIsSwitchedOff(t *testing.T) {
 	fakeCoHome(t)
 	noBrowser(t)
@@ -209,22 +209,22 @@ func TestPluginLoginSaysItIsSwitchedOff(t *testing.T) {
 		t.Fatal(err)
 	}
 	out := login()
-	if !strings.Contains(out, "switched off") || !strings.Contains(out, "magpie provider on fakeco") {
+	if !strings.Contains(out, "switched off") || !strings.Contains(out, "magpie-friday provider on fakeco") {
 		t.Fatalf("signed in to a switched-off provider, and nothing said how to turn it on:\n%s", out)
 	}
 	if p, err := provider.Find("fakeco"); err != nil || !p.Off {
 		t.Fatalf("the sign-in turned the user's switch over: %+v %v", p, err)
 	}
-	// magpie accounts add, the same sign-in, says it too
+	// magpie-friday accounts add, the same sign-in, says it too
 	piped(t, "1", "sk-two-key-2222")
-	if out, err := said(t, func() error { return accountsCmd([]string{"accounts", "add", "fakeco"}) }); err != nil || !strings.Contains(out, "magpie provider on fakeco") {
+	if out, err := said(t, func() error { return accountsCmd([]string{"accounts", "add", "fakeco"}) }); err != nil || !strings.Contains(out, "magpie-friday provider on fakeco") {
 		t.Fatalf("accounts add: %v\n%s", err, out)
 	}
 	out, err := printed(t, providers)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if row := lineWith(out, "fakeco"); !strings.Contains(row, "switched off") || !strings.Contains(row, "magpie provider on fakeco") {
-		t.Errorf("magpie providers, off: %q", row)
+	if row := lineWith(out, "fakeco"); !strings.Contains(row, "switched off") || !strings.Contains(row, "magpie-friday provider on fakeco") {
+		t.Errorf("magpie-friday providers, off: %q", row)
 	}
 }

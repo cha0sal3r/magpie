@@ -8,15 +8,15 @@ import (
 	"testing"
 
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // A reply from a group says which member answered it (#822): its
 // X-Magpie-Provider and X-Magpie-Model headers always, relayed or
 // translated, streamed or not, after a failover too; its body's model the
 // vendor's own name, unless MemberModel (or the request's
-// X-Magpie-Response-Model: member) asks for magpie's provider/model id
+// X-Magpie-Response-Model: member) asks for magpie-friday's provider/model id
 // there — never for Claude Code or Codex, which read it themselves.
 func TestReplyNamesMember(t *testing.T) {
 	bodies := map[string]string{

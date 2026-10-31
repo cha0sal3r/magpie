@@ -26,7 +26,7 @@ func TestAgentMCPFiles(t *testing.T) {
 		// the user's own server and file, as the agent writes them
 		user string
 		toml bool
-		// what magpie writes for each server, as the agent's add does
+		// what magpie-friday writes for each server, as the agent's add does
 		fs, web, sse entry
 		noSSE        bool
 		// pre makes the agent there, beyond its MCP file
@@ -70,7 +70,7 @@ func TestAgentMCPFiles(t *testing.T) {
 			sse:  entry{"type": "sse", "url": "https://example.com/sse"},
 		},
 		{
-			// Qoder's settings.json, which magpie's provider is in too
+			// Qoder's settings.json, which magpie-friday's provider is in too
 			id: "qoder", file: ".qoder/settings.json",
 			user: `{"model": {"name": "auto"}, "mcpServers": {"mine": {"command": "uvx", "args": ["mine"], "trust": true}}}`,
 			fs:   entry{"command": "npx", "args": []any{"-y", "@mcp/fs"}, "env": entry{"K": "V"}},
@@ -158,10 +158,10 @@ func TestAgentMCPFiles(t *testing.T) {
 		},
 		{
 			// Grok App's independent home: the same [mcp_servers] tables,
-			// and the route and magpie's channel stay
+			// and the route and magpie-friday's channel stay
 			id: "grok-app", file: "grok-app-data/agent-home/config.toml", toml: true,
 			env:   map[string]string{"GROK_APP_HOME": "grok-app-data"},
-			user:  "# mine\n[models]\ndefault = \"deepseek\"\n\n[model.magpie]\nmodel = \"grok/grok-4.7\"\nname = \"magpie\"\n\n[mcp_servers.mine]\ncommand = \"uvx\"\nargs = [\"mine\"]\nenabled = true\n",
+			user:  "# mine\n[models]\ndefault = \"deepseek\"\n\n[model.magpie-friday]\nmodel = \"grok/grok-4.7\"\nname = \"magpie-friday\"\n\n[mcp_servers.mine]\ncommand = \"uvx\"\nargs = [\"mine\"]\nenabled = true\n",
 			fs:    entry{"command": "npx", "args": []any{"-y", "@mcp/fs"}, "env": entry{"K": "V"}},
 			web:   entry{"url": "https://example.com/mcp", "headers": entry{"Authorization": "Bearer x"}},
 			noSSE: true,

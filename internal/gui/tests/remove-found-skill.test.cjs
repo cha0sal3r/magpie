@@ -21,7 +21,7 @@ const found = [
   { name: "dev", description: "Work in progress", agents: ["claude"], link: `${HOME}/src/dev` },
 ];
 const lib = (foundSkills) => ({
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: [agent("claude", "Claude Code"), agent("codex", "Codex"), agent("gemini", "Gemini CLI"), agent("goose", "Goose")],
   instructions: { agents: [] }, servers: [], skills: [], foundServers: [], projects: [], foundSkills,
 });
@@ -51,25 +51,25 @@ function server(lang, posts) {
 
 const said = {
   en: {
-    notes: ["It is taken out of Claude Code, Codex, and its folder is moved to magpie's backups.", "Gemini CLI has another skill by this name; that one stays."],
+    notes: ["It is taken out of Claude Code, Codex, and its folder is moved to magpie-friday's backups.", "Gemini CLI has another skill by this name; that one stays."],
     dev: ["It is taken out of Claude Code. The folder it was linked from stays where it is."],
-    grilling: ["It is taken out of Goose, and its folder is moved to magpie's backups.", `Its entry in ${HOME}/.agents/skills/grilling goes to the backups too, so no agent reads it from there.`],
+    grilling: ["It is taken out of Goose, and its folder is moved to magpie-friday's backups.", `Its entry in ${HOME}/.agents/skills/grilling goes to the backups too, so no agent reads it from there.`],
     removed: "notes removed",
   },
   zh: {
-    notes: ["将从 Claude Code, Codex 中移除，文件夹移到 magpie 的备份。", "Gemini CLI 中有另一个同名 Skill，那个保持不动。"],
+    notes: ["将从 Claude Code, Codex 中移除，文件夹移到 magpie-friday 的备份。", "Gemini CLI 中有另一个同名 Skill，那个保持不动。"],
     dev: ["将从 Claude Code 中移除。它链接到的原文件夹保持不动。"],
-    grilling: ["将从 Goose 中移除，文件夹移到 magpie 的备份。", `它在 ${HOME}/.agents/skills/grilling 中的条目也会移到备份，不会再有 Agent 从那里读取。`],
+    grilling: ["将从 Goose 中移除，文件夹移到 magpie-friday 的备份。", `它在 ${HOME}/.agents/skills/grilling 中的条目也会移到备份，不会再有 Agent 从那里读取。`],
   },
   ja: {
-    notes: ["Claude Code, Codex から外され、フォルダは magpie のバックアップに移されます。", "Gemini CLI には同じ名前の別のスキルがあり、そちらはそのまま残ります。"],
+    notes: ["Claude Code, Codex から外され、フォルダは magpie-friday のバックアップに移されます。", "Gemini CLI には同じ名前の別のスキルがあり、そちらはそのまま残ります。"],
     dev: ["Claude Code から外されます。リンク元のフォルダはそのまま残ります。"],
-    grilling: ["Goose から外され、フォルダは magpie のバックアップに移されます。", `${HOME}/.agents/skills/grilling にあるエントリもバックアップに移され、どのエージェントもそこから読まなくなります。`],
+    grilling: ["Goose から外され、フォルダは magpie-friday のバックアップに移されます。", `${HOME}/.agents/skills/grilling にあるエントリもバックアップに移され、どのエージェントもそこから読まなくなります。`],
   },
   de: {
-    notes: ["Er wird aus Claude Code, Codex entfernt, und sein Ordner wird in die Backups von magpie verschoben.", "Gemini CLI hat einen anderen Skill mit diesem Namen; dieser bleibt."],
+    notes: ["Er wird aus Claude Code, Codex entfernt, und sein Ordner wird in die Backups von magpie-friday verschoben.", "Gemini CLI hat einen anderen Skill mit diesem Namen; dieser bleibt."],
     dev: ["Er wird aus Claude Code entfernt. Der Ordner, auf den er verlinkt war, bleibt, wo er ist."],
-    grilling: ["Er wird aus Goose entfernt, und sein Ordner wird in die Backups von magpie verschoben.", `Sein Eintrag in ${HOME}/.agents/skills/grilling kommt ebenfalls in die Backups, sodass kein Agent ihn mehr von dort liest.`],
+    grilling: ["Er wird aus Goose entfernt, und sein Ordner wird in die Backups von magpie-friday verschoben.", `Sein Eintrag in ${HOME}/.agents/skills/grilling kommt ebenfalls in die Backups, sodass kein Agent ihn mehr von dort liest.`],
   },
 };
 

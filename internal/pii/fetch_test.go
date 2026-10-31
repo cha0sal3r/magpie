@@ -237,7 +237,7 @@ func oldInstall(t *testing.T, want map[string][]byte) (string, *files) {
 	return log, f
 }
 
-// A pf-serve of a tag pinned before magpie was updated answers while
+// A pf-serve of a tag pinned before magpie-friday was updated answers while
 // serveTag's is fetched; then it is ended, the next request starts
 // serveTag's, and the old one is deleted.
 func TestOldServeRunsUntilUpgraded(t *testing.T) {

@@ -75,12 +75,12 @@ func TestAgySessions(t *testing.T) {
 		t.Fatalf("no row resume %q", nr.Resume)
 	}
 
-	// started on magpie's gateway: picked up there again
+	// started on magpie-friday's gateway: picked up there again
 	AgyStart = func() string {
-		return "GEMINI_API_KEY=k GOOGLE_GEMINI_BASE_URL=http://127.0.0.1:1 agy --model 'magpie/x'"
+		return "GEMINI_API_KEY=k GOOGLE_GEMINI_BASE_URL=http://127.0.0.1:1 agy --model 'magpie-friday/x'"
 	}
 	r := find(t, List(0), "agy", agyRead)
-	if want := agyResume("/work/proj2", "GEMINI_API_KEY=k GOOGLE_GEMINI_BASE_URL=http://127.0.0.1:1 agy --model 'magpie/x' --conversation "+agyRead); r.Resume != want {
+	if want := agyResume("/work/proj2", "GEMINI_API_KEY=k GOOGLE_GEMINI_BASE_URL=http://127.0.0.1:1 agy --model 'magpie-friday/x' --conversation "+agyRead); r.Resume != want {
 		t.Fatalf("wired resume %q, want %q", r.Resume, want)
 	}
 }

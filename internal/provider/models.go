@@ -15,10 +15,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/probelog"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/probelog"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 func errorf(format string, a ...any) error { return fmt.Errorf(format, a...) }
@@ -209,7 +209,7 @@ func (p Provider) Fetch(ctx context.Context) ([]catalog.Model, error) {
 // list replaces the old one, and a pick made from the old list goes with
 // it — kept, it stayed among the models agents see, as if typed in by
 // hand, though the vendor serves it no more (akic404 on Discord: a remote
-// magpie offering far fewer models, and one of its providers renamed,
+// magpie-friday offering far fewer models, and one of its providers renamed,
 // still listed every old "ws-ba5my…/qwen3.6-max" here after a Refresh).
 // A pick the old list didn't have was typed in by hand, and stays; a
 // fetch that fails, or that answers no model at all, changes nothing.
@@ -441,10 +441,10 @@ var newFetches = struct {
 
 // newFetchRetry is how long FetchNew leaves an account whose list it
 // couldn't get before asking again. Short: until it has its list the
-// account offers magpie's fallback (Kiro's Auto alone), and one try that
+// account offers magpie-friday's fallback (Kiro's Auto alone), and one try that
 // failed — the first after an update, cut short by a page's 8 seconds, or
 // made before the network was up — left it so for ten minutes, while only
-// the Providers page asked again (#422: Auto alone until magpie was
+// the Providers page asked again (#422: Auto alone until magpie-friday was
 // restarted by hand).
 var newFetchRetry = time.Minute
 
@@ -533,15 +533,15 @@ var newRunning atomic.Int32
 // and was told none was on its way until the one picking counted itself.
 func FetchingNew() bool { return newRunning.Load() > 0 || fetchingNew.Load() }
 
-// FetchNew asks each signed-in account whose vendor list magpie hasn't
+// FetchNew asks each signed-in account whose vendor list magpie-friday hasn't
 // fetched yet for it, each for at most timeout. Start-up does this for the
-// accounts there then; an account signed in while magpie runs (in magpie or
-// in the agent's own app) otherwise showed magpie's built-in list, fewer
+// accounts there then; an account signed in while magpie-friday runs (in magpie-friday or
+// in the agent's own app) otherwise showed magpie-friday's built-in list, fewer
 // models than the vendor serves, until Refresh was clicked (#204). One that
 // fails is asked again after newFetchRetry, not each time. It reports
 // whether an account is left without its list (one that failed, or that
 // failed less than newFetchRetry ago), for a caller with no page to ask
-// again from (the terminal, magpie serve) to try once more later.
+// again from (the terminal, magpie-friday serve) to try once more later.
 func FetchNew(timeout time.Duration) (missing bool) {
 	newRunning.Add(1)
 	defer newRunning.Add(-1)
@@ -576,7 +576,7 @@ type newFetch struct {
 // skipped as they failed less than newFetchRetry ago; newFetches held.
 func newDue(ps []Provider) (due, skipped []newFetch) {
 	for _, p := range ps {
-		// a list of decision models fetched before magpie kept their
+		// a list of decision models fetched before magpie-friday kept their
 		// windows and input, or not fetched yet (ARNO on Discord)
 		// one switched off isn't asked (leftAlone): a signed-in
 		// agent's list asks its CLI or the vendor
@@ -1436,7 +1436,7 @@ func (p Provider) ServesNone() bool { return p.NoModels && len(p.Models) == 0 }
 // not the vendor's whole list as for a provider nothing was picked of.
 func (p Provider) waitsForPicks() bool { return len(p.Models) == 0 && len(p.Delisted) > 0 }
 
-// Exposed lists the models magpie offers to agents for this provider: the
+// Exposed lists the models magpie-friday offers to agents for this provider: the
 // user's picks; else the preset's; else everything, when that is few; none
 // after Select none (ServesNone).
 func (p Provider) Exposed() []catalog.Model {
@@ -1491,7 +1491,7 @@ func (p Provider) Exposed() []catalog.Model {
 	// a model listed on none of the APIs the provider has a URL for is
 	// left out before the first 24 are taken (#2094)
 	avail = slices.DeleteFunc(slices.Clone(avail), func(m catalog.Model) bool { return p.NoAPIFor(m.ID) })
-	// another magpie's list is already the models its user exposed
+	// another magpie-friday's list is already the models its user exposed
 	if len(avail) <= manyModels || p.IsRemoteMagpie() {
 		return avail
 	}
@@ -1506,7 +1506,7 @@ func (p Provider) Exposed() []catalog.Model {
 // listed on /messages alone, at a provider given only a chat URL. Agents
 // aren't offered it, as no request for it could be answered (#2094). Only
 // a provider of keys, whose URLs the user typed: a sign-in's APIs are
-// magpie's own. A model whose list says no API, and a provider with no URL
+// magpie-friday's own. A model whose list says no API, and a provider with no URL
 // at all, are never left out here.
 func (p Provider) NoAPIFor(model string) bool {
 	if p.Account != nil {
@@ -1597,7 +1597,7 @@ func (p Provider) RejectsTemperature(model string) bool {
 }
 
 // Efforts are the reasoning levels the model takes, when known: its own,
-// or those the user gave it when it has none known (magpie model spec
+// or those the user gave it when it has none known (magpie-friday model spec
 // --reasoning on a custom provider's model). The gateway fits a request
 // to these. Levels the user kept of a model's own only narrow what is
 // offered (#92): the vendor is still asked at any level it has.
@@ -1730,7 +1730,7 @@ func effortsOf(m catalog.Model) []string {
 }
 
 // borrowedEfforts are the reasoning levels of a model its provider has no
-// word on: its maker's, when a vendor of magpie's presets makes it — none
+// word on: its maker's, when a vendor of magpie-friday's presets makes it — none
 // for Xiaomi's mimo-v2.6-flash, which takes a thinking switch alone and
 // turns away the max resellers list for it (#214) — else those most of the
 // providers giving any give it (a Volcengine endpoint's glm-5.3-flash),
@@ -1779,7 +1779,7 @@ var makerCatalogs = sync.OnceValue(func() []string {
 // it, else as its maker's does (#224): a subscription (Codex's ChatGPT
 // account, Copilot) or a relay with no models.dev id of its own is priced
 // at gpt-6-astra's or gemini-3.8-flash's maker's price, as a Claude
-// account is at Anthropic's. A remote magpie's is what that magpie counts
+// account is at Anthropic's. A remote magpie-friday's is what that magpie-friday counts
 // the model at, as its list says (remotePrice). A model no catalog prices
 // is at the price its plugin lists it at (pluginListPrice), else, when the
 // plugin says the plan serves it free, costs nothing (pluginFree).
@@ -2314,7 +2314,7 @@ func (p Provider) Chosen(id string) bool {
 	return false
 }
 
-// ---- the magpie catalog ------------------------------------------------------
+// ---- the magpie-friday catalog ------------------------------------------------------
 //
 // Agents see one flat list of models across every provider, each spelled
 // "provider/model" so nothing ever clashes. The bare model id works too
@@ -2322,12 +2322,12 @@ func (p Provider) Chosen(id string) bool {
 
 // Entry is one model as the agents see it.
 type Entry struct {
-	ID      string `json:"id"`                // what the agent sends magpie
-	Model   string `json:"model"`             // what magpie sends the vendor
+	ID      string `json:"id"`                // what the agent sends magpie-friday
+	Model   string `json:"model"`             // what magpie-friday sends the vendor
 	Name    string `json:"name"`              // the user's name for it, when they gave one (SetModelName)
 	Default string `json:"default,omitempty"` // the model's own name, when the user gave it another
-	// Plain is a remote magpie's model's name there alone, when Name is
-	// its label there with that magpie's provider after it (catalog.Model's)
+	// Plain is a remote magpie-friday's model's name there alone, when Name is
+	// its label there with that magpie-friday's provider after it (catalog.Model's)
 	Plain      string   `json:"-"`
 	Efforts    []string `json:"efforts,omitempty"`
 	Provider   Provider `json:"-"`                // a group's: its first member's
@@ -2346,7 +2346,7 @@ type Entry struct {
 	// WindowSet is set when Context is a window the user typed: on the
 	// provider for the model or for all of its models (ContextOf), or on
 	// the group (Group.Context, a size). Codex and Claude Code are then
-	// told it whole rather than magpie's default working window
+	// told it whole rather than magpie-friday's default working window
 	// (CompactFor, #1809).
 	WindowSet bool `json:"-"`
 	// Output is the most tokens a reply may hold, when known (a group's:
@@ -2378,10 +2378,10 @@ type Entry struct {
 	// AgentsV2 is set on a model offering Codex's Ultra that no ChatGPT
 	// account answers for (a group's: none of its members): Codex is told
 	// multi-agent V2 for it, so Ultra hands work to its agents, whose
-	// tasks a magpie-served lead writes as text.
+	// tasks a magpie-friday-served lead writes as text.
 	AgentsV2 bool `json:"-"`
 	// Tiers are the service tiers its list offers Codex on the model:
-	// another magpie's, those it offers its own Codex (#1234); a provider
+	// another magpie-friday's, those it offers its own Codex (#1234); a provider
 	// plugin's, those it says its vendor serves the model at (#2514)
 	Tiers []string `json:"-"`
 	// Released is the model's release day (YYYY-MM-DD) as its list or
@@ -2464,7 +2464,7 @@ func entriesOff(off func(pid, model string) bool) []Entry {
 }
 
 // heldOffEntries are the models of the providers the user switched off,
-// which the groups magpie finds keep (foundFrom). One without a key, a
+// which the groups magpie-friday finds keep (foundFrom). One without a key, a
 // plugin not signed in, finds no group.
 func heldOffEntries() []Entry {
 	return heldOf("off entries", func() []Entry {
@@ -2510,7 +2510,7 @@ func entryFor(p Provider, m catalog.Model, s settings.Settings) Entry {
 		images, imageInput = override, &override
 	}
 	// a model its vendor lists with no name is called by its id: unnamed,
-	// an agent's list showed the whole magpie/<provider>/<model> (#955)
+	// an agent's list showed the whole magpie-friday/<provider>/<model> (#955)
 	name := cmp.Or(m.Name, m.ID)
 	e := Entry{ID: p.ID + "/" + m.ID, Model: m.ID, Family: p.Family, Name: name, Efforts: effortsOf(m), Provider: p,
 		Images: images, ImageInput: imageInput, Context: ctx, WindowSet: p.ContextOf(m.ID) > 0, Output: output, OutputSet: outputOf(s, p.ID, m.ID) > 0, Free: m.Free, Rate: m.Rate, RateWas: m.RateWas, Tiers: m.Tiers, Released: m.Released,
@@ -2530,7 +2530,7 @@ func entryFor(p Provider, m catalog.Model, s settings.Settings) Entry {
 	e.Reasoning = e.Reasoning || len(e.Efforts) > 0
 	// Codex's Ultra on a model OpenAI offers it on, served by another
 	// vendor (Copilot's gpt-6.1-sol, #656): a ChatGPT account's list says it
-	// already. Its subagents take their tasks as text from a magpie-served
+	// already. Its subagents take their tasks as text from a magpie-friday-served
 	// lead, so Codex is told V2 for it, where Ultra hands work to them
 	// (codexcat.Entries).
 	if p.Account == nil || p.Account.Agent != "codex" {
@@ -2627,7 +2627,7 @@ func entryIn(entries []Entry, id string) (Entry, bool) {
 // that exposes it, else the one provider that lists it unexposed. The
 // gateway asks GroupFor first, so with found groups on a bare id several
 // providers serve is that group, its members in the same order (MOMO on
-// Discord: glm-5.3 under opencode-go and a6api). magpie writes only
+// Discord: glm-5.3 under opencode-go and a6api). magpie-friday writes only
 // provider/model ids into agents' configs, so a bare one is the user's.
 // A group's id resolves to its first member.
 func Resolve(id string) (Provider, string, bool) {
@@ -2726,7 +2726,7 @@ func ListedWindow(m catalog.Model) int {
 // asked for, MaxContext): set to 512K to spend less, it told opencode-go's
 // cat-jam-free, which takes 262K, 512K (#2112). The window models.dev
 // gives the id under other vendors (catalog.ContextOf) is not the
-// provider's word but magpie's guess, and never caps what the user set: a
+// provider's word but magpie-friday's guess, and never caps what the user set: a
 // custom OpenAI-compatible relay set to 1M told its claude-sonnet-4-5
 // 200K (MisakaNatsuxun on Discord, 10-23). One set for the model itself
 // is the user's word on it, larger or not. The catalog's entries and the
@@ -2853,10 +2853,10 @@ func SetModelOutput(id string, n int) error {
 	}
 
 	// a limit for a model the provider does not serve is one that never
-	// applies and nothing later says so; the same refusal `magpie model
+	// applies and nothing later says so; the same refusal `magpie-friday model
 	// name` makes for the same id.
 	if model != "*" && !p.serves(model) {
-		return errorf("%s has no model %s (magpie provider %s lists them)", p.ID, model, p.ID)
+		return errorf("%s has no model %s (magpie-friday provider %s lists them)", p.ID, model, p.ID)
 	}
 	s := settings.Load()
 	if s.ModelOutputs == nil {
@@ -2908,7 +2908,7 @@ func SetModelOutputs(providerID string, outs map[string]int) error {
 			return err
 		}
 		if model != "*" && n > 0 && s.ModelOutputs[p.ID+"/"+model] != n && !p.serves(model) {
-			return errorf("%s has no model %s (magpie provider %s lists them)", p.ID, model, p.ID)
+			return errorf("%s has no model %s (magpie-friday provider %s lists them)", p.ID, model, p.ID)
 		}
 	}
 	changed := false
@@ -2999,7 +2999,7 @@ func DropModelOutput(id string) (string, bool, error) {
 // renamed from: that is where SetModelOutput keeps a limit set through a
 // display name, and the same resolution outputOf reads it back under.
 func outputKeyOf(id string) (string, error) {
-	r := strings.TrimPrefix(strings.TrimSpace(id), "magpie/")
+	r := strings.TrimPrefix(strings.TrimSpace(id), "magpie-friday/")
 	if IsGroupRef(r) {
 		return "", errorf("that is a routing group, not a provider's model")
 	}
@@ -3050,7 +3050,7 @@ func SetContext(p Provider, model string, n int) error {
 	// applies and nothing later says so. A removal is exempt, so an entry
 	// left for a model that has since gone can still be taken away.
 	if n > 0 && model != "*" && !p.serves(model) {
-		return fmt.Errorf("%s has no model %s (magpie provider %s lists them)", p.ID, model, p.ID)
+		return fmt.Errorf("%s has no model %s (magpie-friday provider %s lists them)", p.ID, model, p.ID)
 	}
 	if n > 0 {
 		if p.Contexts == nil {

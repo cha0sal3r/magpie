@@ -1,17 +1,17 @@
 //go:build ignore
 
-// Icon generator. Everything magpie shows is drawn from one bird: a round
-// little magpie in profile, tail cocked, black and white, on a 44-unit grid.
-// magpie.svg is the full drawing, its belly, shoulder and the slits in its
+// Icon generator. Everything magpie-friday shows is drawn from one bird: a round
+// little magpie-friday in profile, tail cocked, black and white, on a 44-unit grid.
+// magpie-friday.svg is the full drawing, its belly, shoulder and the slits in its
 // tail cut out of the black; the app tile uses it from 64px up.
-// magpie-small.svg drops the eye, which would only be a speck; the tray and
+// magpie-friday-small.svg drops the eye, which would only be a speck; the tray and
 // the smaller tiles use it, and so does the header in
 // internal/gui/assets/index.html.
 //
 //	go run build/icon/gen.go tray internal/gui/tray.png     # 44px black template icon (macOS menu bar)
 //	go run build/icon/gen.go tray-flap internal/gui/trayflap # its frames when clicked (a size after the folder for a bigger look)
 //	go run build/icon/gen.go app 64 internal/gui/icon.png   # app icon at a given size
-//	make icons                                              # regenerates all of them plus magpie.icns
+//	make icons                                              # regenerates all of them plus magpie-friday.icns
 package main
 
 import (
@@ -28,9 +28,9 @@ import (
 )
 
 var (
-	//go:embed magpie.svg
+	//go:embed magpie-friday.svg
 	fullSVG string
-	//go:embed magpie-small.svg
+	//go:embed magpie-friday-small.svg
 	smallSVG string
 )
 

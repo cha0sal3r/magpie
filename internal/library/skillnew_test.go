@@ -157,7 +157,7 @@ func TestCheckSkillsFindsNewOnes(t *testing.T) {
 		t.Errorf("asked %v: an unchanged tree is GitHub's 304 and fetches nothing", asked)
 	}
 
-	// a library from before magpie kept what it offered: every skill
+	// a library from before magpie-friday kept what it offered: every skill
 	// beside the installed ones that it hasn't is new
 	mu.Lock()
 	l, _ = load()

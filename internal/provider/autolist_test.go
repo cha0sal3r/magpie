@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/agentenv"
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
 func autolistHome(t *testing.T) {
@@ -286,7 +286,7 @@ func TestKeepListsFreshFetchesWhatIsDue(t *testing.T) {
 }
 
 // A save that doesn't set them keeps the schedule and the rules: the
-// window's editor and `magpie provider set` change other things.
+// window's editor and `magpie-friday provider set` change other things.
 func TestSaveKeepsTheListsScheduleAndRules(t *testing.T) {
 	autolistHome(t)
 	r := newRelayList(t, "gpt-6")
@@ -316,16 +316,16 @@ func TestSaveKeepsTheListsScheduleAndRules(t *testing.T) {
 	}
 }
 
-// A Remote magpie's list follows the other magpie's with no schedule set
+// A Remote magpie-friday's list follows the other magpie-friday's with no schedule set
 // (6igsteven on Discord, 10-24): a model listed there later, ZCode's
 // GLM-5.3-Trial once its plugin read the gift, is served here after
 // RemoteMagpieEvery, not only after Fetch models in the editor. A relay
-// with no schedule is still asked only when told, and a Remote magpie its
+// with no schedule is still asked only when told, and a Remote magpie-friday its
 // user set off is too.
 func TestRemoteMagpieListFollowsTheOtherMagpie(t *testing.T) {
 	autolistHome(t)
 	r := newRelayList(t, "zcode/GLM-5.2")
-	if err := Save(Provider{ID: "office", Name: "Office", Preset: RemoteMagpiePreset, Chat: r.srv.URL, Key: "sk-magpie-office"}); err != nil {
+	if err := Save(Provider{ID: "office", Name: "Office", Preset: RemoteMagpiePreset, Chat: r.srv.URL, Key: "sk-magpie-friday-office"}); err != nil {
 		t.Fatal(err)
 	}
 	other := newRelayList(t, "x-1")
@@ -349,14 +349,14 @@ func TestRemoteMagpieListFollowsTheOtherMagpie(t *testing.T) {
 		t.Fatalf("asked %v after %s, want [office]", got, RemoteMagpieEvery)
 	}
 	if ids := servedIDs(t, "office"); !slices.Contains(ids, "zcode/GLM-5.3-Trial") || !slices.Contains(ids, "zcode/GLM-5.3-Flash-Trial") {
-		t.Fatalf("served after the other magpie listed its trial models: %v", ids)
+		t.Fatalf("served after the other magpie-friday listed its trial models: %v", ids)
 	}
 	if other.asked.Load() != 0 {
 		t.Fatalf("a relay with no schedule was asked %d times", other.asked.Load())
 	}
-	// as `magpie provider show` and refresh-every say it
+	// as `magpie-friday provider show` and refresh-every say it
 	if p, _ := Find("office"); p.RefreshSchedule() != RemoteMagpieEvery {
-		t.Fatalf("a Remote magpie's schedule with none set: %q, want %q", p.RefreshSchedule(), RemoteMagpieEvery)
+		t.Fatalf("a Remote magpie-friday's schedule with none set: %q, want %q", p.RefreshSchedule(), RemoteMagpieEvery)
 	}
 
 	// set off by its user: asked only when told, and the off is kept
@@ -368,6 +368,6 @@ func TestRemoteMagpieListFollowsTheOtherMagpie(t *testing.T) {
 	}
 	n := r.asked.Load()
 	if got := refreshDueLists(context.Background(), now.Add(2*time.Hour)); len(got) != 0 || r.asked.Load() != n {
-		t.Fatalf("a Remote magpie set off was asked: %v", got)
+		t.Fatalf("a Remote magpie-friday set off was asked: %v", got)
 	}
 }

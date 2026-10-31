@@ -5,15 +5,15 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // On a Claude model, Claude Code's haiku tier — its titles, Explore
 // subagents, the small asks it makes on its own — follows on the Haiku the
 // same provider serves, as Claude Code runs them by itself, not on the main
 // model (X, AncientTwo: a Claude subscription's limits went much faster
-// through magpie). A model of the user's own for it stays; on a model that
+// through magpie-friday). A model of the user's own for it stays; on a model that
 // isn't Claude's it follows the main model as before.
 func TestClaudeHaikuTierOnClaude(t *testing.T) {
 	home := t.TempDir()
@@ -104,7 +104,7 @@ func TestClaudeHaikuTierOnClaude(t *testing.T) {
 		}
 	}
 
-	// an older magpie wrote every tier on the main model: Follow moves the
+	// an older magpie-friday wrote every tier on the main model: Follow moves the
 	// haiku tier onto the Haiku
 	if err := edit.SetJSON(path, edit.KV{Path: "env.ANTHROPIC_DEFAULT_HAIKU_MODEL", Value: "anth/claude-sonnet-4-6"}, edit.KV{Path: "env.ANTHROPIC_SMALL_FAST_MODEL", Value: "anth/claude-sonnet-4-6"}); err != nil {
 		t.Fatal(err)

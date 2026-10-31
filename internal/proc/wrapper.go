@@ -5,7 +5,7 @@ package proc
 // ~/.local/bin/claude. Inside `mise x` the command is looked up on PATH
 // again, and with ~/.local/bin before mise's own folders it is that same
 // script: it runs itself until killed (deluxe on Discord, Omarchy Linux: a
-// magpie started from the desktop, without the shell's mise environment,
+// magpie-friday started from the desktop, without the shell's mise environment,
 // never showed the Claude sign-in link). The program such a script stands
 // for is asked of mise, `mise which <name>`, and run directly.
 
@@ -172,7 +172,7 @@ var miseAsk = func() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), miseWait)
 }
 
-// miseWhich is the program `mise which name` names, run with magpie's
+// miseWhich is the program `mise which name` names, run with magpie-friday's
 // environment (the shell's PATH UserPath took) from the home folder, whose
 // mise config a terminal reads: with the wrapper's tool when plain
 // `mise which` doesn't know it. "" when mise isn't here, fails, or names

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // The login Settings › Proxy saves (微雨南山 on Discord): a username and
@@ -96,7 +96,7 @@ func TestProxyLoginWithReservedCharacters(t *testing.T) {
 		if body, code := throughSaved(t, "http://vendor.example/v1/models"); code != 200 || body != "carried http://vendor.example/v1/models" {
 			t.Fatalf("through the HTTP proxy: %d %q", code, body)
 		}
-		// a CLI magpie starts gets the same login in its *_PROXY
+		// a CLI magpie-friday starts gets the same login in its *_PROXY
 		for _, e := range EnvWith("", []string{}) {
 			if k, v, _ := strings.Cut(e, "="); k == "HTTPS_PROXY" {
 				eu, err := url.Parse(v)

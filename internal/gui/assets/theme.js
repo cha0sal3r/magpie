@@ -4,6 +4,7 @@
 // and default size first, then change as the page loaded.
 (function () {
   var asked = new URLSearchParams(location.search).get("theme");
+  if (asked !== "light" && asked !== "dark") asked = "";
   var prefs = window.bootPrefs;
   var saved = prefs && prefs.theme;
   var theme = asked || (saved && saved !== "system" ? saved : "");

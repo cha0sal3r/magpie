@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // aliasMsg is a line of a Claude Code reply by model.
@@ -13,7 +13,7 @@ func aliasMsg(id, model, at string, in int) string {
 	return `{"type":"assistant","isSidechain":false,"message":{"model":"` + model + `","id":"` + id + `","role":"assistant","content":[],"usage":{"input_tokens":` + itoa(in) + `,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":0}},"timestamp":"` + at + `","cwd":"/work/alias","sessionId":"44444444-2222-3333-4444-555555555555"}` + "\n"
 }
 
-// A model counted under another id (magpie model alias) is one row of a
+// A model counted under another id (magpie-friday model alias) is one row of a
 // session's models, of a day's usage and of a session's summary, and each
 // keeps the cost of the id it was made under (SlouchyQuill507 on Discord).
 func TestSessionsCountAliasedModelsAsOne(t *testing.T) {

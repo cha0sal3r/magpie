@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // claudeAutoModeHome is a sandbox HOME with a provider serving a Claude
@@ -35,8 +35,8 @@ func claudeAutoModeHome(t *testing.T, before string) (*Agent, string, func(strin
 
 // Claude Code's auto mode classifier can have a model of its own
 // (CLAUDE_CODE_AUTO_MODE_MODEL, 2.1.302; Linka on Discord): only while
-// magpie routes Claude Code, only one of magpie's models, never one Claude
-// Code refuses to run its classifier on, and gone again with magpie.
+// magpie-friday routes Claude Code, only one of magpie-friday's models, never one Claude
+// Code refuses to run its classifier on, and gone again with magpie-friday.
 func TestClaudeAutoModeModel(t *testing.T) {
 	a, _, env := claudeAutoModeHome(t, `{}`)
 	f := a.Field("auto_mode")
@@ -52,13 +52,13 @@ func TestClaudeAutoModeModel(t *testing.T) {
 	if err := a.Field("model").Set("relay/deepseek-pro"); err != nil {
 		t.Fatal(err)
 	}
-	// unset, Claude Code's own pick: magpie writes nothing for it
+	// unset, Claude Code's own pick: magpie-friday writes nothing for it
 	if f.Get() != "" || env(claudeAutoModeEnv) != "" {
 		t.Fatalf("auto mode should be unset: %v", a.Values())
 	}
 	opts := f.Options(nil)
 	if !containsOption(opts, "relay/claude-haiku-4-5") || !containsOption(opts, "relay/deepseek-pro") {
-		t.Fatalf("options miss magpie's models: %v", opts)
+		t.Fatalf("options miss magpie-friday's models: %v", opts)
 	}
 	if containsOption(opts, "relay/claude-opus-5-5") {
 		t.Fatalf("Opus 5.5 is offered, which Claude Code won't classify with: %v", opts)
@@ -67,7 +67,7 @@ func TestClaudeAutoModeModel(t *testing.T) {
 		t.Fatalf("Opus 5.5 taken: %v %q", err, env(claudeAutoModeEnv))
 	}
 	if err := f.Set("claude-haiku-4-5"); err == nil || env(claudeAutoModeEnv) != "" {
-		t.Fatalf("a model magpie doesn't serve taken: %v %q", err, env(claudeAutoModeEnv))
+		t.Fatalf("a model magpie-friday doesn't serve taken: %v %q", err, env(claudeAutoModeEnv))
 	}
 	if err := f.Set("relay/claude-haiku-4-5"); err != nil {
 		t.Fatal(err)
@@ -95,7 +95,7 @@ func TestClaudeAutoModeModel(t *testing.T) {
 	if err := f.Set("relay/deepseek-pro"); err != nil {
 		t.Fatal(err)
 	}
-	// back to Claude Code as installed: magpie's pick goes with it
+	// back to Claude Code as installed: magpie-friday's pick goes with it
 	if err := a.Field("model").Set(""); err != nil {
 		t.Fatal(err)
 	}
@@ -107,10 +107,10 @@ func TestClaudeAutoModeModel(t *testing.T) {
 	}
 }
 
-// An auto mode model the user set before magpie routed Claude Code waits
-// out of the env while magpie is wired in (it would name a model magpie
-// doesn't serve) and comes back after; one they set while magpie is wired
-// in is theirs, and magpie never takes it out.
+// An auto mode model the user set before magpie-friday routed Claude Code waits
+// out of the env while magpie-friday is wired in (it would name a model magpie-friday
+// doesn't serve) and comes back after; one they set while magpie-friday is wired
+// in is theirs, and magpie-friday never takes it out.
 func TestClaudeAutoModeUserValue(t *testing.T) {
 	t.Run("before", func(t *testing.T) {
 		a, path, env := claudeAutoModeHome(t, `{"env":{"CLAUDE_CODE_AUTO_MODE_MODEL":"claude-sonnet-4-6"}}`)

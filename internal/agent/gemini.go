@@ -5,18 +5,18 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Gemini CLI only speaks Google's own API, so "provider" here is how it
 // authenticates: Google sign-in, a Gemini API key, or Vertex AI. The choice
 // lives in settings.json (security.auth.selectedType). A Google provider
-// added in magpie lends its key through ~/.gemini/.env, which the CLI loads.
+// added in magpie-friday lends its key through ~/.gemini/.env, which the CLI loads.
 //
-// Any catalog model works too: the gateway serves the Gemini API, so magpie
+// Any catalog model works too: the gateway serves the Gemini API, so magpie-friday
 // points GOOGLE_GEMINI_BASE_URL at it, uses the gateway token as the API
 // key and names the catalog model in model.name.
 
@@ -35,7 +35,7 @@ func geminiIn(at place) *Agent {
 	envKey := func() string { v, _ := edit.GetEnvFile(envPath, "GEMINI_API_KEY"); return v }
 	// routed: the .env names the gateway, or names it at an address it
 	// no longer has (a WSL distro's under NAT changes as WSL restarts) with
-	// magpie's key: either way what is there is magpie's, never stashed as
+	// magpie-friday's key: either way what is there is magpie-friday's, never stashed as
 	// the user's own
 	routed := func() bool {
 		b, k := base(), envKey()
@@ -133,11 +133,11 @@ func geminiIn(at place) *Agent {
 			if routed() {
 				return nil
 			}
-			return fmt.Errorf("pick a model via magpie instead; that routes Gemini CLI through the gateway")
+			return fmt.Errorf("pick a model via magpie-friday instead; that routes Gemini CLI through the gateway")
 		}
-		// an auth it doesn't know is refused before magpie is taken out:
-		// `magpie gemini <a model it has no option for>` comes here, and
-		// unrouted Gemini CLI first, as `magpie snow --help` took magpie
+		// an auth it doesn't know is refused before magpie-friday is taken out:
+		// `magpie-friday gemini <a model it has no option for>` comes here, and
+		// unrouted Gemini CLI first, as `magpie-friday snow --help` took magpie-friday
 		// out of Snow (#1457)
 		switch id {
 		case "", "custom", "google", "vertex", "api-key":
@@ -185,7 +185,7 @@ func geminiIn(at place) *Agent {
 		ID: "gemini", Name: "Gemini CLI", Icon: "geminicli-color", Aliases: []string{"gemini-cli"}, NoNames: true,
 		UA:  []string{"geminicli", "gemini-cli"},
 		Bin: "gemini", Dir: dir, Path: path,
-		// its model's default forgets what it had before magpie, its
+		// its model's default forgets what it had before magpie-friday, its
 		// sign-in's default forgets the sign-in: this puts both back
 		Unwire: unroute,
 		// Gemini CLI is its binary. What it leaves in ~/.gemini stays when it
@@ -210,7 +210,7 @@ func geminiIn(at place) *Agent {
 				return d
 			}
 			if a := auth(); a != "gemini-api-key" {
-				return "Gemini CLI signs in with " + orDefault(a) + " rather than magpie's key, so it asks Google directly"
+				return "Gemini CLI signs in with " + orDefault(a) + " rather than magpie-friday's key, so it asks Google directly"
 			}
 			return ""
 		},
@@ -229,11 +229,11 @@ func geminiIn(at place) *Agent {
 					key := Option{Value: "api-key", Label: "API key", Icon: "gemini-color"}
 					switch {
 					case magpieKey() != "":
-						key.Note = "the Google key from magpie's providers"
+						key.Note = "the Google key from magpie-friday's providers"
 					case envKey() != "":
 						key.Note = "GEMINI_API_KEY from ~/.gemini/.env"
 					default:
-						key.Note = "needs GEMINI_API_KEY — add Google Gemini in magpie's providers"
+						key.Note = "needs GEMINI_API_KEY — add Google Gemini in magpie-friday's providers"
 					}
 					out := []Option{
 						{Value: "google", Label: "Google", Icon: "gemini-color", Note: "Google account · OAuth sign-in"},
@@ -244,7 +244,7 @@ func geminiIn(at place) *Agent {
 					case "custom":
 						out = append(out, Option{Value: "custom", Note: hostOf(base()) + " (from .env)"})
 					case magpieID:
-						out = append(out, Option{Value: magpieID, Label: "magpie", Note: "the local gateway · every provider's models"})
+						out = append(out, Option{Value: magpieID, Label: "magpie-friday", Note: "the local gateway · every provider's models"})
 					}
 					return out
 				},

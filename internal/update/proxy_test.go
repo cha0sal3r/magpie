@@ -12,11 +12,11 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // The update feed and a release's download go through the proxy set in
-// Settings, as magpie's other requests do (#294): a network that reaches
+// Settings, as magpie-friday's other requests do (#294): a network that reaches
 // usemagpie.ai and GitHub only through it gets its updates too.
 func TestUpdateGoesThroughTheProxy(t *testing.T) {
 	h := t.TempDir()
@@ -26,7 +26,7 @@ func TestUpdateGoesThroughTheProxy(t *testing.T) {
 	for _, k := range []string{"HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy", "ALL_PROXY", "all_proxy", "NO_PROXY", "no_proxy"} {
 		t.Setenv(k, "")
 	}
-	body := []byte("new magpie")
+	body := []byte("new magpie-friday")
 	sum := sha256.Sum256(body)
 	var mu sync.Mutex
 	var seen []string
@@ -40,7 +40,7 @@ func TestUpdateGoesThroughTheProxy(t *testing.T) {
 			return
 		}
 		json.NewEncoder(w).Encode(Release{Version: "9.9.9", Assets: map[string]Asset{
-			BinaryAsset(): {URL: "http://releases.magpie.invalid/asset", SHA256: hex.EncodeToString(sum[:])},
+			BinaryAsset(): {URL: "http://releases.magpie-friday.invalid/asset", SHA256: hex.EncodeToString(sum[:])},
 		}})
 	}))
 	defer px.Close()
@@ -48,7 +48,7 @@ func TestUpdateGoesThroughTheProxy(t *testing.T) {
 		t.Fatal(err)
 	}
 	// hosts that resolve nowhere: only the proxy can answer for them
-	t.Setenv("MAGPIE_UPDATE_FEED", "http://feed.magpie.invalid/api/latest")
+	t.Setenv("MAGPIE_UPDATE_FEED", "http://feed.magpie-friday.invalid/api/latest")
 	rel, err := Latest(context.Background())
 	if err != nil {
 		t.Fatal(err)
@@ -56,13 +56,13 @@ func TestUpdateGoesThroughTheProxy(t *testing.T) {
 	if rel.Version != "9.9.9" {
 		t.Fatalf("version %q", rel.Version)
 	}
-	path := filepath.Join(t.TempDir(), "magpie.new")
+	path := filepath.Join(t.TempDir(), "magpie-friday.new")
 	if err := download(context.Background(), rel.Assets[BinaryAsset()], path); err != nil {
 		t.Fatal(err)
 	}
 	mu.Lock()
 	defer mu.Unlock()
-	if want := []string{"http://feed.magpie.invalid/api/latest", "http://releases.magpie.invalid/asset"}; !slices.Equal(seen, want) {
+	if want := []string{"http://feed.magpie-friday.invalid/api/latest", "http://releases.magpie-friday.invalid/asset"}; !slices.Equal(seen, want) {
 		t.Fatalf("through the proxy: %v, want %v", seen, want)
 	}
 }

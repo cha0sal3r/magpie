@@ -18,7 +18,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // checkinAcct is an account checked in each day.
@@ -90,7 +90,7 @@ func (c checkiner) checkinNow(ctx context.Context, soon bool) []WorkBuddyCheckin
 		prev, seen := st[a.key]
 		settled := prev.settled(day, now, soon)
 		// a press asks the vendor again for a done, inactive or
-		// ineligible magpie saw no claim for: answered from the record,
+		// ineligible magpie-friday saw no claim for: answered from the record,
 		// a press never reached the vendor (#3326). A claim, and an
 		// answer the user acts on (own-app, captcha), stand.
 		if soon && prev.unclaimedAnswer() {
@@ -121,7 +121,7 @@ func (c checkiner) checkinNow(ctx context.Context, soon bool) []WorkBuddyCheckin
 		case r.Outcome == CheckinClaimed:
 			r.Claimed = now
 		case seen && prev.claimedOn(day):
-			// a done after magpie's own claim is that claim
+			// a done after magpie-friday's own claim is that claim
 			r.Claimed = cmp.Or(prev.Claimed, prev.At)
 		}
 		st[a.key], changed = r, true

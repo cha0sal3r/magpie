@@ -5,12 +5,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
 	"gopkg.in/yaml.v3"
 )
 
 // hermesConfig is a Hermes config.yaml as the user keeps it: their model,
-// a comment, and a server of their own with settings magpie doesn't write.
+// a comment, and a server of their own with settings magpie-friday doesn't write.
 const hermesConfig = `# my Hermes settings
 model:
   default: anthropic/claude-sonnet-4.6 # the one I like
@@ -28,7 +28,7 @@ toolsets:
 // Hermes reads mcp_servers from $HERMES_HOME/config.yaml (tools/mcp_tool.py):
 // command/args/env, url/headers, transport: sse for SSE; each is written
 // there beside the user's settings, comments and servers, read back, and
-// only magpie's taken out again.
+// only magpie-friday's taken out again.
 func TestHermesMCP(t *testing.T) {
 	h := sandbox(t)
 	dir := filepath.Join(h, "hermes-home")
@@ -104,7 +104,7 @@ func TestHermesMCP(t *testing.T) {
 		t.Errorf("a sync rewrote servers that are as the library has them:\n%s", read(t, p))
 	}
 
-	// a timeout or enabled the user sets on magpie's server stays when it
+	// a timeout or enabled the user sets on magpie-friday's server stays when it
 	// is written again
 	got = strings.Replace(read(t, p), "    url: https://example.com/mcp\n", "    url: https://example.com/mcp\n    enabled: false\n    timeout: 90\n", 1)
 	write(t, p, got)

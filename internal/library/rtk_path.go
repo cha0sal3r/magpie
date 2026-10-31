@@ -6,18 +6,18 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // rtk's hooks run it by name — Pi's extension asks rtk --version and turns
 // itself off ("RTK disabled: rtk binary not found in PATH") when that
 // fails, Claude Code's and Codex's hooks are rtk hook …, and the commands
 // they rewrite to are rtk git status and so on — so an agent needs rtk on
-// its own PATH. magpie finds rtk in more places than that: the folders
+// its own PATH. magpie-friday finds rtk in more places than that: the folders
 // installers use, which the app adds to its PATH whether the user's shell
 // has them or not (~/.local/bin, where rtk's own script puts it and only
 // warns when it isn't on PATH), and winget's, whose link isn't always made.
-// So magpie says when rtk isn't on the PATH a terminal opened now has, and
+// So magpie-friday says when rtk isn't on the PATH a terminal opened now has, and
 // puts it there when asked: a link in a folder on it, or on Windows its
 // folder added to the user's PATH, as winget does when it can't link.
 // Shell profiles are left alone.
@@ -55,7 +55,7 @@ func runnable(p string) bool {
 
 // writable says whether a file can be made in dir.
 func writable(dir string) bool {
-	f, err := os.CreateTemp(dir, ".magpie-")
+	f, err := os.CreateTemp(dir, ".magpie-friday-")
 	if err != nil {
 		return false
 	}
@@ -64,7 +64,7 @@ func writable(dir string) bool {
 	return true
 }
 
-// PathRTK puts the rtk magpie found on the PATH agents get, when the user
+// PathRTK puts the rtk magpie-friday found on the PATH agents get, when the user
 // asks for it (see rtkOnPath).
 func PathRTK() (*RTKView, error) {
 	rtkMu.Lock()
@@ -78,7 +78,7 @@ func PathRTK() (*RTKView, error) {
 	}
 	dir, link := rtkPathDir(bin)
 	if dir == "" {
-		return nil, fmt.Errorf("magpie found no folder on your PATH it can put rtk in — add %s to PATH in your shell profile", filepath.Dir(bin))
+		return nil, fmt.Errorf("magpie-friday found no folder on your PATH it can put rtk in — add %s to PATH in your shell profile", filepath.Dir(bin))
 	}
 	if err := rtkOnPath(bin, dir, link); err != nil {
 		return nil, err

@@ -11,36 +11,36 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
-// The `magpie` command in a terminal (PAMI on Discord: a way in the app to
+// The `magpie-friday` command in a terminal (PAMI on Discord: a way in the app to
 // put it there, and to see whether it is). install.sh links it, Homebrew
 // links it, but the app downloaded from the site — and every Windows one —
 // leaves a terminal without it. Settings' Command line says, for each shell
-// a terminal may open, which magpie its `magpie` runs, and puts this app's
+// a terminal may open, which magpie-friday its `magpie-friday` runs, and puts this app's
 // there when the user asks: a link in a folder already on PATH (the one
-// whose magpie runs first, when that one is another copy, or ~/.local/bin
+// whose magpie-friday runs first, when that one is another copy, or ~/.local/bin
 // and the like), on Windows the app's folder put first in the user's PATH.
 // A shell profile is written only for the shell the user picks, and only
 // with one line that puts ~/.local/bin on its PATH.
 //
-// Another magpie's version is read from its .app's Info.plist or its
-// Homebrew Cellar folder, never by running it: `magpie version` migrates
+// Another magpie-friday's version is read from its .app's Info.plist or its
+// Homebrew Cellar folder, never by running it: `magpie-friday version` migrates
 // the settings first (see StaleCLI).
 
-// CLIShell is one shell's `magpie`.
+// CLIShell is one shell's `magpie-friday`.
 type CLIShell struct {
 	Name    string `json:"name"`              // zsh, bash, fish, PowerShell, cmd
 	Default bool   `json:"default,omitempty"` // the one a terminal opens
 	Known   bool   `json:"known"`             // its PATH could be read
-	Command string `json:"command,omitempty"` // the magpie it runs, "" none
+	Command string `json:"command,omitempty"` // the magpie-friday it runs, "" none
 	Ours    bool   `json:"ours"`              // and that is this app
 	Profile string `json:"profile,omitempty"` // the file a pick of it writes, ~ for the home; "" none
 	HasDir  bool   `json:"hasDir,omitempty"`  // its PATH has CLI.Dir, so Add reaches it without its profile
 }
 
-// CLI is what `magpie` runs in a terminal opened now.
+// CLI is what `magpie-friday` runs in a terminal opened now.
 type CLI struct {
 	Exe     string     `json:"exe"`               // this app's program, which it should run
 	Command string     `json:"command,omitempty"` // the default shell's
@@ -50,7 +50,7 @@ type CLI struct {
 	Stuck   string     `json:"stuck,omitempty"`   // translocated, read-only: why it can't be linked from where it is
 	Shells  []CLIShell `json:"shells"`
 	Windows bool       `json:"windows,omitempty"`
-	Shim    string     `json:"shim,omitempty"` // Windows: the magpie.cmd Add writes beside an app not named magpie.exe, which runs it
+	Shim    string     `json:"shim,omitempty"` // Windows: the magpie-friday.cmd Add writes beside an app not named magpie-friday.exe, which runs it
 }
 
 // cliShell is a shell installed here.
@@ -68,7 +68,7 @@ var (
 
 var cliMu sync.Mutex
 
-// ReadCLI says what `magpie` runs in each shell. It asks each shell for its
+// ReadCLI says what `magpie-friday` runs in each shell. It asks each shell for its
 // PATH, a few seconds at most.
 func ReadCLI() *CLI {
 	v := &CLI{Windows: runtime.GOOS == "windows", Shells: []CLIShell{}}
@@ -115,7 +115,7 @@ func ReadCLI() *CLI {
 	return v
 }
 
-// AddCLI puts this app's magpie on the PATH: of every shell whose PATH has
+// AddCLI puts this app's magpie-friday on the PATH: of every shell whose PATH has
 // the folder ReadCLI names (shell ""), or of the one shell named, by
 // linking it in ~/.local/bin and adding that folder to the shell's profile.
 func AddCLI(shell string) (*CLI, error) {
@@ -127,9 +127,9 @@ func AddCLI(shell string) (*CLI, error) {
 	}
 	switch cliStuck() {
 	case "translocated":
-		return nil, errors.New("macOS runs magpie from a temporary copy until it is moved to Applications: move it there, open it again, then add the command")
+		return nil, errors.New("macOS runs magpie-friday from a temporary copy until it is moved to Applications: move it there, open it again, then add the command")
 	case "read-only":
-		return nil, errors.New("magpie is running from its disk image: copy it to Applications, open it from there, then add the command")
+		return nil, errors.New("magpie-friday is running from its disk image: copy it to Applications, open it from there, then add the command")
 	}
 	if shell == "" {
 		v := ReadCLI()
@@ -137,14 +137,14 @@ func AddCLI(shell string) (*CLI, error) {
 			return v, nil
 		}
 		if v.Dir == "" {
-			return nil, errors.New("no folder on your PATH can take the magpie command: add ~/.local/bin to a shell's profile below")
+			return nil, errors.New("no folder on your PATH can take the magpie-friday command: add ~/.local/bin to a shell's profile below")
 		}
 		if err := cliPlace(exe, v.Dir); err != nil {
 			return nil, err
 		}
 		v = ReadCLI()
 		if !v.Ours && v.Command != "" {
-			return v, fmt.Errorf("magpie is in %s now, but a terminal still runs %s first", v.Dir, v.Command)
+			return v, fmt.Errorf("magpie-friday is in %s now, but a terminal still runs %s first", v.Dir, v.Command)
 		}
 		return v, nil
 	}
@@ -160,7 +160,7 @@ func AddCLI(shell string) (*CLI, error) {
 	}
 	prof := cliProfile(shell)
 	if sh == nil || prof == "" {
-		return nil, fmt.Errorf("%s isn't a shell magpie can add the command to", shell)
+		return nil, fmt.Errorf("%s isn't a shell magpie-friday can add the command to", shell)
 	}
 	dir := filepath.Join(os.Getenv("HOME"), ".local", "bin")
 	if err := os.MkdirAll(dir, 0o755); err != nil {
@@ -175,8 +175,8 @@ func AddCLI(shell string) (*CLI, error) {
 	return ReadCLI(), nil
 }
 
-// Program is this magpie by a path that stays put: what a link, or an
-// agent's config that starts magpie, should name (cliProgram).
+// Program is this magpie-friday by a path that stays put: what a link, or an
+// agent's config that starts magpie-friday, should name (cliProgram).
 func Program() (string, error) { return cliProgram() }
 
 // cliProgram is the program a link should point at: the running one, or
@@ -190,8 +190,8 @@ func cliProgram() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if i := strings.Index(filepath.ToSlash(exe), "/Cellar/magpie/"); i > 0 {
-		opt := filepath.Join(exe[:i], "opt", "magpie", "bin", "magpie")
+	if i := strings.Index(filepath.ToSlash(exe), "/Cellar/magpie-friday/"); i > 0 {
+		opt := filepath.Join(exe[:i], "opt", "magpie-friday", "bin", "magpie-friday")
 		if sameFile(opt, exe) {
 			return opt, nil
 		}
@@ -209,12 +209,12 @@ var cliStuck = func() string {
 
 func cliNames() []string {
 	if runtime.GOOS == "windows" {
-		return []string{"magpie.exe", "magpie.cmd", "magpie.bat"}
+		return []string{"magpie-friday.exe", "magpie-friday.cmd", "magpie-friday.bat"}
 	}
-	return []string{"magpie"}
+	return []string{"magpie-friday"}
 }
 
-// findCLI is the magpie a shell with PATH dirs runs, "" none.
+// findCLI is the magpie-friday a shell with PATH dirs runs, "" none.
 func findCLI(dirs []string) string {
 	for _, d := range dirs {
 		if d == "" || !filepath.IsAbs(d) {
@@ -241,10 +241,10 @@ func sameFile(a, b string) bool {
 
 var (
 	plistVersion = regexp.MustCompile(`<key>CFBundleShortVersionString</key>\s*<string>([^<]+)</string>`)
-	cellarVer    = regexp.MustCompile(`/Cellar/magpie/([^/]+)/`)
+	cellarVer    = regexp.MustCompile(`/Cellar/magpie-friday/([^/]+)/`)
 )
 
-// otherVersion is the version of the magpie at cmd, read from its .app's
+// otherVersion is the version of the magpie-friday at cmd, read from its .app's
 // Info.plist or its Cellar folder; "" when neither says.
 func otherVersion(cmd string) string {
 	p, err := filepath.EvalSymlinks(cmd)
@@ -272,7 +272,7 @@ func profileLine(shell string) string {
 	return `export PATH="$HOME/.local/bin:$PATH"`
 }
 
-const profileMark = "# added by magpie (Settings › Command line)"
+const profileMark = "# added by magpie-friday (Settings › Command line)"
 
 // addToProfile adds line to the profile at path, unless it has it.
 func addToProfile(path, line string) error {
@@ -304,7 +304,7 @@ func addToProfile(path, line string) error {
 }
 
 // cliProfile is the file a shell reads as a terminal opens it, which a pick
-// of it writes; "" for a shell magpie doesn't write one for (Windows').
+// of it writes; "" for a shell magpie-friday doesn't write one for (Windows').
 func cliProfile(shell string) string {
 	if runtime.GOOS == "windows" {
 		return ""
@@ -343,28 +343,28 @@ func tildeHome(p string) string {
 	return p
 }
 
-// A Windows app not named magpie.exe — the site's download is
-// magpie-windows-amd64.exe (#942) — is given a magpie.cmd beside it that
-// runs it, since a terminal looks for `magpie` by that name only. It names
+// A Windows app not named magpie-friday.exe — the site's download is
+// magpie-friday-windows-amd64.exe (#942) — is given a magpie-friday.cmd beside it that
+// runs it, since a terminal looks for `magpie-friday` by that name only. It names
 // the program by its folder (%~dp0) and file name, which an update keeps:
 // it replaces the program where it is, under its name.
 
 // shimName is the file a shim is written to.
-const shimName = "magpie.cmd"
+const shimName = "magpie-friday.cmd"
 
-// shimText is the magpie.cmd that runs the program exe in its folder.
+// shimText is the magpie-friday.cmd that runs the program exe in its folder.
 func shimText(exe string) string {
 	name := filepath.Base(strings.ReplaceAll(exe, `\`, "/"))
-	return "@echo off\r\nrem added by magpie (Settings > Command line): the magpie command runs " + name + " in this folder\r\n\"%~dp0" + name + "\" %*\r\n"
+	return "@echo off\r\nrem added by magpie-friday (Settings > Command line): the magpie-friday command runs " + name + " in this folder\r\n\"%~dp0" + name + "\" %*\r\n"
 }
 
-// needsShim says whether the program exe can't be run as `magpie` by its
+// needsShim says whether the program exe can't be run as `magpie-friday` by its
 // own name.
 func needsShim(exe string) bool {
-	return !strings.EqualFold(filepath.Base(strings.ReplaceAll(exe, `\`, "/")), "magpie.exe")
+	return !strings.EqualFold(filepath.Base(strings.ReplaceAll(exe, `\`, "/")), "magpie-friday.exe")
 }
 
-// writeShim writes the magpie.cmd for exe beside it, when its name needs
+// writeShim writes the magpie-friday.cmd for exe beside it, when its name needs
 // one; it is the file's path, "" when none was needed.
 func writeShim(exe string) (string, error) {
 	if !needsShim(exe) {
@@ -375,12 +375,12 @@ func writeShim(exe string) (string, error) {
 		return p, nil
 	}
 	if err := os.WriteFile(p, []byte(shimText(exe)), 0o755); err != nil {
-		return "", fmt.Errorf("writing %s, which runs %s as magpie: %w", p, filepath.Base(exe), err)
+		return "", fmt.Errorf("writing %s, which runs %s as magpie-friday: %w", p, filepath.Base(exe), err)
 	}
 	return p, nil
 }
 
-// shimRuns says whether cmd is the magpie.cmd magpie wrote for exe.
+// shimRuns says whether cmd is the magpie-friday.cmd magpie-friday wrote for exe.
 func shimRuns(cmd, exe string) bool {
 	if !strings.EqualFold(filepath.Base(cmd), shimName) || !strings.EqualFold(filepath.Dir(cmd), filepath.Dir(exe)) {
 		return false

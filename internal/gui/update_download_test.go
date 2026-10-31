@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/update"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/update"
 )
 
 // #2296 (meifu2027): on a metered network or a proxy billed by traffic,
@@ -30,7 +30,7 @@ func TestUpdateDownloadWaitsForAClick(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", filepath.Join(h, ".config"))
 	t.Setenv("XDG_CACHE_HOME", filepath.Join(h, ".cache"))
 
-	body := []byte("new magpie")
+	body := []byte("new magpie-friday")
 	sum := sha256.Sum256(body)
 	var latest atomic.Value
 	latest.Store("0.1.11")

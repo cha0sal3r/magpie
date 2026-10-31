@@ -45,7 +45,7 @@ func (g Group) IsFast(id string) bool {
 	return slices.Contains(g.Fast, id)
 }
 
-// CanFast reports whether model, as p serves it, has a fast mode magpie
+// CanFast reports whether model, as p serves it, has a fast mode magpie-friday
 // can ask for: a ChatGPT account's GPT models (Codex's Fast), Cursor's
 // models with a -fast one, an OpenAI key's GPT and o-series models on its
 // Responses API (priority processing), an Anthropic key's Opus models with
@@ -117,7 +117,7 @@ func CanFast(p Provider, model string) bool {
 
 // OwnFast reports whether model has a fast mode only as the user's own
 // provider may serve it (#1615): a GPT model on a provider they added by
-// its address, on an OpenAI API, which magpie can't tell serves priority
+// its address, on an OpenAI API, which magpie-friday can't tell serves priority
 // and asks for it all the same when the user switches it fast. Not where
 // CanFast knows the vendor's (OpenAI's own API).
 func OwnFast(p Provider, model string) bool {
@@ -186,7 +186,7 @@ func cleanFast(entries []Entry, g *Group) error {
 			return fmt.Errorf("%s is a group: its models are sent as it says, so it takes no :%s", model, FastWord)
 		}
 		if p, m, ok := resolveIn(entries, model); ok && !CanFast(p, m) {
-			return fmt.Errorf("%s has no fast mode magpie can ask for (ChatGPT and OpenAI GPT models, a GPT model on a provider you added by its address, Cursor's with a fast one, a plugin's it says are served at priority, and Claude Opus 4.8 and 5 on an Anthropic key have)", model)
+			return fmt.Errorf("%s has no fast mode magpie-friday can ask for (ChatGPT and OpenAI GPT models, a GPT model on a provider you added by its address, Cursor's with a fast one, a plugin's it says are served at priority, and Claude Opus 4.8 and 5 on an Anthropic key have)", model)
 		}
 		out = append(out, f)
 	}

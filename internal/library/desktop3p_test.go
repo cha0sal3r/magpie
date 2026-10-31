@@ -41,7 +41,7 @@ func desktopServers(t *testing.T, p string) map[string]map[string]any {
 	return doc.MCPServers
 }
 
-// #297: Claude Desktop in its 3p mode (on magpie's gateway) reads its MCP
+// #297: Claude Desktop in its 3p mode (on magpie-friday's gateway) reads its MCP
 // servers from Claude-3p/claude_desktop_config.json, so a server the
 // library gives it goes there as well as into Claude/'s, and goes from
 // both; the user's own servers and keys in either stay.
@@ -100,7 +100,7 @@ func TestClaudeDesktop3pMCP(t *testing.T) {
 	}
 }
 
-// A server magpie gave Desktop before, only in Claude/'s file, reaches
+// A server magpie-friday gave Desktop before, only in Claude/'s file, reaches
 // Claude-3p's on the next sync; one there only goes when it is removed.
 func TestClaudeDesktop3pSync(t *testing.T) {
 	h := sandbox(t)
@@ -111,7 +111,7 @@ func TestClaudeDesktop3pSync(t *testing.T) {
 		t.Fatal("Claude-3p made for a Desktop never in 3p mode")
 	}
 
-	// Desktop switched to 3p since (magpie's gateway made the folder)
+	// Desktop switched to 3p since (magpie-friday's gateway made the folder)
 	write(t, p3, `{"deploymentMode": "3p"}`)
 	ok(t)(Sync())
 	if fs := desktopServers(t, p3)["fs"]; fs["command"] != "npx" {

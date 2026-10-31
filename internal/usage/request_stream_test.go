@@ -7,7 +7,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
 )
 
 // The Requests page reads a packed local chunk one chunk at a time instead of

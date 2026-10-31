@@ -7,11 +7,11 @@ package agent
 // table; one at the top level is not read), and takes the summary in at the
 // turn's next step. It starts one only on a provider whose
 // capabilities.remote_compaction is "v2", which Codex gives OpenAI's own and
-// Azure alone: on magpie's [model_providers.magpie] it never ran until that
-// was written there too. magpie's gateway answers the trigger as it does
+// Azure alone: on magpie-friday's [model_providers.magpie-friday] it never ran until that
+// was written there too. magpie-friday's gateway answers the trigger as it does
 // Codex's own compaction (codexCompact, or the provider's native one).
 //
-// What magpie writes is kept in the stash, so a value the user set there
+// What magpie-friday writes is kept in the stash, so a value the user set there
 // (by hand, or a value they changed since) is theirs: never written over,
 // and left when the setting is turned off.
 //
@@ -23,7 +23,7 @@ package agent
 // true every Codex reads: an older one ignores it, a newer one turns the
 // feature on at its own 65%. So the table, which the threshold needs, is
 // written only when every Codex that reads this config is known to be new
-// enough (codexReaders), and the bare key otherwise; a table magpie wrote
+// enough (codexReaders), and the bare key otherwise; a table magpie-friday wrote
 // before is taken back out where it no longer is.
 
 import (
@@ -38,7 +38,7 @@ import (
 
 	"github.com/pelletier/go-toml/v2"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 const (
@@ -59,7 +59,7 @@ type CodexReader struct {
 
 // codexReaders are the Codexes that read the config at at: the CLI on
 // PATH, the desktop app's own (its bundled codex-cli on a Mac; the Store
-// app's on Windows, whose version magpie can't read), the editor
+// app's on Windows, whose version magpie-friday can't read), the editor
 // extension's, or a WSL distro's CLI. A var so tests can name them.
 var codexReaders = func(at place) []CodexReader {
 	if at.spell != nil {
@@ -112,7 +112,7 @@ func bundledCodexVersion(bundle, id string) (v string, ok bool) {
 
 // codexAsyncBlocked are the readers that keep the table out: one older
 // than codexAsyncTableFrom, or of no known version. None at all is
-// unknown as well: a Codex magpie can't see may read the config.
+// unknown as well: a Codex magpie-friday can't see may read the config.
 func codexAsyncBlocked(rs []CodexReader) []CodexReader {
 	if len(rs) == 0 {
 		return []CodexReader{{Kind: "cli"}}
@@ -153,7 +153,7 @@ func codexAsyncTableOK(at place) bool {
 	return len(held) == 0
 }
 
-// codexAsyncStash is what magpie wrote.
+// codexAsyncStash is what magpie-friday wrote.
 type codexAsyncStash struct {
 	Enabled bool `json:"enabled,omitempty"` // enabled = true
 	Percent int  `json:"percent,omitempty"` // the threshold
@@ -162,7 +162,7 @@ type codexAsyncStash struct {
 }
 
 // codexAsyncNow is how the config has them: the async_compaction value
-// (nil, a bool, or a table) and magpie's provider table, nil when absent.
+// (nil, a bool, or a table) and magpie-friday's provider table, nil when absent.
 func codexAsyncNow(path string) (feature any, provider map[string]any, err error) {
 	raw, err := edit.Read(path)
 	if err != nil || raw == nil {
@@ -179,12 +179,12 @@ func codexAsyncNow(path string) (feature any, provider map[string]any, err error
 }
 
 // codexAsyncSync puts the setting into the Codex config at path, where
-// Codex is routed through magpie or not: on is the setting, percent its
+// Codex is routed through magpie-friday or not: on is the setting, percent its
 // threshold (0 leaves Codex's own). key is the stash's. tableOK: every
 // Codex reading the config takes the table (codexAsyncTableOK); without
-// it the bare key is written, and a table of magpie's taken out. The
+// it the bare key is written, and a table of magpie-friday's taken out. The
 // capability is written for a feature the user turned on in the config
-// themselves too: on magpie's provider it would never run without it
+// themselves too: on magpie-friday's provider it would never run without it
 // (#2493).
 func codexAsyncSync(path, key string, routed, on bool, percent int, tableOK bool) error {
 	feature, provider, err := codexAsyncNow(path)
@@ -206,7 +206,7 @@ func codexAsyncSync(path, key string, routed, on bool, percent int, tableOK bool
 		percent = 0
 	}
 
-	// the bare async_compaction = true magpie wrote, where the table is
+	// the bare async_compaction = true magpie-friday wrote, where the table is
 	// to go instead or nothing is: still as written, it goes; changed, it
 	// is the user's
 	if st.Bool && (!want || useTable) {
@@ -246,7 +246,7 @@ func codexAsyncSync(path, key string, routed, on bool, percent int, tableOK bool
 			}
 			st.Enabled = true
 		case !useTable && st.Enabled:
-			// off, or a Codex here too old for the table: the table magpie
+			// off, or a Codex here too old for the table: the table magpie-friday
 			// wrote goes (a table left with nothing of the user's goes
 			// whole, so an old Codex loads its config again)
 			if err := edit.DelTOMLKey(path, codexAsyncTable, "enabled"); err != nil {
@@ -291,7 +291,7 @@ func codexAsyncSync(path, key string, routed, on bool, percent int, tableOK bool
 		st.Bool = false // changed since by the user
 	}
 
-	// capabilities on magpie's provider table, when there is one: one the
+	// capabilities on magpie-friday's provider table, when there is one: one the
 	// user gave it, whatever it says, stays as it is
 	if feature, _, err = codexAsyncNow(path); err != nil {
 		return err
@@ -332,9 +332,9 @@ func codexAsyncSync(path, key string, routed, on bool, percent int, tableOK bool
 	return nil
 }
 
-// codexProviderCaps is the capabilities magpie's provider table has, as an
+// codexProviderCaps is the capabilities magpie-friday's provider table has, as an
 // Inline to write it back with when the table is written again: one the
-// user gave it, or magpie's for the background compaction, isn't lost.
+// user gave it, or magpie-friday's for the background compaction, isn't lost.
 func codexProviderCaps(path string) edit.Inline {
 	_, provider, err := codexAsyncNow(path)
 	if err != nil {

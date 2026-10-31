@@ -9,14 +9,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// caa536733's rule for a remote magpie's quota, credit and rate refusals,
+// caa536733's rule for a remote magpie-friday's quota, credit and rate refusals,
 // on the two faces it left out: a restricted account, and one its vendor
 // wants verified first. Both are the remote's own account, on the model
 // that account serves there — the remote rests that account itself, and
-// its other models keep answering. The refusal passes here in magpie's own
+// its other models keep answering. The refusal passes here in magpie-friday's own
 // words (restrictedSaid reads them whoever answered), and rested the whole
 // remote for the two hours restrictedRest names (verifyRest's half hour for
 // a verify), so the group's next request went to the member on this
@@ -33,7 +33,7 @@ func TestRemoteMagpieRestrictedRestsTheModel(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		if req.Model == "workbuddy/glm-5.3-flash" {
 			// the plugin's restricted account, as it says it (#1849: the
-			// 403 11140 ends in magpie's own hint words)
+			// 403 11140 ends in magpie-friday's own hint words)
 			w.WriteHeader(http.StatusForbidden)
 			io.WriteString(w, `{"error":{"message":"403 11140: `+provider.WBRestrictedHint+`"}}`)
 			return
@@ -60,7 +60,7 @@ func TestRemoteMagpieRestrictedRestsTheModel(t *testing.T) {
 		t.Fatalf("glm restricted on the remote: %d %s", code, body)
 	}
 	if r, ok := restOf("office"); ok {
-		t.Errorf("the whole remote magpie rests for one model's restricted account: %+v", r)
+		t.Errorf("the whole remote magpie-friday rests for one model's restricted account: %+v", r)
 	}
 	r, ok := restOf("office/workbuddy/glm-5.3-flash")
 	if !ok || r.Why != failRestricted || r.By != "restricted" || !r.Until.After(time.Now()) {
@@ -82,7 +82,7 @@ func TestRemoteMagpieRestrictedRestsTheModel(t *testing.T) {
 func TestRemoteMagpieVerifyAndKeyLimitScoping(t *testing.T) {
 	c := candidate{p: provider.Provider{ID: "office", Preset: provider.RemoteMagpiePreset, Key: "k"}, model: "gemini/gemini-3-flash", rest: "office"}
 	if !remoteModelRest(c, failRestricted, http.Header{}) || !remoteModelRest(c, failVerify, http.Header{}) {
-		t.Error("a restricted or verify refusal from the other magpie rests the whole remote, not the model")
+		t.Error("a restricted or verify refusal from the other magpie-friday rests the whole remote, not the model")
 	}
 	h := http.Header{}
 	h.Set(remoteKeyLimitHeader, "2026-10-15T00:00:00Z")
@@ -90,7 +90,7 @@ func TestRemoteMagpieVerifyAndKeyLimitScoping(t *testing.T) {
 		t.Error("the key's own limit there rests only the model, not the key")
 	}
 	if remoteModelRest(candidate{p: provider.Provider{ID: "office", Key: "k"}, model: "m", rest: "office"}, failRestricted, http.Header{}) {
-		t.Error("a provider that isn't a remote magpie rests the model on a restricted refusal")
+		t.Error("a provider that isn't a remote magpie-friday rests the model on a restricted refusal")
 	}
 }
 

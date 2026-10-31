@@ -16,7 +16,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // ---- OpenAI Chat Completions --------------------------------------------------
@@ -236,7 +236,7 @@ func dataURL(p Part) string {
 // buildHost is the host a request for p is built for. Cursor's plugin is
 // "cursor" (plugin://cursor) moved or not: a moved one's Host is the
 // built-in's, for show, which Cursor's is none, and its fast mode was lost
-// on every request magpie translated (#1360).
+// on every request magpie-friday translated (#1360).
 func buildHost(p provider.Provider) string {
 	if p.IsPlugin() {
 		switch id := p.PluginProvider(); id {
@@ -931,7 +931,7 @@ type cUsage struct {
 	Credit *float64 `json:"credit"`
 	// what a plugin's step collected of its conversation's earlier steps,
 	// which their own replies couldn't count (the Cursor plugin's usage
-	// events that showed late, yetone/magpie#1053): billed with the step,
+	// events that showed late, yetone/magpie-friday#1053): billed with the step,
 	// never its prompt, which a client reads as how full its context is
 	MagpieDeferred *struct {
 		PromptTokens     int `json:"prompt_tokens"`

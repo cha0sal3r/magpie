@@ -61,7 +61,7 @@ func TestAuthThrottleSparesValidAndLocal(t *testing.T) {
 	t.Cleanup(resetAuthThrottle)
 
 	call := func(from string, hdr ...string) (int, http.Header) {
-		r := httptest.NewRequest("GET", "/v1/magpie/quotas", nil)
+		r := httptest.NewRequest("GET", "/v1/magpie-friday/quotas", nil)
 		r.RemoteAddr = from
 		for i := 0; i+1 < len(hdr); i += 2 {
 			r.Header.Set(hdr[i], hdr[i+1])
@@ -116,7 +116,7 @@ func TestAuthThrottleKeepsFirstRefusalHelpful(t *testing.T) {
 	t.Setenv("MAGPIE_ADDR", "")
 	h := lanGuard(New().Handler())
 	newCaller(t, "LAN client")
-	r := httptest.NewRequest("GET", "/v1/magpie/quotas", nil)
+	r := httptest.NewRequest("GET", "/v1/magpie-friday/quotas", nil)
 	r.RemoteAddr = "10.0.0.7:5000"
 	r.Header.Set("Authorization", "Bearer mgp-typo-key-9z7q")
 	w := httptest.NewRecorder()

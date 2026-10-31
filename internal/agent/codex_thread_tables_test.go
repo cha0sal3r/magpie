@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // codexThreads makes Codex's state database with a thread on each of the
@@ -33,9 +33,9 @@ func codexThreads(t *testing.T, dir string, providers ...string) {
 // and the Codex app resumes it on that provider. CC Switch rewrites
 // config.toml whole when it switches, so its table can be gone, and the
 // app then loads no config for the thread: "Model provider `custom` not
-// found". While magpie is wired, each provider a thread names that has no
-// table gets one pointed at magpie, and keeps it when Codex steps off
-// magpie; Codex's built-in ones, magpie's own and a table the user has
+// found". While magpie-friday is wired, each provider a thread names that has no
+// table gets one pointed at magpie-friday, and keeps it when Codex steps off
+// magpie-friday; Codex's built-in ones, magpie-friday's own and a table the user has
 // stay as they are, one spelled inline too.
 func TestCodexWritesTablesThreadsName(t *testing.T) {
 	for _, auth := range []string{`{"tokens":{"access_token":"x","id_token":"x.e30.x"}}`, ""} {
@@ -43,7 +43,7 @@ func TestCodexWritesTablesThreadsName(t *testing.T) {
 		inline := "model_providers.inl = { name = \"inl\", base_url = \"https://inl.example/v1\" }\n"
 		home, read := codexHome(t, auth, "model = \"gpt-5.4\"\n"+inline+"\n"+mine)
 		dir := filepath.Join(home, ".codex")
-		codexThreads(t, dir, "custom", "openai", "magpie", "mine", "ollama", "cc-switch-2", "custom", "inl")
+		codexThreads(t, dir, "custom", "openai", "magpie-friday", "mine", "ollama", "cc-switch-2", "custom", "inl")
 		path := filepath.Join(dir, "config.toml")
 		table := func(id string) map[string]string {
 			tb, err := edit.GetTOMLTable(path, "model_providers."+id)
@@ -59,7 +59,7 @@ func TestCodexWritesTablesThreadsName(t *testing.T) {
 		v1, key := here(home).v1(), here(home).gwKey()
 		for _, id := range []string{"custom", "cc-switch-2"} {
 			if c := table(id); c["base_url"] != v1 || c["wire_api"] != "responses" || c["experimental_bearer_token"] != key {
-				t.Fatalf("auth %q: %s not written through magpie:\n%s", auth, id, read())
+				t.Fatalf("auth %q: %s not written through magpie-friday:\n%s", auth, id, read())
 			}
 		}
 		for _, id := range []string{"openai", "ollama"} {
@@ -89,7 +89,7 @@ func TestCodexWritesTablesThreadsName(t *testing.T) {
 	}
 }
 
-// Not wired, magpie writes nothing for the threads: Codex isn't magpie's
+// Not wired, magpie-friday writes nothing for the threads: Codex isn't magpie-friday's
 // to change then.
 func TestCodexThreadTablesOnlyWired(t *testing.T) {
 	home, read := codexHome(t, "", "model = \"gpt-5.4\"\n")

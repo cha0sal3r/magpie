@@ -5,8 +5,8 @@
 // settings (here Antigravity, noEnvRefs) is never given such a server: its
 // chip is greyed on the row and in the editor with the reason, and a value
 // typed back to plain text lights it again. The editor says how to write
-// one under Headers and Environment. A check magpie can't make because the
-// variable isn't set where magpie runs says which one, not "couldn't check",
+// one under Headers and Environment. A check magpie-friday can't make because the
+// variable isn't set where magpie-friday runs says which one, not "couldn't check",
 // and isn't painted red as a broken server is (#2308).
 // In en, zh, ja and de at 440px: no sideways scroll.
 // No backend: the API is faked here.
@@ -21,7 +21,7 @@ const assets = path.resolve(__dirname, "../assets");
 const HOME = "/Users/emo";
 const agent = (id, name, more = {}) => ({ id, name, icon: "", skills: `${HOME}/.${id}/skills`, mcp: `${HOME}/.${id}/mcp.json`, ...more });
 const lib = (servers) => ({
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: [agent("claude", "Claude Code"), agent("codex", "Codex", { noSSE: true }), agent("agy", "Antigravity", { noEnvRefs: true })],
   instructions: { agents: [] }, servers, skills: [], foundServers: [], projects: [], foundSkills: [], problems: [],
 });
@@ -47,7 +47,7 @@ function server(lang, servers) {
     if (url.pathname === "/wails/runtime.js") return route.fulfill({ contentType: "text/javascript", body: "export const Window = {};" });
     if (url.pathname === "/api/state") return json({ agents: [], profiles: [], settings: { lang, theme: "light" } });
     if (url.pathname === "/api/library") return json(lib(servers));
-    // gh's token isn't set where magpie runs; fs has none to need
+    // gh's token isn't set where magpie-friday runs; fs has none to need
     if (url.pathname === "/api/library/mcp/check") return json({ servers: Object.fromEntries(req.postDataJSON().names.map((n) => [n, n === "gh" ? { state: "error", why: "novar", detail: "GH_TOKEN" } : { state: "ok", tools: 2 }])) });
     if (url.pathname === "/api/plugins") return json({ plugins: [] });
     if (url.pathname === "/api/usage/quotas") return json([]);
@@ -106,7 +106,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         assert.equal(await agy.getAttribute("title"), why);
         assert.equal(await row("fs").locator('.lib-ag[data-agent="agy"]').getAttribute("aria-disabled"), null, "a server with no ${NAME} was held from Antigravity");
 
-        // the check: which variable magpie's own environment hasn't
+        // the check: which variable magpie-friday's own environment hasn't
         const status = v.locator('.lib-health[data-server="gh"]');
         await page.waitForFunction(() => document.querySelector('#view-library .lib-health[data-server="gh"]')?.classList.contains("unknown"));
         // not painted as broken: the server may well work where the agent runs (#2308)
@@ -116,7 +116,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
           const c = getComputedStyle(x).color; x.remove(); return c;
         }));
         assert.equal((await status.textContent()).trim(), w("{names} not set", { names: "GH_TOKEN" }));
-        assert.equal((await status.getAttribute("title")).split("\n")[0], w("magpie can't check it: {names} isn't set where magpie runs. An agent started where it is set still gets it", { names: "GH_TOKEN" }));
+        assert.equal((await status.getAttribute("title")).split("\n")[0], w("magpie-friday can't check it: {names} isn't set where magpie-friday runs. An agent started where it is set still gets it", { names: "GH_TOKEN" }));
 
         // the editor: the hint under Headers, the chip greyed with the reason
         await row("gh").locator(".sub").click();

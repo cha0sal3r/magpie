@@ -11,8 +11,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // keyedVendor answers images and embeddings on any key, and keeps which
@@ -82,13 +82,13 @@ func postJSON(t *testing.T, s *Server, path, body string) (int, string) {
 // wangru8080); with every key set not to serve it, it is refused with why.
 func TestNonChatGoesToTheKeyThatServesIt(t *testing.T) {
 	s, v := keyedRelay(t)
-	if code, raw := postJSON(t, s, "/v1/images/generations", `{"model":"relay/gpt-image-2","prompt":"a magpie"}`); code != 200 {
+	if code, raw := postJSON(t, s, "/v1/images/generations", `{"model":"relay/gpt-image-2","prompt":"a magpie-friday"}`); code != 200 {
 		t.Fatalf("draw: %d %s", code, raw)
 	}
 	if got := v.keys("/v1/images/generations"); len(got) != 1 || got[0] != "key-b" {
 		t.Fatalf("drawn on %v, want key-b alone", got)
 	}
-	if code, raw := postJSON(t, s, "/v1/embeddings", `{"model":"relay/text-embedding-3-small","input":"a magpie"}`); code != 200 {
+	if code, raw := postJSON(t, s, "/v1/embeddings", `{"model":"relay/text-embedding-3-small","input":"a magpie-friday"}`); code != 200 {
 		t.Fatalf("embed: %d %s", code, raw)
 	}
 	if got := v.keys("/v1/embeddings"); len(got) != 1 || got[0] != "key-b" {
@@ -99,13 +99,13 @@ func TestNonChatGoesToTheKeyThatServesIt(t *testing.T) {
 	if err := provider.SetAccountModels("relay", provider.KeyID("key-b"), []string{"text-embedding-3-small"}); err != nil {
 		t.Fatal(err)
 	}
-	if code, raw := postJSON(t, s, "/v1/images/generations", `{"model":"relay/gpt-image-2","prompt":"a magpie"}`); code != 403 || !strings.Contains(raw, "gpt-image-2") {
+	if code, raw := postJSON(t, s, "/v1/images/generations", `{"model":"relay/gpt-image-2","prompt":"a magpie-friday"}`); code != 403 || !strings.Contains(raw, "gpt-image-2") {
 		t.Fatalf("draw on no key: %d %s", code, raw)
 	}
 	if err := provider.SetAccountModels("relay", provider.KeyID("key-b"), []string{"gpt-image-2"}); err != nil {
 		t.Fatal(err)
 	}
-	if code, raw := postJSON(t, s, "/v1/embeddings", `{"model":"relay/text-embedding-3-small","input":"a magpie"}`); code != 403 || !strings.Contains(raw, "text-embedding-3-small") {
+	if code, raw := postJSON(t, s, "/v1/embeddings", `{"model":"relay/text-embedding-3-small","input":"a magpie-friday"}`); code != 403 || !strings.Contains(raw, "text-embedding-3-small") {
 		t.Fatalf("embed on no key: %d %s", code, raw)
 	}
 	if n, m := len(v.keys("/v1/images/generations")), len(v.keys("/v1/embeddings")); n != 1 || m != 1 {
@@ -177,7 +177,7 @@ func TestCustomVideoGoesPastAKeyThatLacksTheModel(t *testing.T) {
 
 // wangru8080's relay (#1657): key-a first, with no list of its own set,
 // and key-b set to the image model. The relay's own list says gpt-image-2
-// is key-b's; magpie read that list less its image and video models, so
+// is key-b's; magpie-friday read that list less its image and video models, so
 // key-a looked as if it served it and drew first, and its 404 "not
 // supported by any configured account" asked no other key.
 func TestDrawGoesPastAKeyTheRelayListsForText(t *testing.T) {

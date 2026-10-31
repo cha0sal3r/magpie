@@ -60,7 +60,7 @@ const slotMotion = (page) => page.evaluate(() => {
   };
 });
 
-// magpie moves the page only for the reader, so what is out of the window
+// magpie-friday moves the page only for the reader, so what is out of the window
 // is wheeled to as a reader would, then clicked
 async function reach(page, loc) {
   const vb = await page.locator("#view-routing").boundingBox();

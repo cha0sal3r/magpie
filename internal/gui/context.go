@@ -15,8 +15,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
 )
 
 // defaultWindow is the window a prompt is measured against when the
@@ -175,7 +175,7 @@ func sessionOfRoute(r gateway.Route) string {
 // its conversation id was read from (sessions' Convs): dsh's
 // chat-completions and messages routes send no session id, so the gateway
 // keys each request by its first prompt's hash, and the page showed
-// "magpie-a…" where the Sessions page shows the session's title (Kumo31
+// "magpie-friday-a…" where the Sessions page shows the session's title (Kumo31
 // on Discord). An id two sessions share stays as it is.
 func joinConvs(routes []gateway.Route, list func() []sessions.Session) {
 	loose := false
@@ -541,7 +541,7 @@ func contextRoutes(r *http.Request, days int) []gateway.Route {
 			}
 		}
 	}
-	// a group magpie found by the id agents pick it by (publicRoute)
+	// a group magpie-friday found by the id agents pick it by (publicRoute)
 	pub := publicRefs()
 	for i := range out {
 		out[i].Model = pub(out[i].Model)

@@ -10,18 +10,18 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // #2379 (jiz4oh): OpenCode has no /fast. A GPT model a ChatGPT account
-// serves through magpie is written into opencode.json with each reasoning
+// serves through magpie-friday is written into opencode.json with each reasoning
 // level again as a fast variant, low-fast to xhigh-fast, asking for
 // service_tier "priority" as Codex's /fast does. The same model on an
 // OpenAI-style key of the user's, and a Codex model that isn't GPT, get no
-// fast variants. A variant the user put on one of magpie's models stays
-// through a sync, as does one they wrote over under a name of magpie's; a
-// variant of magpie's the model no longer has goes; a second sync writes
+// fast variants. A variant the user put on one of magpie-friday's models stays
+// through a sync, as does one they wrote over under a name of magpie-friday's; a
+// variant of magpie-friday's the model no longer has goes; a second sync writes
 // nothing.
 func TestOpenCodeCodexFastVariants(t *testing.T) {
 	claims := func(m map[string]any) string {
@@ -48,10 +48,10 @@ func TestOpenCodeCodexFastVariants(t *testing.T) {
 		t.Fatal(err)
 	}
 	path := filepath.Join(home, ".config", "opencode", "opencode.json")
-	// the user's own: a variant of their own on magpie's GPT-5.5, and
-	// high-fast written over; max is a variant an older magpie wrote that
+	// the user's own: a variant of their own on magpie-friday's GPT-5.5, and
+	// high-fast written over; max is a variant an older magpie-friday wrote that
 	// the model hasn't
-	writeFile(t, path, `{"theme":"dark","provider":{"magpie":{"models":{"codex/gpt-5.5":{"variants":{
+	writeFile(t, path, `{"theme":"dark","provider":{"magpie-friday":{"models":{"codex/gpt-5.5":{"variants":{
 	  "max":{"reasoningEffort":"max"},
 	  "turbo":{"reasoningEffort":"low","service_tier":"priority","textVerbosity":"low"},
 	  "high-fast":{"reasoningEffort":"high","service_tier":"flex"}}}}}}}`)
@@ -77,7 +77,7 @@ func TestOpenCodeCodexFastVariants(t *testing.T) {
 	if cfg.Theme != "dark" {
 		t.Fatalf("theme lost: %s", b)
 	}
-	ms := cfg.Provider["magpie"].Models
+	ms := cfg.Provider["magpie-friday"].Models
 	gpt, ok := ms["codex/gpt-5.5"]
 	if !ok {
 		t.Fatalf("no codex/gpt-5.5: %s", b)
@@ -97,7 +97,7 @@ func TestOpenCodeCodexFastVariants(t *testing.T) {
 	if !reflect.DeepEqual(gpt.Variants, want) {
 		t.Errorf("codex/gpt-5.5 variants:\n got %v\nwant %v", gpt.Variants, want)
 	}
-	// in order: magpie's weakest first, fast after, the user's own last
+	// in order: magpie-friday's weakest first, fast after, the user's own last
 	order := []string{`"low":`, `"medium":`, `"high":`, `"xhigh":`, `"low-fast":`, `"medium-fast":`, `"high-fast":`, `"xhigh-fast":`, `"turbo":`}
 	i := bytes.Index(b, []byte(`"codex/gpt-5.5"`))
 	at := -1

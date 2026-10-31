@@ -1,10 +1,10 @@
-// Package lastgood keeps the last good generation of magpie's own state
+// Package lastgood keeps the last good generation of magpie-friday's own state
 // files (accounts, sign-ins, providers, settings) and reads it back when
 // the file itself can't be read.
 //
 // A Windows machine that went down mid-write left logins.json and
 // plugin-auth.json at their full length with every byte zero (#1505).
-// magpie then read no accounts, and its next write made that final. Here a
+// magpie-friday then read no accounts, and its next write made that final. Here a
 // file that is there but not valid is unknown, never empty: before each
 // write the file there now is kept as <file>.bak when it is valid, or
 // copied aside as <file>.bad-<time> when it isn't, and a read of a file
@@ -28,7 +28,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/steady"
+	"github.com/cha0sal3r/magpie-friday/internal/steady"
 )
 
 // Valid is whether b is a good copy of a file's contents.
@@ -261,7 +261,7 @@ func note(path, why string) {
 func Noted(path, why string) { note(path, why) }
 
 // Recovered are the files read back from their last good generation since
-// magpie started, for the GUI to tell the user.
+// magpie-friday started, for the GUI to tell the user.
 func Recovered() []Note {
 	notesMu.Lock()
 	defer notesMu.Unlock()

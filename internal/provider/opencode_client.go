@@ -13,10 +13,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
-// OpenCodeVersion is the OpenCode release magpie says it is to OpenCode's
+// OpenCodeVersion is the OpenCode release magpie-friday says it is to OpenCode's
 // gateway. Zen's free tier turns away anything older than 1.18.0 (426
 // "OpenCode 1.18.0 or newer is required to use the free tier").
 const OpenCodeVersion = "1.19.0"
@@ -121,7 +121,7 @@ var OpenCodeTools = []string{"bash", "read"}
 // OpenCodeToolSchemas are the parameters OpenCode itself gives bash and
 // read (1.19.0, as it sent them to Zen). Since mid-October 2026 Zen's free
 // tier answers 403 FreeTierError when either is offered with no
-// parameters, as magpie's stubs were ({"type":"object","properties":{}});
+// parameters, as magpie-friday's stubs were ({"type":"object","properties":{}});
 // one property is enough, and these are OpenCode's own.
 var OpenCodeToolSchemas = map[string]string{
 	"bash": `{"type":"object","properties":{"command":{"type":"string","description":"The command to execute"},"timeout":{"type":"integer","description":"Optional timeout in milliseconds"},"workdir":{"type":"string","description":"The working directory to run the command in"}},"required":["command"]}`,

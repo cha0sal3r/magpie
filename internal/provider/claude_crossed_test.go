@@ -37,7 +37,7 @@ func claudeEmail(user string) string {
 }
 
 // netfishx on X: Pro, Max and Team accounts, Claude Code kept signed in
-// to one. magpie switches Claude Code to the Team account, and a Claude
+// to one. magpie-friday switches Claude Code to the Team account, and a Claude
 // Code started on the Pro a moment before writes the Pro's profile after:
 // the sign-in is the Team's, the profile the Pro's. That isn't saved as
 // the Pro's, whose runs (its own config directory) would then spend the

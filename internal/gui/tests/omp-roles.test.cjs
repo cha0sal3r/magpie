@@ -18,8 +18,8 @@ const { chromium, webkit } = require("playwright");
 
 const assets = path.resolve(__dirname, "../assets");
 const options = [
-  { value: "magpie/deepseek/pro", label: "DeepSeek Pro", ref: "deepseek/pro" },
-  { value: "magpie/deepseek/flash", label: "DeepSeek Flash", ref: "deepseek/flash" },
+  { value: "magpie-friday/deepseek/pro", label: "DeepSeek Pro", ref: "deepseek/pro" },
+  { value: "magpie-friday/deepseek/flash", label: "DeepSeek Flash", ref: "deepseek/flash" },
 ];
 const LEVELS = ["auto", "off", "minimal", "low", "medium", "high", "xhigh", "max"].map((value) => ({ value }));
 const field = (key, label, value) => ({ key, label, value, options });
@@ -30,10 +30,10 @@ const fresh = () => ({
     {
       id: "omp", name: "omp", path: "/test/config.yml", icon: "omp", wired: true,
       fields: [
-        field("model", "model", "magpie/deepseek/pro"),
+        field("model", "model", "magpie-friday/deepseek/pro"),
         field("subagent", "subagents", ""), level("subagent", "subagents", false),
         field("small", "smol", ""), level("small", "smol", false),
-        field("slow", "slow", "magpie/deepseek/flash"), level("slow", "slow", true),
+        field("slow", "slow", "magpie-friday/deepseek/flash"), level("slow", "slow", true),
         field("plan", "plan", ""), level("plan", "plan", false),
         field("vision", "vision", ""), level("vision", "vision", false),
         field("advisor", "advisor", ""), level("advisor", "advisor", false),
@@ -45,8 +45,8 @@ const fresh = () => ({
     },
     // a named profile of omp (#1233) has the same roles
     { id: "omp#work", name: "omp · work", path: "/test/profiles/work/config.yml", icon: "omp", wired: true,
-      fields: [field("model", "model", "magpie/deepseek/pro"), field("slow", "slow", "magpie/deepseek/flash"), level("slow", "slow", true), field("plan", "plan", ""), level("plan", "plan", false)] },
-    { id: "opencode", name: "OpenCode", path: "/test/opencode.json", wired: true, fields: [field("model", "model", "magpie/deepseek/pro"), field("small", "small", "")] },
+      fields: [field("model", "model", "magpie-friday/deepseek/pro"), field("slow", "slow", "magpie-friday/deepseek/flash"), level("slow", "slow", true), field("plan", "plan", ""), level("plan", "plan", false)] },
+    { id: "opencode", name: "OpenCode", path: "/test/opencode.json", wired: true, fields: [field("model", "model", "magpie-friday/deepseek/pro"), field("small", "small", "")] },
   ],
   profiles: [],
 });
@@ -190,7 +190,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       assert.match(await page.locator("#pop:not([hidden]) #list li").first().innerText(), new RegExp(`${w.same}[\\s\\S]*DeepSeek Pro`));
       await page.locator("#pop:not([hidden]) #list li", { hasText: "DeepSeek Flash" }).first().click();
       await page.waitForFunction(() => document.querySelectorAll("#status").length && !document.querySelector("#pop:not([hidden])"));
-      assert.deepEqual(sets[1], { agent: "omp", field: "small", value: "magpie/deepseek/flash" });
+      assert.deepEqual(sets[1], { agent: "omp", field: "small", value: "magpie-friday/deepseek/flash" });
 
       // plan: no "Same as model", omp picks unset
       await square.click();

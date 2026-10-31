@@ -7,11 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
-// codexCall is a request Codex with magpie as its provider sends to
+// codexCall is a request Codex with magpie-friday as its provider sends to
 // /v1/responses: a turn of its own (source "") or a call of a kind of its.
 func codexCall(t *testing.T, s *Server, model, source string) *httptest.ResponseRecorder {
 	t.Helper()
@@ -27,10 +27,10 @@ func codexCall(t *testing.T, s *Server, model, source string) *httptest.Response
 
 // Codex's memory calls come on models of its own by their bare names
 // (gpt-5.6-terra, gpt-5.6-luna), whatever Codex is set to (#742,
-// congee949: every one was a 404 "magpie knows no model"). They go to the
+// congee949: every one was a 404 "magpie-friday knows no model"). They go to the
 // model Codex's own turns go to — the last one answered, or the ledger's
 // after a restart — and are recorded as the memory calls they are. Any
-// other call on a model magpie doesn't know is still turned away.
+// other call on a model magpie-friday doesn't know is still turned away.
 func TestCodexMemoryCallsGoWhereItsTurnsGo(t *testing.T) {
 	f := &fake{t: t}
 	setup(t, provider.Chat, f)
@@ -76,13 +76,13 @@ func TestCodexMemoryCallsGoWhereItsTurnsGo(t *testing.T) {
 		t.Errorf("the ledger's memory call %+v", last)
 	}
 
-	// magpie restarted: the ledger has the turn
+	// magpie-friday restarted: the ledger has the turn
 	f.reply = reply()
 	if rec := codexCall(t, New(), "gpt-5.6-terra", "memory_consolidation"); rec.Code != 200 {
 		t.Fatalf("after a restart: %d %q", rec.Code, rec.Body.String())
 	}
 
-	// any other call on a model magpie doesn't know is turned away as before
+	// any other call on a model magpie-friday doesn't know is turned away as before
 	if rec := codexCall(t, s, "gpt-5.6-terra", ""); rec.Code != 404 {
 		t.Fatalf("a turn on an unknown model: %d", rec.Code)
 	}

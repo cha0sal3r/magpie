@@ -17,20 +17,20 @@ import (
 	"time"
 	"unicode/utf16"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/lastgood"
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/sessions"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/wslrun"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/lastgood"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/wslrun"
 )
 
 // An agent installed in a WSL distro reads its config there, not in
-// Windows' home — so does the Codex app's WSL connection. On Windows magpie
+// Windows' home — so does the Codex app's WSL connection. On Windows magpie-friday
 // lists the distros (wsl.exe -l -q), asks each running one once for its
 // $HOME and which of wslKinds' agents are there (never starting one that is
 // stopped), and edits the files through \\wsl.localhost\<distro>. Each is
@@ -42,14 +42,14 @@ import (
 // Windows as WSL sees it, which reaches the gateway only while that
 // listens beyond loopback.
 
-// place is where an agent lives: its home as magpie opens it, how a path
+// place is where an agent lives: its home as magpie-friday opens it, how a path
 // there is spelt in the agent's own config, and the gateway as it reaches
 // it. here(home) is this machine's.
 type place struct {
 	home  string
 	id    string              // the agent's id when not its own: its stash keys go under it
 	spell func(string) string // a path under home as the agent names it; nil: as is
-	sys   func(string) string // a path of the agent's system (/etc/…) as magpie opens it; nil: as is
+	sys   func(string) string // a path of the agent's system (/etc/…) as magpie-friday opens it; nil: as is
 	base  func() string       // the gateway's URL from the agent; nil: gateway.URL
 	// cold: a stopped distro's, whose files can't be looked at without
 	// starting it — an agent built there takes its files at their defaults
@@ -62,7 +62,7 @@ type place struct {
 func here(home string) place { return place{home: home} }
 
 // getenv is this machine's variable for this machine's agent; "" for one
-// in a distro, whose variables magpie can't read.
+// in a distro, whose variables magpie-friday can't read.
 func (p place) getenv(k string) string {
 	if p.spell != nil {
 		return ""
@@ -71,7 +71,7 @@ func (p place) getenv(k string) string {
 }
 
 // codexHome is Codex's folder at the place: $CODEX_HOME on this machine
-// (appdir.CodexHome), ~/.codex in a distro, whose variables magpie can't
+// (appdir.CodexHome), ~/.codex in a distro, whose variables magpie-friday can't
 // read.
 func (p place) codexHome() string {
 	if p.spell != nil {
@@ -82,7 +82,7 @@ func (p place) codexHome() string {
 
 // claudeDir is Claude Code's folder at the place: $CLAUDE_CONFIG_DIR on
 // this machine (appdir.ClaudeDir), ~/.claude in a distro, whose variables
-// magpie can't read.
+// magpie-friday can't read.
 func (p place) claudeDir() string {
 	if p.spell != nil {
 		return filepath.Join(p.home, ".claude")
@@ -93,7 +93,7 @@ func (p place) claudeDir() string {
 // hermesHome is Hermes Agent's folder at the place: $HERMES_HOME, else
 // %LOCALAPPDATA%\hermes on Windows and ~/.hermes elsewhere, on this machine
 // (appdir.HermesHome); ~/.hermes in a distro, which is Linux and whose
-// variables magpie can't read.
+// variables magpie-friday can't read.
 func (p place) hermesHome() string {
 	if p.spell != nil {
 		return filepath.Join(p.home, ".hermes")
@@ -167,7 +167,7 @@ func (p place) key(k string) string {
 type distro struct {
 	Name    string          `json:"name"`
 	Home    string          `json:"home"`              // $HOME inside it, e.g. /home/me
-	Root    string          `json:"root"`              // where magpie opens its / from, e.g. \\wsl.localhost\Ubuntu
+	Root    string          `json:"root"`              // where magpie-friday opens its / from, e.g. \\wsl.localhost\Ubuntu
 	Has     map[string]bool `json:"has"`               // "dir:.codex", "bin:pi": what the probe found
 	Probe   int             `json:"probe,omitempty"`   // the wslProbeVersion that found it
 	Gateway string          `json:"gateway,omitempty"` // the Windows host as the distro reaches it, when not at 127.0.0.1
@@ -208,12 +208,12 @@ func (d distro) live() bool {
 	return d.up()
 }
 
-// local is a path inside the distro as magpie opens it.
+// local is a path inside the distro as magpie-friday opens it.
 func (d distro) local(linux string) string {
 	return d.Root + strings.ReplaceAll(linux, "/", string(filepath.Separator))
 }
 
-// native is a path magpie opens as the distro spells it.
+// native is a path magpie-friday opens as the distro spells it.
 func (d distro) native(local string) string {
 	rel := local
 	if len(local) >= len(d.Root) && strings.EqualFold(local[:len(d.Root)], d.Root) {
@@ -266,7 +266,7 @@ func (d distro) place(id string) place {
 	return place{home: d.local(d.Home), id: id, spell: d.native, sys: d.local, base: d.base, cold: !d.Running, version: d.Versions[kind]}
 }
 
-// wslKind is an agent magpie looks for in a distro: what the probe finds
+// wslKind is an agent magpie-friday looks for in a distro: what the probe finds
 // of it, and how it lives at a place. Adding one here is all it takes.
 type wslKind struct {
 	id, name string
@@ -293,8 +293,8 @@ var wslKinds = []wslKind{
 			switch key {
 			case "model", "subagent":
 				return func(map[string]string) []Option {
-					// over several accounts magpie routes, so they are
-					// offered via magpie too, as on a live Codex (#1603)
+					// over several accounts magpie-friday routes, so they are
+					// offered via magpie-friday too, as on a live Codex (#1603)
 					if codexFailover() {
 						return append(group("OpenAI", options(ownCodex(), "")), viaMagpie("codex", "")...)
 					}
@@ -354,7 +354,7 @@ var wslKinds = []wslKind{
 			case "effort":
 				return nil
 			case "login":
-				// its sign-in, while the model last seen is magpie's
+				// its sign-in, while the model last seen is magpie-friday's
 				return func(cur map[string]string) []Option {
 					if !isMagpie(cur["model"]) {
 						return nil
@@ -362,7 +362,7 @@ var wslKinds = []wslKind{
 					return claudeSignIns()
 				}
 			}
-			// a tier: magpie's models while the model last seen is one
+			// a tier: magpie-friday's models while the model last seen is one
 			return func(cur map[string]string) []Option {
 				if !isMagpie(cur["model"]) {
 					return nil
@@ -443,7 +443,7 @@ var wslKinds = []wslKind{
 	{id: "fx", name: "fx", dir: ".fx", in: fxIn,
 		restart: newNotice("{agent} in WSL {distro} reads its settings at start-up — restart open fx sessions to use this.")},
 	{id: "commandcode", name: "Command Code", dir: ".commandcode", bin: "command-code", in: commandCodeIn,
-		restart: newNotice("{agent} in WSL {distro} wants its own sign-in there (cmd login) even for models through magpie, and reads its settings at start-up — restart open Command Code sessions to use this.")},
+		restart: newNotice("{agent} in WSL {distro} wants its own sign-in there (cmd login) even for models through magpie-friday, and reads its settings at start-up — restart open Command Code sessions to use this.")},
 	{id: "minimax-code", name: "MiniMax Code", dir: ".minimax", bin: "mcode", in: miniMaxIn,
 		restart: newNotice("{agent} in WSL {distro} reads its settings at start-up — restart open mcode sessions to use this."),
 		asleep: func(key string) func(map[string]string) []Option {
@@ -481,7 +481,7 @@ var wslKinds = []wslKind{
 		restart: newNotice("{agent} in WSL {distro} reads its settings as a session starts — open sessions keep the model they have; new ones use this.")},
 	{id: "qoder-cn", name: "Qoder CN", dir: ".qoder-cn", bin: "qoderclicn", in: qoderCNIn,
 		restart: newNotice("{agent} in WSL {distro} reads its settings as a session starts — open sessions keep the model they have; new ones use this.")},
-	// lgtm on Discord: magpie didn't find a CodeBuddy Code installed in WSL
+	// lgtm on Discord: magpie-friday didn't find a CodeBuddy Code installed in WSL
 	{id: "codebuddy", name: "CodeBuddy Code", dir: ".codebuddy", bin: "codebuddy", in: codebuddyIn,
 		restart: newNotice("{agent} in WSL {distro} reads its model when a session starts — restart open codebuddy sessions, or run /clear in them, to use this.")},
 	// Cline's CLI, and its VS Code extension in a Remote - WSL window, which
@@ -529,7 +529,7 @@ var wslKinds = []wslKind{
 	// Block's goose, by its folder alone: a goose command may be pressly's
 	// database migration tool
 	{id: "goose", name: "Goose", dir: ".config/goose", in: func(at place) *Agent { return gooseIn(at, filepath.Join(at.home, ".config")) },
-		restart: newNotice("{agent} in WSL {distro} loads its providers at start-up — restart open goose sessions to use magpie's models."),
+		restart: newNotice("{agent} in WSL {distro} loads its providers at start-up — restart open goose sessions to use magpie-friday's models."),
 		asleep:  wslOwnAsleep("goose", "model")},
 	// Reasonix's native CLI (1.39 on), by its command and the version it
 	// gives: the historical npm client is reasonix too, and ~/.reasonix is
@@ -555,7 +555,7 @@ var wslKinds = []wslKind{
 					return out
 				}
 			case "effort":
-				// the levels of magpie's model, as its provider is written them
+				// the levels of magpie-friday's model, as its provider is written them
 				return func(cur map[string]string) []Option {
 					ref, ok := strings.CutPrefix(cur["model"], magpieID+"/")
 					if !ok {
@@ -574,7 +574,7 @@ var wslKinds = []wslKind{
 
 // wslOwnAsleep is a stopped distro's options for an agent's model fields
 // (keys) whose live ones read its files: the providers of the value last
-// seen, and magpie's.
+// seen, and magpie-friday's.
 func wslOwnAsleep(id string, keys ...string) func(string) func(map[string]string) []Option {
 	return func(key string) func(map[string]string) []Option {
 		if !slices.Contains(keys, key) {
@@ -603,7 +603,7 @@ func (k wslKind) memo(key string) string {
 	return k.id + "." + key
 }
 
-// wslFound reports whether any agent magpie knows is in d.
+// wslFound reports whether any agent magpie-friday knows is in d.
 func wslFound(d distro) bool {
 	for _, k := range wslKinds {
 		if k.found(d) {
@@ -613,13 +613,13 @@ func wslFound(d distro) bool {
 	return false
 }
 
-// wslKept is whether magpie keeps a distro it probed: one of wslKinds is
+// wslKept is whether magpie-friday keeps a distro it probed: one of wslKinds is
 // there, or the Copilot CLI's folder, whose sign-in it reads (#723).
 func wslKept(d distro) bool { return wslFound(d) || d.Has["dir:"+wslCopilotDir] }
 
 // ListsFor is whose model lists an agent's are (provider.CatalogFor): its
 // own id's, or, for one in a WSL distro, its Windows twin's (claude for
-// claude@wsl:Ubuntu). A distro's agent is written magpie's models under
+// claude@wsl:Ubuntu). A distro's agent is written magpie-friday's models under
 // that id and sends the gateway that id's key, so the models picked for
 // its row are the ones it is shown only when kept under that id too (#927).
 func (a *Agent) ListsFor() string {
@@ -647,7 +647,7 @@ func wslPi(d distro) *Agent { return wslAgent(wslKindOf("pi"), d) }
 
 // wslAgent is an agent in a distro: its own reading and writing, at the
 // distro's home, with the distro's way to the gateway. A distro that isn't
-// running is shown as magpie last saw it, and nothing of it is read: any
+// running is shown as magpie-friday last saw it, and nothing of it is read: any
 // access to its files starts it. Picking a value starts it, as asked.
 func wslAgent(k wslKind, d distro) *Agent {
 	id := k.id + "@wsl:" + d.Name
@@ -764,8 +764,8 @@ func wslAgent(k wslKind, d distro) *Agent {
 	return a
 }
 
-// asleep is a stopped distro's agent: its fields read what magpie last
-// saw, their options come from magpie alone, and it has no files to check,
+// asleep is a stopped distro's agent: its fields read what magpie-friday last
+// saw, their options come from magpie-friday alone, and it has no files to check,
 // sync or migrate (Path and Dir are empty); setting a field goes to the
 // files, which starts the distro.
 func asleep(live *Agent, k wslKind, d distro) *Agent {
@@ -832,7 +832,7 @@ func wslAgents() []*Agent {
 func wslAgentsOf(ds []distro) []*Agent {
 	var out []*Agent
 	for _, d := range ds {
-		// only the agents it has: magpie writes nothing for one that isn't there
+		// only the agents it has: magpie-friday writes nothing for one that isn't there
 		for _, k := range wslKinds {
 			if a := wslAgent(k, d); a.Detected() {
 				out = append(out, a)
@@ -855,7 +855,7 @@ func wslAgentsOf(ds []distro) []*Agent {
 }
 
 // wslHomes are the distros agents (or the Copilot CLI's folder, wslKept)
-// were found in, each user's home as magpie
+// were found in, each user's home as magpie-friday
 // opens it, for internal/sessions to read their sessions in; none off
 // Windows. A stopped distro's is its home as last probed.
 func wslHomes() []sessions.WSLHome {
@@ -873,11 +873,11 @@ func wslHomes() []sessions.WSLHome {
 }
 
 // wslCopilotDir is the Copilot CLI's folder under a distro's $HOME: not an
-// agent magpie sets up, but a sign-in it uses (provider.CopilotWSLHomes),
+// agent magpie-friday sets up, but a sign-in it uses (provider.CopilotWSLHomes),
 // so a distro that has only it is kept as one agents are found in (#723).
 const wslCopilotDir = ".copilot"
 
-// copilotWSLHomes are the homes, as magpie opens them, of the running
+// copilotWSLHomes are the homes, as magpie-friday opens them, of the running
 // distros the Copilot CLI's folder was found in, for provider to read its
 // sign-in in; none off Windows. A stopped distro is left out: reading it
 // would start it.
@@ -900,7 +900,7 @@ func wslHasCopilot(name string) bool {
 
 // Only running distros are probed — asking one anything starts it — once
 // each in a process, and again only after a probe that failed. Those an
-// agent of wslKinds was found in are kept in wsl.json beside magpie's settings (not the
+// agent of wslKinds was found in are kept in wsl.json beside magpie-friday's settings (not the
 // stash, which profiles and backups carry), with their fields as last
 // read, so a stopped one is listed without being started.
 var wsl struct {
@@ -934,7 +934,7 @@ const (
 // wslOn is whether there is WSL to look in: on Windows, or in tests.
 var wslOn = runtime.GOOS == "windows"
 
-// wslLooks is whether magpie looks in WSL on its own: there is WSL, and
+// wslLooks is whether magpie-friday looks in WSL on its own: there is WSL, and
 // Settings' Detect agents in WSL is on (#1264).
 func wslLooks() bool { return wslOn && !settings.Load().NoWSLAgents }
 
@@ -993,7 +993,7 @@ var wslRun = func(timeout time.Duration, args ...string) ([]byte, error) {
 	return cmd.Output()
 }
 
-// wslRoot is where magpie opens a running distro's / from; a var for tests.
+// wslRoot is where magpie-friday opens a running distro's / from; a var for tests.
 var wslRoot = func(name string) string {
 	if _, err := os.Stat(`\\wsl.localhost\` + name + `\`); err == nil {
 		return `\\wsl.localhost\` + name
@@ -1193,8 +1193,8 @@ func wslLastSeen(name, key string) string {
 }
 
 // wslClaudeStandIn is StandIn for a Claude Code in a WSL distro routed
-// through magpie: the first, of the distros running now, whose
-// settings.json has a stand-in. Only magpie's memory of them and which run
+// through magpie-friday: the first, of the distros running now, whose
+// settings.json has a stand-in. Only magpie-friday's memory of them and which run
 // (wslRunningLocked) are asked — nothing is probed, and a stopped distro
 // is never opened.
 func wslClaudeStandIn(model string) string {
@@ -1509,8 +1509,8 @@ func wslSetting(cfg, key string) (val string, ok bool) {
 // what an agent in WSL says after a change, besides its kind's restart
 // (notice.go)
 var (
-	noticeWSLNotMirrored = newNotice("WSL {distro} is in {net} networking, not mirrored, so its {agent} was pointed at Windows ({url}) rather than 127.0.0.1; magpie listens there for WSL, and it answers once Windows' firewall lets WSL in. For 127.0.0.1, set networkingMode=mirrored under [wsl2] in %UserProfile%\\.wslconfig and run wsl --shutdown, then pick the model again.")
-	noticeWSLNoMode      = newNotice("magpie couldn't ask WSL {distro} its networking mode (it has no wslinfo) and %UserProfile%\\.wslconfig doesn't set it to mirrored, so its {agent} was pointed at Windows ({url}) rather than 127.0.0.1; magpie listens there for WSL, and it answers once Windows' firewall lets WSL in. For 127.0.0.1, set networkingMode=mirrored under [wsl2] in %UserProfile%\\.wslconfig and run wsl --shutdown, then pick the model again.")
-	noticeWSLNoRelay     = newNotice("WSL {distro} is in {net} networking with localhostForwarding=false in %UserProfile%\\.wslconfig, so 127.0.0.1 there, where its {agent} was pointed, isn't relayed to Windows, where magpie listens. Remove localhostForwarding=false under [wsl2] (it is on by default) and run wsl --shutdown.")
-	noticeWSLAsleep      = newNotice("WSL {distro} isn't running: magpie shows what it last saw there, and starts it only to change something.")
+	noticeWSLNotMirrored = newNotice("WSL {distro} is in {net} networking, not mirrored, so its {agent} was pointed at Windows ({url}) rather than 127.0.0.1; magpie-friday listens there for WSL, and it answers once Windows' firewall lets WSL in. For 127.0.0.1, set networkingMode=mirrored under [wsl2] in %UserProfile%\\.wslconfig and run wsl --shutdown, then pick the model again.")
+	noticeWSLNoMode      = newNotice("magpie-friday couldn't ask WSL {distro} its networking mode (it has no wslinfo) and %UserProfile%\\.wslconfig doesn't set it to mirrored, so its {agent} was pointed at Windows ({url}) rather than 127.0.0.1; magpie-friday listens there for WSL, and it answers once Windows' firewall lets WSL in. For 127.0.0.1, set networkingMode=mirrored under [wsl2] in %UserProfile%\\.wslconfig and run wsl --shutdown, then pick the model again.")
+	noticeWSLNoRelay     = newNotice("WSL {distro} is in {net} networking with localhostForwarding=false in %UserProfile%\\.wslconfig, so 127.0.0.1 there, where its {agent} was pointed, isn't relayed to Windows, where magpie-friday listens. Remove localhostForwarding=false under [wsl2] (it is on by default) and run wsl --shutdown.")
+	noticeWSLAsleep      = newNotice("WSL {distro} isn't running: magpie-friday shows what it last saw there, and starts it only to change something.")
 )

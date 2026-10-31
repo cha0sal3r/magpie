@@ -6,14 +6,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/mcpauth"
-	"github.com/yetone/magpie/internal/mcpauth/mcpauthtest"
+	"github.com/cha0sal3r/magpie-friday/internal/mcpauth"
+	"github.com/cha0sal3r/magpie-friday/internal/mcpauth/mcpauthtest"
 )
 
 // Every server out of the library at once (#1027), each as RemoveServer
-// takes it: out of every agent and project magpie gave it to, its sign-in
+// takes it: out of every agent and project magpie-friday gave it to, its sign-in
 // forgotten. The servers of the user's own in the same files stay, one by
-// a library server's name that magpie never wrote there too, and a name
+// a library server's name that magpie-friday never wrote there too, and a name
 // the library hasn't is said, the rest gone all the same.
 func TestRemoveServers(t *testing.T) {
 	h, proj := mcpProject(t) // fs and docs, and the project's own "team"
@@ -23,7 +23,7 @@ func TestRemoveServers(t *testing.T) {
 	ok(t)(ServerAgents("fs", []string{"claude", "codex"}))
 	ok(t)(ServerAgents("docs", []string{"claude"}))
 	ok(t)(ProjectServer(proj, "fs", []string{"claude"}))
-	// the user's own, beside magpie's: "mine" in Claude Code's file, and
+	// the user's own, beside magpie-friday's: "mine" in Claude Code's file, and
 	// a "docs" of their own in Codex's, which the library never gave it
 	cj := filepath.Join(h, ".claude.json")
 	write(t, cj, strings.Replace(read(t, cj), `"mcpServers": {`, `"mcpServers": {"mine": {"command": "my-mcp"},`, 1))

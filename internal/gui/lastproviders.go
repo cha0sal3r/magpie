@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // The last-known providers list (#1519, fatkun): the Providers page asked

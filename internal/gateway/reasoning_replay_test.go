@@ -9,7 +9,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // TestReasoningReplayed (#388): Codex offers its web_search, so its request
@@ -79,7 +79,7 @@ func TestReasoningReplayed(t *testing.T) {
 	if strings.Join(kinds, ",") != "message,reasoning,function_call,function_call_output" || q.Input[1].Content[0]["type"] != "reasoning_text" || q.Input[1].Content[0]["text"] != "THINK" {
 		t.Fatalf("Responses upstream sent %s", sent)
 	}
-	// what magpie handed Codex of a translated reply: the summary alone
+	// what magpie-friday handed Codex of a translated reply: the summary alone
 	if sent := ask("resp/deepseek-flash", `{"type":"reasoning","summary":[{"type":"summary_text","text":"SUMMED"}]}`); !strings.Contains(sent, `"text":"SUMMED","type":"reasoning_text"`) {
 		t.Fatalf("summary not replayed: %s", sent)
 	}

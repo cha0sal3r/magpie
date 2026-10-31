@@ -58,7 +58,7 @@ function serve(lang, posts, hold) {
       if (!tries) await new Promise((r) => (hold.release = r));
       // the first move can't reach npm; the second goes through
       if (!tries++) {
-        move = { package: pkg, state: "failed", error: "magpie couldn't reach npm to install the plugin.", why: { code: "offline" } };
+        move = { package: pkg, state: "failed", error: "magpie-friday couldn't reach npm to install the plugin.", why: { code: "offline" } };
         return route.fulfill({ status: 400, json: { error: move.error, why: move.why } });
       }
       move = { package: pkg, state: "plugin" };
@@ -73,12 +73,12 @@ function serve(lang, posts, hold) {
 
 const L = {
   en: { line: "Zed's built-in subscription is retired, and its accounts haven't moved to its plugin yet",
-    move: "Move to the plugin", busy: "Installing the plugin and checking each account…", again: "Try again", retired: "magpie's built-in is retired, so this subscription stays on its plugin.",
-    failed: "Nothing serves them until they move: magpie couldn't reach npm to install the plugin. Check the network or proxy, then try again.",
+    move: "Move to the plugin", busy: "Installing the plugin and checking each account…", again: "Try again", retired: "magpie-friday's built-in is retired, so this subscription stays on its plugin.",
+    failed: "Nothing serves them until they move: magpie-friday couldn't reach npm to install the plugin. Check the network or proxy, then try again.",
     onPlugin: "The community Zed plugin", done: "Zed now runs on its plugin — 2 accounts, 1 model.",
     subs: "Subscriptions", card: "Move" },
   zh: { line: "Zed 的内置订阅已下线，它的账号还没迁移到插件",
-    move: "迁移到插件", busy: "正在安装插件并逐个检查账号…", again: "重试", retired: "magpie 的内置已下线，此订阅一直由插件运行。",
+    move: "迁移到插件", busy: "正在安装插件并逐个检查账号…", again: "重试", retired: "magpie-friday 的内置已下线，此订阅一直由插件运行。",
     failed: "迁移之前，它们无法使用：无法连接 npm 安装插件，请检查网络或代理后重试。",
     onPlugin: "社区 Zed 插件", done: "Zed 已改由插件运行：2 个账号，1 个模型。",
     subs: "订阅", card: "迁移" },
@@ -139,7 +139,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       await ed.locator(".hint", { hasText: w.retired }).waitFor();
       assert.equal(await ed.locator(".move button").count(), 0, "a moved subscription offers a way back");
       assert.ok((await ed.innerText()).includes(w.onPlugin), "doesn't say the plugin runs it");
-      // its plugin:// URLs are magpie's own: no Endpoints, no Test
+      // its plugin:// URLs are magpie-friday's own: no Endpoints, no Test
       assert.equal(await ed.locator(".eps").count(), 0, "shows the plugin:// endpoints");
       if (process.env.ARTIFACT_DIR) await ed.screenshot({ path: path.join(process.env.ARTIFACT_DIR, `plugin-moved-${engine}-${lang}.png`) });
       await page.keyboard.press("Escape");

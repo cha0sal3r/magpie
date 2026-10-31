@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Claude Code signed in to a, with b on beside it; then signed in to b
-// (magpie switching it, or the user). The account the agent is on is
+// (magpie-friday switching it, or the user). The account the agent is on is
 // named by the provider's id alone, so the switch hands "claude" from a to
 // b — but a conversation a answered stays with a, and what a served and
 // how often it failed are a's, not b's (#209).

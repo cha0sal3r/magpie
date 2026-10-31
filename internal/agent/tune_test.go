@@ -102,7 +102,7 @@ func TestTuneUserValueKept(t *testing.T) {
 		t.Fatalf("undo wrote over the user's change:\n%s", got)
 	}
 	if err := TuneUndo(home, "claude", TuneCache, ""); err == nil {
-		t.Fatal("undo with nothing of magpie's to put back")
+		t.Fatal("undo with nothing of magpie-friday's to put back")
 	}
 	if err := TuneApply(home, "claude", TuneCache, "", "2h"); err == nil {
 		t.Fatal("took a lifetime Claude Code has no use for")

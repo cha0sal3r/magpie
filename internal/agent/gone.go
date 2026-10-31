@@ -6,19 +6,19 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
-// An agent uninstalled outside magpie leaves its folder behind (~/.dsh,
+// An agent uninstalled outside magpie-friday leaves its folder behind (~/.dsh,
 // ~/.hermes/config.yaml, ~/.claude), and detection, which goes by that
 // folder, still lists it. Such an agent is shown as its CLI gone, with
 // nothing of its settings offered, since nothing would read them (#2177,
 // mengyianx; #2173, SkyTodInfi: Hermes listed by its config.yaml alone).
-// Only where magpie can tell the folder holds nothing a program still
+// Only where magpie-friday can tell the folder holds nothing a program still
 // reads: an agent whose folder an app, an editor's extension or another
 // program keeps too is gone only when none of those is here either.
 
-// cliOnly are the agents with no install command magpie offers whose
+// cliOnly are the agents with no install command magpie-friday offers whose
 // folder only their CLI keeps, and whose installer puts it where
 // cliHeld looks: Hermes' install.sh clones itself into <home>/hermes-agent
 // and links ~/.local/bin/hermes to it.
@@ -30,7 +30,7 @@ var goneOS = runtime.GOOS
 
 // cliHeld reports whether something here is the agent, or reads its
 // folder as the agent does, so the folder is no leftover; known is false
-// when magpie can't tell, which never counts as gone.
+// when magpie-friday can't tell, which never counts as gone.
 func (a *Agent) cliHeld() (held, known bool) {
 	if a.Bin != "" && (binAt(a.Bin) != "" || proc.FindTool(a.Bin) != "") {
 		if a.ID != "goose" {

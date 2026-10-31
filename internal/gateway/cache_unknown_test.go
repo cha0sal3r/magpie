@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // The Kiro plugin's real replies (opencode-kiro-auth 0.1.16 against
@@ -81,7 +81,7 @@ func TestCacheCountedIsNotUnknown(t *testing.T) {
 	}
 }
 
-// what Claude Code is told is Anthropic's usage: magpie never adds the
+// what Claude Code is told is Anthropic's usage: magpie-friday never adds the
 // field to a reply it writes itself
 func TestCacheUnknownNotTold(t *testing.T) {
 	u := aUsage{InputTokens: 5, OutputTokens: 1, CacheUnknown: true}.usage()

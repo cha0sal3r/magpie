@@ -3,7 +3,7 @@
 // very foot, under a long list, and was hard to find. It is at the top of
 // every tab now, in the strip that stays as the page scrolls, right after
 // Library folder, with the same look; nothing is left at the foot. It
-// opens magpie's backups folder, waits for the library like Library folder
+// opens magpie-friday's backups folder, waits for the library like Library folder
 // does, fits a narrow window and browser without wrapping, and has no left
 // border. In every language, in both engines. No backend: the API is faked
 // here.
@@ -19,18 +19,18 @@ const agent = (id, name, icon) => ({ id, name, icon, skills: `${HOME}/.${id}/ski
 const skills = Array.from({ length: 40 }, (_, i) => ({ name: `skill-${String(i).padStart(2, "0")}`, kind: "folder", description: `Skill number ${i}`, agents: ["claude"], source: `${HOME}/skills/skill-${i}` }));
 const servers = Array.from({ length: 30 }, (_, i) => ({ name: `server-${String(i).padStart(2, "0")}`, transport: "stdio", command: "npx", args: ["-y", `server-${i}`], agents: ["claude"] }));
 const view = {
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: [agent("claude", "Claude Code", "claudecode-color")],
   instructions: { agents: [], sets: [] }, servers, foundServers: [], projects: [], foundSkills: [], skills, problems: [],
   hooks: Array.from({ length: 30 }, (_, i) => ({ name: `hook-${String(i).padStart(2, "0")}`, event: "turn-end", command: `echo ${i}`, agents: ["claude"] })),
 };
 
 const words = {
-  en: { backups: "Backups", folder: "Library folder", note: "magpie keeps a copy of every file before it writes it." },
-  zh: { backups: "备份", folder: "资源库文件夹", note: "magpie 写入任何文件前都会先备份一份。" },
-  "zh-TW": { backups: "備份", folder: "資源庫資料夾", note: "magpie 寫入任何檔案前都會先備份一份。" },
-  ja: { backups: "バックアップ", folder: "ライブラリフォルダ", note: "magpie はファイルに書き込む前に必ずコピーを保存します。" },
-  de: { backups: "Backups", folder: "Bibliotheksordner", note: "magpie sichert jede Datei, bevor es sie schreibt." },
+  en: { backups: "Backups", folder: "Library folder", note: "magpie-friday keeps a copy of every file before it writes it." },
+  zh: { backups: "备份", folder: "资源库文件夹", note: "magpie-friday 写入任何文件前都会先备份一份。" },
+  "zh-TW": { backups: "備份", folder: "資源庫資料夾", note: "magpie-friday 寫入任何檔案前都會先備份一份。" },
+  ja: { backups: "バックアップ", folder: "ライブラリフォルダ", note: "magpie-friday はファイルに書き込む前に必ずコピーを保存します。" },
+  de: { backups: "Backups", folder: "Bibliotheksordner", note: "magpie-friday sichert jede Datei, bevor es sie schreibt." },
 };
 
 function serve(lang, web, opened, held) {
@@ -103,7 +103,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
             };
           });
           assert.equal(got.label, w.backups, where);
-          assert.equal(got.title, w.note + "\n~/.magpie/backups", where);
+          assert.equal(got.title, w.note + "\n~/.magpie-friday/backups", where);
           assert(got.after, `${where}: Backups comes right after ${w.folder}`);
           assert(got.sameRow, `${where}: Backups sits on Library folder's line`);
           assert(got.look, `${where}: Backups looks like Library folder`);

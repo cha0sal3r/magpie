@@ -9,7 +9,7 @@ import (
 // compaction (NativeCompaction, #1099): a compaction_trigger asked and a
 // sealed compaction item given back, on the Responses API, as Codex sent
 // them. A provider of no sign-in with a Responses API does (Sub2API and
-// other relays of OpenAI's, OpenAI's own, a remote magpie), as do a
+// other relays of OpenAI's, OpenAI's own, a remote magpie-friday), as do a
 // ChatGPT account and GitHub Copilot, whose GPT models answer on
 // Responses. Another signed-in agent's, or a plugin's, is asked in its own
 // client's format, which has no such item.

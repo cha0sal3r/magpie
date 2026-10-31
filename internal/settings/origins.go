@@ -36,7 +36,7 @@ func cleanOrigin(raw string) (string, error) {
 		return "", nil
 	}
 	if strings.Contains(raw, "*") {
-		return "", fmt.Errorf("%q: name each origin; a wildcard would let every web page use magpie", raw)
+		return "", fmt.Errorf("%q: name each origin; a wildcard would let every web page use magpie-friday", raw)
 	}
 	if o, ok, err := extensionOrigin(raw); ok {
 		return o, err

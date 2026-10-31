@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/fx"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/fx"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // Settings shows the local address agents use; the Gateway page advertises
@@ -22,7 +22,7 @@ func TestPublicURLInConsole(t *testing.T) {
 	t.Setenv("XDG_CACHE_HOME", filepath.Join(h, ".cache"))
 	t.Setenv("XDG_DATA_HOME", filepath.Join(h, ".local", "share"))
 	t.Setenv("MAGPIE_ADDR", "0.0.0.0:3425")
-	t.Setenv("MAGPIE_PUBLIC_URL", "https://magpie.example.com/magpie///")
+	t.Setenv("MAGPIE_PUBLIC_URL", "https://magpie-friday.example.com/magpie-friday///")
 
 	// Seed the rate the Settings page reads, so it needs no network.
 	cache := fx.CachePath()
@@ -39,10 +39,10 @@ func TestPublicURLInConsole(t *testing.T) {
 	fx.Reset()
 	t.Cleanup(fx.Reset)
 
-	if err := settings.Save(settings.Settings{LAN: true, LANKey: "sk-magpie-test"}); err != nil {
+	if err := settings.Save(settings.Settings{LAN: true, LANKey: "sk-magpie-friday-test"}); err != nil {
 		t.Fatal(err)
 	}
-	want := "https://magpie.example.com/magpie"
+	want := "https://magpie-friday.example.com/magpie-friday"
 	if got := settingsState().Gateway; got != gateway.URL() {
 		t.Errorf("Settings: %q, want %q", got, gateway.URL())
 	}
@@ -117,7 +117,7 @@ func TestPublicURLOnlyWhereOffered(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", filepath.Join(h, ".config"))
 	t.Setenv("XDG_CACHE_HOME", filepath.Join(h, ".cache"))
 	t.Setenv("XDG_DATA_HOME", filepath.Join(h, ".local", "share"))
-	t.Setenv("MAGPIE_PUBLIC_URL", "https://magpie.example.com")
+	t.Setenv("MAGPIE_PUBLIC_URL", "https://magpie-friday.example.com")
 	t.Setenv("MAGPIE_ADDR", "127.0.0.1:3425")
 	if err := settings.Save(settings.Settings{LAN: false}); err != nil {
 		t.Fatal(err)
@@ -131,7 +131,7 @@ func TestPublicURLOnlyWhereOffered(t *testing.T) {
 	if err := settings.Save(settings.Settings{LAN: true}); err != nil {
 		t.Fatal(err)
 	}
-	if g := providersState().Gateway; g.PublicURL != "https://magpie.example.com" {
+	if g := providersState().Gateway; g.PublicURL != "https://magpie-friday.example.com" {
 		t.Errorf("shared: Gateway page's public URL %q", g.PublicURL)
 	}
 	t.Setenv("MAGPIE_PUBLIC_URL", "")

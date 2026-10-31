@@ -12,22 +12,22 @@ package agent
 //
 // Since 1.0 OpenHanako seals the catalog under a key the desktop app keeps
 // in the system keychain: the file is then "HANA-SECRET-1.AES-256-GCM.…",
-// not JSON. magpie can't read it nor write it, and never writes over it. A
+// not JSON. magpie-friday can't read it nor write it, and never writes over it. A
 // provider's definition is in its plugin file, out of the catalog, so that
-// is still magpie's to keep up to date; its key stays sealed, and adding or
-// removing magpie needs OpenHanako running, to do it through its API.
+// is still magpie-friday's to keep up to date; its key stays sealed, and adding or
+// removing magpie-friday needs OpenHanako running, to do it through its API.
 //
-// magpie is one provider there, magpie, spoken to as chat completions at the
+// magpie-friday is one provider there, magpie-friday, spoken to as chat completions at the
 // gateway's /v1 with the catalog as its models; choosing one of them makes it
 // the primary agent's chat model. While OpenHanako runs, both go through its
 // local API, which saves them and reloads its models at once:
 //
-//	PUT /api/config               {"providers":{"magpie":{…}|null}}
+//	PUT /api/config               {"providers":{"magpie-friday":{…}|null}}
 //	PUT /api/agents/:id/config    {"models":{"chat":{"id","provider"}}}
 //	GET /api/models               {"models":[{"id","provider",…}]}
 //
-// Otherwise magpie writes the files, which it reads when it starts. The
-// model the agent had is stashed and put back when magpie steps out; since
+// Otherwise magpie-friday writes the files, which it reads when it starts. The
+// model the agent had is stashed and put back when magpie-friday steps out; since
 // 1.0 the API takes no agent without a model, so with none stashed, or one
 // it no longer has, the agent goes to the first of OpenHanako's own.
 
@@ -46,9 +46,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // hanakoProbe gives up quickly, as OpenHanako's own liveness probe does:
@@ -100,8 +100,8 @@ func hanako(home string) *Agent {
 		// what its provider client sends, though the key names it first
 		UA:  []string{"hanaagent"},
 		Dir: dir, Path: path,
-		// its own providers' models are provider/id as magpie's are: one
-		// is magpie's only on magpie's provider
+		// its own providers' models are provider/id as magpie-friday's are: one
+		// is magpie-friday's only on magpie-friday's provider
 		Spelled: prefixed,
 		Sync: func() error {
 			cur, ok := hanakoCurrent(dir)
@@ -138,7 +138,7 @@ func hanako(home string) *Agent {
 				if v == "" {
 					// nothing changes rather than half of it
 					if _, there := hanakoCurrent(dir); there && hanakoSealed(path) && hanakoLive(dir) == nil {
-						return errSealed("take magpie out of")
+						return errSealed("take magpie-friday out of")
 					}
 					if onMagpie() {
 						// the stash goes only once the model is back
@@ -216,7 +216,7 @@ type hanakoProviderEntry struct {
 	Models      []hanakoModel `json:"models"`
 }
 
-// hanakoProvider is magpie's entry in the catalog. OpenHanako runs on Pi's
+// hanakoProvider is magpie-friday's entry in the catalog. OpenHanako runs on Pi's
 // SDK, whose chat completions carry the effort as reasoning_effort, as for
 // Pi itself; image and reasoning are always said, since a model entry saved
 // over an older one keeps what the new one leaves out.
@@ -232,7 +232,7 @@ func hanakoProvider() hanakoProviderEntry {
 
 func hanakoPlugin(dir string) string { return filepath.Join(dir, "provider-plugins", magpieID) }
 
-// hanakoCurrent is magpie's provider as OpenHanako sees it: the definition
+// hanakoCurrent is magpie-friday's provider as OpenHanako sees it: the definition
 // in its plugin file, if it has moved there, under what the catalog says.
 func hanakoCurrent(dir string) (map[string]any, bool) {
 	cur := map[string]any{}
@@ -277,7 +277,7 @@ func hanakoSealed(path string) bool {
 
 // hanakoSame reports whether the provider says all that want does; keys
 // the user added (headers, say) don't count, nor, in a sealed catalog, its
-// key, which magpie can't read.
+// key, which magpie-friday can't read.
 func hanakoSame(cur map[string]any, want hanakoProviderEntry, sealed bool) bool {
 	b, _ := json.Marshal(want)
 	var w map[string]any
@@ -299,7 +299,7 @@ func hanakoSame(cur map[string]any, want hanakoProviderEntry, sealed bool) bool 
 	return true
 }
 
-// hanakoSave writes magpie's provider: through OpenHanako's API while it
+// hanakoSave writes magpie-friday's provider: through OpenHanako's API while it
 // runs, else into the catalog, whence it moves the definition into a plugin
 // of its own at start-up. An old plugin goes, or its models would be kept
 // beside the new ones.
@@ -335,7 +335,7 @@ func hanakoSave(dir string, p hanakoProviderEntry) error {
 	return os.RemoveAll(hanakoPlugin(dir))
 }
 
-// hanakoRemove takes magpie's provider out, if it is there. It is marked
+// hanakoRemove takes magpie-friday's provider out, if it is there. It is marked
 // deleted, as OpenHanako marks one it removes: else its start-up would
 // bring it back from its models.json, which still has it.
 func hanakoRemove(dir string) error {
@@ -347,7 +347,7 @@ func hanakoRemove(dir string) error {
 	}
 	path := filepath.Join(dir, "provider-catalog.json")
 	if hanakoSealed(path) {
-		return errSealed("take magpie out of")
+		return errSealed("take magpie-friday out of")
 	}
 	if err := edit.DelJSON(path, "providers."+magpieID); err != nil {
 		return err
@@ -361,20 +361,20 @@ func hanakoRemove(dir string) error {
 	return os.RemoveAll(hanakoPlugin(dir))
 }
 
-// errSealed says why magpie can't do what it was asked to with OpenHanako
+// errSealed says why magpie-friday can't do what it was asked to with OpenHanako
 // closed, and what will.
 func errSealed(what string) error {
-	return fmt.Errorf("OpenHanako keeps its providers encrypted, so magpie can only %s it while it runs: open OpenHanako and try again", what)
+	return fmt.Errorf("OpenHanako keeps its providers encrypted, so magpie-friday can only %s it while it runs: open OpenHanako and try again", what)
 }
 
-// hanakoSavePlugin keeps magpie's definition up to date in its plugin file,
+// hanakoSavePlugin keeps magpie-friday's definition up to date in its plugin file,
 // beside a sealed catalog: all but the key, which is the catalog's. With no
-// plugin file magpie isn't there to keep up to date, and only OpenHanako
+// plugin file magpie-friday isn't there to keep up to date, and only OpenHanako
 // can add it, its key going into the sealed catalog.
 func hanakoSavePlugin(dir string, p hanakoProviderEntry) error {
 	file := filepath.Join(hanakoPlugin(dir), "providers", magpieID+".json")
 	if _, err := os.Stat(file); err != nil {
-		return errSealed("add magpie to")
+		return errSealed("add magpie-friday to")
 	}
 	return edit.SetJSON(file,
 		edit.KV{Path: "displayName", Value: p.DisplayName},
@@ -417,12 +417,12 @@ func hanakoChat(dir, agent, v string) error {
 	return edit.SetYAML(path, edit.KV{Path: "models.chat", Value: chat})
 }
 
-// hanakoBack puts an agent's chat model back off magpie's: prev, the one
+// hanakoBack puts an agent's chat model back off magpie-friday's: prev, the one
 // it had, if there is one. Running, OpenHanako takes only a model it has, as
 // provider/id: no model at all or an id alone is a 400 ("models.chat requires
 // provider/id"). So prev is looked up in its models (an id alone, from
-// before its migration #5, by its id), and when magpie has none for this
-// agent (it was put on magpie in OpenHanako, or under another agent) or its
+// before its migration #5, by its id), and when magpie-friday has none for this
+// agent (it was put on magpie-friday in OpenHanako, or under another agent) or its
 // provider has gone, the agent goes to the first model of OpenHanako's own.
 func hanakoBack(dir, agent, prev string) error {
 	s := hanakoLive(dir)
@@ -451,7 +451,7 @@ func hanakoBack(dir, agent, prev string) error {
 		return hanakoBack(dir, agent, "")
 	}
 	if pick == "" {
-		return errors.New("OpenHanako has no model of its own to go back to — add a provider in OpenHanako's settings, then turn magpie off again")
+		return errors.New("OpenHanako has no model of its own to go back to — add a provider in OpenHanako's settings, then turn magpie-friday off again")
 	}
 	return hanakoChat(dir, agent, pick)
 }
@@ -559,7 +559,7 @@ func (s *hanakoServer) put(path string, body any) error {
 
 // hanakoOwn lists the models of OpenHanako's own providers, those the user
 // added in it: the catalog's and its plugins'. The providers built into it
-// list theirs in the app, out of magpie's sight.
+// list theirs in the app, out of magpie-friday's sight.
 func hanakoOwn(dir, cur string) []Option {
 	models := map[string][]string{}
 	add := func(p string, ms []any) {

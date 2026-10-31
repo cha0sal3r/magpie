@@ -22,7 +22,7 @@ import (
 // ARM64 ABI passes in d0, and Go's syscall fills only x0–x7
 // (golang.org/issue/62583), so Wails refuses the call and only logs it. The
 // choice was saved and shown picked, and the page stayed at 100% (#2212).
-// magpie makes the call itself, through a two-instruction thunk that moves
+// magpie-friday makes the call itself, through a two-instruction thunk that moves
 // the double's bits from x1 into d0.
 func setPageZoom(w *application.WebviewWindow, z float64) {
 	if err := putZoomFactor(w, z); err != nil {

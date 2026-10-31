@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // codexFastAsk is a turn as Codex sends it in Fast mode (or Ultrafast), web
-// search offered as on every turn, which has magpie translate it for a
+// search offered as on every turn, which has magpie-friday translate it for a
 // provider that doesn't search by itself.
 func codexFastAsk(tier string) string {
 	return fmt.Sprintf(`{"model":"m1","instructions":"You are Codex.","input":[{"type":"message","role":"user","content":[{"type":"input_text","text":"hi"}]}],"tools":[{"type":"web_search","external_web_access":true}],"tool_choice":"auto","parallel_tool_calls":true,"reasoning":{"effort":"high","summary":"auto"},"store":false,"stream":true,"include":["reasoning.encrypted_content"],"prompt_cache_key":"019a0c1e-thread","service_tier":%q}`, tier)
@@ -38,7 +38,7 @@ func TestOwnProviderGetsTier(t *testing.T) {
 	}
 }
 
-// One of a preset is sent no tier: a relay magpie knows may refuse it.
+// One of a preset is sent no tier: a relay magpie-friday knows may refuse it.
 func TestPresetProviderGetsNoTier(t *testing.T) {
 	f := &fake{t: t, reply: optionalFieldReply(provider.Chat)}
 	setup(t, provider.Chat, f)

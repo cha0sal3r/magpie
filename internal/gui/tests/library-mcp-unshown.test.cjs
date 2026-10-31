@@ -2,7 +2,7 @@
 // A library MCP server is checked on its own only when an agent on the page
 // has it on, or a project's file on the page does (#1597, xiaozhu1337: every
 // chip of ida-pro-mcp and windbg-mcp was off, and both were still started
-// each time magpie opened). The library keeps what each agent it ever gave
+// each time magpie-friday opened). The library keeps what each agent it ever gave
 // a server to has, those the page doesn't show too: one hidden on the Agents
 // page, one no longer installed, one with no MCP of its own, and a project
 // whose folder is gone. A server on only for those is "not checked", and
@@ -17,12 +17,12 @@ const { chromium, webkit } = require("playwright");
 const assets = path.resolve(__dirname, "../assets");
 const HOME = "C:/Users/xz";
 const fixture = () => ({
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: [
     { id: "claude", name: "Claude Code", icon: "claudecode-color", skills: `${HOME}/.claude/skills`, mcp: `${HOME}/.claude.json`, projectMCP: ".mcp.json" },
     // hidden on the Agents page
     { id: "codex", name: "Codex", icon: "codex", skills: `${HOME}/.codex/skills`, mcp: `${HOME}/.codex/config.toml`, projectMCP: ".codex/config.toml" },
-    // skills only: no MCP servers magpie can write
+    // skills only: no MCP servers magpie-friday can write
     { id: "agy", name: "Antigravity", icon: "generic", skills: `${HOME}/.gemini/antigravity/skills` },
   ],
   instructions: { agents: [], sets: [] }, foundServers: [], foundSkills: [], skills: [],

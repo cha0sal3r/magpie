@@ -1,6 +1,6 @@
 # Sync and backup
 
-`internal/backup` collects magpie's portable setup into a passphrase-sealed
+`internal/backup` collects magpie-friday's portable setup into a passphrase-sealed
 bundle. `internal/davsync` keeps that bundle in a WebDAV folder, an S3 bucket
 or a GitHub repository. It merges changes between computers; it does not
 clone a working tree or synchronize arbitrary files.
@@ -10,7 +10,7 @@ clone a working tree or synchronize arbitrary files.
 - [`Config`, `Configure`, `Status` and `syncOnce`](../../internal/davsync/davsync.go)
   keep the active server in `sync.json`, and the last local/remote hashes,
   versions, notices and undo file in `sync-state.json`. These files live beside
-  magpie's settings. Secrets are local, never in the status response.
+  magpie-friday's settings. Secrets are local, never in the status response.
 - The [`remote`](../../internal/davsync/dav.go) interface reads a version and
   conditionally replaces it. WebDAV and S3 use ETags; GitHub uses the file's
   blob SHA. S3's conditions (`If-Match`, `If-None-Match`) go outside the
@@ -40,7 +40,7 @@ an Undo or a backup file brings settings in, and `hashes` blanks them, so
 changing one is no change to push. They are: the window's size and whether it
 was maximised, the fonts, the proxy, the gateway's port, sharing on the local
 network (`LAN`) and the addresses let in to it (`AllowIPs`), the private
-hosts magpie may download from (`FetchPrivate`), the Dock, gateway
+hosts magpie-friday may download from (`FetchPrivate`), the Dock, gateway
 mode, keeping awake, lightweight windows, WSL lookups, account discovery, when
 allowances are read, recording gateway conversations, the Mac terminal a
 session resumes in (`SessionTerminal`) and what the menu bar shows. Launch at
@@ -75,7 +75,7 @@ When a remote file is empty, damaged or another app's format, sync stops and
 describes it through `ServerFile`. Settings and the backend's `upload` command
 can replace it with this computer's setup, keeping the old file first.
 HTML and XML are not offered for replacement. GitHub diagnostics name the
-repository and `magpie github upload`, rather than WebDAV's recovery path.
+repository and `magpie-friday github upload`, rather than WebDAV's recovery path.
 
 A local file that is there but can't be read is unknown, never empty or the
 defaults. `backup.Collect` stops on an unreadable providers.json (with its groups
@@ -101,11 +101,11 @@ repository can keep the token. The branch is part of the sync state key.
   every sealed version to anyone to guess the passphrase against
   (`TestGitHubPublicRepositoryRefused`). In an empty repository, the first encrypted
   backup initializes its default branch through the Contents API. When that
-  API refuses it as too large, a short `README.md` in magpie's folder makes
+  API refuses it as too large, a short `README.md` in magpie-friday's folder makes
   the first commit and the backup follows as the second. A selected
   branch other than the default must already exist. The token needs repository
   Contents read and write.
-- Backups are `<prefix>/magpie/magpie.magpie-backup`; optional usage files
+- Backups are `<prefix>/magpie-friday/magpie-friday.magpie-friday-backup`; optional usage files
   live beside them under `usage/`. Each write or removal is one commit, and
   unchanged setup does not create another backup commit.
 - A repository with commits is written through the Git Data API: a blob
@@ -123,9 +123,9 @@ repository can keep the token. The branch is part of the sync state key.
   large to process" (Zhang-Wei, Discord), while a 19 MB file's Contents
   PUT (about 25 MB of body) went through; GitHub documents no request
   size. So a backup over 16 MiB (`githubPart`) goes up in parts, in the
-  same one commit: `magpie.magpie-backup.parts/1`, `/2`, … beside it, and
+  same one commit: `magpie-friday.magpie-friday-backup.parts/1`, `/2`, … beside it, and
   at the backup's own path a short list of them (`githubParts`: format
-  `magpie-backup`, version 2, `split: github-parts`, the total size and
+  `magpie-friday-backup`, version 2, `split: github-parts`, the total size and
   each part's blob SHA and size). The list's blob SHA is the version, and
   it names each part by blob SHA, so one version pins one whole set; a
   read downloads each part by that SHA, checks it, and returns the backup
@@ -134,11 +134,11 @@ repository can keep the token. The branch is part of the sync state key.
   the list at the head named and the new backup doesn't use, in the same
   commit, so going back to one file leaves no part behind. Backups up to
   16 MiB stay one file, as before.
-- A magpie from before parts opens the list as a backup with version 2
-  and no key derivation, and stops with "made by a newer magpie; update
-  magpie" — not `ErrCorrupt` or `ErrNotBackup`, so it neither rebuilds
+- A magpie-friday from before parts opens the list as a backup with version 2
+  and no key derivation, and stops with "made by a newer magpie-friday; update
+  magpie-friday" — not `ErrCorrupt` or `ErrNotBackup`, so it neither rebuilds
   over it nor offers to replace it. A backup in one file, from any
-  magpie, still reads.
+  magpie-friday, still reads.
 - Tokens are separate from the library's GitHub token, sent only to
   `https://api.github.com`, and must differ from the encryption passphrase.
   Repository history retains older encrypted versions.
@@ -188,7 +188,7 @@ a blob over 24 MiB, as four parts in one commit, reads it back byte for
 byte, then goes to two parts and back to one file with no part left.
 `TestGitHubOneFileBackupStillReads` reads a 30 MB backup in one file and
 replaces it with parts; `TestGitHubPartsOlderMagpie` checks the list stops
-an older magpie as a newer magpie's backup; `TestGitHubPartsDamaged`,
+an older magpie-friday as a newer magpie-friday's backup; `TestGitHubPartsDamaged`,
 `TestGitHubPartsBranchMovedMeanwhile` and
 `TestGitHubEmptyRepositoryPartsBackup` cover a bad list or part, a moved
 head (each blob sent once) and an empty repository;

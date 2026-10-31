@@ -5,13 +5,13 @@
 // It serves the user's own groups on the gateway's router strategy point
 // (P3 of docs/subsystems/plugin-runtime.md): Apply holds
 // provider.ServeGroups, and off, the gateway neither lists nor routes them.
-// The groups magpie finds (one model several providers serve) are the
+// The groups magpie-friday finds (one model several providers serve) are the
 // core's, on or off.
 package groups
 
 import (
-	"github.com/yetone/magpie/internal/pluginrt"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/pluginrt"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 func init() {

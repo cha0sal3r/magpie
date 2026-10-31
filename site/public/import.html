@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Add to magpie</title>
-<meta name="description" content="Open this link in magpie to add a model provider to every agent you use.">
+<title>Add to magpie-friday</title>
+<meta name="description" content="Open this link in magpie-friday to add a model provider to every agent you use.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#fafafa">
 <meta name="referrer" content="no-referrer">
@@ -26,8 +26,8 @@
 <script>try{if(/Linux/.test(navigator.userAgent)&&!/Android/.test(navigator.userAgent)||localStorage.getItem("omarchy")||/[?&]omarchy=/.test(location.search))document.write('<script src="/omarchy.js"><\/script>')}catch(e){}</script>
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="stylesheet" href="/docs.css">
-<meta property="og:title" content="Add to magpie">
-<meta property="og:description" content="Open this link in magpie to add a model provider to every agent you use.">
+<meta property="og:title" content="Add to magpie-friday">
+<meta property="og:description" content="Open this link in magpie-friday to add a model provider to every agent you use.">
 <meta property="og:image" content="https://usemagpie.ai/img/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <style>
@@ -60,23 +60,23 @@ dd .m { display: inline-block; font-size: 12.5px; border: 1px solid var(--line);
 
 <div class="stage">
   <div class="card" id="card">
-    <div class="mark"><div class="tile" id="tile">?</div><span class="plus">→</span><div class="tile"><img class="bird" src="/img/magpie-small.svg" alt="magpie"></div></div>
-    <h1 id="title">Add to magpie</h1>
-    <p class="sub" id="sub">Opening magpie…</p>
+    <div class="mark"><div class="tile" id="tile">?</div><span class="plus">→</span><div class="tile"><img class="bird" src="/img/magpie-friday-small.svg" alt="magpie-friday"></div></div>
+    <h1 id="title">Add to magpie-friday</h1>
+    <p class="sub" id="sub">Opening magpie-friday…</p>
     <dl id="facts"></dl>
     <div class="actions" id="actions">
-      <a class="btn" id="open" href="#"><img class="bird-inv" src="/img/magpie-small.svg" alt="">Open in magpie</a>
-      <a class="btn ghost" id="dl" href="/#get">Don’t have magpie? Download it</a>
+      <a class="btn" id="open" href="#"><img class="bird-inv" src="/img/magpie-friday-small.svg" alt="">Open in magpie-friday</a>
+      <a class="btn ghost" id="dl" href="/#get">Don’t have magpie-friday? Download it</a>
     </div>
-    <p class="fine" id="fine">magpie shows you everything before it adds anything. Needs magpie 0.1.8 or later.</p>
+    <p class="fine" id="fine">magpie-friday shows you everything before it adds anything. Needs magpie-friday 0.1.8 or later.</p>
   </div>
 </div>
-<div class="foot"><a href="/">usemagpie.ai</a> · <a href="/docs/import">Add magpie links to your site</a></div>
+<div class="foot"><a href="/">usemagpie.ai</a> · <a href="/docs/import">Add magpie-friday links to your site</a></div>
 
 <script>
 (() => {
   // The link's parameters are in the fragment, which never reaches a
-  // server; this page only turns them into magpie://import?… and shows
+  // server; this page only turns them into magpie-friday://import?… and shows
   // what they describe. The key is never displayed.
   const raw = location.hash.slice(1);
   const q = new URLSearchParams(raw);
@@ -110,8 +110,8 @@ dd .m { display: inline-block; font-size: 12.5px; border: 1px solid var(--line);
   const known = PRESETS[preset];
   const name = q.get("name") || (known ? known[0] : "");
   if (!raw || (!name && !preset)) {
-    $("title").textContent = "Add to magpie";
-    $("sub").textContent = "This page opens magpie import links, and this one carries nothing to import.";
+    $("title").textContent = "Add to magpie-friday";
+    $("sub").textContent = "This page opens magpie-friday import links, and this one carries nothing to import.";
     $("tile").textContent = "?";
     $("open").href = "/docs/import";
     $("open").lastChild.textContent = "How import links work";
@@ -120,14 +120,14 @@ dd .m { display: inline-block; font-size: 12.5px; border: 1px solid var(--line);
   }
 
   const label = name || preset;
-  $("title").textContent = "Add " + label + " to magpie";
+  $("title").textContent = "Add " + label + " to magpie-friday";
   $("tile").textContent = label.trim().charAt(0).toUpperCase() || "?";
   if (known && known[1] && !q.get("name")) {
     const img = document.createElement("img");
     img.src = "/icons/" + known[1]; img.alt = "";
     $("tile").replaceChildren(img);
   }
-  document.title = "Add " + label + " to magpie";
+  document.title = "Add " + label + " to magpie-friday";
 
   const hosts = [];
   for (const k of ["chat", "responses", "anthropic", "gemini"]) {
@@ -140,27 +140,27 @@ dd .m { display: inline-block; font-size: 12.5px; border: 1px solid var(--line);
   const models = (q.get("models") || "").split(",").map((s) => s.trim()).filter(Boolean);
   if (models.length) row("Models", models.slice(0, 12).map((m) => text("span", m, "m")).concat(models.length > 12 ? [text("span", "+" + (models.length - 12))] : []));
 
-  const link = "magpie://import?" + raw;
+  const link = "magpie-friday://import?" + raw;
   $("open").href = link;
-  $("sub").textContent = "magpie will ask before adding it.";
+  $("sub").textContent = "magpie-friday will ask before adding it.";
 
-  // magpie runs on computers; on a phone, say where to open this.
+  // magpie-friday runs on computers; on a phone, say where to open this.
   if (/iPhone|iPad|iPod|Android/.test(ua)) {
-    $("sub").textContent = "Open this link on the computer where you use magpie.";
+    $("sub").textContent = "Open this link on the computer where you use magpie-friday.";
     $("actions").remove();
     $("fine").innerHTML = "";
-    $("fine").append("magpie is a desktop app for macOS, Windows and Linux. ", Object.assign(document.createElement("a"), { href: "/", textContent: "Learn more" }));
+    $("fine").append("magpie-friday is a desktop app for macOS, Windows and Linux. ", Object.assign(document.createElement("a"), { href: "/", textContent: "Learn more" }));
     return;
   }
 
   // One attempt on arrival; the button is there when the browser wants a
-  // click first, or when magpie isn't installed yet.
+  // click first, or when magpie-friday isn't installed yet.
   let left = false;
   addEventListener("blur", () => (left = true));
   document.addEventListener("visibilitychange", () => document.hidden && (left = true));
   setTimeout(() => { location.href = link; }, 350);
   setTimeout(() => {
-    if (!left) $("sub").textContent = "Nothing happened? Open it below, or install magpie first.";
+    if (!left) $("sub").textContent = "Nothing happened? Open it below, or install magpie-friday first.";
   }, 2600);
 })();
 </script>

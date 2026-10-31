@@ -5,14 +5,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/mcpauth/mcpauthtest"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/mcpauth/mcpauthtest"
 )
 
 // A WSL agent under NAT reaches the gateway at Windows' address, where a
 // request without an enabled gateway key is refused with a 401, which an
-// MCP client takes for the server asking it to sign in. A server magpie
+// MCP client takes for the server asking it to sign in. A server magpie-friday
 // signed in to is given to it at /mcp/<name> with the key the gateway is
 // shared with, as its models are; this machine's agent stays keyless, and
 // so does the WSL one while nothing is shared.

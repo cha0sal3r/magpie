@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // sentOutputEffort is the output_config.effort a Messages body asks for.
@@ -29,7 +29,7 @@ func sentOutputEffort(t *testing.T, body []byte) string {
 // DeepSeek's Anthropic endpoint ignores budget_tokens and takes the
 // effort in output_config.effort alone (api-docs.deepseek.com,
 // guides/anthropic_api and guides/thinking_mode): a client that asks by
-// budget, as DSH's magpie-anthropic route does through pi-ai, has its
+// budget, as DSH's magpie-friday-anthropic route does through pi-ai, has its
 // level said there too, fitted to DeepSeek's low, high and max (#3298).
 // The same model behind another host, and another vendor's model, go as
 // they were sent.

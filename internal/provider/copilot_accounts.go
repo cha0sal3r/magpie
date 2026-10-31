@@ -1,8 +1,8 @@
 package provider
 
 // Several Copilot subscriptions. Copilot's editors and its CLI keep one
-// GitHub account, which magpie only ever reads. Each further account is
-// signed in by magpie itself, with GitHub's device code under the Copilot
+// GitHub account, which magpie-friday only ever reads. Each further account is
+// signed in by magpie-friday itself, with GitHub's device code under the Copilot
 // editors' own OAuth app, and its GitHub token kept in logins.json; the
 // editors' own account is remembered there too, with nothing of its token,
 // so it can stand behind another or be turned off.
@@ -21,7 +21,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
 )
 
 // copilotConfigDir is where the Copilot editors keep their sign-in.
@@ -33,7 +33,7 @@ func copilotConfigDir() string {
 	return filepath.Join(home, ".config")
 }
 
-// CopilotAccountName is how a Copilot account is known in magpie: its
+// CopilotAccountName is how a Copilot account is known in magpie-friday: its
 // GitHub login on github.com (host ""), "<login>@<name>.ghe.com" on an
 // enterprise's (#1220). One login on two hosts is two accounts, each with
 // its own token, plan and usage, so the name every list, switch, card and
@@ -46,7 +46,7 @@ func CopilotAccountName(login, host string) string {
 }
 
 // copilotSavedName is a saved Copilot account's name as CopilotAccountName
-// gives it. One magpie signed in on an enterprise's host before #1220 was
+// gives it. One magpie-friday signed in on an enterprise's host before #1220 was
 // saved under its login alone, its host only in its auth: read, it takes
 // the host into its name, kept under it from its next write. The agent's
 // own (no auth) and one on github.com are as they were.
@@ -189,7 +189,7 @@ func moveKey[V any](m map[string]V, from, to string) bool {
 	return true
 }
 
-// copilotSaved is the sign-in of an account magpie keeps.
+// copilotSaved is the sign-in of an account magpie-friday keeps.
 func copilotSaved(l savedLogin) (copilotApp, bool) {
 	var app copilotApp
 	if l.own() || json.Unmarshal(l.Auth, &app) != nil || app.Token == "" {
@@ -264,7 +264,7 @@ func forgetCopilotLogin(user string) error {
 	return forgetSideLogin("copilot", user, copilotSide(), nil)
 }
 
-// addCopilotLogin keeps an account magpie just signed in, on host ("" for
+// addCopilotLogin keeps an account magpie-friday just signed in, on host ("" for
 // github.com), under its login and host: a same-named account on another
 // host is another account, neither written over nor dropped as the
 // agent's own (#1220).
@@ -285,9 +285,9 @@ func addCopilotLogin(user, plan, token, host string) error {
 }
 
 // copilotEditorRefused says GitHub refused the editors' sign-in of user on
-// host: a stale token in apps.json, which a sign-in from magpie is not let
+// host: a stale token in apps.json, which a sign-in from magpie-friday is not let
 // go for (#1238). The Copilot CLI's, when it is the account's own sign-in,
-// is the same: a revoked one is signed in again in magpie (echo_ts).
+// is the same: a revoked one is signed in again in magpie-friday (echo_ts).
 func copilotEditorRefused(cfg, user, host string) bool {
 	who := copilotApp{User: user, Host: host}
 	gh, ghe := copilotEditorLogins(cfg)
@@ -301,7 +301,7 @@ func copilotEditorRefused(cfg, user, host string) bool {
 }
 
 // copilotProbeEditor asks GitHub whether it still takes the editors' sign-in
-// of user on host, when magpie has not asked yet: a sign-in from magpie of
+// of user on host, when magpie-friday has not asked yet: a sign-in from magpie-friday of
 // the same account is kept only when it doesn't (addCopilotLogin).
 func copilotProbeEditor(ctx context.Context, user, host string) {
 	gh, ghe := copilotEditorLogins(copilotConfigDir())

@@ -15,7 +15,7 @@ import (
 
 // TestClipboardReadBack builds testdata/clipboard_probe.c with the copy and
 // the read back the app runs (clipboard_gtk3.h) and copies in a real GTK 3
-// window on the Wayland compositor the test runs under. magpie's copy is
+// window on the Wayland compositor the test runs under. magpie-friday's copy is
 // read back whole. Wails' copy (CLIPBOARD, then PRIMARY) is read back empty
 // where the compositor has no primary selection, as on #1881's KDE Plasma
 // with middle-click paste off, and the read back then says no copy was
@@ -64,8 +64,8 @@ func TestClipboardReadBack(t *testing.T) {
 		return primary, read, held, out
 	}
 	text := "claude --resume 1881 «剪贴板»"
-	t.Run("magpie", func(t *testing.T) {
-		_, read, held, _ := run(t, "magpie", text)
+	t.Run("magpie-friday", func(t *testing.T) {
+		_, read, held, _ := run(t, "magpie-friday", text)
 		if !copyHeld(read, held, text) {
 			t.Errorf("read back %d %q, want %q", read, held, text)
 		}

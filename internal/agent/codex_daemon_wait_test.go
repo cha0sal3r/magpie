@@ -6,14 +6,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/filememo"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/filememo"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// KeepCodexDaemonCurrent looks at the daemon when magpie writes a file
+// KeepCodexDaemonCurrent looks at the daemon when magpie-friday writes a file
 // (what Codex reads at start among them), every 15s only while the daemon
 // is behind, and otherwise only now and then (#3185: a look every 15s woke
-// an idle magpie).
+// an idle magpie-friday).
 func TestCodexDaemonLooksOnWrites(t *testing.T) {
 	codexHome(t, "", `model = "gpt-5"`)
 	was := daemonCheck
@@ -36,7 +36,7 @@ func TestCodexDaemonLooksOnWrites(t *testing.T) {
 	for n := 1; n <= 2; n++ {
 		for end := time.Now().Add(5 * time.Second); looked() < n; time.Sleep(10 * time.Millisecond) {
 			if time.Now().After(end) {
-				t.Fatalf("magpie's writes had the daemon looked at %d times in 5s, want %d", looked(), n)
+				t.Fatalf("magpie-friday's writes had the daemon looked at %d times in 5s, want %d", looked(), n)
 			}
 			filememo.Forget()
 		}

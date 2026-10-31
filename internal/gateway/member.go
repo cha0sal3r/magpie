@@ -1,17 +1,17 @@
 package gateway
 
-// A reply says which of magpie's providers and models answered it (#822):
+// A reply says which of magpie-friday's providers and models answered it (#822):
 // the body's model is the vendor's own name for it (glm-5.3-flash), which
 // names neither the provider nor the group's member, so an agent that
 // counts usage by it puts every provider's glm-5.3-flash in one bucket.
 //
 // Every reply carries X-Magpie-Provider (the provider's id) and
-// X-Magpie-Model (magpie's provider/model id of the member that answered),
+// X-Magpie-Model (magpie-friday's provider/model id of the member that answered),
 // the body left as the vendor wrote it: agents read the body's model
 // themselves (Claude Code its features, Codex its catalog), so a name they
 // don't know there is not given them unasked. Settings' MemberModel, or a
 // request's X-Magpie-Response-Model: member, has the body's model say
-// magpie's id as well (memberWriter); the vendor's own name is still in
+// magpie-friday's id as well (memberWriter); the vendor's own name is still in
 // the usage log (Record.Served).
 
 import (
@@ -23,8 +23,8 @@ import (
 	"sync"
 
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 const (

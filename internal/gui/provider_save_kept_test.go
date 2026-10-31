@@ -7,11 +7,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A provider's editor saves what it shows. What it doesn't show, set from
-// the CLI or the TUI (`magpie provider set … family= website= keys=
+// the CLI or the TUI (`magpie-friday provider set … family= website= keys=
 // balance= balance.path= models.url=`), stays as the user set it: an
 // editor's Save wrote it away, so a preset's came back as the preset's and
 // a custom one's as nothing.

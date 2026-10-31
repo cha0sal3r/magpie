@@ -12,11 +12,11 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/filememo"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/filememo"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 var asideRead = func(account string) (map[string]json.RawMessage, error) {
@@ -64,7 +64,7 @@ type asideConnection struct {
 func newAsideConnection(at place) *asideConnection {
 	id := asideChoice(at)
 	dir := asideAccountDir(at, id)
-	// what magpie remembers of an account's settings is that account's:
+	// what magpie-friday remembers of an account's settings is that account's:
 	// u0's keeps the name it had before there was a choice
 	record := "aside-state.json"
 	if id != 0 {
@@ -114,7 +114,7 @@ func (c *asideConnection) reconcileSettings(snapshot map[string]json.RawMessage,
 			if len(field.Pending) == 0 || !asideSameSetting(asideRaw(c.snapshot, asideFieldPath(key)), field.Pending) {
 				continue
 			}
-			if strings.HasPrefix(asideSelection(field.Pending), "magpie/") {
+			if strings.HasPrefix(asideSelection(field.Pending), "magpie-friday/") {
 				field.Last = field.Pending
 				field.Pending = nil
 				r.Fields[key] = field
@@ -146,14 +146,14 @@ func asideOwnOptions(path, cur string) []Option {
 	sort.Strings(names)
 	for _, p := range names {
 		v := s.Providers[p]
-		if p == "magpie" {
+		if p == "magpie-friday" {
 			continue
 		}
 		for _, m := range v.Models {
 			out = append(out, Option{Value: p + "/" + m.ID, Label: m.Name, Group: p})
 		}
 	}
-	if cur != "" && !strings.HasPrefix(cur, "magpie/") {
+	if cur != "" && !strings.HasPrefix(cur, "magpie-friday/") {
 		found := false
 		for _, o := range out {
 			if o.Value == cur {
@@ -244,7 +244,7 @@ func (c *asideConnection) load() (asideRecord, error) {
 		return r, nil
 	}
 	// Legacy stash entries exist only for selections explicitly replaced by
-	// magpie. Reading them does not adopt fields with no restore point.
+	// magpie-friday. Reading them does not adopt fields with no restore point.
 	legacy := stashLoad()
 	for _, key := range append([]string{"model", "image"}, asideRoles...) {
 		if _, ok := r.Fields[key]; ok {
@@ -256,7 +256,7 @@ func (c *asideConnection) load() (asideRecord, error) {
 		}
 		value, ok := legacy[c.at.key(name)]
 		p, m, valid := strings.Cut(value, "/")
-		if !ok || !valid || p == "" || m == "" || p == "magpie" {
+		if !ok || !valid || p == "" || m == "" || p == "magpie-friday" {
 			continue
 		}
 		raw, _ := edit.GetJSON(c.path, asideFieldPath(key))
@@ -296,7 +296,7 @@ func (c *asideConnection) provider() (string, string) {
 	if len(bytes.TrimSpace(b)) != 0 && !json.Valid(b) {
 		return "foreign", "Aside's provider configuration could not be read"
 	}
-	raw, ok := edit.GetJSON(c.models, "providers.magpie")
+	raw, ok := edit.GetJSON(c.models, "providers.magpie-friday")
 	if !ok {
 		return "disconnected", ""
 	}
@@ -310,16 +310,16 @@ func (c *asideConnection) provider() (string, string) {
 		return "invalid", "Aside's provider configuration could not be read"
 	}
 	if p.Key == "" || p.URL == "" {
-		return "foreign", "Aside's magpie provider has no ownership credential; it will not be overwritten"
+		return "foreign", "Aside's magpie-friday provider has no ownership credential; it will not be overwritten"
 	}
 	if p.Key != gateway.TokenFor("aside") && p.Key != agentKeyAt("aside", c.at.gw()) {
-		return "foreign", "Aside's magpie provider belongs to another configuration; it will not be overwritten"
+		return "foreign", "Aside's magpie-friday provider belongs to another configuration; it will not be overwritten"
 	}
 	if !sameGateway(p.URL, c.at.v1()) {
-		return "invalid", "Aside's magpie provider points to another gateway; reconnect explicitly to use this one"
+		return "invalid", "Aside's magpie-friday provider points to another gateway; reconnect explicitly to use this one"
 	}
 	if p.API == "" || len(p.Models) == 0 {
-		return "invalid", "Aside's magpie provider has an incomplete model catalog; reconnect the provider"
+		return "invalid", "Aside's magpie-friday provider has an incomplete model catalog; reconnect the provider"
 	}
 	return "connected", ""
 }
@@ -342,9 +342,9 @@ func (c *asideConnection) connectLocked() error {
 		return fmt.Errorf("%s", detail)
 	}
 	if status == "connected" {
-		return syncJSON(c.models, "providers.magpie", c.kept())
+		return syncJSON(c.models, "providers.magpie-friday", c.kept())
 	}
-	return edit.SetJSON(c.models, edit.KV{Path: "providers.magpie", Value: c.kept()()})
+	return edit.SetJSON(c.models, edit.KV{Path: "providers.magpie-friday", Value: c.kept()()})
 }
 
 func (c *asideConnection) sync() error {
@@ -354,10 +354,10 @@ func (c *asideConnection) sync() error {
 	if status != "connected" {
 		return nil
 	}
-	return syncJSON(c.models, "providers.magpie", c.kept())
+	return syncJSON(c.models, "providers.magpie-friday", c.kept())
 }
 
-// kept is the block with what else Aside's providers.magpie holds kept
+// kept is the block with what else Aside's providers.magpie-friday holds kept
 // (theirsKept).
 func (c *asideConnection) kept() func() any {
 	return piBlockKept(c.models, c.block)
@@ -377,7 +377,7 @@ func (c *asideConnection) state() NativeState {
 	for _, key := range append([]string{"model", "image"}, asideRoles...) {
 		value := c.value(key)
 		f := NativeField{Value: value, Status: "unmanaged"}
-		if strings.HasPrefix(value, "magpie/") {
+		if strings.HasPrefix(value, "magpie-friday/") {
 			f.Status = "managed"
 			if owned, ok := r.Fields[key]; !ok || len(owned.Before) == 0 {
 				f.Status = "missingRestorePoint"
@@ -396,9 +396,9 @@ func (c *asideConnection) state() NativeState {
 		} else if _, ok := r.Fields[key]; ok {
 			f.Status = "userChanged"
 		}
-		if strings.HasPrefix(value, "magpie/") && status == "disconnected" {
+		if strings.HasPrefix(value, "magpie-friday/") && status == "disconnected" {
 			f.Status = "unavailable"
-			f.Detail = "The magpie provider is missing; reconnect the provider without changing this selection"
+			f.Detail = "The magpie-friday provider is missing; reconnect the provider without changing this selection"
 		}
 		if owned, ok := r.Fields[key]; ok && len(owned.Pending) > 0 {
 			f.Status = "pendingRestart"
@@ -420,7 +420,7 @@ func asideImageOptions() []Option {
 		}
 		for _, m := range gateway.Drawers(p) {
 			ref := p.ID + "/" + m.ID
-			out = append(out, Option{Value: "magpie/" + ref, Ref: ref, Label: m.Name, Group: p.Name, Icon: p.Icon, Note: "image generation · via magpie"})
+			out = append(out, Option{Value: "magpie-friday/" + ref, Ref: ref, Label: m.Name, Group: p.Name, Icon: p.Icon, Note: "image generation · via magpie-friday"})
 		}
 	}
 	return out
@@ -429,8 +429,8 @@ func asideImageOptions() []Option {
 func asideImageOffered(value string) bool {
 	// a ChatGPT account's gpt-image-2.5, offered before #1865, is its one
 	// GPT Image, which draws the same
-	if ref, ok := strings.CutPrefix(value, "magpie/"); ok {
-		value = "magpie/" + gateway.ListedDrawer(ref)
+	if ref, ok := strings.CutPrefix(value, "magpie-friday/"); ok {
+		value = "magpie-friday/" + gateway.ListedDrawer(ref)
 	}
 	for _, o := range asideImageOptions() {
 		if o.Value == value {
@@ -449,7 +449,7 @@ func (c *asideConnection) validateSelection(key, value string) (string, error) {
 		return value, nil
 	}
 	value = strings.TrimSpace(value)
-	if strings.HasPrefix(value, "magpie/") {
+	if strings.HasPrefix(value, "magpie-friday/") {
 		if _, err := a.Spell(key, value); err != nil {
 			return "", err
 		}
@@ -458,7 +458,7 @@ func (c *asideConnection) validateSelection(key, value string) (string, error) {
 	if !ok || p == "" || m == "" {
 		return "", fmt.Errorf("expected provider/model")
 	}
-	if key == "image" && p == "magpie" && !asideImageOffered(value) {
+	if key == "image" && p == "magpie-friday" && !asideImageOffered(value) {
 		return "", fmt.Errorf("%s is not an image generation model", value)
 	}
 	return value, nil
@@ -498,14 +498,14 @@ func (c *asideConnection) apply(key, value string) error {
 	if len(before) == 0 {
 		before = json.RawMessage("null")
 	}
-	if _, ok := r.Fields[key]; ok && !strings.HasPrefix(asideSelection(before), "magpie/") {
+	if _, ok := r.Fields[key]; ok && !strings.HasPrefix(asideSelection(before), "magpie-friday/") {
 		delete(r.Fields, key)
 	}
-	if strings.HasPrefix(value, "magpie/") {
+	if strings.HasPrefix(value, "magpie-friday/") {
 		if err := c.connectLocked(); err != nil {
 			return err
 		}
-		if _, ok := r.Fields[key]; !ok && !strings.HasPrefix(asideSelection(before), "magpie/") {
+		if _, ok := r.Fields[key]; !ok && !strings.HasPrefix(asideSelection(before), "magpie-friday/") {
 			r.Fields[key] = asideOwned{Before: append(json.RawMessage(nil), before...)}
 			if err := c.save(r); err != nil {
 				return err
@@ -573,13 +573,13 @@ func (c *asideConnection) apply(key, value string) error {
 		return fmt.Errorf("Aside did not apply %s; its current selection is %s", key, c.value(key))
 	}
 	if key == "effort" {
-		if owned, ok := r.Fields["model"]; ok && strings.HasPrefix(asideSelection(got), "magpie/") {
+		if owned, ok := r.Fields["model"]; ok && strings.HasPrefix(asideSelection(got), "magpie-friday/") {
 			owned.Last = append(json.RawMessage(nil), got...)
 			r.Fields["model"] = owned
 		}
 	}
 	if owned, ok := r.Fields[key]; ok {
-		if strings.HasPrefix(value, "magpie/") {
+		if strings.HasPrefix(value, "magpie-friday/") {
 			owned.Last = append(json.RawMessage(nil), got...)
 			owned.Pending = nil
 			r.Fields[key] = owned
@@ -638,7 +638,7 @@ func (c *asideConnection) planLocked() (*DisconnectPlan, error) {
 	for _, key := range append([]string{"model", "image"}, asideRoles...) {
 		path := asideFieldPath(key)
 		now := asideRaw(saved, path)
-		if !strings.HasPrefix(asideSelection(now), "magpie/") {
+		if !strings.HasPrefix(asideSelection(now), "magpie-friday/") {
 			continue
 		}
 		owned, ok := r.Fields[key]
@@ -661,7 +661,7 @@ func (c *asideConnection) planLocked() (*DisconnectPlan, error) {
 	if err != nil {
 		return nil, err
 	}
-	without, err := edit.PatchJSON(models, nil, []string{"providers.magpie"})
+	without, err := edit.PatchJSON(models, nil, []string{"providers.magpie-friday"})
 	if err != nil {
 		return nil, err
 	}

@@ -18,7 +18,7 @@ function strings() {
     if (!fs.existsSync(file)) continue;
     const src = fs.readFileSync(file, "utf8");
     let dict;
-    new Function("magpie", src)({ strings: (d) => { dict = d; } });
+    new Function("magpie-friday", src)({ strings: (d) => { dict = d; } });
     files.push({ file: path.relative(assets, file), src, dict });
     for (const [lang, words] of Object.entries(dict)) {
       const to = (I18N[lang] ||= {});

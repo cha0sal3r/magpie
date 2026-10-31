@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // groupBenchUpstream answers an Anthropic request as it asked: streamed
@@ -50,7 +50,7 @@ func (u groupBenchUpstream) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // groupBenchCatalog is a catalog of providers serving models each, the
-// same model ids at each (so magpie finds a group of each model), and
+// same model ids at each (so magpie-friday finds a group of each model), and
 // groups of one, four and eight members, one whose first member fails
 // every time, and one whose first member is resting.
 func groupBenchCatalog(b *testing.B, providers, models int) {
@@ -155,7 +155,7 @@ func groupBenchServer(b *testing.B, c groupBenchCase) func() {
 
 // BenchmarkGroupOverhead is a request to a provider's model and the same
 // request to routing groups, streamed and not, with a long conversation:
-// what magpie adds for a group is the difference. cpu-ms/op is the CPU
+// what magpie-friday adds for a group is the difference. cpu-ms/op is the CPU
 // the process spent, which a busy machine doesn't change as it does the
 // wall time.
 func BenchmarkGroupOverhead(b *testing.B) {

@@ -34,10 +34,10 @@ func TestConfigNeverRelative(t *testing.T) {
 	t.Setenv(homeVar(), home)
 	t.Setenv("XDG_CONFIG_HOME", "relative/cfg")
 	t.Setenv("XDG_CACHE_HOME", "relative/cache")
-	if got, want := Config(), filepath.Join(home, ".config", "magpie"); got != want {
+	if got, want := Config(), filepath.Join(home, ".config", "magpie-friday"); got != want {
 		t.Errorf("Config() = %q, want %q", got, want)
 	}
-	if got, want := Cache(), filepath.Join(home, ".cache", "magpie"); got != want {
+	if got, want := Cache(), filepath.Join(home, ".cache", "magpie-friday"); got != want {
 		t.Errorf("Cache() = %q, want %q", got, want)
 	}
 	t.Setenv(homeVar(), "")
@@ -49,8 +49,8 @@ func TestConfigNeverRelative(t *testing.T) {
 	Config()
 }
 
-// A relative folder variable reads as unset inside magpie and stays in the
-// environment for the programs magpie starts; one a login shell lends later
+// A relative folder variable reads as unset inside magpie-friday and stays in the
+// environment for the programs magpie-friday starts; one a login shell lends later
 // (proc.UserPath sets it with os.Setenv) is read the same way.
 func TestRelativeFolderVariablesIgnoredNotUnset(t *testing.T) {
 	t.Setenv(homeVar(), t.TempDir())

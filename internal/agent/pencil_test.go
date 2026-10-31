@@ -10,8 +10,8 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // pencilUser is ~/.pencil/models.json as Pencil writes a custom provider
@@ -99,7 +99,7 @@ func pencilFormat(t *testing.T, raw []byte) pencilProvider {
 }
 
 // Pencil (pen.dev) reads custom providers from ~/.pencil/models.json in
-// Pi's format. magpie adds itself as the provider "magpie", every model on
+// Pi's format. magpie-friday adds itself as the provider "magpie-friday", every model on
 // openai-completions at the gateway, and keeps the user's own providers,
 // keys and keys of Pencil's; off, it takes only its own out.
 func TestPencilModels(t *testing.T) {

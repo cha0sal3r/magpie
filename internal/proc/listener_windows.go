@@ -13,7 +13,7 @@ import (
 // When nothing listens the cmdlet fails with ObjectNotFound, and with
 // -ErrorAction SilentlyContinue PowerShell still exits 1 for it, so a port
 // nobody holds read as an error and a take-over waited for the older
-// magpie's port to be let go until it said "stuck" (#2231). That one
+// magpie-friday's port to be let go until it said "stuck" (#2231). That one
 // failure is no listener, as lsof and /proc say it; any other failure, or
 // a PowerShell cut short, is still an error.
 func listeningOn(ctx context.Context, port int) ([]int, error) {

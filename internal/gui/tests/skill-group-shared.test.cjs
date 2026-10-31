@@ -2,7 +2,7 @@
 // #1862 (WardLu): a group's chips and its rows' say the same thing of a
 // skill kept in ~/.agents/skills, which an agent (Codex here) reads itself
 // whatever is ticked. The group's chip counts, gives and takes only the
-// skills magpie decides for that agent: turned off, it isn't sent the one
+// skills magpie-friday decides for that agent: turned off, it isn't sent the one
 // Codex reads itself, and says Codex still has it. The row's chip for that
 // one is lit with a lock, not greyed like a switch. A group whose skills
 // Codex reads every one of itself has a locked chip too, which sends
@@ -59,7 +59,7 @@ const L = {
 };
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
-  test(engine + ": a group's chips count only what magpie decides", async (t) => {
+  test(engine + ": a group's chips count only what magpie-friday decides", async (t) => {
     assert(["chromium", "webkit"].includes(engine), "BROWSER must be chromium or webkit");
     const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: process.env.PLAYWRIGHT_CHANNEL || "chromium" }));
     t.after(() => browser.close());
@@ -68,7 +68,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         const w = L[lang];
         const state = {
           lib: {
-            dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+            dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
             agents: [agent("claude", "Claude Code", "claudecode-color"), agent("codex", "Codex", "openai")],
             instructions: { agents: [], sets: [] }, servers: [], foundServers: [], projects: [], foundSkills: [], problems: [],
             skills: [
@@ -96,7 +96,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
 
         // the heading says it before any click
         assert.match(await head.locator(".who .sub").textContent(), new RegExp(w.note.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&")));
-        // Codex has the one magpie decides (cherry): lit, and its tip says
+        // Codex has the one magpie-friday decides (cherry): lit, and its tip says
         // it reads the other itself
         assert.equal(await chip(head, "codex").getAttribute("aria-pressed"), "true");
         assert.equal(await chip(head, "codex").evaluate((c) => c.classList.contains("some")), false);

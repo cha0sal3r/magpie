@@ -12,7 +12,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/yetone/magpie/internal/steady"
+	"github.com/cha0sal3r/magpie-friday/internal/steady"
 )
 
 type entry struct {
@@ -38,7 +38,7 @@ var (
 	mu   sync.Mutex
 	seen = map[string]entry{}
 	// holds is how many requests hold what was read (Hold); gen is moved
-	// on by every write magpie makes (Forget)
+	// on by every write magpie-friday makes (Forget)
 	holds int
 	gen   uint64
 	// gone is the files found not there last time looked at, not waited
@@ -82,7 +82,7 @@ func Hold() (release func()) {
 	})
 }
 
-// Forget has every file looked at again on its next read: magpie wrote
+// Forget has every file looked at again on its next read: magpie-friday wrote
 // one.
 func Forget() {
 	mu.Lock()
@@ -106,11 +106,11 @@ func wake() {
 // written is closed, and made anew, by every Forget.
 var written = make(chan struct{})
 
-// Written is closed by the next write magpie makes (Forget), or by
-// another process's that Watch is told of: a loop that follows magpie's
+// Written is closed by the next write magpie-friday makes (Forget), or by
+// another process's that Watch is told of: a loop that follows magpie-friday's
 // files waits on it, and looks at them only every so often (OthersEvery)
 // for what another process wrote, rather than polling each second for its
-// own writes too (#3185: those polls woke an idle magpie ~12 times a
+// own writes too (#3185: those polls woke an idle magpie-friday ~12 times a
 // second).
 func Written() <-chan struct{} {
 	mu.Lock()
@@ -126,7 +126,7 @@ var gens atomic.Uint64
 func Gen() uint64 { return gens.Load() }
 
 // Look has the file at path looked at on its next read, even while a
-// request holds what was read (Hold): another magpie may have written it,
+// request holds what was read (Hold): another magpie-friday may have written it,
 // which Forget, moved on by this one's writes alone, can't know of.
 func Look(path string) {
 	mu.Lock()

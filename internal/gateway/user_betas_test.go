@@ -9,7 +9,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // betaRelay is an Anthropic endpoint that turns away betas it doesn't
@@ -120,8 +120,8 @@ func TestUserBetasAlone(t *testing.T) {
 }
 
 // Claude Code signed in to claude.ai asks oauth-2025-04-20 with its
-// sign-in, which magpie never passes on: a provider gets the other betas,
-// as Claude Code with magpie's key asks them, and an oauth beta the user
+// sign-in, which magpie-friday never passes on: a provider gets the other betas,
+// as Claude Code with magpie-friday's key asks them, and an oauth beta the user
 // set on the provider (header.anthropic-beta) still goes.
 func TestSignInBetaStaysWithMagpie(t *testing.T) {
 	fresh(t)

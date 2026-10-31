@@ -17,7 +17,7 @@ package provider
 // the scope date/service/tc3_request, and a key derived from "TC3" and
 // the SecretKey. TestTC3SignMatchesDoc pins the doc's own example.
 //
-// Not tried against the real API: magpie has no Tencent Cloud account.
+// Not tried against the real API: magpie-friday has no Tencent Cloud account.
 // What is read is the docs' reply: TotalUsed of CycleQuota (else
 // TotalQuota), resetting at TokenSummary's CycleEndTime.
 
@@ -159,7 +159,7 @@ func tencentPlanCards(ctx context.Context, p Provider, region string, now func()
 		} `json:"Response"`
 	}
 	if err == nil && (json.Unmarshal(raw, &list) != nil || list.Response == nil) {
-		err = fmt.Errorf("Tencent Cloud DescribeTokenPlanList: a reply magpie can't read: %s", shapeOf(raw))
+		err = fmt.Errorf("Tencent Cloud DescribeTokenPlanList: a reply magpie-friday can't read: %s", shapeOf(raw))
 	}
 	tag := keyTag("tencent "+region, p.AccessKeyID)
 	if err != nil {

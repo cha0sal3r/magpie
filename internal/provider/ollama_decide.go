@@ -6,7 +6,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
 // Ollama (0.35.0 and later, 0.40.5 for its cloud models) serves decision

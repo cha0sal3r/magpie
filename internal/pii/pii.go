@@ -4,7 +4,7 @@
 //
 // The model is OpenAI's Privacy Filter (Apache-2.0), 1.6 GB as the q8 GGUF
 // LocalAI made of it, run by pf-serve (native/privacy-filter), a program
-// built from privacy-filter.cpp on ggml. Neither ships with magpie: both
+// built from privacy-filter.cpp on ggml. Neither ships with magpie-friday: both
 // are downloaded when the user turns the model on, each checked against
 // the sha256 pinned here, and the setting (settings.RedactModel) is saved
 // only once both are. pf-serve is started on the first request that needs
@@ -14,7 +14,7 @@
 // A process of its own, not linked in: 1.7 GB the gateway would otherwise
 // hold for good, and a GPU driver's crash that would end the gateway with
 // it. One that dies is started again; one that dies on the GPU is started
-// on the CPU for the rest of magpie's run.
+// on the CPU for the rest of magpie-friday's run.
 package pii
 
 import (
@@ -24,7 +24,7 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
 )
 
 // The model, at a revision of LocalAI's repo, so the file is always the
@@ -42,7 +42,7 @@ var (
 var (
 	serveTag  = "pf-v2"
 	oldTags   = []string{"pf-v1"}
-	serveBase = "https://github.com/yetone/magpie/releases/download/"
+	serveBase = "https://github.com/cha0sal3r/magpie-friday/releases/download/"
 	serveSHA  = map[string]string{
 		"darwin-amd64":  "4b68c9f06b14b909ec35e491ba58fcb06df500a5a0985465dd1115f9e7a5d753",
 		"darwin-arm64":  "13ea258cc139dd0fc024f8eab70ee3566aa12ce6b5ab71f890b68bc8507159d3",
@@ -61,7 +61,7 @@ func Supported() bool { return serveSHA[target()] != "" }
 // Size is how much turning the model on downloads.
 func Size() int64 { return modelSize }
 
-// dir is where the model and pf-serve are kept: magpie's cache, since
+// dir is where the model and pf-serve are kept: magpie-friday's cache, since
 // either can be downloaded again, and never the settings' folder, which a
 // sync carries to the user's other computers.
 var dir = func() string { return filepath.Join(appdir.Cache(), "privacy-filter") }
@@ -104,7 +104,7 @@ func Installed() bool {
 }
 
 // ErrNotInstalled is what a request gets when the model is on in the
-// settings and isn't on disk (magpie's cache was cleared).
+// settings and isn't on disk (magpie-friday's cache was cleared).
 var ErrNotInstalled = errors.New("the local masking model isn't downloaded; download it again in Settings → Privacy, or turn it off")
 
 // Status is what Settings → Privacy shows of the model.

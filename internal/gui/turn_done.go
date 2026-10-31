@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 // turnDoneText is the notification that an agent's turn is done (itieniu
@@ -71,7 +71,7 @@ func turnTook(lang string, d time.Duration) string {
 	return fmt.Sprintf("%d%s", sec, u.s)
 }
 
-// agentName is an agent's name as magpie shows it, its id for one it
+// agentName is an agent's name as magpie-friday shows it, its id for one it
 // doesn't know.
 func agentName(id string) string {
 	for _, a := range agent.All() {

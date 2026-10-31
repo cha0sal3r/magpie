@@ -9,7 +9,7 @@ import (
 )
 
 // #973: a junction, what Windows links with when symlinks aren't allowed,
-// is a link to the library's skill: magpie's own, and taking it away
+// is a link to the library's skill: magpie-friday's own, and taking it away
 // leaves the skill where it is.
 func TestJunctionIsALink(t *testing.T) {
 	h := sandbox(t)
@@ -23,7 +23,7 @@ func TestJunctionIsALink(t *testing.T) {
 		t.Errorf("link target %q %v", to, ok)
 	}
 	if !ours(p, "pdf") {
-		t.Error("magpie's junction isn't its own")
+		t.Error("magpie-friday's junction isn't its own")
 	}
 	if _, err := os.Stat(filepath.Join(p, "SKILL.md")); err != nil {
 		t.Errorf("the skill isn't read through the junction: %v", err)

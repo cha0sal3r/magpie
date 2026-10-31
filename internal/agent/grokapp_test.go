@@ -10,9 +10,9 @@ import (
 
 	toml "github.com/pelletier/go-toml/v2"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // grokAppConfig is agent-home/config.toml as Grok App 0.2.39 writes it
@@ -38,7 +38,7 @@ context_window = 1000000
 `
 
 // grokAppHome is a HOME with Grok App's data folder under GROK_APP_HOME,
-// its agent-home/config.toml holding body, and magpie with a provider of
+// its agent-home/config.toml holding body, and magpie-friday with a provider of
 // two models, one of them with effort levels.
 func grokAppHome(t *testing.T, body string) (home, path string) {
 	t.Helper()
@@ -48,7 +48,7 @@ func grokAppHome(t *testing.T, body string) (home, path string) {
 	t.Setenv("XDG_CONFIG_HOME", filepath.Join(home, ".config"))
 	t.Setenv("XDG_CACHE_HOME", filepath.Join(home, ".cache"))
 	t.Setenv("GROK_APP_HOME", filepath.Join(home, "grok-app-data"))
-	// images only where the model takes them itself, not where magpie's
+	// images only where the model takes them itself, not where magpie-friday's
 	// vision model describes them
 	was := provider.Described
 	provider.Described = func() bool { return false }
@@ -75,7 +75,7 @@ func grokAppHome(t *testing.T, body string) (home, path string) {
 // grokAppSections reads config.toml the way Grok App itself does
 // (providers.rs parse_model_sections and unquote): line by line, a
 // [model.<id>] header starting a section, each `key = value` taken with a
-// quoted value decoded as a JSON string — so what magpie writes has to be
+// quoted value decoded as a JSON string — so what magpie-friday writes has to be
 // what that reader takes, not only valid TOML.
 func grokAppSections(t *testing.T, path string) map[string]map[string]string {
 	t.Helper()
@@ -117,8 +117,8 @@ func grokAppSections(t *testing.T, path string) map[string]map[string]string {
 	return out
 }
 
-// Connecting Grok App adds magpie as one of its provider channels — the
-// gateway, with a key naming Grok App, and every one of magpie's models in
+// Connecting Grok App adds magpie-friday as one of its provider channels — the
+// gateway, with a key naming Grok App, and every one of magpie-friday's models in
 // the App's own app_models form — and leaves the route alone. The App's own
 // channel stays in the file, and Disconnect gives the file back byte for
 // byte.
@@ -137,11 +137,11 @@ func TestGrokApp(t *testing.T) {
 		opts[o.Value] = o
 	}
 	if opts["deepseek"].Direct != "api.deepseek.com" || opts["deepseek"].Label != "DeepSeek" ||
-		opts["grok"].Value == "" || opts["magpie/kimi/k2"].Value == "" {
+		opts["grok"].Value == "" || opts["magpie-friday/kimi/k2"].Value == "" {
 		t.Fatalf("options: %v", opts)
 	}
 
-	if err := a.Pick("model", "magpie/kimi/k2"); err != nil {
+	if err := a.Pick("model", "magpie-friday/kimi/k2"); err != nil {
 		t.Fatal(err)
 	}
 	var m map[string]any
@@ -152,13 +152,13 @@ func TestGrokApp(t *testing.T) {
 	if d := m["models"].(map[string]any); d["default"] != "deepseek" || d["max_retries"] != int64(3) {
 		t.Fatalf("[models] route changed: %v", d)
 	}
-	ch := m["model"].(map[string]any)["magpie"].(map[string]any)
+	ch := m["model"].(map[string]any)["magpie-friday"].(map[string]any)
 	// Grok Build reads these two bare: a quoted context window is what the
 	// App heals as broken (#538 of its own), and the effort gate a bool
 	if ch["context_window"] != int64(262144) || ch["supports_reasoning_effort"] != true {
 		t.Fatalf("bare keys: %v", ch)
 	}
-	if !a.Wired() || f.Get() != "magpie/kimi/k2" {
+	if !a.Wired() || f.Get() != "magpie-friday/kimi/k2" {
 		t.Fatalf("wired %v, model %q", a.Wired(), f.Get())
 	}
 	if c := a.Check(); c != "" {
@@ -166,11 +166,11 @@ func TestGrokApp(t *testing.T) {
 	}
 
 	secs := grokAppSections(t, path)
-	s := secs["magpie"]
-	if s["model"] != "kimi/k2" || s["base_url"] != here(home).v1() || s["name"] != "magpie" ||
+	s := secs["magpie-friday"]
+	if s["model"] != "kimi/k2" || s["base_url"] != here(home).v1() || s["name"] != "magpie-friday" ||
 		s["api_key"] != agentKeyAt("grok-app", here(home).gw()) || s["api_backend"] != "chat_completions" ||
 		s["app_provider_mode"] != "generic" || s["context_window"] != "262144" || s["supports_reasoning_effort"] != "true" {
-		t.Fatalf("magpie's channel as the App reads it: %v", s)
+		t.Fatalf("magpie-friday's channel as the App reads it: %v", s)
 	}
 	if _, ok := s["app_supports_vision"]; ok {
 		t.Fatalf("k2 takes no images: %v", s)
@@ -218,11 +218,11 @@ func TestGrokApp(t *testing.T) {
 		t.Fatalf("the user's comment went:\n%s", b)
 	}
 
-	// another of magpie's models: the channel's extras are that one's
-	if err := a.Pick("model", "magpie/kimi/k2-vision"); err != nil {
+	// another of magpie-friday's models: the channel's extras are that one's
+	if err := a.Pick("model", "magpie-friday/kimi/k2-vision"); err != nil {
 		t.Fatal(err)
 	}
-	s = grokAppSections(t, path)["magpie"]
+	s = grokAppSections(t, path)["magpie-friday"]
 	if s["model"] != "kimi/k2-vision" || s["app_supports_vision"] != "true" || s["supports_reasoning_effort"] != "false" ||
 		s["app_efforts"] != "[]" {
 		t.Fatalf("k2-vision's channel: %v", s)
@@ -254,7 +254,7 @@ func grokAppSectionsOf(t *testing.T, body string) map[string]map[string]string {
 func TestGrokAppSyncKeepsTheirs(t *testing.T) {
 	home, path := grokAppHome(t, grokAppConfig)
 	a := grokApp(home)
-	if err := a.Pick("model", "magpie/kimi/k2"); err != nil {
+	if err := a.Pick("model", "magpie-friday/kimi/k2"); err != nil {
 		t.Fatal(err)
 	}
 	b, _ := os.ReadFile(path)
@@ -270,7 +270,7 @@ func TestGrokAppSyncKeepsTheirs(t *testing.T) {
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	s := grokAppSections(t, path)["magpie"]
+	s := grokAppSections(t, path)["magpie-friday"]
 	if s["model"] != "kimi/k2-vision" || s["app_supports_vision"] != "true" {
 		t.Fatalf("the App's pick went: %v", s)
 	}
@@ -289,12 +289,12 @@ func TestGrokAppSyncKeepsTheirs(t *testing.T) {
 	}
 }
 
-// Picking the App's own route in magpie does not take the App over and does
+// Picking the App's own route in magpie-friday does not take the App over and does
 // not remove the custom provider. The route stays the one the App had.
 func TestGrokAppOwnRouteStays(t *testing.T) {
 	home, path := grokAppHome(t, grokAppConfig)
 	a := grokApp(home)
-	if err := a.Pick("model", "magpie/kimi/k2"); err != nil {
+	if err := a.Pick("model", "magpie-friday/kimi/k2"); err != nil {
 		t.Fatal(err)
 	}
 	def, _, rerr := grokAppRead(path)
@@ -302,14 +302,14 @@ func TestGrokAppOwnRouteStays(t *testing.T) {
 		t.Fatalf("connecting moved the route: %q err %v", def, rerr)
 	}
 	// one of the App's own routes the picker offers is taken: it is the
-	// route, and magpie's channel goes, as picking another provider leaves
-	// magpie on every other agent
+	// route, and magpie-friday's channel goes, as picking another provider leaves
+	// magpie-friday on every other agent
 	if err := a.Pick("model", "grok"); err != nil {
 		t.Fatalf("picking the official route: %v", err)
 	}
 	secs := grokAppSections(t, path)
-	if _, ok := secs["magpie"]; ok || a.Field("model").Get() != "grok" {
-		t.Fatalf("magpie's channel stayed: model %q\n%v", a.Field("model").Get(), secs["magpie"])
+	if _, ok := secs["magpie-friday"]; ok || a.Field("model").Get() != "grok" {
+		t.Fatalf("magpie-friday's channel stayed: model %q\n%v", a.Field("model").Get(), secs["magpie-friday"])
 	}
 	def, _, rerr = grokAppRead(path)
 	if rerr != nil || def != "grok" {
@@ -322,7 +322,7 @@ func TestGrokAppOwnRouteStays(t *testing.T) {
 
 // Disconnect puts back the route the App was on before Connect through the
 // model field (connect.was) when unwire left none: a route Use set to
-// magpie with nothing stashed to put back. Set refused an own route, so
+// magpie-friday with nothing stashed to put back. Set refused an own route, so
 // Disconnect failed half done.
 func TestGrokAppDisconnectPutsTheRouteBack(t *testing.T) {
 	home, path := grokAppHome(t, grokAppConfig)
@@ -330,7 +330,7 @@ func TestGrokAppDisconnectPutsTheRouteBack(t *testing.T) {
 	if err := a.Connect(); err != nil {
 		t.Fatal(err)
 	}
-	if err := edit.SetTOMLKey(path, "models", "default", magpieID); err != nil { // Use on magpie
+	if err := edit.SetTOMLKey(path, "models", "default", magpieID); err != nil { // Use on magpie-friday
 		t.Fatal(err)
 	}
 	forget("grok-app:" + path + ":default")
@@ -343,8 +343,8 @@ func TestGrokAppDisconnectPutsTheRouteBack(t *testing.T) {
 	}
 }
 
-// A sync with nothing of magpie's in the App writes nothing, not even to
-// magpie's own stash; one whose route is magpie with the channel gone is
+// A sync with nothing of magpie-friday's in the App writes nothing, not even to
+// magpie-friday's own stash; one whose route is magpie-friday with the channel gone is
 // told, since the App reaches nothing.
 func TestGrokAppSyncUnconnected(t *testing.T) {
 	home, path := grokAppHome(t, grokAppConfig)
@@ -361,15 +361,15 @@ func TestGrokAppSyncUnconnected(t *testing.T) {
 		t.Fatalf("check: %q", c)
 	}
 	stash(map[string]string{grokAppReleased: "1"}) // a Use after the one put back
-	if err := os.WriteFile(path, []byte(strings.Replace(before, `default = "deepseek"`, `default = "magpie"`, 1)), 0o600); err != nil {
+	if err := os.WriteFile(path, []byte(strings.Replace(before, `default = "deepseek"`, `default = "magpie-friday"`, 1)), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if c := a.Check(); !strings.Contains(c, "no longer reaches magpie") {
-		t.Fatalf("route magpie without the channel: check %q", c)
+	if c := a.Check(); !strings.Contains(c, "no longer reaches magpie-friday") {
+		t.Fatalf("route magpie-friday without the channel: check %q", c)
 	}
 }
 
-// An older magpie that set the route to itself is put back once. A Use the
+// An older magpie-friday that set the route to itself is put back once. A Use the
 // user presses after that is the App's choice and stays.
 func TestGrokAppReleasesATakeover(t *testing.T) {
 	home, path := grokAppHome(t, grokAppConfig)
@@ -379,7 +379,7 @@ func TestGrokAppReleasesATakeover(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(path, []byte(strings.Replace(string(b), `default = "deepseek"`, `default = "magpie"`, 1)), 0o600); err != nil {
+	if err := os.WriteFile(path, []byte(strings.Replace(string(b), `default = "deepseek"`, `default = "magpie-friday"`, 1)), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	if err := a.Sync(); err != nil {
@@ -389,14 +389,14 @@ func TestGrokAppReleasesATakeover(t *testing.T) {
 	if err != nil || def != "deepseek" {
 		t.Fatalf("after sync: route %q err %v", def, err)
 	}
-	if err := os.WriteFile(path, []byte(strings.Replace(string(mustRead(t, path)), `default = "deepseek"`, `default = "magpie"`, 1)), 0o600); err != nil {
+	if err := os.WriteFile(path, []byte(strings.Replace(string(mustRead(t, path)), `default = "deepseek"`, `default = "magpie-friday"`, 1)), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
 	def, _, err = grokAppRead(path)
-	if err != nil || def != "magpie" {
+	if err != nil || def != "magpie-friday" {
 		t.Fatalf("Use was undone: %q err %v", def, err)
 	}
 }
@@ -419,10 +419,10 @@ func TestGrokAppFresh(t *testing.T) {
 	if !a.Detected() {
 		t.Fatal("not detected")
 	}
-	if err := a.Pick("model", "magpie/kimi/k2-vision"); err != nil {
+	if err := a.Pick("model", "magpie-friday/kimi/k2-vision"); err != nil {
 		t.Fatal(err)
 	}
-	if s := grokAppSections(t, path)["magpie"]; s["model"] != "kimi/k2-vision" {
+	if s := grokAppSections(t, path)["magpie-friday"]; s["model"] != "kimi/k2-vision" {
 		t.Fatalf("channel: %v", s)
 	}
 	if err := a.Disconnect(); err != nil {

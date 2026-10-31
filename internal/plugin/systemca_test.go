@@ -11,7 +11,7 @@ import (
 // Bun checks TLS against its own roots: behind a proxy that re-signs HTTPS
 // with a root the user installed, `bun add` failed with
 // UNABLE_TO_VERIFY_LEAF_SIGNATURE (chenyyi001 on X, installing
-// @magpie-community/opencode-kiro-auth). Every bun magpie runs is given
+// @magpie-community/opencode-kiro-auth). Every bun magpie-friday runs is given
 // the system's roots, unless the user names a file of their own.
 func TestBunIsGivenTheSystemsRoots(t *testing.T) {
 	old := systemCAFile
@@ -53,13 +53,13 @@ func caVars(env []string) []string {
 // from where it runs, which is under the same user folder.
 func TestBunIsGivenAnASCIIWayToTheRoots(t *testing.T) {
 	user := `C:\Users\张三`
-	ca := user + `\.cache\magpie\bun\system-ca-abc.pem`
+	ca := user + `\.cache\magpie-friday\bun\system-ca-abc.pem`
 	for _, c := range []struct{ name, p, dir, goos, want string }{
-		{"under a Chinese user name", ca, user + `\.config\magpie\plugins`, "windows", `..\..\..\.cache\magpie\bun\system-ca-abc.pem`},
-		{"an ASCII path as it is", `C:\Users\bob\.cache\magpie\bun\system-ca-abc.pem`, `C:\Users\bob\x`, "windows", `C:\Users\bob\.cache\magpie\bun\system-ca-abc.pem`},
+		{"under a Chinese user name", ca, user + `\.config\magpie-friday\plugins`, "windows", `..\..\..\.cache\magpie-friday\bun\system-ca-abc.pem`},
+		{"an ASCII path as it is", `C:\Users\bob\.cache\magpie-friday\bun\system-ca-abc.pem`, `C:\Users\bob\x`, "windows", `C:\Users\bob\.cache\magpie-friday\bun\system-ca-abc.pem`},
 		{"another drive, no way there", ca, `D:\plugins`, "windows", ca},
 		{"no way there in ASCII", ca, `C:\其他\plugins`, "windows", ca},
-		{"Bun elsewhere reads it whole", "/home/张三/.cache/magpie/bun/system-ca-abc.pem", "/home/张三/.config/magpie/plugins", "linux", "/home/张三/.cache/magpie/bun/system-ca-abc.pem"},
+		{"Bun elsewhere reads it whole", "/home/张三/.cache/magpie-friday/bun/system-ca-abc.pem", "/home/张三/.config/magpie-friday/plugins", "linux", "/home/张三/.cache/magpie-friday/bun/system-ca-abc.pem"},
 	} {
 		if c.goos == "windows" && runtime.GOOS != "windows" {
 			// filepath.Rel works on this OS's paths; Windows' are tried there

@@ -10,7 +10,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // Project is a folder of the user's whose agents get some of the library's
@@ -24,24 +24,24 @@ type Project struct {
 	Copy bool `json:"copy,omitempty"`
 	// Skills are the library's skills the project has, and for which agents
 	Skills map[string][]string `json:"skills,omitempty"`
-	// Placed are the entries magpie put in the folder (.claude/skills/pdf),
+	// Placed are the entries magpie-friday put in the folder (.claude/skills/pdf),
 	// the only ones it ever takes away
 	Placed []string `json:"placed,omitempty"`
-	// Made are the folders magpie made to place them in, taken away again
+	// Made are the folders magpie-friday made to place them in, taken away again
 	// once they're empty; Gitignore is whether it made the .gitignore
 	Made      []string `json:"made,omitempty"`
 	Gitignore bool     `json:"gitignore,omitempty"`
 	// Servers are the library's MCP servers the project has, and for which
 	// agents (project_mcp.go)
 	Servers map[string][]string `json:"servers,omitempty"`
-	// Wrote are, by the project's file (.mcp.json), the servers magpie
+	// Wrote are, by the project's file (.mcp.json), the servers magpie-friday
 	// wrote in it, the only entries it ever takes out
 	Wrote map[string][]string `json:"wrote,omitempty"`
-	// Startup are, by the project's file, the startup timeout magpie
+	// Startup are, by the project's file, the startup timeout magpie-friday
 	// wrote in each server's entry there (Codex's startup_timeout_sec):
 	// one other than this is the user's
 	Startup map[string]map[string]float64 `json:"startup,omitempty"`
-	// MadeFiles are the files magpie made to write servers in, listed in
+	// MadeFiles are the files magpie-friday made to write servers in, listed in
 	// the .gitignore and taken away again once nothing's left in them
 	MadeFiles []string `json:"madeFiles,omitempty"`
 }
@@ -58,7 +58,7 @@ type Project struct {
 // a setting can turn off), CodeBuddy Code .codebuddy/skills
 // (getProjectSkillsDir, @tencent-ai/codebuddy-code 2.164.0) and Command
 // Code .commandcode/skills (commandcode.ai/docs/skills). MiMo Code, Crush,
-// ZCode, DeepSeek Harness and oh-my-pi say of no project folder magpie can
+// ZCode, DeepSeek Harness and oh-my-pi say of no project folder magpie-friday can
 // rely on.
 var projectSkillsDirs = map[string]string{
 	"claude":      ".claude/skills",
@@ -81,7 +81,7 @@ var projectSkillsDirs = map[string]string{
 }
 
 // ProjectSkillsDir is the folder, in a project, an agent reads its skills
-// from: "" for one magpie can't give a project's skills to.
+// from: "" for one magpie-friday can't give a project's skills to.
 func ProjectSkillsDir(agent string) string { return projectSkillsDirs[agent] }
 
 func (l *Library) project(dir string) *Project {
@@ -93,10 +93,10 @@ func (l *Library) project(dir string) *Project {
 	return nil
 }
 
-// The .gitignore lines magpie keeps between these two, and only there.
+// The .gitignore lines magpie-friday keeps between these two, and only there.
 const (
-	ignoreBegin = "# >>> magpie: library skills placed here (magpie adds and removes these lines) >>>"
-	ignoreEnd   = "# <<< magpie <<<"
+	ignoreBegin = "# >>> magpie-friday: library skills placed here (magpie-friday adds and removes these lines) >>>"
+	ignoreEnd   = "# <<< magpie-friday <<<"
 )
 
 // syncProjects places the library's skills in every project as it says.
@@ -154,7 +154,7 @@ func (l *Library) syncProject(p *Project, res *Result) {
 		case err == nil:
 			placed = append(placed, e)
 		case errors.Is(err, errForeign):
-			fail(name, fmt.Errorf("%s is in the project already and isn't magpie's: it's left as it is", e))
+			fail(name, fmt.Errorf("%s is in the project already and isn't magpie-friday's: it's left as it is", e))
 		default:
 			fail(name, err)
 			if ours(filepath.Join(p.Dir, filepath.FromSlash(e)), name) {
@@ -173,7 +173,7 @@ func (l *Library) syncProject(p *Project, res *Result) {
 	p.tidy()
 }
 
-var errForeign = errors.New("not magpie's")
+var errForeign = errors.New("not magpie-friday's")
 
 // place puts a skill at e in the project: a link to the library's, or a
 // copy made again whenever the library's differs from it.
@@ -211,7 +211,7 @@ func (p *Project) place(e, name string) error {
 }
 
 // mkdirs makes dir and the folders above it the project hasn't, noting
-// which magpie made.
+// which magpie-friday made.
 func (p *Project) mkdirs(dir string) error {
 	var made []string
 	for d := dir; d != p.Dir && strings.HasPrefix(d, p.Dir+string(filepath.Separator)); d = filepath.Dir(d) {
@@ -232,7 +232,7 @@ func (p *Project) mkdirs(dir string) error {
 	return nil
 }
 
-// tidy takes away the folders magpie made that are empty now, the deepest
+// tidy takes away the folders magpie-friday made that are empty now, the deepest
 // first; one with anything in it stays.
 func (p *Project) tidy() {
 	sort.Slice(p.Made, func(i, j int) bool { return len(p.Made[i]) > len(p.Made[j]) })
@@ -252,9 +252,9 @@ func (p *Project) tidy() {
 	p.Made = kept
 }
 
-// writeIgnore keeps the project's .gitignore listing what magpie placed,
+// writeIgnore keeps the project's .gitignore listing what magpie-friday placed,
 // between its two lines; the rest of the file is the user's and stays.
-// A .gitignore magpie made is taken away once nothing's left in it.
+// A .gitignore magpie-friday made is taken away once nothing's left in it.
 func (p *Project) writeIgnore() error {
 	f := filepath.Join(p.Dir, ".gitignore")
 	b, err := os.ReadFile(f)
@@ -297,7 +297,7 @@ func (p *Project) writeIgnore() error {
 	return edit.WriteAtomic(f, []byte(out))
 }
 
-// stripIgnore is a .gitignore without magpie's lines, and the blank line
+// stripIgnore is a .gitignore without magpie-friday's lines, and the blank line
 // left before them.
 func stripIgnore(s string) string {
 	var out []string
@@ -377,10 +377,10 @@ func notGlobal(dir string) error {
 	return nil
 }
 
-// RemoveProject takes every skill magpie placed out of a project, and the
+// RemoveProject takes every skill magpie-friday placed out of a project, and the
 // project off the list; what's left, it couldn't take away and says why.
 // keep takes the project off the list alone (#514: a project given a few
-// skills or servers once, to keep them): everything magpie put in the
+// skills or servers once, to keep them): everything magpie-friday put in the
 // folder — skills, servers in the agents' files, its lines in the
 // .gitignore — stays as it is, the user's from then on.
 func RemoveProject(dir string, keep bool) (*Result, error) {
@@ -416,7 +416,7 @@ func ProjectSkill(dir, name string, agents []string) (*Result, error) {
 		var ids []string
 		for _, id := range agents {
 			if ProjectSkillsDir(id) == "" {
-				return fmt.Errorf("magpie knows of no folder %s reads a project's skills from", id)
+				return fmt.Errorf("magpie-friday knows of no folder %s reads a project's skills from", id)
 			}
 			ids = set(ids, id, true)
 		}
@@ -453,7 +453,7 @@ type ProjectView struct {
 	Skills  map[string][]string `json:"skills"`
 	Placed  []string            `json:"placed"`
 	Servers map[string][]string `json:"servers"`
-	// Wrote are, by the project's file, the servers magpie wrote there
+	// Wrote are, by the project's file, the servers magpie-friday wrote there
 	Wrote   map[string][]string `json:"wrote"`
 	Missing bool                `json:"missing,omitempty"` // the folder is gone
 	// Problems are, by skill ("" for the project's own), what couldn't be done

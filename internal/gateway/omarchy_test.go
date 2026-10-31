@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-// usemagpie.ai on an Omarchy machine asks the magpie there for the theme it
+// usemagpie.ai on an Omarchy machine asks the magpie-friday there for the theme it
 // draws itself in: only from this machine, only readable by the site.
 func TestOmarchyThemeForTheSite(t *testing.T) {
 	fresh(t)
@@ -25,7 +25,7 @@ func TestOmarchyThemeForTheSite(t *testing.T) {
 	t.Cleanup(func() { onOmarchy = was })
 	h := lanGuard(New().Handler())
 	call := func(method, from, origin string) *httptest.ResponseRecorder {
-		r := httptest.NewRequest(method, "/v1/magpie/omarchy", nil)
+		r := httptest.NewRequest(method, "/v1/magpie-friday/omarchy", nil)
 		r.RemoteAddr = from
 		r.Host = "127.0.0.1:3425"
 		if origin != "" {

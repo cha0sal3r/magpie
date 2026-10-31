@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // grokShape422 is xAI's answer to an input item its API doesn't know (#350).
@@ -65,7 +65,7 @@ func TestGroupFailsOverARequestShape(t *testing.T) {
 }
 
 // openCodeGoDepth400 is OpenCode Go's answer on muse-spark-1.3-contributor
-// to Claude Code's MCP tools (WardLu on #1621, #1870), which magpie showed
+// to Claude Code's MCP tools (WardLu on #1621, #1870), which magpie-friday showed
 // as "400 OpenCode Go: JSON schema exceeds the maximum nesting depth of 10
 // levels": the vendor's message in the OpenAI error shape it answers in.
 const openCodeGoDepth400 = `{"error":{"message":"JSON schema exceeds the maximum nesting depth of 10 levels","type":"invalid_request_error"}}`

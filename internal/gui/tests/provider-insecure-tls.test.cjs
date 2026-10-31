@@ -59,7 +59,7 @@ function serve(lang, posts) {
 
 const strings = [
   "Certificate", "Don't check its certificate",
-  "For your own server with a self-signed certificate or one from your company's CA. magpie then can't tell it from another machine answering at its address: turn it on only on a network you trust.",
+  "For your own server with a self-signed certificate or one from your company's CA. magpie-friday then can't tell it from another machine answering at its address: turn it on only on a network you trust.",
 ];
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {

@@ -1,27 +1,27 @@
 // Package agentenv names the environment variables through which an agent
-// really installed on this machine reaches magpie: the one list a test
+// really installed on this machine reaches magpie-friday: the one list a test
 // sandbox clears, so that a test meets only the agents it put there itself.
 //
-// A sandbox fakes magpie's own folders through HOME, USERPROFILE and the XDG
+// A sandbox fakes magpie-friday's own folders through HOME, USERPROFILE and the XDG
 // variables (appdir decides those), and an agent's folder through the
 // variable that agent's own CLI reads before it falls back to its folder in
 // the home: CLAUDE_CONFIG_DIR, CODEX_HOME, QODER_CONFIG_DIR and the rest.
-// Any one of them left over from the developer's shell points magpie at a
+// Any one of them left over from the developer's shell points magpie-friday at a
 // real agent, whose sessions and settings a test then reads — and, where
-// magpie writes what it wires, writes into (#522). Qoder's CLI sets both of
-// its variables for every child it starts, and magpie manages Qoder, so
-// writing magpie from inside Qoder was one way to meet this.
+// magpie-friday writes what it wires, writes into (#522). Qoder's CLI sets both of
+// its variables for every child it starts, and magpie-friday manages Qoder, so
+// writing magpie-friday from inside Qoder was one way to meet this.
 //
 // Each package keeps its own sandbox, because a test in internal/sessions
 // cannot import internal/agent, which imports it, to ask which variables
-// there are; this is the list they all clear. A name here is one magpie
-// reads, and TestVarsAreRead says so, so a variable magpie stopped reading
+// there are; this is the list they all clear. A name here is one magpie-friday
+// reads, and TestVarsAreRead says so, so a variable magpie-friday stopped reading
 // does not linger — that is how GEMINI_CLI_HOME and OPENCODE_CONFIG came to
-// be cleared by a sandbox while OPENCODE_CONFIG_DIR, the one magpie reads,
+// be cleared by a sandbox while OPENCODE_CONFIG_DIR, the one magpie-friday reads,
 // was not. What is deliberately not here: APPDATA and LOCALAPPDATA, Windows'
 // folders rather than an agent's, which a sandbox sets to a folder of its
 // own instead of clearing; and CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC, a
-// behaviour flag whose one test sets it on purpose to read what magpie then
+// behaviour flag whose one test sets it on purpose to read what magpie-friday then
 // does.
 package agentenv
 
@@ -126,10 +126,10 @@ var NotPaths = map[string]bool{
 
 // ClaudeProviders are Claude Code's switches that send its requests to a
 // cloud's endpoint (Amazon Bedrock, Vertex AI, …) in place of
-// ANTHROPIC_BASE_URL, so a Claude Code wired to magpie with one on never
+// ANTHROPIC_BASE_URL, so a Claude Code wired to magpie-friday with one on never
 // reaches it (jw1dev on X). The login shell is asked for them
-// (proc.LoginEnv), for magpie to say when a terminal's Claude Code has one
-// on, but they are never set in magpie's own environment, and a test's
+// (proc.LoginEnv), for magpie-friday to say when a terminal's Claude Code has one
+// on, but they are never set in magpie-friday's own environment, and a test's
 // sandbox clears them. They are Claude Code 2.1.300's (Ie() in its bundle).
 var ClaudeProviders = []string{
 	"CLAUDE_CODE_USE_BEDROCK", "CLAUDE_CODE_USE_VERTEX", "CLAUDE_CODE_USE_FOUNDRY",

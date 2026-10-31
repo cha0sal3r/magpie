@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // forkNoneTask is the first request Codex 0.162 (rust-v0.162.0-alpha.17.2)
@@ -113,7 +113,7 @@ func TestSealedTaskNamesSubagentsOnAnyModel(t *testing.T) {
 		}
 		return got.Error.Message
 	}
-	if msg := refusal(); !strings.Contains(msg, `turn on "Codex subagents on any model" in Codex's settings on magpie's Agents page and start a new thread`) {
+	if msg := refusal(); !strings.Contains(msg, `turn on "Codex subagents on any model" in Codex's settings on magpie-friday's Agents page and start a new thread`) {
 		t.Fatalf("the refusal doesn't name the setting: %s", msg)
 	}
 	st := settings.Load()
@@ -121,7 +121,7 @@ func TestSealedTaskNamesSubagentsOnAnyModel(t *testing.T) {
 	if err := settings.Save(st); err != nil {
 		t.Fatal(err)
 	}
-	if msg := refusal(); !strings.Contains(msg, `"Codex subagents on any model" is on in Codex's settings on magpie's Agents page`) || !strings.Contains(msg, "features.multi_agent_v2") || strings.Contains(msg, "turn on") {
+	if msg := refusal(); !strings.Contains(msg, `"Codex subagents on any model" is on in Codex's settings on magpie-friday's Agents page`) || !strings.Contains(msg, "features.multi_agent_v2") || strings.Contains(msg, "turn on") {
 		t.Fatalf("with the setting on, the refusal doesn't say why the thread is still sealed: %s", msg)
 	}
 }

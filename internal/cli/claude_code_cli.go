@@ -8,20 +8,20 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/claudecode"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/claudecode"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-const claudeCodeUsage = "usage: magpie claude-code                  which Claude Code the Claude subscription runs\n" +
-	"       magpie claude-code install [--yes]  download Anthropic's own build of Claude Code for magpie (a server or container without one)\n" +
-	"       magpie claude-code remove           delete the Claude Code magpie downloaded\n" +
-	"       magpie claude-code runs [N|auto]    how many Claude Code processes may run at once (auto: what this machine's memory holds)"
+const claudeCodeUsage = "usage: magpie-friday claude-code                  which Claude Code the Claude subscription runs\n" +
+	"       magpie-friday claude-code install [--yes]  download Anthropic's own build of Claude Code for magpie-friday (a server or container without one)\n" +
+	"       magpie-friday claude-code remove           delete the Claude Code magpie-friday downloaded\n" +
+	"       magpie-friday claude-code runs [N|auto]    how many Claude Code processes may run at once (auto: what this machine's memory holds)"
 
-// claudeCodeCmd: magpie claude-code [install [--yes]|remove]. A Claude
+// claudeCodeCmd: magpie-friday claude-code [install [--yes]|remove]. A Claude
 // subscription is answered by Claude Code, and signed in to through it; a
-// server or a container has none (Jorben on Discord), so magpie downloads
+// server or a container has none (Jorben on Discord), so magpie-friday downloads
 // Anthropic's build when asked, as Anthropic's installer does.
 func claudeCodeCmd(args []string) error {
 	if len(args) == 0 {
@@ -35,14 +35,14 @@ func claudeCodeCmd(args []string) error {
 			case "--yes", "-y":
 				yes = true
 			default:
-				return fmt.Errorf("magpie claude-code install: unknown %q\n%s", a, claudeCodeUsage)
+				return fmt.Errorf("magpie-friday claude-code install: unknown %q\n%s", a, claudeCodeUsage)
 			}
 		}
 		return installClaudeCode(yes)
 	case "remove", "rm":
 		path, v := claudeCode.downloaded()
 		if path == "" {
-			fmt.Println(muted.Render("magpie hasn't downloaded Claude Code"))
+			fmt.Println(muted.Render("magpie-friday hasn't downloaded Claude Code"))
 			return nil
 		}
 		if err := claudecode.Remove(); err != nil {
@@ -56,19 +56,19 @@ func claudeCodeCmd(args []string) error {
 		fmt.Println(claudeCodeUsage)
 		return nil
 	}
-	return fmt.Errorf("magpie claude-code: unknown %q\n%s", args[0], claudeCodeUsage)
+	return fmt.Errorf("magpie-friday claude-code: unknown %q\n%s", args[0], claudeCodeUsage)
 }
 
-// claudeCodeRuns: magpie claude-code runs [N|auto]. Each Claude
+// claudeCodeRuns: magpie-friday claude-code runs [N|auto]. Each Claude
 // subscription conversation, test and /usage read is a Claude Code process
 // of about 100 MiB; a 512 MiB service ran 16 and the kernel killed them
-// (#2956). magpie holds them to what the machine's memory holds unless the
+// (#2956). magpie-friday holds them to what the machine's memory holds unless the
 // user says how many (claudeRunsMost).
 func claudeCodeRuns(args []string) error {
 	s := settings.Load()
 	switch {
 	case len(args) > 1:
-		return fmt.Errorf("magpie claude-code runs takes one value\n%s", claudeCodeUsage)
+		return fmt.Errorf("magpie-friday claude-code runs takes one value\n%s", claudeCodeUsage)
 	case len(args) == 1 && (args[0] == "-h" || args[0] == "--help"):
 		fmt.Println(claudeCodeUsage)
 		return nil
@@ -77,7 +77,7 @@ func claudeCodeRuns(args []string) error {
 		if args[0] != "auto" {
 			v, err := strconv.Atoi(args[0])
 			if err != nil || v < 1 {
-				return fmt.Errorf("magpie claude-code runs takes a number from 1, or auto, not %q", args[0])
+				return fmt.Errorf("magpie-friday claude-code runs takes a number from 1, or auto, not %q", args[0])
 			}
 			n = v
 		}
@@ -87,13 +87,13 @@ func claudeCodeRuns(args []string) error {
 		}
 	}
 	auto, why := gateway.ClaudeMemRuns()
-	autoSaid := "no bound: this machine's memory isn't known to magpie"
+	autoSaid := "no bound: this machine's memory isn't known to magpie-friday"
 	if auto > 0 {
 		autoSaid = why
 	}
 	if s.ClaudeRunsMost > 0 {
 		fmt.Println(green.Render("●"), s.ClaudeRunsMost, "Claude Code processes may run at once", muted.Render("· your setting"))
-		fmt.Println(muted.Render("  auto would be " + autoSaid + " · magpie claude-code runs auto"))
+		fmt.Println(muted.Render("  auto would be " + autoSaid + " · magpie-friday claude-code runs auto"))
 		return nil
 	}
 	if auto > 0 {
@@ -101,7 +101,7 @@ func claudeCodeRuns(args []string) error {
 	} else {
 		fmt.Println(green.Render("●"), "any number of Claude Code processes may run", muted.Render("· "+autoSaid))
 	}
-	fmt.Println(muted.Render("  magpie claude-code runs N sets how many"))
+	fmt.Println(muted.Render("  magpie-friday claude-code runs N sets how many"))
 	return nil
 }
 
@@ -125,14 +125,14 @@ func claudeCodeStatus() error {
 	case own != "":
 		fmt.Println(green.Render("●"), "Claude Code", muted.Render(own), muted.Render("· this machine's own, which the Claude subscription runs"))
 		if path != "" {
-			fmt.Println(muted.Render("  magpie's download (" + v + ", " + path + ") isn't used while it is here · magpie claude-code remove deletes it"))
+			fmt.Println(muted.Render("  magpie-friday's download (" + v + ", " + path + ") isn't used while it is here · magpie-friday claude-code remove deletes it"))
 		}
 	case path != "":
-		fmt.Println(green.Render("●"), "Claude Code", v, muted.Render(path), muted.Render("· downloaded by magpie"))
-		fmt.Println(muted.Render("  magpie claude-code install gets the newest · magpie claude-code remove deletes it"))
+		fmt.Println(green.Render("●"), "Claude Code", v, muted.Render(path), muted.Render("· downloaded by magpie-friday"))
+		fmt.Println(muted.Render("  magpie-friday claude-code install gets the newest · magpie-friday claude-code remove deletes it"))
 	default:
 		fmt.Println(amber.Render("○"), "no Claude Code here: a Claude subscription can't be signed in to or answered")
-		fmt.Println(muted.Render("  install it (https://code.claude.com/docs), or magpie claude-code install downloads Anthropic's own build for magpie"))
+		fmt.Println(muted.Render("  install it (https://code.claude.com/docs), or magpie-friday claude-code install downloads Anthropic's own build for magpie-friday"))
 	}
 	return nil
 }
@@ -156,7 +156,7 @@ func installClaudeCode(yes bool) error {
 	fmt.Println(muted.Render("  from  " + r.URL))
 	fmt.Println(muted.Render("  to    " + claudecode.Root()))
 	fmt.Println(muted.Render("  Anthropic's own build, as its installer downloads it; its SHA-256 is checked against Anthropic's manifest"))
-	fmt.Println(muted.Render("  it is Anthropic's software, under Anthropic's terms; magpie runs it for the Claude subscription only"))
+	fmt.Println(muted.Render("  it is Anthropic's software, under Anthropic's terms; magpie-friday runs it for the Claude subscription only"))
 	if own := claudeCode.own(); own != "" {
 		fmt.Println(amber.Render("!"), "this machine has a Claude Code of its own,", own+": it is the one run while it is there")
 	}
@@ -184,7 +184,7 @@ func installClaudeCode(yes bool) error {
 		return fmt.Errorf("downloading Claude Code %s: %w", r.Version, err)
 	}
 	fmt.Println(green.Render("✓"), "Claude Code", r.Version, "downloaded and checked", muted.Render("("+path+")"))
-	fmt.Println(muted.Render("  add a Claude account: magpie accounts add claude"))
+	fmt.Println(muted.Render("  add a Claude account: magpie-friday accounts add claude"))
 	return nil
 }
 

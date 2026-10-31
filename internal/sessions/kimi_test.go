@@ -22,7 +22,7 @@ import (
 //   - wd_v14-cancel: 1.4, cwd as workDir, 6 calls, 15,726 + 132,096, 2,009
 //   - wd_v15-early-no-agentid: 1.5, cwd and createdAt in ms, 10 calls,
 //     20,888 + 317,440, 2,176
-//   - wd_v15-magpie-failed: 1.5, one failed call through magpie, no tokens
+//   - wd_v15-magpie-friday-failed: 1.5, one failed call through magpie-friday, no tokens
 //   - wd_v14-no-turn: opened and closed without a prompt
 //   - wd_v10-migrated: from the Python kimi-cli, no time on any record, a
 //     title the user gave (isCustomTitle)

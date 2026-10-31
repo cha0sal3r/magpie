@@ -122,7 +122,7 @@ func unstartable(t *testing.T, path string) {
 // stay as they are.
 func TestCantStartSaysCLibrary(t *testing.T) {
 	bunHome(t, BunVersion, time.Now())
-	bun := filepath.Join(t.TempDir(), "magpie-bun")
+	bun := filepath.Join(t.TempDir(), "magpie-friday-bun")
 	unstartable(t, bun)
 	err := exec.Command(bun).Start()
 	if !errors.Is(err, fs.ErrNotExist) {
@@ -178,10 +178,10 @@ func TestHostOnUnstartableBunSaysCLibrary(t *testing.T) {
 // alpineLoader is what musl's loader printed on a bare Alpine 3.20 when
 // asked to run Bun 1.4.2's musl build (bun --version), cut after a few of
 // its 40 "Error relocating" lines.
-const alpineLoader = `Error loading shared library libstdc++.so.6: No such file or directory (needed by /sbx/.cache/magpie/bun/musl/1.4.2/magpie-bun)
-Error relocating /sbx/.cache/magpie/bun/musl/1.4.2/magpie-bun: _ZSt15get_new_handlerv: symbol not found
-Error relocating /sbx/.cache/magpie/bun/musl/1.4.2/magpie-bun: _ZSt24__throw_out_of_range_fmtPKcz: symbol not found
-Error relocating /sbx/.cache/magpie/bun/musl/1.4.2/magpie-bun: __once_proxy: symbol not found
+const alpineLoader = `Error loading shared library libstdc++.so.6: No such file or directory (needed by /sbx/.cache/magpie-friday/bun/musl/1.4.2/magpie-friday-bun)
+Error relocating /sbx/.cache/magpie-friday/bun/musl/1.4.2/magpie-friday-bun: _ZSt15get_new_handlerv: symbol not found
+Error relocating /sbx/.cache/magpie-friday/bun/musl/1.4.2/magpie-friday-bun: _ZSt24__throw_out_of_range_fmtPKcz: symbol not found
+Error relocating /sbx/.cache/magpie-friday/bun/musl/1.4.2/magpie-friday-bun: __once_proxy: symbol not found
 `
 
 // lacksLibstdcxx is a bun as Bun's musl build is on a bare Alpine: the

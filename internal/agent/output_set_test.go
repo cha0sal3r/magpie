@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // #2064: DeepSeek V4.1 Flash with Max output 384k set on its provider
@@ -54,7 +54,7 @@ func TestAgentsTakeTheUsersMaxOutput(t *testing.T) {
 		os.RemoveAll(filepath.Join(home, ".zcode"))
 		os.MkdirAll(filepath.Join(home, ".zcode", "v2"), 0o755)
 		zc := zcode(home)
-		if err := zc.Field("provider").Set("magpie"); err != nil {
+		if err := zc.Field("provider").Set("magpie-friday"); err != nil {
 			t.Fatal(err)
 		}
 		b, _ := os.ReadFile(filepath.Join(home, ".zcode", "v2", "config.json"))
@@ -68,7 +68,7 @@ func TestAgentsTakeTheUsersMaxOutput(t *testing.T) {
 		if err := json.Unmarshal(b, &c); err != nil {
 			t.Fatalf("zcode: %v %s", err, b)
 		}
-		got["zcode"] = c.Provider["magpie"].Models["relay/glm-4.6"].Limit.Output
+		got["zcode"] = c.Provider["magpie-friday"].Models["relay/glm-4.6"].Limit.Output
 		return got
 	}
 

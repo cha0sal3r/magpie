@@ -20,11 +20,11 @@ import (
 	"github.com/pelletier/go-toml/v2"
 	"github.com/tidwall/jsonc"
 
-	"github.com/yetone/magpie/internal/agentenv"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
-// sandbox is a home with every agent magpie can give the library to, and
+// sandbox is a home with every agent magpie-friday can give the library to, and
 // nothing on PATH, so only these are found.
 func sandbox(t *testing.T) string {
 	t.Helper()
@@ -192,7 +192,7 @@ var almaFront = regexp.MustCompile(`^---\n([\s\S]*?)\n---`)
 
 // Jie211's USER.md, as Alma's own setup writes one, keeps its front matter
 // first and its profile whole when Alma is given the shared instructions:
-// magpie's part goes after it, and turning Alma off leaves the file as it
+// magpie-friday's part goes after it, and turning Alma off leaves the file as it
 // was (#2315).
 func TestAlmaInstructionsKeepTheProfile(t *testing.T) {
 	h := sandbox(t)
@@ -217,7 +217,7 @@ func TestAlmaInstructionsKeepTheProfile(t *testing.T) {
 	}
 }
 
-// Alma with no USER.md gets one with magpie's part alone, taken away again
+// Alma with no USER.md gets one with magpie-friday's part alone, taken away again
 // when Alma is turned off.
 func TestAlmaInstructionsWithoutUserMD(t *testing.T) {
 	h := sandbox(t)
@@ -572,7 +572,7 @@ authorization_server_issuer = "https://id.example"
 	}
 }
 
-// What a TOML value magpie keeps reads back as the same value and type.
+// What a TOML value magpie-friday keeps reads back as the same value and type.
 func TestTOMLValueKeepsTypes(t *testing.T) {
 	src := "f = 120.0\ng = 1e21\nh = -0.5\ni = 7\nd = 2026-10-06\nlt = 07:32:00.5\nldt = 2026-10-06T07:32:00\nodt = 2026-10-06T07:32:00.123+08:00\ninf = inf\n"
 	var want map[string]any
@@ -701,13 +701,13 @@ func TestInstructions(t *testing.T) {
 		t.Error("rewrite didn't")
 	}
 
-	// off: magpie's part goes, the user's stays; a file only magpie wrote goes
+	// off: magpie-friday's part goes, the user's stays; a file only magpie-friday wrote goes
 	ok(t)(SaveInstructions(InstructionsChange{Agents: []string{}}))
 	if s := read(t, cl); s != "# Mine\n\nBe brief.\n" {
 		t.Errorf("claude after:\n%q", s)
 	}
 	if _, err := os.Stat(cx); !os.IsNotExist(err) {
-		t.Error("codex's AGENTS.md, only magpie's, is still there")
+		t.Error("codex's AGENTS.md, only magpie-friday's, is still there")
 	}
 	if es, _ := os.ReadDir(BackupDir()); len(es) == 0 {
 		t.Error("nothing was backed up")
@@ -715,7 +715,7 @@ func TestInstructions(t *testing.T) {
 }
 
 // TestInstructionsSetLinkedToAgentsFile is #2349: instructions.md linked to
-// the file Claude Code reads. The set was read with magpie's part in it, so
+// the file Claude Code reads. The set was read with magpie-friday's part in it, so
 // each sync wrote the whole file into its own part again and it doubled.
 func TestInstructionsSetLinkedToAgentsFile(t *testing.T) {
 	h := sandbox(t)
@@ -744,7 +744,7 @@ func TestInstructionsSetLinkedToAgentsFile(t *testing.T) {
 		t.Errorf("shared: %q", iv.Shared)
 	}
 
-	// a file grown before: every part magpie wrote into itself comes out
+	// a file grown before: every part magpie-friday wrote into itself comes out
 	grown := "# Mine\n\nBe brief.\n"
 	for range 4 {
 		grown = withBlock(grown, strings.TrimSpace(grown))
@@ -1297,7 +1297,7 @@ func TestInstructionSets(t *testing.T) {
 
 // DeepSeek Harness takes instructions in $DSH_HOME/AGENTS.md, skills in
 // $DSH_HOME/skills, and a server as a dsh-mcp-client row an insert of
-// magpie's adds to every profile's patch list; the user's own entries,
+// magpie-friday's adds to every profile's patch list; the user's own entries,
 // rows and !!js values stay as they are.
 func TestDsh(t *testing.T) {
 	h := sandbox(t)
@@ -1343,7 +1343,7 @@ func TestDsh(t *testing.T) {
 
 	fs := Server{Name: "fs", Transport: "stdio", Command: "npx", Args: []string{"-y", "@mcp/fs"}, Env: map[string]string{"TOKEN": "t\"q"}, Agents: []string{"dsh"}}
 	ok(t)(SaveServer("", fs))
-	// the user's web, now magpie's: out of the user's insert, its timeout kept
+	// the user's web, now magpie-friday's: out of the user's insert, its timeout kept
 	ok(t)(SaveServer("", Server{Name: "web", Transport: "http", URL: "https://example.com/mcp", Headers: map[string]string{"Authorization": "Bearer x"}, Agents: []string{"dsh"}}))
 	// dsh-mcp-client has no SSE
 	if r, err := SaveServer("", Server{Name: "ev", Transport: "sse", URL: "https://example.com/sse", Agents: []string{"dsh"}}); err != nil ||
@@ -1372,7 +1372,7 @@ func TestDsh(t *testing.T) {
 	}
 	s := read(t, web)
 	for _, want := range []string{"- id: llm-deepseek\n  config:\n    thinking: enabled\n", "serverName: engram", "cwd: !!js process.cwd()",
-		"toolCallTimeoutMs: 5000", "- insert: # magpie\n    - id: magpie-mcp-fs\n      name: \"@deepseek-ai/dsh-mcp-client\""} {
+		"toolCallTimeoutMs: 5000", "- insert: # magpie-friday\n    - id: magpie-friday-mcp-fs\n      name: \"@deepseek-ai/dsh-mcp-client\""} {
 		if !strings.Contains(s, want) {
 			t.Errorf("web profile lacks %q:\n%s", want, s)
 		}
@@ -1384,7 +1384,7 @@ func TestDsh(t *testing.T) {
 		t.Error("nothing was backed up")
 	}
 
-	// off again: magpie's inserts go, the user's stay
+	// off again: magpie-friday's inserts go, the user's stay
 	ok(t)(RemoveServer("fs"))
 	ok(t)(RemoveServer("web"))
 	ok(t)(SaveInstructions(InstructionsChange{Agents: []string{}}))
@@ -1393,7 +1393,7 @@ func TestDsh(t *testing.T) {
 		t.Errorf("desktop:\n%q", s)
 	}
 	s = read(t, web)
-	if strings.Contains(s, "# magpie") || !strings.Contains(s, "serverName: engram") || !strings.Contains(s, "cwd: !!js process.cwd()") {
+	if strings.Contains(s, "# magpie-friday") || !strings.Contains(s, "serverName: engram") || !strings.Contains(s, "cwd: !!js process.cwd()") {
 		t.Errorf("web:\n%s", s)
 	}
 	if s := read(t, filepath.Join(d, "AGENTS.md")); s != "# Mine\n" {
@@ -1414,7 +1414,7 @@ func TestDshServerName(t *testing.T) {
 }
 
 // A server of the user's the library takes in keeps what dsh works out
-// itself (!!js) when magpie writes it again.
+// itself (!!js) when magpie-friday writes it again.
 func TestDshImportKeepsJS(t *testing.T) {
 	h := sandbox(t)
 	p := filepath.Join(h, ".dsh/profiles/web/cordis.patch.yml")
@@ -1433,7 +1433,7 @@ func TestDshImportKeepsJS(t *testing.T) {
 	ok(t)(ImportServer("engram"))
 	ok(t)(SaveServer("engram", Server{Name: "engram", Transport: "stdio", Command: "engram", Args: []string{"mcp"}, Agents: []string{"dsh"}}))
 	s := read(t, p)
-	if !strings.Contains(s, "- insert: # magpie") || !strings.Contains(s, `cwd: !!js "process.cwd()"`) || strings.Count(s, "serverName") != 1 {
+	if !strings.Contains(s, "- insert: # magpie-friday") || !strings.Contains(s, `cwd: !!js "process.cwd()"`) || strings.Count(s, "serverName") != 1 {
 		t.Errorf("patch list:\n%s", s)
 	}
 }
@@ -1566,7 +1566,7 @@ func TestInstructionSetTakesAnEmptyOnesPlace(t *testing.T) {
 	if s := read(t, md); !strings.HasPrefix(s, "# Mine\n\n"+blockBegin+"\nCompany rules.\n"+blockEnd) {
 		t.Errorf("CLAUDE.md:\n%s", s)
 	}
-	// off: magpie's part out, the user's own as it was
+	// off: magpie-friday's part out, the user's own as it was
 	ok(t)(SaveInstructions(InstructionsChange{Agents: []string{}}))
 	if s := read(t, md); s != "# Mine\n" {
 		t.Errorf("switched off:\n%q", s)

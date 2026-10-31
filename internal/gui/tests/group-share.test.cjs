@@ -23,22 +23,22 @@ const info = (ids) => ids.map((id) => ({ id, ready: true }));
 const group = (id, name, members, more = {}) => ({ id, name, members, ready: true, memberInfo: info(members), ...more });
 
 const words = {
-  en: { share: "Copy to share", copied: "One copied", imp: "Import", added: "Added One 2", missing: "Not in your magpie, left out: gone/y", instead: "The same model from your own provider: relay/x → a/x", rules: "2 rules left out with them", bad: "This is not a routing group shared from magpie", done: "Done" },
-  zh: { share: "分享为文字", copied: "已复制 One", imp: "导入", added: "已添加 One 2", missing: "你的 magpie 里没有，已略过：gone/y", instead: "换成你自己服务商的同一模型：relay/x → a/x", rules: "2 条规则随之略过", bad: "这不是从 magpie 分享的路由组", done: "完成" },
-  "zh-TW": { share: "分享為文字", copied: "已複製 One", imp: "匯入", added: "已新增 One 2", missing: "你的 magpie 裡沒有，已略過：gone/y", instead: "換成你自己服務商的同一模型：relay/x → a/x", rules: "2 條規則隨之略過", bad: "這不是從 magpie 分享的路由組", done: "完成" },
-  ja: { share: "共有用にコピー", copied: "One をコピーしました", imp: "インポート", added: "One 2", missing: "この magpie にないため除外：gone/y", instead: "自分のプロバイダーの同じモデルを使用：relay/x → a/x", rules: "2 件のルールも一緒に除外", bad: "magpie から共有されたルーティンググループではありません", done: "完了" },
-  de: { share: "Zum Teilen kopieren", copied: "One kopiert", imp: "Importieren", added: "One 2", missing: "Nicht in deinem magpie, weggelassen: gone/y", instead: "Dasselbe Modell von deinem eigenen Anbieter: relay/x → a/x", rules: "2 Regeln mit ihnen weggelassen", bad: "Das ist keine aus magpie geteilte Routing-Gruppe", done: "Fertig" },
+  en: { share: "Copy to share", copied: "One copied", imp: "Import", added: "Added One 2", missing: "Not in your magpie-friday, left out: gone/y", instead: "The same model from your own provider: relay/x → a/x", rules: "2 rules left out with them", bad: "This is not a routing group shared from magpie-friday", done: "Done" },
+  zh: { share: "分享为文字", copied: "已复制 One", imp: "导入", added: "已添加 One 2", missing: "你的 magpie-friday 里没有，已略过：gone/y", instead: "换成你自己服务商的同一模型：relay/x → a/x", rules: "2 条规则随之略过", bad: "这不是从 magpie-friday 分享的路由组", done: "完成" },
+  "zh-TW": { share: "分享為文字", copied: "已複製 One", imp: "匯入", added: "已新增 One 2", missing: "你的 magpie-friday 裡沒有，已略過：gone/y", instead: "換成你自己服務商的同一模型：relay/x → a/x", rules: "2 條規則隨之略過", bad: "這不是從 magpie-friday 分享的路由組", done: "完成" },
+  ja: { share: "共有用にコピー", copied: "One をコピーしました", imp: "インポート", added: "One 2", missing: "この magpie-friday にないため除外：gone/y", instead: "自分のプロバイダーの同じモデルを使用：relay/x → a/x", rules: "2 件のルールも一緒に除外", bad: "magpie-friday から共有されたルーティンググループではありません", done: "完了" },
+  de: { share: "Zum Teilen kopieren", copied: "One kopiert", imp: "Importieren", added: "One 2", missing: "Nicht in deinem magpie-friday, weggelassen: gone/y", instead: "Dasselbe Modell von deinem eigenen Anbieter: relay/x → a/x", rules: "2 Regeln mit ihnen weggelassen", bad: "Das ist keine aus magpie-friday geteilte Routing-Gruppe", done: "Fertig" },
 };
-const KEYS = ["Copy to share", "{name} as text to paste into another magpie: its models, routing and rules, no key",
-  "{name} copied: paste it into Import on another magpie's Routing page", "Add a routing group someone shared from their magpie",
-  "Paste a group copied with Copy to share", "A routing group shared from magpie",
-  "Paste a routing group someone shared from their magpie: its models, routing and rules come with it, never a key",
-  "Not in your magpie, left out: {models}", "The same model from your own provider: {models}", "1 rule left out with them",
-  "{n} rules left out with them", "This group was shared from a newer magpie (format {n}): update magpie to import it",
+const KEYS = ["Copy to share", "{name} as text to paste into another magpie-friday: its models, routing and rules, no key",
+  "{name} copied: paste it into Import on another magpie-friday's Routing page", "Add a routing group someone shared from their magpie-friday",
+  "Paste a group copied with Copy to share", "A routing group shared from magpie-friday",
+  "Paste a routing group someone shared from their magpie-friday: its models, routing and rules come with it, never a key",
+  "Not in your magpie-friday, left out: {models}", "The same model from your own provider: {models}", "1 rule left out with them",
+  "{n} rules left out with them", "This group was shared from a newer magpie-friday (format {n}): update magpie-friday to import it",
   "This shared group says no format it is in: copy it again with Copy to share", "This shared group can't be read: copy it again with Copy to share",
-  "None of the group's models is in your magpie: {models}",
-  "This is not a routing group shared from magpie: copy one with Copy to share in a group's menu", "Import", "Added {name}", "Done", "Cancel"];
-const SHARED = '{"magpie":"routing-group","version":1,"group":{"name":"One","members":["a/x","a/m"]}}';
+  "None of the group's models is in your magpie-friday: {models}",
+  "This is not a routing group shared from magpie-friday: copy one with Copy to share in a group's menu", "Import", "Added {name}", "Done", "Cancel"];
+const SHARED = '{"magpie-friday":"routing-group","version":1,"group":{"name":"One","members":["a/x","a/m"]}}';
 
 function serve(lang, posts) {
   let list = [
@@ -71,7 +71,7 @@ function serve(lang, posts) {
     if (url.pathname === "/api/groups/import") {
       const { text } = JSON.parse(r.request().postData() || "{}");
       posts.push(["import", text]);
-      if (!text.includes("routing-group")) return r.fulfill({ status: 400, json: { error: "this is not a routing group shared from magpie", code: "share", share: "not_shared", format: "0", models: "" } });
+      if (!text.includes("routing-group")) return r.fulfill({ status: 400, json: { error: "this is not a routing group shared from magpie-friday", code: "share", share: "not_shared", format: "0", models: "" } });
       list = [...list, group("one-2", "One 2", ["a/x"])];
       return json({ ...groups(), imported: { id: "one-2", name: "One 2", missing: ["gone/y"], instead: ["relay/x → a/x"], rules: 2 } });
     }

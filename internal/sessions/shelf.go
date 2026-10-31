@@ -19,7 +19,7 @@ const shelfHeld = 4
 // readers, 205 long-line buffers and 281 zstd decoders scans asked for,
 // ~1.9 GB allocated again. A shelf keeps them across collections while
 // scans run, and lets them all go once none was taken or given back for
-// shelfIdle, so an idle magpie holds none.
+// shelfIdle, so an idle magpie-friday holds none.
 type shelf[T any] struct {
 	idleFor time.Duration // shelfIdle when 0; set by tests
 

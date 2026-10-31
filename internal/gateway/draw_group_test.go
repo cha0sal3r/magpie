@@ -8,7 +8,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // #2005 (tianxia3111): an image request to a routing group set to "order"
@@ -44,7 +44,7 @@ func TestImageGroupMovesOnToTheNextMember(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"group/gpt-image-2.5-flare","prompt":"a magpie","size":"1024x1024"}`)
+	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"group/gpt-image-2.5-flare","prompt":"a magpie-friday","size":"1024x1024"}`)
 	if code != 200 || len(a.Data) != 1 || a.Model != "art/gpt-image-2.5-flare" {
 		t.Fatalf("the group's second member didn't draw: %d %s", code, raw)
 	}
@@ -72,7 +72,7 @@ func TestImageGroupMovesOnToTheNextMember(t *testing.T) {
 	status, said = 400, `{"error":{"message":"Your request was rejected by the safety system.","type":"invalid_request_error"}}`
 	mu.Unlock()
 	before := len(e.got("/v1/images/generations"))
-	code, _, raw = postImages(t, s, "/v1/images/generations", "application/json", `{"model":"group/gpt-image-2.5-flare","prompt":"a magpie"}`)
+	code, _, raw = postImages(t, s, "/v1/images/generations", "application/json", `{"model":"group/gpt-image-2.5-flare","prompt":"a magpie-friday"}`)
 	if code != 400 || !strings.Contains(raw, "safety system") {
 		t.Fatalf("the request's own refusal: %d %s", code, raw)
 	}
@@ -87,7 +87,7 @@ func TestImageGroupMovesOnToTheNextMember(t *testing.T) {
 	mu.Lock()
 	status, said = 503, `{"error":{"message":"no available channel"}}`
 	mu.Unlock()
-	if code, _, raw = postImages(t, s, "/v1/images/generations", "application/json", `{"model":"group/dead-draw","prompt":"a magpie"}`); code != 503 || !strings.Contains(raw, "no available channel") {
+	if code, _, raw = postImages(t, s, "/v1/images/generations", "application/json", `{"model":"group/dead-draw","prompt":"a magpie-friday"}`); code != 503 || !strings.Contains(raw, "no available channel") {
 		t.Fatalf("all failing: %d %s", code, raw)
 	}
 }

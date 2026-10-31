@@ -11,21 +11,21 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
-// Signing in to an account removed from magpie shows it again before the
+// Signing in to an account removed from magpie-friday shows it again before the
 // sign-in reads as done, so the window, seeing it done, finds the account
 // listed rather than saying it can't list it (TestClaudeTeamSeatBesidePersonal
 // found it missing on macOS in #1046's CI). Each way a sign-in finishes is
-// checked: magpie's own callback (Codex), an agent's login command run by
-// magpie (Claude) and a plugin's.
+// checked: magpie-friday's own callback (Codex), an agent's login command run by
+// magpie-friday (Claude) and a plugin's.
 func TestSignInDoneOnceTheAccountIsBack(t *testing.T) {
 	for _, c := range []struct {
 		agent string
-		// setUp signs in to agent, which is then removed from magpie
+		// setUp signs in to agent, which is then removed from magpie-friday
 		setUp func(t *testing.T)
 		// signIn starts the sign-in again, and finish does what the
 		// browser, or the code its page shows, does then

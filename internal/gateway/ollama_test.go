@@ -11,9 +11,9 @@ import (
 	"testing"
 
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // ollamaPlan is a provider with a model that sees, thinks and has a
@@ -40,7 +40,7 @@ func ollamaPlan(t *testing.T, chat string) {
 // Studio's Copilot BYOK, wani on Discord; VS Code's Copilot Ollama
 // provider) asks /api/version, lists /api/tags and reads each model's
 // capabilities and window from /api/show, then chats on
-// /v1/chat/completions. The list is magpie's catalog by its ids, and a
+// /v1/chat/completions. The list is magpie-friday's catalog by its ids, and a
 // model's window and what it takes are its catalog entry's.
 func TestOllamaModelRoutes(t *testing.T) {
 	fresh(t)
@@ -98,7 +98,7 @@ func TestOllamaModelRoutes(t *testing.T) {
 		!strings.Contains(fmt.Sprint(s.ModelInfo["general.basename"]), "seer") {
 		t.Fatalf("show seer: %d %+v", c, s)
 	}
-	// a client from before Ollama 0.5 names it "name"; a window magpie
+	// a client from before Ollama 0.5 names it "name"; a window magpie-friday
 	// doesn't know is told as the one VS Code's Copilot assumes, never 0
 	c, s = show(`{"name":"plan/plain"}`)
 	if c != 200 || !slices.Equal(s.Capabilities, []string{"completion", "tools"}) || s.ModelInfo[arch+".context_length"] != float64(32768) {
@@ -174,7 +174,7 @@ func TestOllamaRoutesHoldAKey(t *testing.T) {
 // The Ollama routes are guarded as every gateway route is, through the
 // real server stack: with no key, a page elsewhere, a sandboxed frame
 // (Origin null), a page at a localhost subdomain, a page rebound to
-// loopback under its own name, and another machine while magpie isn't
+// loopback under its own name, and another machine while magpie-friday isn't
 // shared or sends none are all refused, and none is told a model. An
 // agent on this computer, and a keyed call, are answered.
 func TestOllamaRoutesGuarded(t *testing.T) {
@@ -224,7 +224,7 @@ func TestOllamaRoutesGuarded(t *testing.T) {
 		}
 		refused(at+" rebound", do(rt.method, rt.path, rt.body, "127.0.0.1:50123", "rebind.attacker.example:3425", hdr...), http.StatusForbidden)
 		refused(at+" rebound at a localhost subdomain", do(rt.method, rt.path, rt.body, "127.0.0.1:50123", "evil.localhost:3425", hdr...), http.StatusForbidden)
-		// another machine, no Origin at all: magpie not shared
+		// another machine, no Origin at all: magpie-friday not shared
 		refused(at+" from the LAN, not shared", do(rt.method, rt.path, rt.body, "192.168.1.9:5000", "192.168.1.2:3425"), http.StatusForbidden)
 		// a tunnel on loopback
 		refused(at+" through a tunnel, not shared", do(rt.method, rt.path, rt.body, "127.0.0.1:50123", gw, "X-Forwarded-For", "203.0.113.9"), http.StatusForbidden)
@@ -237,7 +237,7 @@ func TestOllamaRoutesGuarded(t *testing.T) {
 	_, secrets := newCaller(t, "Visual Studio")
 	for _, rt := range routes {
 		at := rt.method + " " + rt.path
-		for _, hdr := range [][]string{nil, {"Authorization", "Bearer magpie"}, {"Authorization", "Bearer sk-magpie-wrong"}} {
+		for _, hdr := range [][]string{nil, {"Authorization", "Bearer magpie-friday"}, {"Authorization", "Bearer sk-magpie-friday-wrong"}} {
 			resetAuthThrottle()
 			refused(at+" from the LAN with "+strings.Join(hdr, " "), do(rt.method, rt.path, rt.body, "192.168.1.9:5000", "192.168.1.2:3425", hdr...), http.StatusUnauthorized)
 		}

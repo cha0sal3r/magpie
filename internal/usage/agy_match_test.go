@@ -4,10 +4,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
 )
 
-// #2097: an agy step that went through magpie is counted once. agy 1.2.16,
+// #2097: an agy step that went through magpie-friday is counted once. agy 1.2.16,
 // run in a sandbox through a fake Gemini endpoint, sent no session header
 // (only User-Agent google-genai-sdk/…, X-Goog-Api-Key), so the gateway's
 // record names no session; its transcript's step began at 06:12:41Z, to
@@ -27,7 +27,7 @@ func TestAgyStepThroughMagpieCountedOnce(t *testing.T) {
 		t.Error("the step the gateway logged is counted again as agy's own call")
 	}
 	if m[1] {
-		t.Error("a step agy made without magpie was taken for the gateway's")
+		t.Error("a step agy made without magpie-friday was taken for the gateway's")
 	}
 
 	// a step the gateway's call ended before is not that call

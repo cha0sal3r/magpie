@@ -1,7 +1,7 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // 耍赖天都爱 on Discord (模型测试的时候有的必须是codex 客户端或者claude 客户端):
-// a relay that serves only Codex or Claude Code turns magpie's own test
-// request away, while the agent's requests through magpie are served. A
+// a relay that serves only Codex or Claude Code turns magpie-friday's own test
+// request away, while the agent's requests through magpie-friday are served. A
 // model chip's right-click offers "Test as Codex" and "Test as Claude
 // Code" where the provider says it can be asked so (testsAs), posting
 // provider/test with that model and `as`; one that can't be yet is off,
@@ -14,7 +14,7 @@ const { test } = require("node:test");
 const { chromium, webkit } = require("playwright");
 
 const assets = path.resolve(__dirname, "../assets");
-const NOT_YET = "no Claude Code request has come through magpie yet: run Claude Code through magpie once, then test again";
+const NOT_YET = "no Claude Code request has come through magpie-friday yet: run Claude Code through magpie-friday once, then test again";
 const base = { icon: "generic", responses: "", anthropic: "", catalog: "", agents: [], fallback: [], headers: {},
   key: { set: true, masked: "sk-…one" }, keyList: [], balanceToken: { takes: false, set: false }, proxy: "" };
 const relay = { ...base, id: "relay", name: "Relay", chat: "https://relay.example.com/v1", anthropic: "https://relay.example.com",
@@ -92,7 +92,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       assert.deepEqual(tests.map((b) => ({ id: b.id, test: b.test, as: b.as })), [{ id: "relay", test: ["gpt-5.5"], as: "codex" }]);
       await chip.locator(".tdot.ok").waitFor();
 
-      // Test this model asks as magpie does
+      // Test this model asks as magpie-friday does
       await rightClick(chip);
       await menu.getByRole("menuitem", { name: await tr("Test this model") }).click();
       for (let i = 0; i < 60 && tests.length < 2; i++) await page.waitForTimeout(50);

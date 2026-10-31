@@ -33,7 +33,7 @@ func TestDownloadRetriesAndReports(t *testing.T) {
 
 	var done, total int64
 	ctx := WithProgress(context.Background(), func(d, t int64) { done, total = d, t })
-	path := filepath.Join(t.TempDir(), "magpie.new")
+	path := filepath.Join(t.TempDir(), "magpie-friday.new")
 	if err := download(ctx, Asset{URL: srv.URL, SHA256: hex.EncodeToString(sum[:])}, path); err != nil {
 		t.Fatal(err)
 	}

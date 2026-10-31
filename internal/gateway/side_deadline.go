@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// sideTimedOut is why a request magpie asks of itself (an image's
+// sideTimedOut is why a request magpie-friday asks of itself (an image's
 // description, a search) ended when its own time limit did: not the agent
 // leaving, which the usage log said it was ("the agent canceled the
 // request", #2318).
@@ -21,7 +21,7 @@ func (e sideTimedOut) Error() string {
 	return "no answer in " + e.after.String()
 }
 
-// sideDeadline bounds a request magpie asks of itself through the gateway
+// sideDeadline bounds a request magpie-friday asks of itself through the gateway
 // (s.serve). The vendor has d from when the request last went out to it —
 // each try's own d, a try after a failure starting it again — and the whole
 // of it, with the waits before a try (a lane's slot, room in the minute, a
@@ -62,12 +62,12 @@ func sideTimeout(ctx context.Context) (sideTimedOut, bool) {
 }
 
 // canceled is what the usage log says of a request whose context ended
-// before it was answered: the agent canceled it, or magpie's own limit for
+// before it was answered: the agent canceled it, or magpie-friday's own limit for
 // a request it asked of itself ran out — still no fault of the vendor's,
 // told apart (#2318).
 func canceled(ctx context.Context) (int, string) {
 	if t, ok := sideTimeout(ctx); ok {
-		return 499, "magpie stopped waiting: its " + t.what + " had " + t.Error()
+		return 499, "magpie-friday stopped waiting: its " + t.what + " had " + t.Error()
 	}
 	return 499, "the agent canceled the request"
 }

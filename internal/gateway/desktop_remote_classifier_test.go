@@ -9,13 +9,13 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// A Claude Desktop session on another magpie's Claude model keeps Claude
+// A Claude Desktop session on another magpie-friday's Claude model keeps Claude
 // Code's own background requests on the model they name, as served by that
-// magpie: its auto mode's classifier asks for claude-sonnet-5 by Claude's
-// id, which the Remote magpie lists as office/claude/claude-sonnet-5, and
+// magpie-friday: its auto mode's classifier asks for claude-sonnet-5 by Claude's
+// id, which the Remote magpie-friday lists as office/claude/claude-sonnet-5, and
 // went to the session's office/claude/claude-opus-5-5 instead (#2187,
 // SuInk: 9 sonnet calls answered by opus, 480K tokens of 1h cache written).
 // Desktop's title still follows the session, and a model the remote
@@ -34,10 +34,10 @@ func TestClaudeDesktopClassifierOnRemoteMagpie(t *testing.T) {
 	}
 	h := New().Handler()
 	var mu sync.Mutex
-	var hops []string // the models the other magpie was asked for
+	var hops []string // the models the other magpie-friday was asked for
 	remote := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
-			h.ServeHTTP(w, r) // its model list, as that magpie gives it
+			h.ServeHTTP(w, r) // its model list, as that magpie-friday gives it
 			return
 		}
 		b, _ := io.ReadAll(r.Body)
@@ -59,7 +59,7 @@ func TestClaudeDesktopClassifierOnRemoteMagpie(t *testing.T) {
 	if _, err := office.Fetch(context.Background()); err != nil {
 		t.Fatal(err)
 	}
-	// here, only the other magpie serves Claude
+	// here, only the other magpie-friday serves Claude
 	if err := provider.Delete("work"); err != nil {
 		t.Fatal(err)
 	}
@@ -91,11 +91,11 @@ func TestClaudeDesktopClassifierOnRemoteMagpie(t *testing.T) {
 		mu.Lock()
 		defer mu.Unlock()
 		if len(hops) != 1 {
-			t.Fatalf("the other magpie was asked %v", hops)
+			t.Fatalf("the other magpie-friday was asked %v", hops)
 		}
 		return hops[0]
 	}
-	// the session is on the other magpie's opus, by the id Desktop was
+	// the session is on the other magpie-friday's opus, by the id Desktop was
 	// shown it by
 	opus, _ := entryOf("office/work/claude-opus-5-5")
 	if got := send(cli, `{"model":"`+DesktopID(opus)+`","max_tokens":64000,"stream":true,"tools":[{"name":"Bash","input_schema":{"type":"object"}}],"messages":[{"role":"user","content":"hi"}]}`); got != "work/claude-opus-5-5" {
@@ -107,7 +107,7 @@ func TestClaudeDesktopClassifierOnRemoteMagpie(t *testing.T) {
 		`{"model":"claude-sonnet-5","max_tokens":1024,"stream":true,"system":[{"type":"text","text":"A user kicked off a Claude Code agent to do a coding task and walked away."}],"messages":[{"role":"user","content":"…"}]}`,
 	} {
 		if got := send(cli, body); got != "work/claude-sonnet-5" {
-			t.Fatalf("classifier: the other magpie was asked for %q, want work/claude-sonnet-5", got)
+			t.Fatalf("classifier: the other magpie-friday was asked for %q, want work/claude-sonnet-5", got)
 		}
 	}
 	// Desktop's title follows the session
@@ -115,7 +115,7 @@ func TestClaudeDesktopClassifierOnRemoteMagpie(t *testing.T) {
 	if got := send(electron, title); got != "work/claude-opus-5-5" {
 		t.Fatalf("title: sent %q", got)
 	}
-	// a Claude model the other magpie doesn't serve goes to the session's
+	// a Claude model the other magpie-friday doesn't serve goes to the session's
 	if got := send(cli, `{"model":"claude-haiku-4-5","max_tokens":64,"stream":true,"messages":[{"role":"user","content":"hi"}]}`); got != "work/claude-opus-5-5" {
 		t.Fatalf("unserved: sent %q", got)
 	}

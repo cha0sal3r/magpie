@@ -1,13 +1,13 @@
 package provider
 
-// What magpie spent of a Codex account's rate-limit resets, kept so the
-// user can see it afterwards (foobra12 on Discord: "magpie会自动使用codex
+// What magpie-friday spent of a Codex account's rate-limit resets, kept so the
+// user can see it afterwards (foobra12 on Discord: "magpie-friday会自动使用codex
 // 重置卡吗 我发现刚才好像不小心自动给我使用了一张"). Auto-use spends one
 // in the background — its week used up, or one about to run out — and
 // before this only the gateway's log said so; a reset gone from the card
-// read the same whether magpie spent it, the user did, or it ran out. Each
+// read the same whether magpie-friday spent it, the user did, or it ran out. Each
 // use is kept in codex-resets-used.json, by account, and shown on the
-// account's card and by `magpie quota auto-reset`.
+// account's card and by `magpie-friday quota auto-reset`.
 
 import (
 	"encoding/json"
@@ -20,9 +20,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/filelock"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/steady"
+	"github.com/cha0sal3r/magpie-friday/internal/filelock"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/steady"
 )
 
 // Why a reset was used: by itself as the account's week was used up and no
@@ -35,7 +35,7 @@ const (
 	ResetUsedByHand   = "hand"
 )
 
-// ResetUse is one reset magpie spent on an account.
+// ResetUse is one reset magpie-friday spent on an account.
 type ResetUse struct {
 	User    string    `json:"user"`
 	At      time.Time `json:"at"`
@@ -45,7 +45,7 @@ type ResetUse struct {
 
 var (
 	// resetsUsedKeep is how long a use is kept, and resetsUsedMost how many
-	// at most: enough to answer "did magpie use one?" a while later
+	// at most: enough to answer "did magpie-friday use one?" a while later
 	resetsUsedKeep = 90 * 24 * time.Hour
 	resetsUsedMost = 200
 	// resetsUsedShown is how many of an account's uses its card gets
@@ -55,7 +55,7 @@ var (
 func resetsUsedPath() string { return filepath.Join(settings.Dir(), "codex-resets-used.json") }
 
 // resetsUsedMu keeps the file to one writer at a time, across the magpies
-// on the computer too: the gateway spends by itself, a terminal's magpie
+// on the computer too: the gateway spends by itself, a terminal's magpie-friday
 // by hand.
 var resetsUsedMu = filelock.Mutex{Path: func() string { return resetsUsedPath() + ".lock" }}
 
@@ -104,7 +104,7 @@ func noteResetUsed(user, why string, out ResetOutcome) {
 	_ = steady.WriteFile(resetsUsedPath(), append(b, '\n'), 0o600)
 }
 
-// ResetsUsed is what magpie spent of the Codex account user's resets,
+// ResetsUsed is what magpie-friday spent of the Codex account user's resets,
 // newest first, resetsUsedShown at most; nil when none, or when the file
 // can't be read.
 func ResetsUsed(user string) []ResetUse {

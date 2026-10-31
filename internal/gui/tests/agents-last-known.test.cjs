@@ -1,6 +1,6 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // #1519 (fatkun): after a start, or after light mode let the window go, the
-// Agents and Providers pages waited ~2 s for magpie to read every agent's
+// Agents and Providers pages waited ~2 s for magpie-friday to read every agent's
 // config again (seconds more with WSL agents on). The Agents page now draws
 // the state kept from the last read at once and the fresh one replaces it:
 // an agent leaves the list only once the fresh read says it is gone. The

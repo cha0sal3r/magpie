@@ -9,12 +9,12 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// The allow list (lc on Discord, magpie in Docker on a public host): the
-// addresses other computers may reach magpie from at all, as IPs and CIDR
+// The allow list (lc on Discord, magpie-friday in Docker on a public host): the
+// addresses other computers may reach magpie-friday from at all, as IPs and CIDR
 // ranges. A request from any other address is refused 403 before its key
 // is looked at, so a gateway key that leaks is of no use from elsewhere.
 // No list lets every address in, as before. This computer (loopback, and
@@ -22,13 +22,13 @@ import (
 //
 // The address judged is the connection's own (r.RemoteAddr). A forwarding
 // header (X-Forwarded-For and the rest) is never taken for it: anyone can
-// write one, and magpie keeps no list of proxies to believe. A proxy or
-// tunnel on this computer reaches magpie from loopback, so what it passes
+// write one, and magpie-friday keeps no list of proxies to believe. A proxy or
+// tunnel on this computer reaches magpie-friday from loopback, so what it passes
 // on is let in here, and still needs a gateway key (proxied); limit who
 // reaches such a proxy at the proxy.
 
 // AllowIPsEnv names the environment variable that sets the list, in place
-// of Settings' (for Docker and `magpie web`).
+// of Settings' (for Docker and `magpie-friday web`).
 const AllowIPsEnv = "MAGPIE_ALLOW_IPS"
 
 // AllowIPs is the allow list in force, as written, and whether
@@ -41,7 +41,7 @@ func AllowIPs() (list []string, fromEnv bool) {
 // lastAllow is the Settings list as last read whole. settings.json that
 // can't be read, or doesn't parse with no last good generation, holds a
 // list nobody knows: it is never taken for "no list" (every address let
-// in). The one read last stays in force, and with none read since magpie
+// in). The one read last stays in force, and with none read since magpie-friday
 // started, only this computer is let in.
 var lastAllow struct {
 	sync.Mutex
@@ -80,7 +80,7 @@ var warnedAllow sync.Map
 // settings.json holds one nobody knows (unknown), which lets in only this
 // computer. An entry that doesn't read (a mistyped MAGPIE_ALLOW_IPS) lets
 // nothing in and is logged once: the list stays on, so a typo never opens
-// magpie to every address.
+// magpie-friday to every address.
 func allowPrefixes() (ps []netip.Prefix, on, unknown bool) {
 	list, _, unknown := allowList()
 	if unknown {
@@ -134,7 +134,7 @@ var ownAddr = func(a netip.Addr) bool {
 	return false
 }
 
-// AllowedFrom: a request from a may reach magpie under the allow list —
+// AllowedFrom: a request from a may reach magpie-friday under the allow list —
 // there is none, a is this computer's, or a is in it.
 func AllowedFrom(a netip.Addr) bool {
 	ps, on, _ := allowPrefixes()
@@ -178,7 +178,7 @@ func KeepsOut(list []string, r *http.Request) (string, bool) {
 	return a.String(), !allowedListFrom(list, a)
 }
 
-// allowed: r may reach magpie under the allow list; when it may not, it
+// allowed: r may reach magpie-friday under the allow list; when it may not, it
 // names r's address and says why.
 func allowed(r *http.Request) (addr, why string, ok bool) {
 	ps, on, unknown := allowPrefixes()
@@ -199,13 +199,13 @@ func allowed(r *http.Request) (addr, why string, ok bool) {
 // list, or (unknown) settings.json, which holds the list, can't be read.
 func notAllowed(addr string, unknown bool) string {
 	if unknown {
-		return "magpie couldn't read its settings.json in " + settings.Dir() + ", which holds its allow list, so it answers only this computer until it can, and this request came from " + addr + ": repair that file, or set the list in " + AllowIPsEnv
+		return "magpie-friday couldn't read its settings.json in " + settings.Dir() + ", which holds its allow list, so it answers only this computer until it can, and this request came from " + addr + ": repair that file, or set the list in " + AllowIPsEnv
 	}
-	return "magpie answers only the addresses on its allow list (" + AllowIPsEnv + ", or Settings → Network and sharing → Allowed addresses), and this request came from " + addr + ": add it there to let it in"
+	return "magpie-friday answers only the addresses on its allow list (" + AllowIPsEnv + ", or Settings → Network and sharing → Allowed addresses), and this request came from " + addr + ": add it there to let it in"
 }
 
 // AllowGuard refuses a request from an address the allow list leaves out,
-// 403, before anything else looks at it: the page `magpie web` serves.
+// 403, before anything else looks at it: the page `magpie-friday web` serves.
 func AllowGuard(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if addr, why, ok := allowed(r); !ok {

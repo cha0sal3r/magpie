@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // edgeDropped is what ylorn's ChatGPT backend answered to a request whose
@@ -166,7 +166,7 @@ func TestCodexEdgeResetSmallBodyStays503(t *testing.T) {
 }
 
 // edgeUnbufferedSaid is the body of the 507 sparrowu93's ChatGPT backend
-// answered through magpie in pi (#2034), which pi was told as "Codex: 507
+// answered through magpie-friday in pi (#2034), which pi was told as "Codex: 507
 // Insufficient Storage: exceeded request buffer limit while retrying
 // upstream": Envoy's own, when its first try at the backend failed and
 // the request was more than it buffers to try again.
@@ -225,7 +225,7 @@ func TestCodexUnbufferedAskedAgain(t *testing.T) {
 }
 
 // Answered the 507 every time, the agent is told a 503, which pi, Codex
-// and magpie ask again for (pi's _isRetryableError matches 503, not 507),
+// and magpie-friday ask again for (pi's _isRetryableError matches 503, not 507),
 // with Envoy's words and what may help. Nobody rests.
 func TestCodexUnbufferedTold503(t *testing.T) {
 	codexSignedIn(t, "spare@example.com")

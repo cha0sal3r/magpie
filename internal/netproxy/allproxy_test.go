@@ -5,9 +5,9 @@ import (
 	"testing"
 )
 
-// ALL_PROXY, which curl reads and Go doesn't, is magpie's too when neither
+// ALL_PROXY, which curl reads and Go doesn't, is magpie-friday's too when neither
 // HTTPS_PROXY nor HTTP_PROXY is set: a shell with only
-// ALL_PROXY=socks5://… gets magpie update through it (akic404 on Discord),
+// ALL_PROXY=socks5://… gets magpie-friday update through it (akic404 on Discord),
 // and NO_PROXY still keeps hosts off it.
 func TestAllProxyFromTheEnvironment(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
@@ -19,7 +19,7 @@ func TestAllProxyFromTheEnvironment(t *testing.T) {
 
 	t.Setenv("all_proxy", "socks5h://127.0.0.1:1080")
 	t.Setenv("NO_PROXY", "internal.example, .corp.example:443")
-	gh, _ := url.Parse("https://github.com/yetone/magpie-releases/releases/download/v1/magpie")
+	gh, _ := url.Parse("https://github.com/cha0sal3r/magpie-friday-releases/releases/download/v1/magpie-friday")
 	if p, err := For(gh); err != nil || p == nil || p.String() != "socks5h://127.0.0.1:1080" {
 		t.Fatalf("ALL_PROXY: %v %v", p, err)
 	}

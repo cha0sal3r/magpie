@@ -45,7 +45,7 @@ function server(lang, held) {
       if (held.fail) return route.fulfill({ status: 500, body: "read failed" });
       return json(answer(q));
     }
-    if (url.pathname === "/api/usage") return json({ calls: 40, input: 40000, output: 4000, cost: 0.04, bucket: "day", series: [], agents: [], models: [], path: "~/.config/magpie/usage.jsonl" });
+    if (url.pathname === "/api/usage") return json({ calls: 40, input: 40000, output: 4000, cost: 0.04, bucket: "day", series: [], agents: [], models: [], path: "~/.config/magpie-friday/usage.jsonl" });
     if (url.pathname === "/api/sessions") return json({ sessions: [], dirs: [] });
     if (url.pathname === "/api/providers") return json({ providers: [], presets: [], excluded: [], models: [], gateway: { running: false } });
     if (url.pathname === "/api/groups") return json({ groups: [], models: [] });

@@ -68,7 +68,7 @@ function serve(lang, log) {
 const KEYS = [
   "Search sessions", "Searching what was said…", "Searched what was said in the latest {n} of {total} sessions.",
   "Couldn't search what was said: {error}",
-  "{agent}'s own files of its sessions can't be read here, so only what magpie recorded through the gateway is searched.",
+  "{agent}'s own files of its sessions can't be read here, so only what magpie-friday recorded through the gateway is searched.",
 ];
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {

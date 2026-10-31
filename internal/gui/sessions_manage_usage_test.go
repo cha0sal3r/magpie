@@ -9,13 +9,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/sessions"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // The Sessions page shows what each session spent, as the Usage page's
 // list did (#752): sessions/manage carries a session's tokens, cost and
-// models, and where magpie's gateway sent its calls (via).
+// models, and where magpie-friday's gateway sent its calls (via).
 func TestSessionsManageCarriesUsage(t *testing.T) {
 	h := sandboxHome(t)
 	claude := filepath.Join(h, ".claude")

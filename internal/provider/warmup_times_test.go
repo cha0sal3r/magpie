@@ -46,7 +46,7 @@ func TestWarmAtSeveralTimes(t *testing.T) {
 	}
 }
 
-// A warm-up file from a magpie before several times keeps the day alone:
+// A warm-up file from a magpie-friday before several times keeps the day alone:
 // the day it is updated on, a time already had isn't sent again, and the
 // next day's are.
 func TestWarmAtKeptDayFromBefore(t *testing.T) {

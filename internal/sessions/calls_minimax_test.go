@@ -8,9 +8,9 @@ import (
 
 // #1605 (LukeZ1988): MiniMax Code's calls reach the usage ledger. The
 // sessions are @minimax-ai/code 0.6.8's own, written in a sandbox against a
-// fake Anthropic upstream: one session with a single call through magpie's
-// entry, one with two through magpie's entry and then one on a relay of the
-// user's own (custom_provider:relay, model m2). The calls through magpie are
+// fake Anthropic upstream: one session with a single call through magpie-friday's
+// entry, one with two through magpie-friday's entry and then one on a relay of the
+// user's own (custom_provider:relay, model m2). The calls through magpie-friday are
 // the gateway's to count; the relay's is MiniMax Code's own, read here.
 func TestMiniMaxCodeCalls(t *testing.T) {
 	for _, viaEnv := range []bool{false, true} {

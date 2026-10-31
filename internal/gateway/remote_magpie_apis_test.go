@@ -12,10 +12,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // Discover decision models through a real gateway, including names that
@@ -118,7 +118,7 @@ func TestRemoteMagpieSystemOne(t *testing.T) {
 		if h.path != "/v1/systemone" {
 			continue
 		}
-		if h.head.Get("Authorization") != "Bearer remote-key" || h.head.Get(AgentHeader) != "pi" || h.head.Get(ViaHeader) == "" || h.head.Get(SessionHeader) != "decision-session" || h.head.Get("session_id") != "native-session" || !strings.HasPrefix(h.head.Get("User-Agent"), "magpie/") {
+		if h.head.Get("Authorization") != "Bearer remote-key" || h.head.Get(AgentHeader) != "pi" || h.head.Get(ViaHeader) == "" || h.head.Get(SessionHeader) != "decision-session" || h.head.Get("session_id") != "native-session" || !strings.HasPrefix(h.head.Get("User-Agent"), "magpie-friday/") {
 			t.Errorf("remote caller: %v", h.head)
 		}
 	}
@@ -202,7 +202,7 @@ func TestRemoteMagpieRetrieval(t *testing.T) {
 	}
 	for _, tc := range []struct{ path, body, result, model string }{
 		{"/v1/embeddings", `{"model":"office/lib/embed-1","input":["hello","world"],"dimensions":2,"encoding_format":"float"}`, `"embedding":[0.1,-0.2]`, "embed-1"},
-		{"/v1/rerank", `{"model":"office/lib/rerank-1","query":"magpie","documents":["a crow","a magpie"],"top_n":2,"return_documents":true}`, `"relevance_score":0.9`, "rerank-1"},
+		{"/v1/rerank", `{"model":"office/lib/rerank-1","query":"magpie-friday","documents":["a crow","a magpie-friday"],"top_n":2,"return_documents":true}`, `"relevance_score":0.9`, "rerank-1"},
 	} {
 		req := httptest.NewRequest("POST", tc.path, strings.NewReader(tc.body))
 		req.Header.Set("User-Agent", "pi/1.0")

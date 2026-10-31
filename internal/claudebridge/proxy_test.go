@@ -32,7 +32,7 @@ func ownIPv4() string {
 	return ""
 }
 
-// #2440 (ump45nose): an agent hands the helper the *_PROXY magpie gave it
+// #2440 (ump45nose): an agent hands the helper the *_PROXY magpie-friday gave it
 // for its vendor (the system's proxy, by default), and a gateway on a LAN
 // or Tailscale address isn't in that NO_PROXY. The helper's callback went
 // to the proxy, which reset it, and the tool call never reached the run.
@@ -108,7 +108,7 @@ func TestCallbackGoesPastTheAgentsProxy(t *testing.T) {
 		t.Fatal("no answer from the helper")
 	}
 	if !strings.Contains(got, "file body") {
-		t.Fatalf("the call didn't reach magpie: %s", got)
+		t.Fatalf("the call didn't reach magpie-friday: %s", got)
 	}
 	select {
 	case <-proxied:

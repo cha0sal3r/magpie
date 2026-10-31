@@ -74,5 +74,5 @@ jobs:
           sha256sum pf-serve-*.zip | tee SHA256SUMS
           gh release create "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" --prerelease --latest=false \
             --title "pf-serve $GITHUB_REF_NAME" \
-            --notes "pf-serve, which runs the local masking model of Settings → Privacy (native/privacy-filter). Not a magpie release: magpie downloads these itself, checked against the sha256s in internal/pii." \
+            --notes "pf-serve, which runs the local masking model of Settings → Privacy (native/privacy-filter). Not a magpie-friday release: magpie-friday downloads these itself, checked against the sha256s in internal/pii." \
             pf-serve-*.zip SHA256SUMS

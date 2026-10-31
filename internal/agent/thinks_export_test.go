@@ -5,14 +5,14 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// #2380: Trae CN's kimi-k3-max thinks with no levels magpie knows, and
+// #2380: Trae CN's kimi-k3-max thinks with no levels magpie-friday knows, and
 // /v1/models said reasoning: true for it, but Pi's models.json was written
 // reasoning: false (the export read the levels alone), so Pi offered off
-// alone and `magpie pi effort high` was clamped to off. Every export that
+// alone and `magpie-friday pi effort high` was clamped to off. Every export that
 // writes a reasoning flag says what /v1/models says.
 func TestThinkingWithoutLevelsReachesTheExports(t *testing.T) {
 	syncHome(t)
@@ -39,11 +39,11 @@ func TestThinkingWithoutLevelsReachesTheExports(t *testing.T) {
 		t.Fatalf("the fixture is a model that thinks with no levels, as /v1/models says it: %+v", entry)
 	}
 
-	if got := piOffered("pi", "magpie/"+id); !reflect.DeepEqual(got, []string{"off", "minimal", "low", "medium", "high"}) {
+	if got := piOffered("pi", "magpie-friday/"+id); !reflect.DeepEqual(got, []string{"off", "minimal", "low", "medium", "high"}) {
 		t.Fatalf("Pi offers %v for %s, want its own off to high", got, id)
 	}
-	if got := piClamp("high", piOffered("pi", "magpie/"+id)); got != "high" {
-		t.Fatalf("magpie pi effort high runs at %q", got)
+	if got := piClamp("high", piOffered("pi", "magpie-friday/"+id)); got != "high" {
+		t.Fatalf("magpie-friday pi effort high runs at %q", got)
 	}
 
 	ms := ccProviderJSONAt("http://127.0.0.1:1/v1").(map[string]any)["models"].(map[string]any)
@@ -52,6 +52,6 @@ func TestThinkingWithoutLevelsReachesTheExports(t *testing.T) {
 		t.Fatalf("Command Code's entry: %v", cc)
 	}
 	if _, set := cc["reasoningEfforts"]; set {
-		t.Fatalf("Command Code was told levels magpie doesn't know: %v", cc)
+		t.Fatalf("Command Code was told levels magpie-friday doesn't know: %v", cc)
 	}
 }

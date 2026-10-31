@@ -18,9 +18,9 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // deepseekLoop is the reporter's reasoning, line for line as dsh showed it
@@ -235,7 +235,7 @@ func TestLoopGuardReadsEveryProtocol(t *testing.T) {
 }
 
 // What ordinary replies are made of is never taken for a loop, as
-// reasoning or as text: magpie's own source (gateway.go's 4,900 lines,
+// reasoning or as text: magpie-friday's own source (gateway.go's 4,900 lines,
 // the GUI's 20,000 of JavaScript and its five languages of strings), its
 // docs and their tables, a log, a numbered list, a CSV, a hex table,
 // base64 and a run of rules and braces.
@@ -379,9 +379,9 @@ func (v *loopingVendor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // loopAsks are a streamed request on each of the agents' protocols, and
-// how each one's stream says it ended well, and with magpie's error; asks
+// how each one's stream says it ended well, and with magpie-friday's error; asks
 // is how many times the vendor is asked when every reply loops: once, and
-// again once (loopReasks), whether magpie translates the reply to the
+// again once (loopReasks), whether magpie-friday translates the reply to the
 // agent's protocol or passes a Chat stream through as it comes (#2436).
 var loopAsks = []struct {
 	name, path, body string
@@ -389,7 +389,7 @@ var loopAsks = []struct {
 	asks             int
 }{
 	{"chat", "/v1/chat/completions", `{"model":"ds/deepseek-v4-max","stream":true,"messages":[{"role":"user","content":"add TOML"}]}`,
-		"data: [DONE]", `data: {"error":{"message":"magpie ended this reply`, 2},
+		"data: [DONE]", `data: {"error":{"message":"magpie-friday ended this reply`, 2},
 	{"anthropic", "/v1/messages", `{"model":"ds/deepseek-v4-max","max_tokens":32000,"stream":true,"messages":[{"role":"user","content":"add TOML"}]}`,
 		`"type":"message_stop"`, "event: error\ndata: {\"error\":{", 2},
 	{"responses", "/v1/responses", `{"model":"ds/deepseek-v4-max","stream":true,"input":"add TOML"}`,
@@ -458,7 +458,7 @@ func TestLoopEndsTheReplyOnEveryProtocol(t *testing.T) {
 func loopCut(t *testing.T, v *loopingVendor, got, done, failed, provider string, asks int) {
 	t.Helper()
 	if !strings.Contains(got, failed) || !strings.Contains(got, "stuck in a loop") || strings.Contains(got, done) {
-		t.Fatalf("the stream doesn't end with magpie's error:\n%s", got[max(len(got)-1500, 0):])
+		t.Fatalf("the stream doesn't end with magpie-friday's error:\n%s", got[max(len(got)-1500, 0):])
 	}
 	if !strings.Contains(got, "Producing") {
 		t.Fatal("the reasoning before the loop was found didn't reach the agent")
@@ -552,7 +552,7 @@ func TestReasoningLoopIsAskedAgain(t *testing.T) {
 			v := &loopingVendor{loops: 1, letGo: make(chan bool, 4)}
 			gw := deepseekOn(t, v)
 			got := askStream(t, gw+x.path, x.body)
-			if !strings.Contains(got, x.done) || strings.Contains(got, "magpie ended this reply") || !strings.Contains(got, "parse() now takes .toml") {
+			if !strings.Contains(got, x.done) || strings.Contains(got, "magpie-friday ended this reply") || !strings.Contains(got, "parse() now takes .toml") {
 				t.Fatalf("the reply asked again didn't end whole:\n%s", got[max(len(got)-1500, 0):])
 			}
 			if !strings.Contains(got, "Producing") || !strings.Contains(got, "a case for .toml in parse()") {
@@ -606,7 +606,7 @@ func TestLoopAfterTextIsNotAskedAgain(t *testing.T) {
 }
 
 // A long reply that doesn't loop goes through whole, on every protocol:
-// magpie's own gateway.go as the model's reasoning, 4,900 lines of code
+// magpie-friday's own gateway.go as the model's reasoning, 4,900 lines of code
 // with its braces, returns and comments.
 func TestLongReplyThatDoesNotLoopGoesThrough(t *testing.T) {
 	src, err := os.ReadFile("gateway.go")
@@ -622,7 +622,7 @@ func TestLongReplyThatDoesNotLoopGoesThrough(t *testing.T) {
 			v := &loopingVendor{reasoning: string(src), letGo: make(chan bool, 4)}
 			gw := deepseekOn(t, v)
 			got := askStream(t, gw+x.path, x.body)
-			if !strings.Contains(got, x.done) || strings.Contains(got, "magpie ended this reply") || !strings.Contains(got, "parse() now takes .toml") {
+			if !strings.Contains(got, x.done) || strings.Contains(got, "magpie-friday ended this reply") || !strings.Contains(got, "parse() now takes .toml") {
 				t.Fatalf("the reply didn't go through whole:\n%s", got[max(len(got)-1500, 0):])
 			}
 			if letGo := <-v.letGo; letGo {
@@ -641,7 +641,7 @@ func TestLoopGuardOff(t *testing.T) {
 		t.Fatal(err)
 	}
 	got := askStream(t, gw+"/v1/chat/completions", loopAsks[0].body)
-	if !strings.Contains(got, "data: [DONE]") || strings.Contains(got, "magpie ended this reply") {
+	if !strings.Contains(got, "data: [DONE]") || strings.Contains(got, "magpie-friday ended this reply") {
 		t.Fatalf("the loop was cut with the guard off:\n%s", got[max(len(got)-800, 0):])
 	}
 	if letGo := <-v.letGo; letGo || v.sent.Load() != 3000 {

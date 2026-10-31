@@ -11,45 +11,45 @@ meet it.
 
 `claudeBinary` (and the sign-in's `claudeExecutable`) take
 `claudecode.Find`: the machine's own `claude` (`proc.FindTool`), else the
-one `magpie claude-code install` downloaded into
+one `magpie-friday claude-code install` downloaded into
 `<cache>/claude-code/<version>/` (`internal/claudecode`), else, on Windows,
 one in WSL. The download is Anthropic's native build from
 `downloads.claude.ai/claude-code-releases`, the "latest" channel, as
 `claude.ai/install.sh` takes it: the release's `manifest.json` gives the
 platform's SHA-256 and size, and a build that doesn't match both is not
-kept. It is only made when the user asks (`magpie claude-code install`, or
-yes to `magpie accounts add claude`'s offer on a machine without one), for
+kept. It is only made when the user asks (`magpie-friday claude-code install`, or
+yes to `magpie-friday accounts add claude`'s offer on a machine without one), for
 a server or a container (Jorben on Discord). It is not on PATH and stands
 in for no agent. It doesn't update itself (the bridge sets
 `DISABLE_AUTOUPDATER`); installing again takes the newest and removes the
 older one.
 
 A run is started with `--dangerously-skip-permissions` (`claudeCLIArgs`):
-its only tools are magpie's MCP ones, answered by the client, and
+its only tools are magpie-friday's MCP ones, answered by the client, and
 Anthropic's web search. Claude Code run as root refuses that flag ("cannot
 be used with root/sudo privileges") unless `IS_SANDBOX` is `1` or
-`CLAUDE_CODE_BUBBLEWRAP` is set, so a run as root, magpie's own euid 0 or
+`CLAUDE_CODE_BUBBLEWRAP` is set, so a run as root, magpie-friday's own euid 0 or
 a WSL distro whose default user is root (the probe's `uid`,
 `wslrun.Tool.Root`), is given `IS_SANDBOX=1` (`claudeCLI.asRoot`;
 FrierenF on Discord). A run as anyone else has its env as before. Only the
 bridge's run gets it; the warm-up and `/usage` runs don't skip
 permissions.
 
-Every Claude Code magpie starts for the subscription (a turn's run, the
+Every Claude Code magpie-friday starts for the subscription (a turn's run, the
 warm-up and model test `askClaude`, `/usage`, and the sign-in's
 `auth login` and `auth status`) is given its proxy through one helper,
 `claudeCLI.proxied` in each package, which is
 `netproxy.EnvForBunWith`: the account's own proxy, else the
 subscription's, else the global one (`netproxy.EnvWith`), with a SOCKS5
-proxy replaced by magpie's loopback HTTP bridge to it (`netproxy.Bridge`,
-as for every bun magpie starts, #1409). Claude Code is built with Bun,
+proxy replaced by magpie-friday's loopback HTTP bridge to it (`netproxy.Bridge`,
+as for every bun magpie-friday starts, #1409). Claude Code is built with Bun,
 which takes only http:// and https:// proxies: given `socks5://`, every
 request failed as `UnsupportedProxyProtocol`, after about three minutes of
 Claude Code's own retries, as a 502 (#2651). A Claude Code in a WSL
 distro that doesn't share Windows' loopback (`wslrun.Tool.Host` set)
 can't reach the bridge, so there, and where the bridge can't start, a
 SOCKS proxy is refused before Claude Code starts, with an error that says
-to use an http:// proxy. The `settings.json` env that magpie writes for the
+to use an http:// proxy. The `settings.json` env that magpie-friday writes for the
 user's own Claude Code sessions leaves a SOCKS proxy out (see
 [Providers and accounts](providers-accounts.md)).
 
@@ -65,7 +65,7 @@ run was offered it. `subscriptionRun.names` (`bridgeNames`) maps it back
 to the declared name in `toolStart`, for streamed and whole messages, and
 in `mcpCall` (#2649).
 
-The run's MCP server is magpie itself (`magpie claude-mcp-helper`,
+The run's MCP server is magpie-friday itself (`magpie-friday claude-mcp-helper`,
 `internal/claudebridge`), which hands each tool call back to the gateway
 at `POST /_magpie/claude-mcp/<token>` (`mcpCall`), where the call is
 registered in `b.calls` for the turn with its results to find. The token
@@ -89,7 +89,7 @@ A run started anew is told the whole conversation in one user message
 (`renderClaudePrompt`), a prefix the prompt cache has never seen, so the
 conversation is written to the cache again and its images are sent again.
 By default, that message holds the history in blocks of `historyChunk`
-messages, and magpie's one mark (Claude Code keeps three of Anthropic's four) is on the
+messages, and magpie-friday's one mark (Claude Code keeps three of Anthropic's four) is on the
 last whole block, else on the caller's instructions: a later run started
 anew for the same conversation within the hour reads the history up to an
 earlier run's mark, found within Anthropic's 20-block lookback. A
@@ -235,11 +235,11 @@ exit status and the end of its stderr (`endedBefore`), as one that ends
 before it reads its input is (`whyEnded`). The tool-results path and
 `resume` already start a new run when the one they found has ended.
 
-magpie ends a run (`abort`) by asking Claude Code to end with SIGTERM
+magpie-friday ends a run (`abort`) by asking Claude Code to end with SIGTERM
 (`proc.Tree.Stop`) and kills its tree only once it has exited or
 `stopGrace` (5s) has passed; Windows kills the job at once. Claude Code
 removes `~/.claude/.oauth_refresh.lock` as it exits on SIGTERM (2.1.299
-exits within half a second), and the SIGKILL magpie sent before left the
+exits within half a second), and the SIGKILL magpie-friday sent before left the
 lock for the next requests to fail on (#2195). The run counts as ended at
 once; the gateway stopping (`abortAll`) waits for every tree. Covered by
 `TestClaudeAbortAllowsLockCleanup` and `TestTreeStop*`.
@@ -318,7 +318,7 @@ other (`serveSubscription`'s ended callback runs only when `gone()`
 stopped the `AfterFunc` that calls `letGo`), so it isn't those two of one
 request. `keepIdle` holds the rule whichever caller it was (#1596). Past `idleMost`, the
 eviction loop takes out the key it found as oldest, not the run's own.
-Before (X, Sma1lboy: magpie at 158 GB after two days of omp agents), one
+Before (X, Sma1lboy: magpie-friday at 158 GB after two days of omp agents), one
 run under two keys was the oldest on every pass, the pass took out only
 its newer key, and the loop never ended: it held `b.mu`, stopping every
 Claude subscription request, and grew its list of runs to let go without
@@ -445,7 +445,7 @@ whose text is replaced by the line is not this shape, and starts anew.
 
 ## How many Claude Code processes run (`claudeRoom`, #2956)
 
-Every Claude Code magpie starts for a Claude subscription takes a place in
+Every Claude Code magpie-friday starts for a Claude subscription takes a place in
 `claudeRoom` (`claude_room.go`) before it starts, and frees it once its
 process has exited: each conversation's run (`startRun`), busy, idle or
 parked on tool results, and each one-off test, warm-up and /usage read
@@ -458,11 +458,11 @@ six idle runs were enough for two OOM kills.
 How many may run (`claudeRunsMost`):
 
 - the user's `claudeRunsMost` in settings.json, set with
-  `magpie claude-code runs N` (`auto` clears it). It is this machine's own
+  `magpie-friday claude-code runs N` (`auto` clears it). It is this machine's own
   setting (`KeepOwn`): a sync never brings a desktop's number to a server.
 - otherwise, on Linux, `(limit − 256 MiB) / 128 MiB`, at least 1, where
   the limit is the least of MemTotal, the cgroup v2 `memory.max` and
-  `memory.high` of magpie's cgroup and every one above it, and the cgroup v1
+  `memory.high` of magpie-friday's cgroup and every one above it, and the cgroup v1
   `memory.limit_in_bytes` (`memLimit`). 512 MiB gives 2, 1 GiB 6, a 964 MiB
   machine with no cgroup limit 5. It is read once per process.
 - otherwise no bound: macOS, Windows, and a Linux whose limits can't be
@@ -499,7 +499,7 @@ the 503.
 `claudeRoom` bounds how many Claude Code processes run, not how large each
 is. A run is kept for its conversation's next turn, turn after turn, and a
 service that is never restarted kept one for days: on a 31 GiB host a
-`node-MainThread` in magpie.service reached 8 GiB RSS and the kernel's OOM
+`node-MainThread` in magpie-friday.service reached 8 GiB RSS and the kernel's OOM
 killer took the machine's other work with it.
 
 Each time a run's reply ends, `oversized` (`claude_rss.go`) reads the
@@ -507,7 +507,7 @@ resident memory of its process tree (`proc.Tree.RSS`: `/proc/<pid>/status`
 VmRSS on Linux, `ps -o rss=` on macOS, the working sets of every process in
 its job on Windows, where an npm install's `claude.cmd` is a cmd.exe with
 the node under it) and logs it with the pid. The budget is an eighth of the
-memory magpie may use (`memLimit` on Linux, `proc.MemTotal` elsewhere), at
+memory magpie-friday may use (`memLimit` on Linux, `proc.MemTotal` elsewhere), at
 least 1 GiB, 4 GiB where neither is known. It is read once per process.
 
 - A whole turn (`ended`, stop) over the budget: the run is not kept idle.
@@ -521,17 +521,17 @@ least 1 GiB, 4 GiB where neither is known. It is read once per process.
 Each Claude Code a run starts logs its pid and model when it starts, and its
 run time, how it ended and its peak RSS (`proc.PeakRSS`, rusage
 `ru_maxrss`; not on Windows) when it ends: an OOM report's pid can be found
-in magpie's log.
+in magpie-friday's log.
 
 ## The run's working folder (`clientWorkDir`)
 
 Claude Code tells its model the folder it runs in as the "Primary working
 directory". A run has no tools of its own: the client's run in the
-client's folder. Run in magpie's shared work folder (`claudeWorkDir`,
-`<tmp>/magpie-claude-work-<uid>`), the model was told that folder. It then
+client's folder. Run in magpie-friday's shared work folder (`claudeWorkDir`,
+`<tmp>/magpie-friday-claude-work-<uid>`), the model was told that folder. It then
 wrote the client's files there, through the client's own tools, while the
 client's own prompt named another folder. Under a real Claude Code client,
-`pelican.html` landed in magpie's folder.
+`pelican.html` landed in magpie-friday's folder.
 
 A run therefore starts in the folder the caller names. `clientWorkDir`
 reads the system prompt and every message that is not the model's, and
@@ -563,14 +563,14 @@ Nothing else of the folder reaches the run. `--setting-sources ""` loads
 no CLAUDE.md, settings or skills from it. Auto memory is off, and
 `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=1` keeps the repository's status out
 of the prompt, which would change it, and Anthropic's cache with it,
-whenever a file changes. The system prompt magpie sends is unchanged; only
+whenever a file changes. The system prompt magpie-friday sends is unchanged; only
 the folder Claude Code runs in is.
 
 A run's sessions are saved in that folder's project
 (`<config>/projects/<the caller's folder>`), beside the user's own Claude
 Code sessions there when the run is on the user's own sign-in. Claude
 Code's `--resume` picker lists them while they last. That project is never
-swept: only magpie's own folder is (`sweepSessions`). A run's session is
+swept: only magpie-friday's own folder is (`sweepSessions`). A run's session is
 removed there by its id, when it ends or is discarded (`removeSession`).
 A session that a stopped gateway left there, and its temp files, stay
 there as the user's own sessions do; a sweep can't tell them apart.
@@ -580,7 +580,7 @@ there as the user's own sessions do; a sweep can't tell them apart.
 - Its session: `<config>/projects/<work project>/<session>.jsonl`, for
   `--resume` (`claudeSessions`). It is removed when the run ends unless
   shelved, and when a saved session is discarded (`removeSession`).
-  `sweepSessions` removes those a stopped gateway left in magpie's own
+  `sweepSessions` removes those a stopped gateway left in magpie-friday's own
   work folder's project, once older than `idleLongest`; a caller's folder
   is never swept (`clientWorkDir`).
 - Claude Code's temp files for the session, the images it was given:
@@ -593,7 +593,7 @@ there as the user's own sessions do; a sweep can't tell them apart.
 
 A run started anew still sends every image in the conversation. Replacing
 earlier images with a placeholder would change what the model sees, and
-magpie doesn't do it.
+magpie-friday doesn't do it.
 
 ## Tool results another request answers first
 
@@ -726,14 +726,14 @@ kept either.
 
 A Claude Code signed in to claude.ai (its sign-in field set to
 `claudeai`, `claudeSignIns` in `internal/agent/claude.go`) reads these into its status line's `rate_limits`, which
-claude-hud shows. One that signs in to magpie with magpie's key
+claude-hud shows. One that signs in to magpie-friday with magpie-friday's key
 (`ANTHROPIC_AUTH_TOKEN`) ignores them: Claude Code 2.1.293 reads the
 headers only for a claude.ai subscriber. A reply another provider answered
 carries none.
 
 ## A restart to update
 
-A run is a Claude Code process of this magpie's, so a restart to update
+A run is a Claude Code process of this magpie-friday's, so a restart to update
 that hands the gateway to the new version ([GUI shell](gui-shell.md#a-restart-to-update-hands-the-gateway-over))
 waits for the bridge's turns, and for none of the gateway's other requests
 (`restartBusy` in [`handover.go`](../../internal/gui/handover.go): `Busy.Bridge`,

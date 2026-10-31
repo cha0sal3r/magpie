@@ -1,4 +1,4 @@
-// Package stats counts magpie's users: once a day a running magpie tells
+// Package stats counts magpie-friday's users: once a day a running magpie-friday tells
 // PostHog it is in use, under an id made up on this computer, with its
 // version and system, and, unless the user turned that part off, which
 // agents, providers and models it is used with, by their built-in ids
@@ -22,12 +22,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/update"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/update"
 )
 
-// Key is the Magpie project's key on PostHog: it can send events there and
+// Key is the magpie-friday project's key on PostHog: it can send events there and
 // read nothing, so it is safe in the app.
 const Key = "phc_nyDyYyrUTRGvNq5U7FBesCyM2j4GdKeqGp8ko7DBerTC"
 
@@ -50,7 +50,7 @@ func Off() bool {
 	return settings.Load().NoStats
 }
 
-// Run sends the day's event while magpie runs, as what ("app", "serve"): at
+// Run sends the day's event while magpie-friday runs, as what ("app", "serve"): at
 // start, and then whenever a new day (UTC) has begun. Only releases send
 // it, unless MAGPIE_STATS_HOST is set.
 func Run(version, what string) {
@@ -106,19 +106,19 @@ func Send(ctx context.Context, version, what string, now time.Time) error {
 			ids  []string
 		}{{"agent", u.Agents}, {"provider", u.Providers}, {"model", u.Models}} {
 			for _, x := range l.ids {
-				uses = append(uses, event("magpie uses", map[string]any{"kind": l.kind, "id": x}))
+				uses = append(uses, event("magpie-friday uses", map[string]any{"kind": l.kind, "id": x}))
 			}
 		}
 		// a partner's counts of the days ended, each at its own day
 		for _, c := range provider.PartnerCounts(now) {
-			e := event("magpie partner", map[string]any{"id": c.ID, "what": c.What, "count": c.Count, "day": c.Day})
+			e := event("magpie-friday partner", map[string]any{"id": c.ID, "what": c.What, "count": c.Count, "day": c.Day})
 			e["timestamp"] = c.Day + "T12:00:00Z"
 			uses = append(uses, e)
 		}
 	}
 	body, _ := json.Marshal(map[string]any{
 		"api_key": Key,
-		"batch":   append([]map[string]any{event("magpie active", active)}, uses...),
+		"batch":   append([]map[string]any{event("magpie-friday active", active)}, uses...),
 	})
 	ctx, cancel := context.WithTimeout(ctx, 20*time.Second)
 	defer cancel()

@@ -1,5 +1,5 @@
 // Package mcpauthtest is a remote MCP server behind an OAuth sign-in, as
-// Neon's or Notion's is, for the tests of magpie signing in to one (#615).
+// Neon's or Notion's is, for the tests of magpie-friday signing in to one (#615).
 package mcpauthtest
 
 import (
@@ -17,7 +17,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/mcpauth"
+	"github.com/cha0sal3r/magpie-friday/internal/mcpauth"
 )
 
 // Fake is the server: its MCP endpoint is URL, which takes only a token it
@@ -309,14 +309,14 @@ func (f *Fake) Revoke() {
 	f.valid = map[string]bool{}
 }
 
-// SignIn signs magpie in to the server as name, standing in for the
-// browser: it opens the sign-in page, which sends it back to magpie.
+// SignIn signs magpie-friday in to the server as name, standing in for the
+// browser: it opens the sign-in page, which sends it back to magpie-friday.
 func (f *Fake) SignIn(t *testing.T, name string) mcpauth.State {
 	t.Helper()
 	return SignIn(t, name, f.URL)
 }
 
-// SignIn signs magpie in to the server at u as name, standing in for the
+// SignIn signs magpie-friday in to the server at u as name, standing in for the
 // browser.
 func SignIn(t *testing.T, name, u string) mcpauth.State {
 	t.Helper()
@@ -350,7 +350,7 @@ func (f *Fake) RefuseTokens() {
 }
 
 // AddApp makes an OAuth app the user signs in as, made with the server's
-// vendor rather than registered by magpie: with a secret, it gives it in
+// vendor rather than registered by magpie-friday: with a secret, it gives it in
 // the token request's form.
 func (f *Fake) AddApp(id, secret string) {
 	f.mu.Lock()

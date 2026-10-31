@@ -9,8 +9,8 @@ import (
 )
 
 // The Codex app reads its sign-in only as it opens: an account used up
-// while it runs greys its Send for every model, magpie's included, and
-// stays so after magpie becomes Codex's provider (MasterYi on Discord),
+// while it runs greys its Send for every model, magpie-friday's included, and
+// stays so after magpie-friday becomes Codex's provider (MasterYi on Discord),
 // till the app is quit and opened again. What follows tells the account
 // is out as soon as a reply says so, not at the next look five minutes
 // on, and keeps which Codex app was open when it ran out, for the GUI to
@@ -110,7 +110,7 @@ func noteCodexAppOut(out bool) {
 // CodexAppOut is the ChatGPT account of a Codex app that was open when
 // that account ran out and hasn't been opened again since, "" for none:
 // it sends nothing till it is (the agent package's AppOut says whether
-// magpie is Codex's provider for it, which the app needs too).
+// magpie-friday is Codex's provider for it, which the app needs too).
 func CodexAppOut() string {
 	c := &codexAppOut
 	c.Lock()
@@ -135,7 +135,7 @@ func CodexAppOut() string {
 }
 
 // CodexAppReopenOnce is whether the Codex app CodexAppOut names may be
-// reopened by magpie: true once for each time the account runs out, so
+// reopened by magpie-friday: true once for each time the account runs out, so
 // a reopen that didn't take is never tried again.
 func CodexAppReopenOnce() bool {
 	c := &codexAppOut
@@ -148,7 +148,7 @@ func CodexAppReopenOnce() bool {
 	return true
 }
 
-// CodexAppReopenTried is whether magpie tried reopening the Codex app
+// CodexAppReopenTried is whether magpie-friday tried reopening the Codex app
 // CodexAppOut names already, which it doesn't do twice.
 func CodexAppReopenTried() bool {
 	c := &codexAppOut

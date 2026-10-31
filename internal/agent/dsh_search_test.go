@@ -6,16 +6,16 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// Packing1 on Discord: dsh through magpie alone, every web search failed
+// Packing1 on Discord: dsh through magpie-friday alone, every web search failed
 // asking for DEEPSEEK_API_KEY — dsh's web-search-deepseek plugin signs its
-// own requests to DeepSeek. While dsh starts on a model of magpie's, the row
-// points at the gateway with magpie's key and that model; it goes again with
-// magpie's model, and a row or a DeepSeek key of the user's is left as it is.
+// own requests to DeepSeek. While dsh starts on a model of magpie-friday's, the row
+// points at the gateway with magpie-friday's key and that model; it goes again with
+// magpie-friday's model, and a row or a DeepSeek key of the user's is left as it is.
 func TestDshSearchThroughGateway(t *testing.T) {
 	home, dir, web := dshRouteHome(t)
 	template := "# Your patch layer for this dsh profile.\n[]\n"
@@ -24,7 +24,7 @@ func TestDshSearchThroughGateway(t *testing.T) {
 	a := dsh(home)
 	f := a.Field("model")
 
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	s := read()
@@ -32,7 +32,7 @@ func TestDshSearchThroughGateway(t *testing.T) {
 	if !strings.Contains(s, want) || strings.Count(s, "id: "+dshSearchRow) != 1 {
 		t.Fatalf("search row:\n%s", s)
 	}
-	for _, w := range []string{"- id: web-search-deepseek # magpie", "apiKeyEnv: " + dshKeyRef, `baseURL: "` + gatewayV1() + `"`, `model: "deepseek/pro"`, `name: "@deepseek-ai/dsh-web-search-deepseek"`} {
+	for _, w := range []string{"- id: web-search-deepseek # magpie-friday", "apiKeyEnv: " + dshKeyRef, `baseURL: "` + gatewayV1() + `"`, `model: "deepseek/pro"`, `name: "@deepseek-ai/dsh-web-search-deepseek"`} {
 		if !strings.Contains(s, w) {
 			t.Fatalf("missing %q in\n%s", w, s)
 		}
@@ -41,8 +41,8 @@ func TestDshSearchThroughGateway(t *testing.T) {
 		t.Fatalf("check: %q", a.Check())
 	}
 
-	// another model of magpie's: the search asks it, still one row
-	if err := f.Set("magpie/deepseek/flash"); err != nil {
+	// another model of magpie-friday's: the search asks it, still one row
+	if err := f.Set("magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
 	if s = read(); !strings.Contains(s, `model: "deepseek/flash"`) || strings.Count(s, "id: "+dshSearchRow) != 1 {
@@ -63,9 +63,9 @@ func TestDshSearchThroughGateway(t *testing.T) {
 		t.Fatal(err)
 	}
 	if s = read(); strings.Contains(s, dshSearchRow) {
-		t.Fatalf("own model kept magpie's search:\n%s", s)
+		t.Fatalf("own model kept magpie-friday's search:\n%s", s)
 	}
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	if err := f.Set(""); err != nil {
@@ -78,7 +78,7 @@ func TestDshSearchThroughGateway(t *testing.T) {
 	// a DeepSeek key of dsh's own: its search works as it is
 	env := filepath.Join(dir, ".env")
 	os.WriteFile(env, []byte("DEEPSEEK_API_KEY=sk-mine\n"), 0o600)
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	if s = read(); strings.Contains(s, dshSearchRow) {
@@ -87,7 +87,7 @@ func TestDshSearchThroughGateway(t *testing.T) {
 	f.Set("")
 	os.Remove(env)
 	os.WriteFile(filepath.Join(dir, ".credentials.yaml"), []byte("version: 1\nrecords:\n  DEEPSEEK_API_KEY:\n    kind: secret\n    payload:\n      value: sk-mine\n"), 0o600)
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	if s = read(); strings.Contains(s, dshSearchRow) {
@@ -99,7 +99,7 @@ func TestDshSearchThroughGateway(t *testing.T) {
 	// a row of the user's stays through connect and disconnect
 	own := "# Your patch layer for this dsh profile.\n- id: web-search-deepseek\n  config:\n    apiKeyEnv: MY_KEY\n    baseURL: https://search.example/v1\n"
 	os.WriteFile(web, []byte(own), 0o644)
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	if s = read(); !strings.HasPrefix(s, own) || strings.Count(s, dshSearchRow) != 1 {
@@ -138,7 +138,7 @@ func TestDshSearchAsksNamedSearcher(t *testing.T) {
 	f := dsh(home).Field("model")
 
 	name("oai/gpt-6-luna")
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	s := read()
@@ -157,7 +157,7 @@ func TestDshSearchAsksNamedSearcher(t *testing.T) {
 	if s = read(); !strings.Contains(s, `model: "deepseek/pro"`) || strings.Contains(s, `model: "oai/gpt-6-luna"`) {
 		t.Fatalf("searcher cleared:\n%s", s)
 	}
-	// named again, while dsh already runs through magpie
+	// named again, while dsh already runs through magpie-friday
 	name("oai/gpt-6-luna")
 	if _, err := dshRouteAgain(web, magpieModels("dsh"), gateway.URL()); err != nil {
 		t.Fatal(err)
@@ -184,7 +184,7 @@ func TestDshSearchAsksNamedSearcher(t *testing.T) {
 	// a row of the user's, its own model, stays with a searcher named
 	own := "# Your patch layer for this dsh profile.\n- id: web-search-deepseek\n  config:\n    apiKeyEnv: MY_KEY\n    baseURL: https://search.example/v1\n    model: my-search\n"
 	os.WriteFile(web, []byte(own), 0o644)
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := dshRouteAgain(web, magpieModels("dsh"), gateway.URL()); err != nil {

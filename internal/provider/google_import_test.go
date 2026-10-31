@@ -128,7 +128,7 @@ func TestImportGoogleAccounts(t *testing.T) {
 		googleTokenURL, codeAssistProd, codeAssistDaily, googleUserInfoURL = oldToken, oldProd, oldDaily, oldWho
 	})
 
-	// b is in magpie already, with the same sign-in
+	// b is in magpie-friday already, with the same sign-in
 	if err := addGoogleLogin("antigravity", "b@x.com", "", googleAuth{RefreshToken: "1//b", Project: "pb"}); err != nil {
 		t.Fatal(err)
 	}
@@ -171,7 +171,7 @@ func TestImportGoogleAccounts(t *testing.T) {
 	}
 	for _, rt := range f.refreshed {
 		if rt == "1//b" {
-			t.Error("an account already in magpie was refreshed")
+			t.Error("an account already in magpie-friday was refreshed")
 		}
 	}
 	// kept as signed-in accounts are, with their project

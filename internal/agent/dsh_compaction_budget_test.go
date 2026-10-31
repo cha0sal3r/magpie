@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
 // dshCompactsAt is where dsh's compaction-basic starts compacting a model
@@ -20,7 +20,7 @@ func dshCompactsAt(window, out int) int {
 	return min(window*8/10, pressure)
 }
 
-// TestDshOutputLeavesCompactionRoom: dsh reserves the maxTokens magpie lists
+// TestDshOutputLeavesCompactionRoom: dsh reserves the maxTokens magpie-friday lists
 // a model with, and 65536 more, out of its window before it compacts. A
 // vendor's reply limit near the window had dsh compact at 41248 of a 500000
 // group (#2823) or fail outright on 524288/524288 (LoKi on Discord) and

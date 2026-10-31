@@ -1,8 +1,8 @@
 package provider
 
-// The cards another magpie is told (CachedCards) as fresh as this magpie
+// The cards another magpie-friday is told (CachedCards) as fresh as this magpie-friday
 // knows them, not only as the Usage page last read them (jorben, #1313).
-// A magpie that serves only other magpies (`magpie serve` in a container)
+// A magpie-friday that serves only other magpies (`magpie-friday serve` in a container)
 // has nobody on its Usage page, so the page's cards were never read
 // there, while the same accounts' allowances are read all the time
 // behind the requests: the account switching and the Codex warm-up
@@ -17,7 +17,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
 )
 
 // cardFace is what a card is named and drawn with.
@@ -49,12 +49,12 @@ func accountCard(agent string) cardFace {
 	return cardFace{}
 }
 
-// KnownFace is the name and icon magpie knows the provider id by while it
+// KnownFace is the name and icon magpie-friday knows the provider id by while it
 // isn't set up: a built-in subscription signed out of, or with account
 // discovery off ("claude" is Claude Code), or a preset's removed since.
 // The usage log keeps the id of every provider a call went to, and the
 // Usage page names those by this rather than by the bare id (@ByronVon1
-// on X: "claude" in the Provider filter). "" for an id magpie doesn't
+// on X: "claude" in the Provider filter). "" for an id magpie-friday doesn't
 // know, such as a custom provider removed since.
 func KnownFace(id string) (name, icon string) {
 	if !strings.HasPrefix(id, "plugin:") {
@@ -162,8 +162,8 @@ func withAccountReadings(cards []SubscriptionQuota) []SubscriptionQuota {
 // Claude Code last told of its allowance as it answered (NoteClaudeLimits)
 // when it told it after q was read: the windows a request's answer gave
 // are kept apart from the readings (claudeUsage), and telling them drops
-// the account's reading (StaleAllowance), so a magpie only requests reach
-// (`magpie serve` for a Remote magpie) had a card for nobody (#2206,
+// the account's reading (StaleAllowance), so a magpie-friday only requests reach
+// (`magpie-friday serve` for a Remote magpie-friday) had a card for nobody (#2206,
 // SuInk). A reading started after it stands, as it is newer.
 func withHeardClaude(q SubscriptionQuota, l Login) SubscriptionQuota {
 	if l.Agent != "claude" {
@@ -202,7 +202,7 @@ type cardKey struct {
 // order requests try them: the key in use first, then each other one on.
 // One entry per key, even two of one name: each card is read and kept by
 // its key (keyTag), and a map by the name made the second of one name
-// drop out — one card told another magpie where the Usage page has two.
+// drop out — one card told another magpie-friday where the Usage page has two.
 func cardKeys(p Provider) []cardKey {
 	others := 0
 	for _, k := range p.Keys {
@@ -241,8 +241,8 @@ func keyCardProviders() []Provider {
 	return out
 }
 
-// keptKeyCards are the plan and balance cards of the keys magpie has, as
-// they were last read and kept on disk (quotas.json): what another magpie
+// keptKeyCards are the plan and balance cards of the keys magpie-friday has, as
+// they were last read and kept on disk (quotas.json): what another magpie-friday
 // is shown before this one reads them again after a restart.
 func keptKeyCards(ps []Provider) (plans, balances []SubscriptionQuota) {
 	plans, balances = []SubscriptionQuota{}, []SubscriptionQuota{}

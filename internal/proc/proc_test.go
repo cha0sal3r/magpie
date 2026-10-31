@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-// Every command magpie runs is made here, or the desktop app on Windows
+// Every command magpie-friday runs is made here, or the desktop app on Windows
 // opens a console window for it again. internal/testenv is left out: only
 // tests import it, never the app, and it can't import proc, whose own tests
 // import it.

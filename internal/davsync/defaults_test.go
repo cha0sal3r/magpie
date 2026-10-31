@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/backup"
-	"github.com/yetone/magpie/internal/profile"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/backup"
+	"github.com/cha0sal3r/magpie-friday/internal/profile"
 )
 
 // Two computers exchange an explicit default, a chosen model, and then a
@@ -60,7 +60,7 @@ func TestSyncAgentDefaults(t *testing.T) {
 		t.Fatal(err)
 	}
 	now()
-	remote, err := backup.Open(f.objects["team x+y/magpie/magpie.magpie-backup"], cfg.Passphrase)
+	remote, err := backup.Open(f.objects["team x+y/magpie-friday/magpie-friday.magpie-friday-backup"], cfg.Passphrase)
 	if err != nil {
 		t.Fatal(err)
 	}

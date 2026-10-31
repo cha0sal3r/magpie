@@ -62,7 +62,7 @@ func SetEnvFile(path string, kvs ...KV) error {
 }
 
 // DelEnvFile removes keys from a dotenv file, and the file when they were
-// all it held (Gemini CLI's .env, made by magpie for its key).
+// all it held (Gemini CLI's .env, made by magpie-friday for its key).
 func DelEnvFile(path string, keys ...string) error {
 	raw, err := Read(path)
 	if err != nil || len(raw) == 0 {

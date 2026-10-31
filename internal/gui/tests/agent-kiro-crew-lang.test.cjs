@@ -1,6 +1,6 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // Kiro Crew (Vincent on Discord) runs on a harness, an agent connected to
-// magpie. Connecting it with none connected, or with its harness set in
+// magpie-friday. Connecting it with none connected, or with its harness set in
 // its config.local.json, is refused, and the refusal reads in the
 // window's language; connected, the notice that new sessions take the new
 // harness does too. In every language, in Chromium and WebKit, at a wide
@@ -12,14 +12,14 @@ const { test } = require("node:test");
 const { chromium, webkit } = require("playwright");
 
 const assets = path.resolve(__dirname, "../assets");
-const NO_HARNESS = "Kiro Crew runs on a harness: connect Codex, Claude Code, OpenCode, Pi or Goose to magpie first, then connect Kiro Crew";
-const PINNED = "Kiro Crew's config.local.json sets its harness, and that wins over config.json: magpie leaves it alone. Change agent.acp_backend there, or take it out, then connect again";
+const NO_HARNESS = "Kiro Crew runs on a harness: connect Codex, Claude Code, OpenCode, Pi or Goose to magpie-friday first, then connect Kiro Crew";
+const PINNED = "Kiro Crew's config.local.json sets its harness, and that wins over config.json: magpie-friday leaves it alone. Change agent.acp_backend there, or take it out, then connect again";
 const NEW_SESSIONS = "Kiro Crew takes the new harness for new sessions; sessions already open keep theirs.";
-const NOTE = "its harness, an agent connected to magpie, runs on magpie's models";
+const NOTE = "its harness, an agent connected to magpie-friday, runs on magpie-friday's models";
 const crew = (on) => ({
   id: "kirocrew", name: "Kiro Crew", icon: "generic", path: "/test/kiro/crew/config.json", wired: on,
   fields: [
-    { key: "provider", label: "provider", value: on ? "magpie" : "", options: [{ value: "magpie", label: "magpie", icon: "magpie", note: NOTE }] },
+    { key: "provider", label: "provider", value: on ? "magpie-friday" : "", options: [{ value: "magpie-friday", label: "magpie-friday", icon: "magpie-friday", note: NOTE }] },
     { key: "harness", label: "harness", value: on ? "codex" : "", quiet: true, options: [{ value: "codex", label: "Codex", icon: "codex-color" }] },
   ],
 });
@@ -36,7 +36,7 @@ function server(lang, answers) {
       const a = answers.shift();
       if (a) return route.fulfill({ status: 400, json: { error: a } });
       on = true;
-      return route.fulfill({ json: { ...st(), connected: { how: "magpie" }, notice: NEW_SESSIONS } });
+      return route.fulfill({ json: { ...st(), connected: { how: "magpie-friday" }, notice: NEW_SESSIONS } });
     }
     if (url.pathname === "/api/usage/quotas") return route.fulfill({ json: [] });
     if (url.pathname === "/api/groups") return route.fulfill({ json: { groups: [] } });

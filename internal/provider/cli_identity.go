@@ -7,14 +7,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // cliIdentity is who an agent's CLI says is signed in (`cursor-agent about`,
 // `devin auth status`). Asking takes the CLI seconds, ten at worst, and
 // every request of the gateway and every page of the window reads the
 // accounts, so after the first answer a stale one is served while a fresh
-// one is fetched behind it. The answer is kept on disk too: a magpie just
+// one is fetched behind it. The answer is kept on disk too: a magpie-friday just
 // started serves the last one at once rather than holding everything for
 // the CLIs (#123), and asks them again behind it. An ask that couldn't tell
 // (the CLI failed, ran out of time or printed something else) leaves what
@@ -151,7 +151,7 @@ func (c *cliIdentity) unchanged(since time.Duration) bool {
 // unchangedAsk is how often a CLI whose sign-in reads the same is asked
 // anyway, for a plan changed on the vendor's side. Asked every minute,
 // cursor-agent alone, a Node program asking Cursor's servers, took ~0.5s of
-// CPU and 200 MB each time, for as long as magpie ran (#3185).
+// CPU and 200 MB each time, for as long as magpie-friday ran (#3185).
 const unchangedAsk = 30 * time.Minute
 
 // firstAsk is how long a look waits for a CLI never answered before.

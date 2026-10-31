@@ -5,7 +5,7 @@ import (
 	"os/exec"
 	"syscall"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 const (
@@ -28,7 +28,7 @@ func alive(pid int) bool {
 	return ev == waitTimeout
 }
 
-// detach starts a relaunched magpie outside this one's console, so it
+// detach starts a relaunched magpie-friday outside this one's console, so it
 // outlives it. It gets no console at all, so Windows ignores the
 // CREATE_NO_WINDOW proc may have set.
 func detach(cmd *exec.Cmd) {

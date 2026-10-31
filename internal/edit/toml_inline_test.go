@@ -10,51 +10,51 @@ import (
 )
 
 // An Inline value given to SetTOMLTable goes into the spelling the file
-// already has for that key. Codex's config.toml held magpie's provider
+// already has for that key. Codex's config.toml held magpie-friday's provider
 // headers as their own table (wztlink1013 on Discord, Windows), and the
 // inline http_headers written beside it defined the key twice: "edited TOML
 // is invalid: toml: key http_headers should be a table, not a value".
 func TestSetTOMLTableInlineMergesUsersSpelling(t *testing.T) {
-	actor := Inline{{Path: "x-openai-actor-authorization", Value: "magpie"}}
+	actor := Inline{{Path: "x-openai-actor-authorization", Value: "magpie-friday"}}
 	cases := []struct {
 		name, in string
 		want     []string // lines the result has
 		gone     []string // text it no longer has
 	}{{
 		name: "own table",
-		in: "model = \"m\"\n\n[model_providers.magpie]\nname = \"old\"\n\n" +
-			"[model_providers.magpie.http_headers]\n# mine\n\"x-org\" = \"acme\" # keep\n\"x-openai-actor-authorization\" = \"old\"\n",
-		want: []string{"# mine", `"x-org" = "acme" # keep`, `"x-openai-actor-authorization" = "magpie"`, `name = "magpie"`},
+		in: "model = \"m\"\n\n[model_providers.magpie-friday]\nname = \"old\"\n\n" +
+			"[model_providers.magpie-friday.http_headers]\n# mine\n\"x-org\" = \"acme\" # keep\n\"x-openai-actor-authorization\" = \"old\"\n",
+		want: []string{"# mine", `"x-org" = "acme" # keep`, `"x-openai-actor-authorization" = "magpie-friday"`, `name = "magpie-friday"`},
 		gone: []string{"http_headers = {", `"old"`},
 	}, {
 		name: "own table, header not there yet",
-		in:   "[model_providers.magpie]\nname = \"magpie\"\n\n[model_providers.magpie.http_headers]\nx-org = \"acme\"\n",
-		want: []string{`x-org = "acme"`, `"x-openai-actor-authorization" = "magpie"`},
+		in:   "[model_providers.magpie-friday]\nname = \"magpie-friday\"\n\n[model_providers.magpie-friday.http_headers]\nx-org = \"acme\"\n",
+		want: []string{`x-org = "acme"`, `"x-openai-actor-authorization" = "magpie-friday"`},
 		gone: []string{"http_headers = {"},
 	}, {
 		name: "own table only",
-		in:   "model = \"m\"\n\n[model_providers.magpie.http_headers]\nx-org = \"acme\"\n",
-		want: []string{"[model_providers.magpie]", `x-org = "acme"`, `"x-openai-actor-authorization" = "magpie"`},
+		in:   "model = \"m\"\n\n[model_providers.magpie-friday.http_headers]\nx-org = \"acme\"\n",
+		want: []string{"[model_providers.magpie-friday]", `x-org = "acme"`, `"x-openai-actor-authorization" = "magpie-friday"`},
 		gone: []string{"http_headers = {"},
 	}, {
 		name: "dotted keys",
-		in:   "[model_providers.magpie]\nname = \"old\"\nhttp_headers.\"x-org\" = \"acme\" # keep\nhttp_headers.\"x-openai-actor-authorization\" = \"old\"\n",
-		want: []string{`http_headers."x-org" = "acme" # keep`, `http_headers."x-openai-actor-authorization" = "magpie"`},
+		in:   "[model_providers.magpie-friday]\nname = \"old\"\nhttp_headers.\"x-org\" = \"acme\" # keep\nhttp_headers.\"x-openai-actor-authorization\" = \"old\"\n",
+		want: []string{`http_headers."x-org" = "acme" # keep`, `http_headers."x-openai-actor-authorization" = "magpie-friday"`},
 		gone: []string{"http_headers = {", `"old"`},
 	}, {
 		name: "dotted keys, header not there yet",
-		in:   "[model_providers.magpie]\nhttp_headers.x-org = \"acme\"\n",
-		want: []string{`http_headers.x-org = "acme"`, `http_headers."x-openai-actor-authorization" = "magpie"`},
+		in:   "[model_providers.magpie-friday]\nhttp_headers.x-org = \"acme\"\n",
+		want: []string{`http_headers.x-org = "acme"`, `http_headers."x-openai-actor-authorization" = "magpie-friday"`},
 		gone: []string{"http_headers = {"},
 	}, {
 		name: "inline",
-		in:   "[model_providers.magpie]\nname = \"old\"\nhttp_headers = { \"x-openai-actor-authorization\" = \"old\" }\n",
-		want: []string{`http_headers = { "x-openai-actor-authorization" = "magpie" }`},
+		in:   "[model_providers.magpie-friday]\nname = \"old\"\nhttp_headers = { \"x-openai-actor-authorization\" = \"old\" }\n",
+		want: []string{`http_headers = { "x-openai-actor-authorization" = "magpie-friday" }`},
 		gone: []string{`"old"`},
 	}, {
 		name: "absent",
 		in:   "model = \"m\"\n",
-		want: []string{`http_headers = { "x-openai-actor-authorization" = "magpie" }`},
+		want: []string{`http_headers = { "x-openai-actor-authorization" = "magpie-friday" }`},
 	}}
 	for _, c := range cases {
 		for _, crlf := range []bool{false, true} {
@@ -66,8 +66,8 @@ func TestSetTOMLTableInlineMergesUsersSpelling(t *testing.T) {
 			if err := os.WriteFile(path, []byte(in), 0o644); err != nil {
 				t.Fatal(err)
 			}
-			err := SetTOMLTable(path, "model_providers.magpie",
-				KV{Path: "name", Value: "magpie"},
+			err := SetTOMLTable(path, "model_providers.magpie-friday",
+				KV{Path: "name", Value: "magpie-friday"},
 				KV{Path: "http_headers", Value: actor})
 			if err != nil {
 				t.Fatalf("%s (crlf %v): %v", c.name, crlf, err)
@@ -100,10 +100,10 @@ func TestSetTOMLTableInlineMergesUsersSpelling(t *testing.T) {
 			if err := toml.Unmarshal(b, &cfg); err != nil {
 				t.Fatalf("%s: %v", c.name, err)
 			}
-			if h := cfg.Providers["magpie"].Headers["x-openai-actor-authorization"]; h != "magpie" {
+			if h := cfg.Providers["magpie-friday"].Headers["x-openai-actor-authorization"]; h != "magpie-friday" {
 				t.Errorf("%s (crlf %v): header reads %q:\n%s", c.name, crlf, h, got)
 			}
-			if strings.Contains(c.in, "acme") && cfg.Providers["magpie"].Headers["x-org"] != "acme" {
+			if strings.Contains(c.in, "acme") && cfg.Providers["magpie-friday"].Headers["x-org"] != "acme" {
 				t.Errorf("%s (crlf %v): the user's x-org header is lost:\n%s", c.name, crlf, got)
 			}
 		}

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Magpie theme smoke test</title>
+<link rel="stylesheet" href="app.css">
+<style>
+* { box-sizing: border-box; }
+body { padding: 30px; font: 14px var(--font); background-color: var(--bg); background-image: var(--bg-paint); background-attachment: fixed; color: var(--fg); }
+main { max-width: 940px; margin: 0 auto; }
+header { display:flex; align-items:center; justify-content:space-between; gap:20px; margin-bottom:26px; }
+.brand { display:flex; align-items:center; gap:12px; }
+.mark { width:38px; height:38px; display:grid; place-items:center; border-radius:13px; color:white; background:var(--accent-grad); box-shadow:var(--glow); font-size:20px; font-weight:800; }
+h1 { font-size:27px; letter-spacing:-.04em; margin:0 0 4px; }
+.lede { color:var(--muted); margin:0; }
+.eyebrow { color:var(--accent); font-size:10px; letter-spacing:.15em; text-transform:uppercase; font-weight:700; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(225px,1fr)); gap:14px; }
+.card { padding:19px; border-radius:16px; background:var(--card); border:1px solid var(--line); box-shadow:var(--glass-edge),var(--glow); -webkit-backdrop-filter:blur(18px) saturate(1.16); backdrop-filter:blur(18px) saturate(1.16); }
+.card h2 { margin:0 0 8px; font-size:15px; letter-spacing:-.015em; }
+.card p { color:var(--fg-2); line-height:1.55; }
+.actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:15px; }
+button { font:inherit; color:var(--fg); background:var(--pill); border:1px solid var(--line); border-radius:9px; padding:9px 13px; cursor:pointer; transition:transform .16s ease,box-shadow .16s ease; }
+button:hover { transform:translateY(-1px); box-shadow:var(--glow); }
+button.primary { color:var(--accent-fg); background:var(--accent-grad); border-color:transparent; font-weight:650; box-shadow:var(--glow); }
+button:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+input { font:inherit; color:var(--fg); background:var(--card-2); border:1px solid var(--line); border-radius:8px; padding:9px 11px; }
+.swatch { width:23px; height:23px; border-radius:7px; border:1px solid var(--line); background:linear-gradient(135deg,var(--card),var(--accent-soft)); box-shadow:inset 0 -7px var(--accent),0 0 16px color-mix(in srgb,var(--accent-2,var(--accent)) 36%,transparent); display:inline-block; vertical-align:middle; margin-right:6px; }
+code { color:var(--accent); font:12px var(--code); }
+footer { margin-top:15px; text-align:center; color:var(--muted); font-size:11px; }
+@media(max-width:520px) { body { padding:18px; } header { align-items:flex-start; flex-direction:column; gap:14px; } h1 { font-size:23px; } }
+</style>
+</head>
+<body>
+<main>
+  <header><div class="brand"><div class="mark">M</div><div><div class="eyebrow">Magpie interface system</div><h1>Aurora Control</h1><p class="lede">An energetic glass UI for routing models, agents and gateways.</p></div></div><button class="primary">Launch gateway ↗</button></header>
+  <div class="grid">
+    <section class="card"><h2>System</h2><p>Follow the browser's emulated operating-system preference.</p><div class="actions"><span class="swatch"></span><button id="system">System</button></div></section>
+    <section class="card"><h2>Light</h2><p>Neutral paper surfaces, graphite content and indigo actions.</p><div class="actions"><span class="swatch" style="background:#fff"></span><button id="light">Light</button></div></section>
+    <section class="card"><h2>Dark</h2><p>Quiet charcoal surfaces with legible content and restrained accent.</p><div class="actions"><span class="swatch" style="background:#262b3a"></span><button id="dark">Dark</button></div></section>
+  </div>
+  <section class="card" style="margin-top:14px">
+    <h2>Controls and typography</h2><p>UI text uses <code>--font</code>; identifiers use <code>--code</code>.</p>
+    <label>Example field <input placeholder="Search providers…"></label>
+    <div class="actions"><button class="primary">Primary action</button><button>Secondary</button><button>Quiet action</button></div>
+  </section>
+  <footer>Electric when it matters. Quiet where the data lives.</footer>
+</main>
+<script>
+const root=document.documentElement;
+for(const mode of ["system","light","dark"])document.getElementById(mode).onclick=()=>{if(mode==="system")delete root.dataset.theme;else root.dataset.theme=mode};
+</script>
+</body>
+</html>

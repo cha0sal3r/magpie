@@ -8,32 +8,32 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // modelsHome is the sandbox with a provider of three models and Codex set up
-// with magpie as its provider, whose model list magpie writes into
-// magpie-models.json, and the agents' files following a change of the
-// catalog as they do in magpie (main sets catalog.Changed).
+// with magpie-friday as its provider, whose model list magpie-friday writes into
+// magpie-friday-models.json, and the agents' files following a change of the
+// catalog as they do in magpie-friday (main sets catalog.Changed).
 func modelsHome(t *testing.T) (catalogFile string) {
 	t.Helper()
 	h := sandbox(t)
 	if err := provider.Save(provider.Provider{ID: "relay", Name: "Relay", Key: "k", Chat: "http://127.0.0.1:1/v1", Models: []string{"m1", "m2", "m3"}}); err != nil {
 		t.Fatal(err)
 	}
-	catalogFile = filepath.Join(h, ".codex", "magpie-models.json")
-	// the catalog named as magpie names it: by its full path, and on
+	catalogFile = filepath.Join(h, ".codex", "magpie-friday-models.json")
+	// the catalog named as magpie-friday names it: by its full path, and on
 	// Windows relative to config.toml (#816). A C:/ spelling isn't one
-	// magpie writes or takes for its own list, so on Windows Codex's list
+	// magpie-friday writes or takes for its own list, so on Windows Codex's list
 	// was never written and these tests failed there (#1517).
 	ref := "'" + catalogFile + "'"
 	if runtime.GOOS == "windows" {
-		ref = `"magpie-models.json"`
+		ref = `"magpie-friday-models.json"`
 	}
-	write(t, filepath.Join(h, ".codex", "config.toml"), "model = \"relay/m1\"\nmodel_provider = \"magpie\"\nmodel_catalog_json = "+ref+"\n\n[model_providers.magpie]\nname = \"magpie\"\nbase_url = \"http://127.0.0.1:1/v1\"\nwire_api = \"responses\"\n")
+	write(t, filepath.Join(h, ".codex", "config.toml"), "model = \"relay/m1\"\nmodel_provider = \"magpie-friday\"\nmodel_catalog_json = "+ref+"\n\n[model_providers.magpie-friday]\nname = \"magpie-friday\"\nbase_url = \"http://127.0.0.1:1/v1\"\nwire_api = \"responses\"\n")
 	was := catalog.Changed
 	catalog.Changed = agent.SyncCatalog
 	t.Cleanup(func() { catalog.Changed = was })
@@ -41,7 +41,7 @@ func modelsHome(t *testing.T) (catalogFile string) {
 	return catalogFile
 }
 
-// lists is which of the relay's models magpie-models.json gives Codex.
+// lists is which of the relay's models magpie-friday-models.json gives Codex.
 func lists(t *testing.T, file string) []string {
 	t.Helper()
 	var out []string

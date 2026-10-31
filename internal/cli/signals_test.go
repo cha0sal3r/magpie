@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // deaths records what the signal handler would die of, and takes the
@@ -50,7 +50,7 @@ func diesOf(t *testing.T, died chan os.Signal, want os.Signal) {
 			t.Fatalf("died of %v, want %v", s, want)
 		}
 	case <-time.After(3 * time.Second):
-		t.Fatalf("%v didn't end magpie", want)
+		t.Fatalf("%v didn't end magpie-friday", want)
 	}
 }
 
@@ -58,7 +58,7 @@ func livesOn(t *testing.T, died chan os.Signal, why string) {
 	t.Helper()
 	select {
 	case s := <-died:
-		t.Fatalf("magpie died of %v %s", s, why)
+		t.Fatalf("magpie-friday died of %v %s", s, why)
 	case <-time.After(300 * time.Millisecond):
 	}
 }
@@ -73,7 +73,7 @@ func TestSignalEndsMagpie(t *testing.T) {
 }
 
 // the app and the TUI take SIGINT and SIGTERM back: the signal reaches their
-// own handling (Wails's, bubbletea's) and magpie doesn't end first, which
+// own handling (Wails's, bubbletea's) and magpie-friday doesn't end first, which
 // skipped the app's OnShutdown and left the terminal on the TUI's screen
 func TestOwnSignalsHandsThemBack(t *testing.T) {
 	died := deaths(t, syscall.SIGTERM)
@@ -92,7 +92,7 @@ func TestOwnSignalsHandsThemBack(t *testing.T) {
 }
 
 // but not SIGHUP, which neither Wails nor bubbletea handles: the terminal
-// closing under the app or the TUI still ends the probes before magpie
+// closing under the app or the TUI still ends the probes before magpie-friday
 func TestOwnSignalsKeepsHangUp(t *testing.T) {
 	died := deaths(t, syscall.SIGHUP)
 	endProbesOnSignal()
@@ -116,13 +116,13 @@ func TestInterruptWhileEndingProbes(t *testing.T) {
 	stop()                             // and the command is done
 	select {
 	case s := <-died:
-		t.Fatalf("magpie died of %v in a command ending itself on Ctrl+C", s)
+		t.Fatalf("magpie-friday died of %v in a command ending itself on Ctrl+C", s)
 	case <-time.After(2 * time.Second):
 	}
 }
 
 // the TUI asks CLIs while it loads, before bubbletea listens for signals:
-// one then is still magpie's, which ends those probes, and the TUI takes the
+// one then is still magpie-friday's, which ends those probes, and the TUI takes the
 // signals once it is ready
 func TestTUIKeepsSignalsWhileLoading(t *testing.T) {
 	died := deaths(t, syscall.SIGTERM)

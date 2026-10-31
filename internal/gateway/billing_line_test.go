@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // claudeCodeTurn is Claude Code 2.1.114's request as #1600 (justrun1983)
@@ -119,7 +119,7 @@ func claudeCodeSends(t *testing.T, body string) {
 // Claude Code's billing line changes every turn (cch), and a vendor's model
 // read it as the first words of the prompt: DeepSeek's prefix cache missed
 // from byte 0 on every turn, 4% of a day's input read from it (#1600,
-// justrun1983). On every API magpie asks a vendor's model on, and for
+// justrun1983). On every API magpie-friday asks a vendor's model on, and for
 // another API's Claude, two turns that differ only in cch now send the
 // same prompt, without the line, the rest of it as Claude Code sent it.
 func TestBillingLineLeftOutForVendors(t *testing.T) {

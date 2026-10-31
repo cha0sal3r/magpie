@@ -25,8 +25,8 @@ work got wrong and the rule that would have caught it.
 ## Built-in subscriptions that a plugin serves
 
 These built-in subscriptions are retired. Reaching them can break their
-vendors' terms, so they moved out of magpie into community OpenCode plugins,
-which keeps magpie itself from being banned. Each one has a plugin that does
+vendors' terms, so they moved out of magpie-friday into community OpenCode plugins,
+which keeps magpie-friday itself from being banned. Each one has a plugin that does
 the same job:
 
 | Subscription | id | Plugin (npm) | Mover |
@@ -95,11 +95,11 @@ plugin:
 2. Fix the plugin in the community repo,
    [magpie-community/plugins](https://github.com/magpie-community/plugins)
    (`packages/<name>`, provider id = the built-in's id; checked out locally
-   at `~/workspace/projects/magpie-commuity-plugins`). Publish a new version.
+   at `~/workspace/projects/magpie-friday-commuity-plugins`). Publish a new version.
 3. Raise the mover's `min` to that version. `keepMovedCurrent` then updates
    every moved user's plugin.
 
-This magpie-side code still runs for moved subscriptions:
+This magpie-friday-side code still runs for moved subscriptions:
 
 - the plugin host: `internal/plugin`, `host.js`;
 - `internal/provider/plugins.go`, `plugin_usage.go` (`movedCards`) and

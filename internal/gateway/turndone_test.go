@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // turnsFollowed has turns followed for a test: a turn as long as the
@@ -95,11 +95,11 @@ func TestTurnDoneSaidAtTheTurnsEnd(t *testing.T) {
 		}
 	}
 	chat := `{"model":"plan/m1","stream":true,"messages":[{"role":"user","content":"hi"}]}`
-	messages := `{"model":"plan/m1","stream":true,"max_tokens":100,"system":"You are Claude Code.\n - Primary working directory: /Users/u/work/magpie\n","messages":[{"role":"user","content":"hi"}]}`
+	messages := `{"model":"plan/m1","stream":true,"max_tokens":100,"system":"You are Claude Code.\n - Primary working directory: /Users/u/work/magpie-friday\n","messages":[{"role":"user","content":"hi"}]}`
 
 	for _, c := range []struct{ name, path, body, folder string }{
 		{"chat", "/v1/chat/completions", chat, ""},
-		{"anthropic", "/v1/messages", messages, "/Users/u/work/magpie"},
+		{"anthropic", "/v1/messages", messages, "/Users/u/work/magpie-friday"},
 	} {
 		t.Run(c.name, func(t *testing.T) {
 			ends, length := turnsFollowed(t, time.Nanosecond)
@@ -177,8 +177,8 @@ func TestTurnDoneWaitsForEveryRequest(t *testing.T) {
 func TestTurnDoneConcurrentTasksByTheirConversation(t *testing.T) {
 	ends, _ := turnsFollowed(t, time.Minute)
 	var ts turns
-	long := &Route{turn: true, Agent: "codex", Conv: "magpie-long"}
-	short := &Route{turn: true, Agent: "codex", Conv: "magpie-short"}
+	long := &Route{turn: true, Agent: "codex", Conv: "magpie-friday-long"}
+	short := &Route{turn: true, Agent: "codex", Conv: "magpie-friday-short"}
 	t0 := time.Now().Add(-time.Hour)
 	ts.begin(long, t0)
 	// the short task runs while the long one is going, and ends first

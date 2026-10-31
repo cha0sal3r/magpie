@@ -9,7 +9,7 @@ import (
 
 // The user's own groups wait on plugins/groups only where the gateway is
 // served: ungated (the CLI, the TUI) they are listed; gated, only while
-// ServeGroups is held. The groups magpie finds are listed either way, and
+// ServeGroups is held. The groups magpie-friday finds are listed either way, and
 // NamedGroups, which keeps the plugin on, counts the user's own regardless.
 func TestOwnGroupsWaitOnThePlugin(t *testing.T) {
 	home := t.TempDir()
@@ -75,7 +75,7 @@ func TestNamedGroupsUnreadable(t *testing.T) {
 // gateway's refresh first (which turns the plugin on), so one made a
 // moment ago is served at once, not on the runtime's next look; a refresh
 // that leaves it off is asked at most once a second, and never for the
-// groups magpie found alone.
+// groups magpie-friday found alone.
 func TestOwnGroupRefreshesTheGate(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)

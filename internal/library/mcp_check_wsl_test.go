@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/wslrun"
+	"github.com/cha0sal3r/magpie-friday/internal/wslrun"
 )
 
 // wslCheck is a Windows machine with WSL whose running distros are up;
@@ -52,7 +52,7 @@ func fakeWSLCheck(t *testing.T, up ...string) *wslCheck {
 		return nil, errors.New("unexpected wsl.exe " + strings.Join(args, " "))
 	}
 	wslCommand = func(ctx context.Context, tl wslrun.Tool, args ...string) *exec.Cmd {
-		// wsl.exe as magpie starts it, its program swapped for the fake
+		// wsl.exe as magpie-friday starts it, its program swapped for the fake
 		c := tl.Command(ctx, args...)
 		w.mu.Lock()
 		w.runs = append(w.runs, slices.Clone(c.Args))
@@ -113,15 +113,15 @@ func TestCheckWSLOnlyServerInItsDistro(t *testing.T) {
 		}
 		return old(d, args...)
 	}
-	s.Command, s.Agents = "magpie-no-such-node", []string{"claude@wsl:Debian"}
-	if h = CheckServer(context.Background(), s); h.Why != "notfound" || h.Detail != "magpie-no-such-node" || !slices.Equal(h.Checked, []string{"Debian"}) {
+	s.Command, s.Agents = "magpie-friday-no-such-node", []string{"claude@wsl:Debian"}
+	if h = CheckServer(context.Background(), s); h.Why != "notfound" || h.Detail != "magpie-friday-no-such-node" || !slices.Equal(h.Checked, []string{"Debian"}) {
 		t.Fatalf("got %+v, want notfound in Debian", h)
 	}
 }
 
 // A server only this machine's agents have is checked here as before,
 // WSL never asked; so is a Windows program given to agents in WSL
-// (magpie's own image server, which runs on Windows whoever starts it).
+// (magpie-friday's own image server, which runs on Windows whoever starts it).
 func TestCheckWindowsServerHere(t *testing.T) {
 	w := fakeWSLCheck(t, "Ubuntu")
 	s := fakeStdio(t, "ok", nil)
@@ -130,7 +130,7 @@ func TestCheckWindowsServerHere(t *testing.T) {
 	if h.State != "ok" || h.Tools != 3 || h.Checked != nil {
 		t.Fatalf("got %+v, want ok here with nothing named", h)
 	}
-	for _, c := range []string{`D:\tools\Magpie\magpie-windows-amd64.exe`, `C:/x/npx.cmd`} {
+	for _, c := range []string{`D:\tools\magpie-friday\magpie-friday-windows-amd64.exe`, `C:/x/npx.cmd`} {
 		if got := checkSides(&Server{Transport: "stdio", Command: c, Agents: []string{"claude@wsl:Ubuntu"}}); !slices.Equal(got, []string{""}) {
 			t.Errorf("%s: sides %q, want this machine", c, got)
 		}

@@ -1,11 +1,11 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// Anoninz on #2120: magpie's Open at login said On while the Mac's own
+// Anoninz on #2120: magpie-friday's Open at login said On while the Mac's own
 // switch for it, in System Settings › General › Login Items, was off, so
-// magpie never opened at login. Settings now says whether the system will
+// magpie-friday never opened at login. Settings now says whether the system will
 // open it: in every language, at 1000px and 440px, in both engines, on a Mac,
 // with the API faked:
 // - a record the system holds switched off shows On with one line under it
-//   saying so, and a button that asks magpie to open Login Items (the exact
+//   saying so, and a button that asks magpie-friday to open Login Items (the exact
 //   x-apple.systempreferences URL, through /api/open);
 // - the window coming back to the front reads the state again: switched
 //   back on there, the line goes;
@@ -21,11 +21,11 @@ const { watchSettingsReads, settingsDrawn, reach } = require("./reader.cjs");
 const assets = path.resolve(__dirname, "../assets");
 const loginItems = "x-apple.systempreferences:com.apple.LoginItems-Settings.extension";
 const line = {
-  en: "Switched off in System Settings’ Login Items, so magpie won’t open at login",
-  zh: "已在系统设置的登录项里关闭，登录时不会打开 magpie",
-  "zh-TW": "已在系統設定的登入項目裡關閉，登入時不會開啟 magpie",
-  ja: "システム設定のログイン項目でオフになっているため、ログイン時に magpie は開きません",
-  de: "In den Systemeinstellungen unter „Anmeldeobjekte“ ausgeschaltet, daher öffnet sich magpie bei der Anmeldung nicht",
+  en: "Switched off in System Settings’ Login Items, so magpie-friday won’t open at login",
+  zh: "已在系统设置的登录项里关闭，登录时不会打开 magpie-friday",
+  "zh-TW": "已在系統設定的登入項目裡關閉，登入時不會開啟 magpie-friday",
+  ja: "システム設定のログイン項目でオフになっているため、ログイン時に magpie-friday は開きません",
+  de: "In den Systemeinstellungen unter „Anmeldeobjekte“ ausgeschaltet, daher öffnet sich magpie-friday bei der Anmeldung nicht",
 };
 const button = { en: "Open Login Items", zh: "打开登录项", "zh-TW": "打開登入項目", ja: "ログイン項目を開く", de: "Anmeldeobjekte öffnen" };
 
@@ -109,7 +109,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       for (let i = 0; i < 50 && !opened.length; i++) await page.waitForTimeout(50);
       assert.deepEqual(opened, [loginItems]);
 
-      // switched back on in System Settings, then back to magpie: the line goes
+      // switched back on in System Settings, then back to magpie-friday: the line goes
       st.loginAllow = false;
       await page.evaluate(() => window.dispatchEvent(new Event("focus")));
       await sub.waitFor({ state: "detached" });

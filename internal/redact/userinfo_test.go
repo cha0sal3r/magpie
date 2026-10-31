@@ -23,7 +23,7 @@ func TestURLUserinfoIsNoEmail(t *testing.T) {
 		// Redis has a password and no user
 		{"REDIS_URL=redis://:r3disPass@cache.acme-corp.cn:6379/0", `^REDIS_URL=redis://:` + ph("PASSWORD") + `@cache\.acme-corp\.cn:6379/0$`},
 		// a user and no password: neither part is an address
-		{"git clone https://yetone@github.com/yetone/magpie.git", `^git clone https://yetone@github\.com/yetone/magpie\.git$`},
+		{"git clone https://yetone@github.com/cha0sal3r/magpie-friday.git", `^git clone https://yetone@github\.com/cha0sal3r/magpie-friday\.git$`},
 		{"ssh://git@gitlab.acme-corp.cn:2222/team/repo.git", `^ssh://git@gitlab\.acme-corp\.cn:2222/team/repo\.git$`},
 		// an address is still one: in prose, in mailto:, in a URL's path or query
 		{"mail rina.k@fastmail.com today", `^mail ` + ph("EMAIL") + ` today$`},

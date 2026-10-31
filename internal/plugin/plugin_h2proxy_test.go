@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
 )
 
 // connectTo is an HTTP proxy that tunnels every CONNECT to addr, whatever
@@ -67,7 +67,7 @@ func connectTo(t *testing.T, addr string) (string, *atomic.Int32, *atomic.Value)
 
 // #1035: Cursor's plugin runs its chats on node:http2, which Bun connects
 // directly whatever the proxy: where Cursor is reached only through
-// magpie's proxy, the plugin's fetches (sign-in, models, usage) came
+// magpie-friday's proxy, the plugin's fetches (sign-in, models, usage) came
 // through it and its chats didn't. A session a plugin opens goes through
 // the proxy its fetches take, as the built-in's requests did; one for a
 // provider set to "direct" goes through none.

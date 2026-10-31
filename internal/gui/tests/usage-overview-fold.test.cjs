@@ -29,7 +29,7 @@ const sum = (k) => AGENTS.reduce((n, g) => n + g[k], 0);
 const USAGE = {
   calls: 30, errors: 0, input: sum("input"), output: sum("output"), reasoning: 0, cache_read: sum("cache_read"), cache_write: 0, unpriced: 0, cost: 0, bucket: "day",
   series: [{ label: "Oct 15", time: new Date().toISOString(), calls: 30, input: sum("input"), output: sum("output"), cache_read: sum("cache_read"), cache_write: 0, cost: 0 }],
-  path: "~/.config/magpie/usage.jsonl",
+  path: "~/.config/magpie-friday/usage.jsonl",
   agents: AGENTS, models: MODELS, accounts: ACCOUNTS, callerKeys: KEYS,
 };
 // the Requests tab's totals, the reporter's: 183.2万 in, 71.1万 out, 8793.3万 cache

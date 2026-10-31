@@ -1,6 +1,6 @@
-// Package omarchy is what magpie knows of Omarchy (omarchy.org), the
+// Package omarchy is what magpie-friday knows of Omarchy (omarchy.org), the
 // Hyprland desktop: whether it runs on one, and the look its current theme
-// gives every surface, so magpie's windows can take that look there and
+// gives every surface, so magpie-friday's windows can take that look there and
 // nowhere else.
 //
 // Omarchy (4.x) keeps the current theme under
@@ -24,11 +24,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
-// Detect reports whether magpie runs on Omarchy. MAGPIE_OMARCHY=1 says it
+// Detect reports whether magpie-friday runs on Omarchy. MAGPIE_OMARCHY=1 says it
 // does (with MAGPIE_OMARCHY_THEME the theme's folder), =0 that it doesn't.
 func Detect() bool {
 	switch os.Getenv("MAGPIE_OMARCHY") {
@@ -73,7 +73,7 @@ func ThemeDir() string {
 	return ""
 }
 
-// Theme is the current theme as magpie draws with it.
+// Theme is the current theme as magpie-friday draws with it.
 type Theme struct {
 	Name  string            `json:"name"`  // tokyo-night
 	Mode  string            `json:"mode"`  // dark or light
@@ -199,7 +199,7 @@ func (c color) alpha(a float64) color { c.a = a; return c }
 func (c color) luminance() float64 { return 0.2126*c.r + 0.7152*c.g + 0.0722*c.b }
 
 // Vars turns the theme's palette (colors.toml) and shell tokens
-// (shell.toml) into magpie's CSS custom properties, the rest given: the
+// (shell.toml) into magpie-friday's CSS custom properties, the rest given: the
 // font's family, the corners' radius and the border's width.
 func Vars(colors, shell map[string]string, font string, rounding, border int) (map[string]string, string) {
 	get := func(m map[string]string, fallback color, keys ...string) color {

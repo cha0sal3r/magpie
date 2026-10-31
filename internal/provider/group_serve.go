@@ -8,11 +8,11 @@ import (
 )
 
 // The user's own routing groups — those not Auto, made on the Routing page
-// or with `magpie group` — are plugins/groups' to serve (P3 of
+// or with `magpie-friday group` — are plugins/groups' to serve (P3 of
 // docs/subsystems/plugin-runtime.md). In the process serving the gateway
 // (GateGroups), while that plugin is off (no ServeGroups held), they are
 // neither listed nor routed: Groups, FindGroup, GroupFor and the catalog
-// leave them out. The groups magpie finds (Auto) are the core's either
+// leave them out. The groups magpie-friday finds (Auto) are the core's either
 // way, as Smart is: they are how a model several providers serve is one
 // model with failover, which a new install, the groups plugin off, has.
 //
@@ -20,7 +20,7 @@ import (
 // (NamedGroups), so off, there is none to leave out but one added since
 // the plugin last looked: a lookup that finds one asks the gate's refresh
 // (the gateway's plugin runtime) first, which turns the plugin on, so a
-// group made a moment ago with `magpie group add` is served at once. A
+// group made a moment ago with `magpie-friday group add` is served at once. A
 // process not serving the gateway (the CLI, the TUI) lists them all.
 var groupGate struct {
 	sync.Mutex

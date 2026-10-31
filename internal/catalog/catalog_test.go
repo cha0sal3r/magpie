@@ -19,7 +19,7 @@ func writeCatalog(t *testing.T, body string) {
 	t.Helper()
 	dir := t.TempDir()
 	t.Setenv("XDG_CACHE_HOME", dir)
-	if err := os.MkdirAll(filepath.Join(dir, "magpie"), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Join(dir, "magpie-friday"), 0o755); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(CachePath(), []byte(body), 0o644); err != nil {
@@ -444,7 +444,7 @@ func TestFetchedModalitiesKeepEveryKind(t *testing.T) {
 // Finding a model's kin doesn't copy each model of its provider to the
 // heap: Provider ran once a round of dsh's wiring, and a pointer to the
 // loop's copy made its allocations grow with the square of a provider's
-// models (~6 GB in 48 minutes of a user's magpie). 200 models of one
+// models (~6 GB in 48 minutes of a user's magpie-friday). 200 models of one
 // family ask a few allocations each, not 200. And a provider's list is
 // built once a load: asked again, it is a copy of the one built.
 func TestProviderAllocsGrowWithModels(t *testing.T) {

@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // serveOn starts s's ListenAndServe and waits for it to listen.
@@ -40,7 +40,7 @@ func listening(t *testing.T, s *Server) (stop context.CancelFunc, done <-chan er
 	return cancel, ch
 }
 
-// A restart to update hands the gateway's socket to the new magpie: a
+// A restart to update hands the gateway's socket to the new magpie-friday: a
 // reply streaming through the old one when it does finishes there — the
 // old one's end waits for it, rather than 2s — while new requests are
 // answered by the new one, and none is refused on the way.
@@ -229,11 +229,11 @@ func TestSameAddr(t *testing.T) {
 	}
 }
 
-// A Claude Code run of the magpie before this one, its turn under way when
+// A Claude Code run of the magpie-friday before this one, its turn under way when
 // the gateway changed hands, calls its tools on the port this one now
-// serves: the call goes on to that magpie's callbacks socket, through the
+// serves: the call goes on to that magpie-friday's callbacks socket, through the
 // network guard as its own run's would, and comes back answered. Once that
-// magpie is gone, such a call is unknown here again, and guarded.
+// magpie-friday is gone, such a call is unknown here again, and guarded.
 func TestToolCallOfTheMagpieBeforeGoesToIt(t *testing.T) {
 	fresh(t)
 	t.Setenv("MAGPIE_ADDR", "0.0.0.0:3425")
@@ -270,20 +270,20 @@ func TestToolCallOfTheMagpieBeforeGoesToIt(t *testing.T) {
 		t.Fatalf("the call wasn't passed on: %d %s", c, b)
 	}
 	if g, _ := got.Load().(string); !strings.HasPrefix(g, "POST "+claudeMCPPath+token+" ") || !strings.Contains(g, `"tool_call_id":"x"`) {
-		t.Fatalf("the magpie before got %q", g)
+		t.Fatalf("the magpie-friday before got %q", g)
 	}
-	// that magpie gone: the call is unknown here, and from the network it
+	// that magpie-friday gone: the call is unknown here, and from the network it
 	// needs a key again
 	before.Close()
 	os.Remove(sock)
 	if c, b := call("127.0.0.1:5000"); c != http.StatusNotFound {
-		t.Fatalf("with the magpie before gone: %d %s", c, b)
+		t.Fatalf("with the magpie-friday before gone: %d %s", c, b)
 	}
 	if forwarding() {
-		t.Fatal("still passing calls on to a magpie gone")
+		t.Fatal("still passing calls on to a magpie-friday gone")
 	}
 	if c, b := call("192.168.1.9:5000"); c != http.StatusUnauthorized {
-		t.Fatalf("from the network, with the magpie before gone: %d %s", c, b)
+		t.Fatalf("from the network, with the magpie-friday before gone: %d %s", c, b)
 	}
 }
 

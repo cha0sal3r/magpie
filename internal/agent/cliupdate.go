@@ -27,25 +27,25 @@ import (
 	"time"
 	"unicode/utf16"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/source"
-	"github.com/yetone/magpie/internal/update"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/source"
+	"github.com/cha0sal3r/magpie-friday/internal/update"
 )
 
-// CLI is what magpie knows of an agent's command-line program.
+// CLI is what magpie-friday knows of an agent's command-line program.
 type CLI struct {
 	Version string `json:"version,omitempty"`
 	// Latest is the newest there is, from where it would be updated:
 	// Homebrew's for one Homebrew installed, npm's otherwise
 	Latest string `json:"latest,omitempty"`
 	// Via is what updates it: npm, bun, pnpm, brew, or self (its own
-	// updater); "" when magpie can't tell how it was installed
+	// updater); "" when magpie-friday can't tell how it was installed
 	Via string `json:"via,omitempty"`
 	// Command is the update as a person would type it
 	Command string `json:"command,omitempty"`
-	// Update: Latest is after Version, and magpie knows how to get it
+	// Update: Latest is after Version, and magpie-friday knows how to get it
 	Update bool `json:"update,omitempty"`
 	// App is the version of the agent's desktop app installed beside it
 	// (the Codex app, AppVersion); shown even with no CLI on PATH
@@ -53,15 +53,15 @@ type CLI struct {
 	// Admin: the update needs an administrator, which Windows asks for
 	// first (npm's global folder under Program Files)
 	Admin bool `json:"admin,omitempty"`
-	// Path is where the CLI was found: the file magpie runs, as PATH
+	// Path is where the CLI was found: the file magpie-friday runs, as PATH
 	// reached it
 	Path string `json:"path,omitempty"`
-	// OffPath says the CLI was found in a folder magpie adds to its own
+	// OffPath says the CLI was found in a folder magpie-friday adds to its own
 	// PATH (proc.UserPath: ~/.local/bin, npm's prefixes, nvm's default
 	// Node, bun, Homebrew, ...) that a terminal opened now doesn't have,
 	// so that `which` there doesn't find it. A row of an agent the user
 	// believed uninstalled, with a version and nothing to say where it
-	// came from, read as magpie making it up (悠悠哥 on Discord: Codex
+	// came from, read as magpie-friday making it up (悠悠哥 on Discord: Codex
 	// 0.162.1 listed with no codex on PATH and no ~/.codex). False when
 	// the terminal's PATH can't be told.
 	OffPath bool `json:"offPath,omitempty"`
@@ -83,7 +83,7 @@ type cliSpec struct {
 	// not published on npm
 	latest func() string
 	// target: its own updater takes the version to install (opencode
-	// upgrade 1.19.3), so magpie gives it the one it already knows, as the
+	// upgrade 1.19.3), so magpie-friday gives it the one it already knows, as the
 	// row promised, when that updater is what runs (via "self"): npm's,
 	// bun's, pnpm's and brew's commands take no version after them. An opencode 1.19.0 from its own installer (method curl)
 	// asks GitHub's API for the newest release, which answers an address 60
@@ -175,7 +175,7 @@ var cliSpecs = map[string]cliSpec{
 	// ~/.local/bin/cursor-agent to ~/.local/share/cursor-agent/versions/<v>/
 	// cursor-agent, and `cursor-agent --version` says the version
 	// ("2026.10.01-e373342"). Not on npm nor Homebrew, and it updates
-	// itself, so magpie shows its version only (@G_Z_Y on X saw none).
+	// itself, so magpie-friday shows its version only (@G_Z_Y on X saw none).
 	"cursor": {},
 	// AtomCode's installer chooses /usr/local/bin or ~/.local/bin by
 	// writability (`.local\bin\atomcode.exe` on Windows); `atomcode upgrade`
@@ -264,7 +264,7 @@ func howInstalled(spec cliSpec, bin string) *updater {
 
 // selfPath is the folder to put first on PATH for a CLI's own updater, when
 // a package manager installed it in a global node_modules: the updater runs
-// that manager by its bare name (omo update runs npm i -g), and magpie's
+// that manager by its bare name (omo update runs npm i -g), and magpie-friday's
 // PATH can find another one first, a system node's in /usr/local/bin
 // before a version manager's, whose npm then installs into a folder only
 // root may change (#2021, ggbdpq). npm's global folder follows the node
@@ -362,7 +362,7 @@ func fromNodeModules(pkg, bin, real string) *updater {
 		}
 		return &updater{via: "pnpm", pkg: pkg, cmd: []string{pnpm, "add", "-g", pkg + "@latest"}}
 	case strings.Contains(lower, "/.volta/") || strings.Contains(lower, "/yarn/") || strings.Contains(lower, "/.yarn/"):
-		return nil // installed by a manager of its own, which magpie leaves to it
+		return nil // installed by a manager of its own, which magpie-friday leaves to it
 	}
 	if modules == "" {
 		return nil
@@ -616,7 +616,7 @@ var npmRegistry = "https://registry.npmjs.org/"
 func npmLatest(pkg string) (string, error) {
 	c := &http.Client{Timeout: 8 * time.Second}
 	req, _ := http.NewRequest("GET", npmRegistry+pkg+"/latest", nil)
-	req.Header.Set("User-Agent", "magpie")
+	req.Header.Set("User-Agent", "magpie-friday")
 	req.Header.Set("Accept", "application/json")
 	resp, err := source.Do(c, req)
 	if err != nil {
@@ -669,7 +669,7 @@ func grokLatest() string {
 func channelVersion(url string) (string, error) {
 	c := &http.Client{Timeout: 8 * time.Second}
 	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Set("User-Agent", "magpie")
+	req.Header.Set("User-Agent", "magpie-friday")
 	resp, err := source.Do(c, req)
 	if err != nil {
 		return "", err
@@ -752,10 +752,10 @@ func offPath(bin string, dirs []string) bool {
 	return true
 }
 
-// cliBin is where the agent's CLI is, "" when it has none magpie knows or
-// none is installed. One not on magpie's PATH is looked for where a user's
+// cliBin is where the agent's CLI is, "" when it has none magpie-friday knows or
+// none is installed. One not on magpie-friday's PATH is looked for where a user's
 // tools are installed (proc.FindTool), on every system as on Windows: a
-// `magpie serve` or a service started with a PATH that lacks ~/.bun/bin, an
+// `magpie-friday serve` or a service started with a PATH that lacks ~/.bun/bin, an
 // npm prefix or an nvm Node other than the default never found omp there,
 // so its version stayed unknown and its models offered xhigh in place of
 // max (whqtian on Discord: fixed on Windows and in WSL, still xhigh on
@@ -793,9 +793,9 @@ func (a *Agent) cliBin() (string, cliSpec) {
 	return bin, spec
 }
 
-// CLI is the agent's CLI: its version, the newest, and whether magpie can
+// CLI is the agent's CLI: its version, the newest, and whether magpie-friday can
 // update it, with its desktop app's version. ok is false for an agent with
-// neither a CLI magpie knows nor its app.
+// neither a CLI magpie-friday knows nor its app.
 func (a *Agent) CLI() (c CLI, ok bool) {
 	c.App = a.AppVersion()
 	bin, spec := a.cliBin()
@@ -816,7 +816,7 @@ func (a *Agent) CLI() (c CLI, ok bool) {
 }
 
 // InstalledVersion is what the agent's CLI on PATH says its version is: ""
-// for an agent without a CLI magpie knows, one not on PATH, or one that
+// for an agent without a CLI magpie-friday knows, one not on PATH, or one that
 // didn't say. Asked once per binary, like CLI's; nothing is fetched.
 func (a *Agent) InstalledVersion() string {
 	bin, _ := a.cliBin()
@@ -895,7 +895,7 @@ type AdminError struct {
 func (e *AdminError) Error() string {
 	why := "Windows' administrator prompt was declined"
 	if !e.Canceled {
-		why = "magpie couldn't ask Windows for one (" + e.Err.Error() + ")"
+		why = "magpie-friday couldn't ask Windows for one (" + e.Err.Error() + ")"
 	}
 	where := fmt.Sprintf("%s is installed in %s, which only an administrator can change", e.Agent, e.Prefix)
 	if e.Prefix == "" {
@@ -920,7 +920,7 @@ var runUpdate = func(ctx context.Context, u *updater) ([]byte, error) {
 	return cmd.CombinedOutput()
 }
 
-// updateEnv is the environment an update runs in: the proxy magpie's own
+// updateEnv is the environment an update runs in: the proxy magpie-friday's own
 // requests take (a SOCKS5 one bridged for bun, which can't use it: #1409),
 // and u's PATH first.
 func updateEnv(u *updater) []string {
@@ -948,11 +948,11 @@ var updateTimeout = 10 * time.Minute
 func (a *Agent) UpdateCLI() (CLI, error) {
 	bin, spec := a.cliBin()
 	if bin == "" {
-		return CLI{}, fmt.Errorf("magpie can't find %s's CLI", a.Name)
+		return CLI{}, fmt.Errorf("magpie-friday can't find %s's CLI", a.Name)
 	}
 	real, u := installedAt(spec, bin)
 	if u == nil {
-		return CLI{}, fmt.Errorf("magpie can't tell how %s was installed at %s — update it the way you installed it", a.Name, bin)
+		return CLI{}, fmt.Errorf("magpie-friday can't tell how %s was installed at %s — update it the way you installed it", a.Name, bin)
 	}
 	if _, busy := updating.LoadOrStore(a.ID, true); busy {
 		return CLI{}, fmt.Errorf("%s is already being updated", a.Name)

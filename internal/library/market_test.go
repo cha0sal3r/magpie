@@ -28,12 +28,12 @@ func TestFromRegistry(t *testing.T) {
 		"remotes": [
 			{"type": "sse", "url": "https://acme.dev/sse"},
 			{"type": "streamable-http", "url": "https://acme.dev/mcp", "headers": [
-				{"name": "X-Client", "value": "magpie"},
+				{"name": "X-Client", "value": "magpie-friday"},
 				{"name": "Authorization", "value": "Bearer {token}", "isRequired": true, "isSecret": true}
 			]}
 		]}`))
 	if !ok || m.Name != "weather" || m.Title != "weather" || m.Publisher != "acme" || m.Homepage != "https://github.com/acme/weather" ||
-		m.Icon != gh("acme") || m.Transport != "http" || m.server.URL != "https://acme.dev/mcp" || m.server.Headers["X-Client"] != "magpie" {
+		m.Icon != gh("acme") || m.Transport != "http" || m.server.URL != "https://acme.dev/mcp" || m.server.Headers["X-Client"] != "magpie-friday" {
 		t.Fatalf("remote: %+v %v", m, ok)
 	}
 	if len(m.Inputs) != 1 || m.Inputs[0].Key != "Authorization" || m.Inputs[0].format != "Bearer {}" || !m.Inputs[0].Secret {
@@ -68,7 +68,7 @@ func TestFromRegistry(t *testing.T) {
 		t.Fatalf("oci: %+v %v", m, ok)
 	}
 
-	// what magpie can't start: a URL with a variable in it, a package over
+	// what magpie-friday can't start: a URL with a variable in it, a package over
 	// another transport, a named argument it would have to make up
 	for _, s := range []string{
 		`{"name": "a/b", "remotes": [{"type": "streamable-http", "url": "https://{tenant}.acme.dev/mcp"}]}`,
@@ -221,7 +221,7 @@ func TestSkillsShPages(t *testing.T) {
 	}
 }
 
-// magpie's own skills come first, marked official, and only where a
+// magpie-friday's own skills come first, marked official, and only where a
 // search names them (ttmouse on X).
 func TestFeaturedSkills(t *testing.T) {
 	sandbox(t)
@@ -233,20 +233,20 @@ func TestFeaturedSkills(t *testing.T) {
 	t.Cleanup(func() { popular.Lock(); popular.list = nil; popular.Unlock() })
 
 	list, _ := MarketSkills("")
-	if len(list) != 3 || list[0].ID != "magpie-community/plugins/magpie-setup" || list[1].ID != "magpie-community/plugins/magpie-quota" || list[2].ID != "o/r/pdf" {
+	if len(list) != 3 || list[0].ID != "magpie-community/plugins/magpie-friday-setup" || list[1].ID != "magpie-community/plugins/magpie-friday-quota" || list[2].ID != "o/r/pdf" {
 		t.Fatalf("market: %+v", list)
 	}
 	for _, m := range list[:2] {
 		if !m.Official || !m.Featured || m.Description == "" || m.Icon != gh("magpie-community") || !offered(m.Icon) {
-			t.Fatalf("magpie's own: %+v", m)
+			t.Fatalf("magpie-friday's own: %+v", m)
 		}
 	}
-	if list, _ := MarketSkills("quota"); len(list) == 0 || list[0].SkillID != "magpie-quota" || slices.ContainsFunc(list, func(m MarketSkill) bool { return m.SkillID == "magpie-setup" }) {
+	if list, _ := MarketSkills("quota"); len(list) == 0 || list[0].SkillID != "magpie-friday-quota" || slices.ContainsFunc(list, func(m MarketSkill) bool { return m.SkillID == "magpie-friday-setup" }) {
 		t.Fatalf("quota: %+v", list)
 	}
-	// Leyuu_5 on X: an agent sets magpie up; found by what a user searches
+	// Leyuu_5 on X: an agent sets magpie-friday up; found by what a user searches
 	for _, q := range []string{"setup", "routing", "gateway key"} {
-		if list, _ := MarketSkills(q); len(list) == 0 || list[0].SkillID != "magpie-setup" {
+		if list, _ := MarketSkills(q); len(list) == 0 || list[0].SkillID != "magpie-friday-setup" {
 			t.Fatalf("%s: %+v", q, list)
 		}
 	}
@@ -302,7 +302,7 @@ func TestInstallFromRegistry(t *testing.T) {
 	if s.Name != "acme" || s.URL != "https://acme.dev/mcp" || s.Headers["Authorization"] != "Bearer k-123" || !slices.Equal(s.Agents, []string{"claude"}) {
 		t.Fatalf("server: %+v", s)
 	}
-	// its icon stays with it, and stays one magpie will fetch, once the
+	// its icon stays with it, and stays one magpie-friday will fetch, once the
 	// market has forgotten it
 	seenServers.Lock()
 	clear(seenServers.m)
@@ -321,31 +321,31 @@ func TestInstallFromRegistry(t *testing.T) {
 
 func TestMagpieImageIsOptIn(t *testing.T) {
 	sandbox(t)
-	ok(t)(InstallServer("magpie-image", nil, nil))
+	ok(t)(InstallServer("magpie-friday-image", nil, nil))
 	list, err := MarketServers("")
 	if err != nil {
 		t.Fatal(err)
 	}
-	i := slices.IndexFunc(list, func(m MarketServer) bool { return m.ID == "magpie-image" })
-	if i < 0 || !list[i].OptIn || list[i].Have != "magpie-image" {
+	i := slices.IndexFunc(list, func(m MarketServer) bool { return m.ID == "magpie-friday-image" })
+	if i < 0 || !list[i].OptIn || list[i].Have != "magpie-friday-image" {
 		t.Fatalf("market: %+v", list)
 	}
 	l, err := load()
 	if err != nil {
 		t.Fatal(err)
 	}
-	s := l.server("magpie-image")
+	s := l.server("magpie-friday-image")
 	if s == nil || len(s.Agents) != 0 || !filepath.IsAbs(s.Command) || strings.Join(s.Args, " ") != "mcp image" {
 		t.Fatalf("added as %+v", s)
 	}
 }
 
-// Magpie Image's card doesn't say videos need a Grok subscription: the
-// gateway also makes them with Seedance, another magpie and a provider whose
+// magpie-friday Image's card doesn't say videos need a Grok subscription: the
+// gateway also makes them with Seedance, another magpie-friday and a provider whose
 // model list marks video models (#1399).
 func TestMagpieImageSaysVideoModels(t *testing.T) {
 	d := selfServer().Description
-	if strings.Contains(d, "Grok subscription") || !strings.Contains(d, "video model set up in Magpie") {
+	if strings.Contains(d, "Grok subscription") || !strings.Contains(d, "video model set up in magpie-friday") {
 		t.Fatalf("description %q", d)
 	}
 }

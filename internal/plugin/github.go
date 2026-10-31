@@ -40,7 +40,7 @@ type Tagged struct {
 	Package string `json:"package,omitempty"`
 	Version string `json:"version,omitempty"`
 	Kind    string `json:"kind,omitempty"` // "middleware", "agent" or "page" when that is all it is
-	// its package.json's magpie.icon, as an installed plugin gives its
+	// its package.json's magpie-friday.icon, as an installed plugin gives its
 	// provider one: an https URL or a data:image URI, as it is written
 	Icon string `json:"icon,omitempty"`
 }
@@ -143,7 +143,7 @@ func TaggedRepos(ctx context.Context) ([]Tagged, error) {
 	if os.Getenv("MAGPIE_PLUGIN_MARKET") == "off" {
 		return []Tagged{}, nil
 	}
-	// a magpie started again within the ten minutes: what GitHub said then,
+	// a magpie-friday started again within the ten minutes: what GitHub said then,
 	// without the wait of asking (a package.json read for each)
 	if taggedL == nil {
 		if fi, err := os.Stat(taggedCache()); err == nil && time.Since(fi.ModTime()) < taggedTTL {
@@ -168,7 +168,7 @@ func TaggedRepos(ctx context.Context) ([]Tagged, error) {
 		if b, err := json.Marshal(l); err == nil {
 			_ = os.MkdirAll(filepath.Dir(taggedCache()), 0o755)
 			_ = os.WriteFile(taggedCache(), b, 0o644)
-			// a magpie started again meanwhile asks again too
+			// a magpie-friday started again meanwhile asks again too
 			_ = os.Chtimes(taggedCache(), taggedAt, taggedAt)
 		}
 		return l, taggedWhy
@@ -401,7 +401,7 @@ func readTagged(pc context.Context, t Tagged, branch string) (Tagged, bool, bool
 		return t, false, true, nil
 	}
 	t.Package, t.Version = pj.Name, pj.Version
-	// a picture, as host.js's iconOf takes one: magpie checks and
+	// a picture, as host.js's iconOf takes one: magpie-friday checks and
 	// keeps it before the page shows it (the GUI's /api/plugins/github)
 	t.Icon = ownIcon(pj.Magpie.Icon)
 	if pj.Main == "" && len(pj.Exports) == 0 {

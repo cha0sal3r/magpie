@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 func TestS3UsageListingMustFinish(t *testing.T) {
@@ -51,7 +51,7 @@ func TestS3UsageListingMustFinish(t *testing.T) {
 					}
 				}
 				truncated := tc.broken != "" || page < tc.pages
-				fmt.Fprintf(w, `<ListBucketResult><Contents><Key>%s%d.magpie-usage</Key><ETag>etag-%d</ETag></Contents><IsTruncated>%t</IsTruncated><NextContinuationToken>%s</NextContinuationToken></ListBucketResult>`, q.Get("prefix"), page, page, truncated, next)
+				fmt.Fprintf(w, `<ListBucketResult><Contents><Key>%s%d.magpie-friday-usage</Key><ETag>etag-%d</ETag></Contents><IsTruncated>%t</IsTruncated><NextContinuationToken>%s</NextContinuationToken></ListBucketResult>`, q.Get("prefix"), page, page, truncated, next)
 			}))
 			defer srv.Close()
 			s, err := newS3(Config{URL: "s3://test-bucket", Endpoint: srv.URL})

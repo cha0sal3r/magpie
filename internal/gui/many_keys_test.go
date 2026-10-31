@@ -5,10 +5,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// @NetRozee on X: a custom endpoint given a thousand keys froze magpie.
+// @NetRozee on X: a custom endpoint given a thousand keys froze magpie-friday.
 // The Providers page asked, for each key, what it rests by, and that
 // listed every key on again: a thousand keys took 1.5s to draw, five
 // thousand 2m40s, and each answer of /api/keys/* (an import too) waited

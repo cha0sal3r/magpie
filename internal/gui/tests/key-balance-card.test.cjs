@@ -23,7 +23,7 @@ const week = (() => {
   return (at(y) - Date.now() > 8 * 86400e3 ? at(y) : at(y + 1)).toISOString();
 })();
 
-// the reporter's (magpie quota's lines): one Command Code key with a plan
+// the reporter's (magpie-friday quota's lines): one Command Code key with a plan
 // and credits, and other providers' balances
 const reporter = {
   quotas: [

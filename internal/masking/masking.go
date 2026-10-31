@@ -9,10 +9,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/yetone/magpie/internal/gwmw"
-	"github.com/yetone/magpie/internal/pii"
-	"github.com/yetone/magpie/internal/redact"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/gwmw"
+	"github.com/cha0sal3r/magpie-friday/internal/pii"
+	"github.com/cha0sal3r/magpie-friday/internal/redact"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // Masker masks as the settings say, read on each call.

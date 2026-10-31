@@ -3,7 +3,7 @@ package agent
 import (
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
 // TestDshMaxReachesOutputEffortModels: pi-ai asks a model on Messages for a
@@ -11,7 +11,7 @@ import (
 // max to high (16384), so DSH's Max on zcode's GLM-5.3 reached it as high
 // (01huadalang on Discord, 10-24). Z.ai's GLM-5.2 and GLM-5.3, which take
 // adaptive thinking with their level, are told to think adaptively on
-// magpie's Anthropic route, which has pi-ai send the level itself; on the
+// magpie-friday's Anthropic route, which has pi-ai send the level itself; on the
 // other routes, for MiniMax (not tried adaptive, #3496) and for a model
 // that takes a budget, nothing changes.
 func TestDshMaxReachesOutputEffortModels(t *testing.T) {

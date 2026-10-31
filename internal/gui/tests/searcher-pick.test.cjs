@@ -1,13 +1,13 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // Settings' Web search section: which provider searches for a model that
-// can't (01huadalang on Discord). The row shows magpie's own pick while none
+// can't (01huadalang on Discord). The row shows magpie-friday's own pick while none
 // is named; the picker offers Automatic, Off, each provider that can search by
 // its small model, and each of its models, including a relay said to search;
 // a pick is saved as searcher ("<provider>" or "<provider>/<model>") and shown;
 // a provider's small model is offered once, not again among its models, and
-// one saved by name is ticked as it (Player on Discord); no "via magpie" tag,
+// one saved by name is ticked as it (Player on Discord); no "via magpie-friday" tag,
 // as no agent asks for these;
-// one named that magpie can't use (turned off) is said in the row, magpie's pick shown instead;
+// one named that magpie-friday can't use (turned off) is said in the row, magpie-friday's pick shown instead;
 // relays said to search are manual-only, including during fallback; a Kimi Code plan, which
 // searches by its web search with no model, is offered by itself and said to search for its
 // own models first. Another setting saved
@@ -50,22 +50,22 @@ const words = {
 };
 const helpWords = {
   en: {
-    help: "When a model can't search the web directly, the selected provider searches for it and returns the results. Searches may use the service's quota or incur charges; if the provider magpie picks fails, it tries other available sources, but a provider you select here is never replaced by another provider, only by your Search APIs.",
+    help: "When a model can't search the web directly, the selected provider searches for it and returns the results. Searches may use the service's quota or incur charges; if the provider magpie-friday picks fails, it tries other available sources, but a provider you select here is never replaced by another provider, only by your Search APIs.",
     relays: "These relays must be selected manually and are not used for automatic selection or fallback: MyRelay.",
     left: "These providers can't be selected to search for other models with the current configuration: MiniMax, Kimi For Coding. Their models can still get search results through other available search providers or configured search APIs.",
   },
   zh: {
-    help: "当模型无法直接联网搜索时，由所选供应商代为搜索并返回结果。代搜可能消耗所用服务的额度或产生费用；magpie 自动选择的供应商失败时会尝试其他可用来源，但在此手动选中的供应商不会被换成其他供应商，只会改用你配置的搜索 API。",
+    help: "当模型无法直接联网搜索时，由所选供应商代为搜索并返回结果。代搜可能消耗所用服务的额度或产生费用；magpie-friday 自动选择的供应商失败时会尝试其他可用来源，但在此手动选中的供应商不会被换成其他供应商，只会改用你配置的搜索 API。",
     relays: "以下中转服务需手动指定，不参与自动选择或自动回退：MyRelay。",
     left: "以下供应商在当前配置下不可选为代搜供应商：MiniMax, Kimi For Coding。它们的模型仍可通过其他可用的代搜供应商或已配置的搜索 API 获取搜索结果。",
   },
   ja: {
-    help: "モデルが直接ウェブ検索できない場合、選択したプロバイダが代わりに検索し、結果を返します。検索にはサービスの利用枠を消費したり、料金が発生したりする場合があります。magpie が自動で選んだプロバイダが失敗すると他の利用可能な検索元を試しますが、ここで選んだプロバイダが別のプロバイダに置き換えられることはなく、設定済みの検索 API だけが代わりに使われます。",
+    help: "モデルが直接ウェブ検索できない場合、選択したプロバイダが代わりに検索し、結果を返します。検索にはサービスの利用枠を消費したり、料金が発生したりする場合があります。magpie-friday が自動で選んだプロバイダが失敗すると他の利用可能な検索元を試しますが、ここで選んだプロバイダが別のプロバイダに置き換えられることはなく、設定済みの検索 API だけが代わりに使われます。",
     relays: "次の中継サービスは手動で選択する必要があり、自動選択や自動フォールバックの対象にはなりません：MyRelay。",
     left: "次のプロバイダは現在の設定では他のモデルの検索用に選択できません：MiniMax, Kimi For Coding。これらのモデルも、他の利用可能な検索用プロバイダや設定済みの検索 API を通じて検索結果を取得できます。",
   },
   de: {
-    help: "Wenn ein Modell nicht direkt im Web suchen kann, übernimmt der ausgewählte Anbieter die Suche und liefert die Ergebnisse. Suchen können das Kontingent des Dienstes verbrauchen oder Kosten verursachen. Schlägt der von magpie gewählte Anbieter fehl, versucht magpie andere verfügbare Quellen; ein hier ausgewählter Anbieter wird jedoch nie durch einen anderen Anbieter ersetzt, nur durch Ihre Such-APIs.",
+    help: "Wenn ein Modell nicht direkt im Web suchen kann, übernimmt der ausgewählte Anbieter die Suche und liefert die Ergebnisse. Suchen können das Kontingent des Dienstes verbrauchen oder Kosten verursachen. Schlägt der von magpie-friday gewählte Anbieter fehl, versucht magpie-friday andere verfügbare Quellen; ein hier ausgewählter Anbieter wird jedoch nie durch einen anderen Anbieter ersetzt, nur durch Ihre Such-APIs.",
     relays: "Diese Relays müssen manuell ausgewählt werden und werden weder automatisch noch als Fallback gewählt: MyRelay.",
     left: "Diese Anbieter können mit der aktuellen Konfiguration nicht für die Suche anderer Modelle ausgewählt werden: MiniMax, Kimi For Coding. Ihre Modelle können weiterhin über andere verfügbare Suchanbieter oder konfigurierte Such-APIs Suchergebnisse erhalten.",
   },
@@ -220,7 +220,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       assert.equal(items.filter((x) => x.includes("MyRelay")).length, 1, items.join(" | "));
       assert.equal(items.filter((x) => x.includes("Claude Haiku 4.5")).length, 0, "Claude's and MyRelay's small model only as their small model");
       assert.equal(items.filter((x) => x.startsWith("claude-haiku-4-5")).length, 2, items.join(" | "));
-      assert.equal(await page.locator("#list .badge.path").count(), 0, "no agent asks for these: no via magpie");
+      assert.equal(await page.locator("#list .badge.path").count(), 0, "no agent asks for these: no via magpie-friday");
       await click(page.locator("#list li:not(.group)", { hasText: "GPT Five Five" }));
       await page.waitForFunction(() => document.querySelector("#searchList button.searcher-pick")?.innerText.includes("GPT Five Five"));
       assert.equal(posted.at(-1).searcher, "openai/gpt-5.5");
@@ -279,7 +279,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       assert.equal(posted.length, n + 1);
       assert.equal(posted.at(-1).searcher, "openai", "another setting saved sends the pick as it was");
 
-      // the one named turned off: said, and magpie's pick shown
+      // the one named turned off: said, and magpie-friday's pick shown
       st.unused = "off";
       await page.evaluate(() => renderSettings && fetch("/api/settings").then((r) => r.json()).then((s) => { prefs = s; state.settings = s; renderSettings(); }));
       await page.waitForFunction(() => document.querySelector("#searchList .searcher-unused"));
@@ -308,7 +308,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       assert.equal(await page.locator("#searchFirstRow").count(), 0);
       assert.equal(await row.locator(".sub").innerText(), lang === "zh"
         ? "关闭供应商代搜后，仅使用已配置的搜索 API；未配置时，Magpie 不添加搜索工具。供应商自带的联网搜索不受影响。"
-        : "When provider search is off, only configured Search APIs are used. Without a Search API, magpie does not add a search tool. Providers' native web search is unchanged.");
+        : "When provider search is off, only configured Search APIs are used. Without a Search API, magpie-friday does not add a search tool. Providers' native web search is unchanged.");
 
       // back to Automatic
       const afterReload = await where();

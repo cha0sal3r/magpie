@@ -87,7 +87,7 @@ const words = {
 };
 const NEW = [
   "No cap on {window}: it is used to 100%, whatever this account's cap. Click to change",
-  "{window} has a cap of its own: magpie counts this account as used up once {window} is at {n}%, until it renews. Click to change",
+  "{window} has a cap of its own: magpie-friday counts this account as used up once {window} is at {n}%, until it renews. Click to change",
   "Click to give {window} a cap of its own, apart from this account's",
   "{window} of {who} follows the account's cap", "{window} of {who} has no cap", "{who} stops at {n}% of {window}",
   "Cap for {window}, in percent", "Account's cap · {n}%", "Account's cap · none", "As the account's other windows",

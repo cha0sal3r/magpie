@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // keepFast makes the keepalives of a test's streams come at its pace.
@@ -25,7 +25,7 @@ func keepFast(t *testing.T, gap, every, longest time.Duration) {
 // TestTranslatedStreamKeepsClientAlive: a provider that says "progress",
 // then only ": keepalive" every 20ms for 1.5s, then finishes, translated
 // for a client whose idle timeout is 500ms (#436, congee949's repro).
-// Without magpie's keepalives the client hears nothing for three of its
+// Without magpie-friday's keepalives the client hears nothing for three of its
 // timeouts; 500ms, not 150ms, is room for a loaded machine's scheduler
 // (#2169, #2711, #2737). The client must hear something it counts all along: Codex's
 // timeout counts events, never a comment, so a Responses or Anthropic

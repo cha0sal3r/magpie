@@ -20,7 +20,7 @@ import (
 //
 // ylorn (X, v0.1.1202): a text-only gpt-6-luna turn of 1100224 bytes sent
 // plain was answered 503, the same turn zstd-compressed (259 bytes) 200,
-// and through magpie, which decoded Codex's zstd and sent the backend
+// and through magpie-friday, which decoded Codex's zstd and sent the backend
 // plain JSON, 503 again.
 
 // codexZstd is level 3 (klauspost's SpeedDefault, "roughly equivalent to
@@ -66,7 +66,7 @@ func CodexZstdForTests(on bool) (restore func()) {
 // client sends it, when req is a turn to the ChatGPT backend
 // (CodexBase/responses), and as it is otherwise. It is called once the
 // body is final and signed, and returns the bytes that go on the wire. The
-// body is still the plain body everywhere magpie keeps or shows it.
+// body is still the plain body everywhere magpie-friday keeps or shows it.
 func CodexCompressed(req *http.Request, body []byte) int {
 	if req.Method != http.MethodPost || codexZstdOff.Load() || !codexTurnURL(req.URL) {
 		return len(body)

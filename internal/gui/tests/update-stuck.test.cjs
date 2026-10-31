@@ -1,11 +1,11 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// Settings → Version and the Update pill, for a magpie that can't replace
-// itself where it runs: a magpie.exe kept at C:\ (#1277) said only that a new
+// Settings → Version and the Update pill, for a magpie-friday that can't replace
+// itself where it runs: a magpie-friday.exe kept at C:\ (#1277) said only that a new
 // version was out, and its Download opened the release page with nothing
-// saying why. Both now say the folder magpie may not write to, in English,
+// saying why. Both now say the folder magpie-friday may not write to, in English,
 // Chinese, Japanese and German, at a narrow window too. In a container (the
-// Docker image's /magpie, run as nonroot) they say to pull the new image
-// rather than to move magpie to another folder. No backend, the API is
+// Docker image's /magpie-friday, run as nonroot) they say to pull the new image
+// rather than to move magpie-friday to another folder. No backend, the API is
 // faked here.
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
@@ -17,30 +17,30 @@ const assets = path.resolve(__dirname, "../assets");
 const DIR = "C:\\";
 
 const words = {
-  en: { version: "Version", why: "magpie can't write to the folder it runs from (C:\\), so it can't update itself; move it to a folder you can write to and open it from there." },
-  zh: { version: "版本", why: "magpie 无法写入它所在的文件夹（C:\\），所以无法自动更新；请把它移到你有写入权限的文件夹，再从那里打开。" },
-  ja: { why: "magpie は実行中のフォルダ（C:\\）に書き込めないため、自動アップデートできません。書き込み可能なフォルダに移動し、そこから開いてください。" },
-  de: { why: "magpie kann nicht in den Ordner schreiben, aus dem es läuft (C:\\), und kann sich daher nicht selbst aktualisieren; verschieben Sie es in einen Ordner mit Schreibrechten und öffnen Sie es von dort." },
+  en: { version: "Version", why: "magpie-friday can't write to the folder it runs from (C:\\), so it can't update itself; move it to a folder you can write to and open it from there." },
+  zh: { version: "版本", why: "magpie-friday 无法写入它所在的文件夹（C:\\），所以无法自动更新；请把它移到你有写入权限的文件夹，再从那里打开。" },
+  ja: { why: "magpie-friday は実行中のフォルダ（C:\\）に書き込めないため、自動アップデートできません。書き込み可能なフォルダに移動し、そこから開いてください。" },
+  de: { why: "magpie-friday kann nicht in den Ordner schreiben, aus dem es läuft (C:\\), und kann sich daher nicht selbst aktualisieren; verschieben Sie es in einen Ordner mit Schreibrechten und öffnen Sie es von dort." },
 };
 
-const folder = { state: "available", current: "0.1.400", latest: "0.1.401", url: "https://github.com/yetone/magpie-releases/releases/tag/v0.1.401", stuck: "not-writable", stuckDir: DIR };
-const container = { state: "available", current: "0.1.400", latest: "0.1.401", url: "https://github.com/yetone/magpie-releases/releases/tag/v0.1.401", stuck: "container" };
+const folder = { state: "available", current: "0.1.400", latest: "0.1.401", url: "https://github.com/cha0sal3r/magpie-friday-releases/releases/tag/v0.1.401", stuck: "not-writable", stuckDir: DIR };
+const container = { state: "available", current: "0.1.400", latest: "0.1.401", url: "https://github.com/cha0sal3r/magpie-friday-releases/releases/tag/v0.1.401", stuck: "container" };
 const pull = {
-  en: "magpie runs in a container, so it can't update itself; pull the new image (docker pull ghcr.io/yetone/magpie:latest) and recreate the container.",
-  zh: "magpie 运行在容器里，无法自动更新；请拉取新镜像（docker pull ghcr.io/yetone/magpie:latest）并重新创建容器。",
-  "zh-TW": "magpie 在容器中執行，無法自動更新；請拉取新映像（docker pull ghcr.io/yetone/magpie:latest）並重新建立容器。",
-  ja: "magpie はコンテナで実行されているため、自動アップデートできません。新しいイメージを取得し（docker pull ghcr.io/yetone/magpie:latest）、コンテナを作り直してください。",
-  de: "magpie läuft in einem Container und kann sich daher nicht selbst aktualisieren; laden Sie das neue Image (docker pull ghcr.io/yetone/magpie:latest) und erstellen Sie den Container neu.",
+  en: "magpie-friday runs in a container, so it can't update itself; pull the new image (docker pull ghcr.io/cha0sal3r/magpie-friday:latest) and recreate the container.",
+  zh: "magpie-friday 运行在容器里，无法自动更新；请拉取新镜像（docker pull ghcr.io/cha0sal3r/magpie-friday:latest）并重新创建容器。",
+  "zh-TW": "magpie-friday 在容器中執行，無法自動更新；請拉取新映像（docker pull ghcr.io/cha0sal3r/magpie-friday:latest）並重新建立容器。",
+  ja: "magpie-friday はコンテナで実行されているため、自動アップデートできません。新しいイメージを取得し（docker pull ghcr.io/cha0sal3r/magpie-friday:latest）、コンテナを作り直してください。",
+  de: "magpie-friday läuft in einem Container und kann sich daher nicht selbst aktualisieren; laden Sie das neue Image (docker pull ghcr.io/cha0sal3r/magpie-friday:latest) und erstellen Sie den Container neu.",
 };
 const cases = [
-  { name: "a magpie that can't write to its folder says why it can't update", update: folder, langs: ["en", "zh", "ja", "de"], why: (lang) => words[lang].why },
-  { name: "a magpie in a container says to pull the new image", update: container, langs: ["en", "zh", "zh-TW", "ja", "de"], why: (lang) => pull[lang] },
+  { name: "a magpie-friday that can't write to its folder says why it can't update", update: folder, langs: ["en", "zh", "ja", "de"], why: (lang) => words[lang].why },
+  { name: "a magpie-friday in a container says to pull the new image", update: container, langs: ["en", "zh", "zh-TW", "ja", "de"], why: (lang) => pull[lang] },
 ];
 
 function server(lang, ctl, update) {
   const settings = {
     theme: "light", lang, tray: "panel", quotaLeft: false, currency: "usd",
-    version: "0.1.400", dir: "~/.config/magpie", gateway: "http://127.0.0.1:3999",
+    version: "0.1.400", dir: "~/.config/magpie-friday", gateway: "http://127.0.0.1:3999",
     proxyNow: "none", proxySource: "none", login: false, redactWords: [],
     visionModels: [], imageGenModels: [], workbuddyCheckins: [], lanURLs: [],
     fx: { rate: 7.2, at: new Date().toISOString(), stale: false },

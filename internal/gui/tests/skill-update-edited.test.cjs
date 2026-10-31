@@ -1,7 +1,7 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // #1449 (YangZhiqiang98): Library → Skills should find which skills have
 // updates and update them. The page now checks by itself when the server
-// says a check is due (none since magpie started, or not for 12 hours),
+// says a check is due (none since magpie-friday started, or not for 12 hours),
 // once, and says only what there is to update. A skill changed here since it
 // was fetched from GitHub carries "Changed here"; its row's Update asks in
 // the page before it replaces the change (Keep mine sends nothing, Update
@@ -21,7 +21,7 @@ const agent = (id, name) => ({ id, name, icon: "", skills: `${HOME}/.${id}/skill
 const sk = (name, extra) => ({ name, description: name + " skill", kind: "github", source: `https://github.com/${REPO}/tree/HEAD/skills/${name}`, agents: ["claude"], ...extra });
 const mine = (name) => ({ name, description: name + " of mine", kind: "folder", source: `${HOME}/skills/${name}`, agents: ["claude"] });
 const lib = (st) => ({
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: [agent("claude", "Claude Code"), agent("codex", "Codex")],
   instructions: { agents: [] }, servers: [], foundServers: [], projects: [], foundSkills: [], newSkills: [],
   checkDue: !st.checked,

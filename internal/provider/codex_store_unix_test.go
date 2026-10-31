@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // securityKeychain reads `security` as macOS answers: exit 44 is no item,

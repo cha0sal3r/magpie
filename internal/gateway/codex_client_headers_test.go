@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 func TestFromCodex(t *testing.T) {
@@ -32,7 +32,7 @@ func TestFromCodex(t *testing.T) {
 // A relay that serves only Codex (Discord: "This account only allows Codex
 // official clients", sub2api's codex_cli_only: an official User-Agent or
 // originator, and an x-codex- header) gets Codex's own headers as it sent
-// them, the provider's key in place of magpie's, on the Responses API and
+// them, the provider's key in place of magpie-friday's, on the Responses API and
 // on Chat Completions, relayed or translated
 func TestCodexHeadersReachKeyedRelay(t *testing.T) {
 	codex := http.Header{
@@ -60,7 +60,7 @@ func TestCodexHeadersReachKeyedRelay(t *testing.T) {
 	}{
 		{provider.Responses, "/v1/responses", `{"model":"fake/m1","input":"hi","stream":false}`,
 			"application/json", `{"id":"r","object":"response","status":"completed","output":[]}`},
-		// Codex's default web_search makes magpie build the request again
+		// Codex's default web_search makes magpie-friday build the request again
 		{provider.Responses, "/v1/responses", `{"model":"fake/m1","input":"hi","stream":false,"tools":[{"type":"web_search","external_web_access":false}]}`,
 			"", "data: {\"type\":\"response.completed\",\"response\":{\"id\":\"r\",\"status\":\"completed\",\"output\":[],\"usage\":{\"input_tokens\":3,\"output_tokens\":1,\"total_tokens\":4}}}\n\n"},
 		{provider.Chat, "/v1/responses", `{"model":"fake/m1","input":"hi","stream":false}`,
@@ -99,13 +99,13 @@ func TestCodexHeadersReachKeyedRelay(t *testing.T) {
 			}
 		}
 
-		// a provider with no key of its own still never sees magpie's
+		// a provider with no key of its own still never sees magpie-friday's
 		p, _ := provider.Find("fake")
 		p.Key = ""
 		provider.Save(*p)
 		send(codex)
 		if a := f.head.Get("Authorization"); a != "" {
-			t.Errorf("%s: magpie's key leaked: %q", c.proto, a)
+			t.Errorf("%s: magpie-friday's key leaked: %q", c.proto, a)
 		}
 		if f.head.Get("Originator") != "codex_exec" {
 			t.Errorf("%s: originator: %v", c.proto, f.head)
@@ -117,9 +117,9 @@ func TestCodexHeadersReachKeyedRelay(t *testing.T) {
 			t.Errorf("%s: desktop: %v", c.proto, f.head)
 		}
 
-		// another agent's request goes as magpie's
+		// another agent's request goes as magpie-friday's
 		send(http.Header{"User-Agent": {"opencode/1.0"}, "X-Codex-Window-Id": {"w"}, "Session-Id": {"s"}})
-		if ua := f.head.Get("User-Agent"); !strings.HasPrefix(ua, "magpie/") || f.head.Get("X-Codex-Window-Id") != "" || f.head.Get("Session-Id") != "" {
+		if ua := f.head.Get("User-Agent"); !strings.HasPrefix(ua, "magpie-friday/") || f.head.Get("X-Codex-Window-Id") != "" || f.head.Get("Session-Id") != "" {
 			t.Errorf("%s: other agent: %q %v", c.proto, ua, f.head)
 		}
 	}

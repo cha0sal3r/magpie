@@ -2,8 +2,8 @@
 // Two installed plugins that sign in to one provider (neiko on Discord: a
 // third-party plugin and their own folder plugin both name it). Both rows
 // stay, each says which one serves the provider, and the other one offers
-// "Use for …", which tells magpie to run the provider on it. Neither row
-// reads "Signs in to nothing magpie can use". Chromium and WebKit, every
+// "Use for …", which tells magpie-friday to run the provider on it. Neither row
+// reads "Signs in to nothing magpie-friday can use". Chromium and WebKit, every
 // language, wide and narrow; the API is faked here.
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
@@ -54,11 +54,11 @@ function server(lang, asked) {
 
 // what each row says, in each language
 const L = {
-  en: { installed: "Installed", nothing: "Signs in to nothing magpie can use", served: "Acme is served by {other}, which signs in to it too", serves: "{other} signs in to Acme too; this one serves it", use: "Use for Acme", done: "Acme now runs on my-acme" },
-  zh: { installed: "已安装", nothing: "没有 magpie 能用的登录", served: "Acme 由同样登录它的 {other} 提供", serves: "{other} 也登录 Acme；由这个插件提供", use: "用于 Acme", done: "Acme 现在由 my-acme 提供" },
-  "zh-TW": { installed: "已安裝", nothing: "沒有 magpie 能用的登入", served: "Acme 由同樣登入它的 {other} 提供", serves: "{other} 也登入 Acme；由這個外掛提供", use: "用於 Acme", done: "Acme 現在由 my-acme 提供" },
-  ja: { installed: "インストール済み", nothing: "magpie で使えるサインインはありません", served: "Acme は、同じくサインインする {other} が提供しています", serves: "{other} も Acme にサインインします。このプラグインが提供中です", use: "Acme に使う", done: "Acme は my-acme で動くようになりました" },
-  de: { installed: "Installiert", nothing: "Meldet bei nichts an, das magpie nutzen kann", served: "Acme wird von {other} bereitgestellt, die sich ebenfalls dort anmeldet", serves: "{other} meldet sich auch bei Acme an; diese Erweiterung stellt es bereit", use: "Für Acme nutzen", done: "Acme läuft jetzt über my-acme" },
+  en: { installed: "Installed", nothing: "Signs in to nothing magpie-friday can use", served: "Acme is served by {other}, which signs in to it too", serves: "{other} signs in to Acme too; this one serves it", use: "Use for Acme", done: "Acme now runs on my-acme" },
+  zh: { installed: "已安装", nothing: "没有 magpie-friday 能用的登录", served: "Acme 由同样登录它的 {other} 提供", serves: "{other} 也登录 Acme；由这个插件提供", use: "用于 Acme", done: "Acme 现在由 my-acme 提供" },
+  "zh-TW": { installed: "已安裝", nothing: "沒有 magpie-friday 能用的登入", served: "Acme 由同樣登入它的 {other} 提供", serves: "{other} 也登入 Acme；由這個外掛提供", use: "用於 Acme", done: "Acme 現在由 my-acme 提供" },
+  ja: { installed: "インストール済み", nothing: "magpie-friday で使えるサインインはありません", served: "Acme は、同じくサインインする {other} が提供しています", serves: "{other} も Acme にサインインします。このプラグインが提供中です", use: "Acme に使う", done: "Acme は my-acme で動くようになりました" },
+  de: { installed: "Installiert", nothing: "Meldet bei nichts an, das magpie-friday nutzen kann", served: "Acme wird von {other} bereitgestellt, die sich ebenfalls dort anmeldet", serves: "{other} meldet sich auch bei Acme an; diese Erweiterung stellt es bereit", use: "Für Acme nutzen", done: "Acme läuft jetzt über my-acme" },
 };
 const say = (s, other) => s.replace("{other}", other);
 
@@ -103,7 +103,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
           assert.ok(over <= 0, `the page scrolls sideways by ${over}px`);
           await shot(view, `plugin-clash-${engine}-${lang}-${width}`);
 
-          // Use for Acme on the user's own one: magpie is told to run it there
+          // Use for Acme on the user's own one: magpie-friday is told to run it there
           const use = mine.locator("button", { hasText: w.use });
           assert.equal(await use.count(), 1);
           assert.ok((await use.getAttribute("title")).includes("opencode-acme-auth"), "its title names the one it takes over from");

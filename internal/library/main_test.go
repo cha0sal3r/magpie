@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // The tests run in a home of their own, never the user's real files, with
@@ -17,7 +17,7 @@ func TestMain(m *testing.M) {
 	if os.Getenv(testenv.Marker) != "" {
 		testenv.Main(m) // started again by a test: in its temp dir already
 	}
-	tmp, err := os.MkdirTemp("", "magpie-library-test-")
+	tmp, err := os.MkdirTemp("", "magpie-friday-library-test-")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

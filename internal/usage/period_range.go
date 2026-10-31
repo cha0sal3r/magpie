@@ -28,7 +28,7 @@ func RangeOf(from, to string) (Period, bool) {
 // A period can also be hours or days long, ending now (#2075): a rolling
 // window, written "last:24h" or "last:90m", read from LastOf. Unlike the
 // presets, which begin at a local midnight, it begins that long ago —
-// what `magpie usage --last 24h` and `--days 1` ask for, where a preset
+// what `magpie-friday usage --last 24h` and `--days 1` ask for, where a preset
 // would give a whole calendar day or week instead.
 const lastSep = "last:"
 

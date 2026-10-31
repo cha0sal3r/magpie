@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// #1984: Settings → the menu bar can show magpie's own tokens and cost for
+// #1984: Settings → the menu bar can show magpie-friday's own tokens and cost for
 // today or the last 7 days, beside the allowances or alone. The picker lists
 // both after the subscriptions, ticked and saved as a card is ("usage:today",
 // "usage:7d"); the pill names a total alone, and counts a mix of them without
@@ -36,7 +36,7 @@ function settingsPayload(over) {
     dock: false, dockWindow: false, proxy: "", redact: false, redactPersonal: false, redactWords: [],
     codexWarmup: "", claudeWarmup: "", codexWarmAt: "", claudeWarmAt: "", workbuddyCheckin: false, noStats: false,
     trayUsage: "", trayUsages: [], trayUsageEvery: 3, vision: "", imageGen: "",
-    version: "0.1.400", dir: "~/.config/magpie", gateway: "http://127.0.0.1:3425",
+    version: "0.1.400", dir: "~/.config/magpie-friday", gateway: "http://127.0.0.1:3425",
     proxyNow: "none", proxySource: "none", login: false,
     visionModels: [], imageGenModels: [], workbuddyCheckins: [], lanURLs: [],
     fx: { rate: 7.2, at: new Date().toISOString(), stale: false },
@@ -49,7 +49,7 @@ const empty = (period) => ({
   bucket: period === "today" ? "hour" : "day", series: [], by: { provider: [], agent: [], model: [] }, agents: [], providers: [],
 });
 
-// server answers as magpie does: trayUsage kept as the first of trayUsages
+// server answers as magpie-friday does: trayUsage kept as the first of trayUsages
 function server(lang, posts, asked, web = false) {
   let cur = settingsPayload({ lang });
   return async (route) => {

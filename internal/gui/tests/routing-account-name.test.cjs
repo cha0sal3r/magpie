@@ -1,6 +1,6 @@
 // An account's name of the user's own (#1515) is what the Routing page
 // calls it (magpie-community/plugins#310, molvqingtai): a Kiro account
-// signed in as "example@gmail.com (foo)" and renamed in magpie to
+// signed in as "example@gmail.com (foo)" and renamed in magpie-friday to
 // "example@gmail.com (bar)" still read "(foo)" on every request made
 // after. The trace keeps the vendor's name (who), the key the user's name
 // is kept by; the page looks the name up as it draws, so a request from

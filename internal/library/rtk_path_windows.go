@@ -19,7 +19,7 @@ func rtkPathDir(bin string) (dir string, link bool) {
 }
 
 // rtkOnPath adds dir to the user's PATH in the registry, where a terminal
-// opened from now on takes it up, and to magpie's own.
+// opened from now on takes it up, and to magpie-friday's own.
 func rtkOnPath(_, dir string, _ bool) error {
 	k, err := registry.OpenKey(registry.CURRENT_USER, `Environment`, registry.QUERY_VALUE|registry.SET_VALUE)
 	if err != nil {

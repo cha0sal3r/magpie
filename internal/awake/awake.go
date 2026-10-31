@@ -1,7 +1,7 @@
 // Package awake keeps the computer from going to sleep by itself while
-// agents work through magpie's gateway (xiao_wang24004 on X: the computer
+// agents work through magpie-friday's gateway (xiao_wang24004 on X: the computer
 // went to sleep in the middle of an agent's task). With settings.KeepAwake
-// on, the magpie serving the gateway holds the system's sleep off while a
+// on, the magpie-friday serving the gateway holds the system's sleep off while a
 // request is in flight, a Claude Code turn waits on its tool results, or a
 // request ended less than Grace ago — an agent running a build or the tests
 // between one request and the next — and lets go once it is idle. Only the
@@ -22,8 +22,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/yetone/magpie/internal/beat"
-	"github.com/yetone/magpie/internal/filememo"
+	"github.com/cha0sal3r/magpie-friday/internal/beat"
+	"github.com/cha0sal3r/magpie-friday/internal/filememo"
 )
 
 // Grace is how long after the last request ended sleep is still held off.
@@ -99,7 +99,7 @@ func Keep(ctx context.Context, level func() Level, state func() State) {
 		}
 		// turned off (as it is unless the user turns it on), only a change
 		// to settings can turn it on: waited for, not looked for each few
-		// seconds (#3185: these looks woke an idle magpie)
+		// seconds (#3185: these looks woke an idle magpie-friday)
 		every, changed := tick, (<-chan struct{})(nil)
 		if l == Off {
 			every, changed = filememo.OthersEvery(), filememo.Written()

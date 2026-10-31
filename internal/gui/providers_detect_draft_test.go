@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // #1545 (thedavidweng): Detect APIs and Each picked model ask with the
@@ -149,7 +149,7 @@ func TestProviderDetectDraft(t *testing.T) {
 		t.Fatalf("copy with a key typed asked with %v", got)
 	}
 	// the request log is the one file a detection writes: each request it
-	// sent, as magpie's own (usage.SourceProbe), and nothing else changes
+	// sent, as magpie-friday's own (usage.SourceProbe), and nothing else changes
 	after := draftFiles(t, appdir.Config())
 	logBefore, logAfter := before["usage.jsonl"], after["usage.jsonl"]
 	delete(before, "usage.jsonl")
@@ -165,7 +165,7 @@ func TestProviderDetectDraft(t *testing.T) {
 		t.Fatalf("providers now %+v", ps)
 	}
 
-	// magpie web: without its key a draft probe is turned away, and the
+	// magpie-friday web: without its key a draft probe is turned away, and the
 	// vendor is never asked
 	guarded := webHandler("3999", "0123456789abcdef-1545", time.Hour, mux)
 	if w := post(guarded, "detect", `{"typed":true,"key":"sk-typed","base":"`+base+`","picked":["draft-m"]}`); w.Code != http.StatusUnauthorized {

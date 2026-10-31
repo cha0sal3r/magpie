@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-// asAnother has this process take its own Offer, as the new magpie would.
+// asAnother has this process take its own Offer, as the new magpie-friday would.
 func asAnother(t *testing.T) {
 	t.Helper()
 	old := self
@@ -21,7 +21,7 @@ func asAnother(t *testing.T) {
 	t.Cleanup(func() { self = old })
 }
 
-// offerListener offers ln from a goroutine, as the magpie handing over
+// offerListener offers ln from a goroutine, as the magpie-friday handing over
 // does, and reports AwaitAck's answer.
 func offerListener(t *testing.T, dir, exe string, ln *net.TCPListener) (*Offer, <-chan error) {
 	t.Helper()
@@ -67,9 +67,9 @@ func TestHandOverListener(t *testing.T) {
 		t.Fatal(err)
 	}
 	addr := ln.Addr().String()
-	_, acked := offerListener(t, dir, "/apps/magpie", ln)
+	_, acked := offerListener(t, dir, "/apps/magpie-friday", ln)
 
-	got, err := Take(dir, "/apps/magpie", Hello{PID: 4242, Version: "v2"}, 5*time.Second)
+	got, err := Take(dir, "/apps/magpie-friday", Hello{PID: 4242, Version: "v2"}, 5*time.Second)
 	if err != nil || got == nil {
 		t.Fatalf("Take = %v, %v", got, err)
 	}
@@ -112,7 +112,7 @@ func TestHandOverListener(t *testing.T) {
 	}
 }
 
-// A new magpie that drops the connection without an ack leaves the
+// A new magpie-friday that drops the connection without an ack leaves the
 // socket with the old one, which hears so at once.
 func TestNoAckKeepsTheSocket(t *testing.T) {
 	asAnother(t)
@@ -122,8 +122,8 @@ func TestNoAckKeepsTheSocket(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer ln.Close()
-	_, acked := offerListener(t, dir, "/apps/magpie", ln)
-	got, err := Take(dir, "/apps/magpie", Hello{PID: 4242}, 5*time.Second)
+	_, acked := offerListener(t, dir, "/apps/magpie-friday", ln)
+	got, err := Take(dir, "/apps/magpie-friday", Hello{PID: 4242}, 5*time.Second)
 	if err != nil || got == nil {
 		t.Fatalf("Take = %v, %v", got, err)
 	}
@@ -135,7 +135,7 @@ func TestNoAckKeepsTheSocket(t *testing.T) {
 			t.Fatal("an ack was heard that was never sent")
 		}
 	case <-time.After(5 * time.Second):
-		t.Fatal("the old one waited out its timeout for a magpie gone")
+		t.Fatal("the old one waited out its timeout for a magpie-friday gone")
 	}
 }
 
@@ -150,7 +150,7 @@ func TestTakeOnlyAFreshOfferForThisProgram(t *testing.T) {
 		}
 	}
 	take := func() *Taken {
-		got, err := Take(dir, "/apps/magpie", Hello{PID: 1}, time.Second)
+		got, err := Take(dir, "/apps/magpie-friday", Hello{PID: 1}, time.Second)
 		if err != nil {
 			return nil
 		}
@@ -166,18 +166,18 @@ func TestTakeOnlyAFreshOfferForThisProgram(t *testing.T) {
 	}
 	defer ln.Close()
 	for name, p := range map[string]pointer{
-		"its own":         {PID: os.Getpid(), Sock: sock, Exe: "/apps/magpie", At: time.Now()},
-		"stale":           {PID: os.Getppid(), Sock: sock, Exe: "/apps/magpie", At: time.Now().Add(-time.Hour)},
-		"another program": {PID: os.Getppid(), Sock: sock, Exe: "/dev/magpie-dev", At: time.Now()},
-		"a process gone":  {PID: 1 << 30, Sock: sock, Exe: "/apps/magpie", At: time.Now()},
+		"its own":         {PID: os.Getpid(), Sock: sock, Exe: "/apps/magpie-friday", At: time.Now()},
+		"stale":           {PID: os.Getppid(), Sock: sock, Exe: "/apps/magpie-friday", At: time.Now().Add(-time.Hour)},
+		"another program": {PID: os.Getppid(), Sock: sock, Exe: "/dev/magpie-friday-dev", At: time.Now()},
+		"a process gone":  {PID: 1 << 30, Sock: sock, Exe: "/apps/magpie-friday", At: time.Now()},
 	} {
 		write(p)
-		if _, ok := readPointer(dir, "/apps/magpie"); ok {
+		if _, ok := readPointer(dir, "/apps/magpie-friday"); ok {
 			t.Errorf("%s: the Offer was taken", name)
 		}
 	}
-	write(pointer{PID: os.Getppid(), Sock: sock, Exe: "/apps/magpie", At: time.Now()})
-	if _, ok := readPointer(dir, "/apps/magpie"); !ok {
+	write(pointer{PID: os.Getppid(), Sock: sock, Exe: "/apps/magpie-friday", At: time.Now()})
+	if _, ok := readPointer(dir, "/apps/magpie-friday"); !ok {
 		t.Fatal("a fresh Offer of a running process wasn't taken")
 	}
 }
@@ -185,7 +185,7 @@ func TestTakeOnlyAFreshOfferForThisProgram(t *testing.T) {
 // Close takes the pointer away, and only while it is the Offer's own.
 func TestCloseRemovesOnlyItsPointer(t *testing.T) {
 	dir := t.TempDir()
-	o, err := Open(dir, "/apps/magpie")
+	o, err := Open(dir, "/apps/magpie-friday")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -196,12 +196,12 @@ func TestCloseRemovesOnlyItsPointer(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(dir, pointerName)); !os.IsNotExist(err) {
 		t.Fatalf("the pointer stayed: %v", err)
 	}
-	o2, err := Open(dir, "/apps/magpie")
+	o2, err := Open(dir, "/apps/magpie-friday")
 	if err != nil {
 		t.Fatal(err)
 	}
-	// another magpie's offer since
-	b, _ := json.Marshal(pointer{PID: os.Getppid(), Sock: "/x", Exe: "/apps/magpie", At: time.Now()})
+	// another magpie-friday's offer since
+	b, _ := json.Marshal(pointer{PID: os.Getppid(), Sock: "/x", Exe: "/apps/magpie-friday", At: time.Now()})
 	os.WriteFile(filepath.Join(dir, pointerName), b, 0o600)
 	o2.Close()
 	if _, err := os.Stat(filepath.Join(dir, pointerName)); err != nil {
@@ -219,7 +219,7 @@ func TestOpenWithALongTemporaryFolder(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Setenv("TMPDIR", long)
-	o, err := Open(t.TempDir(), "/apps/magpie")
+	o, err := Open(t.TempDir(), "/apps/magpie-friday")
 	if err != nil {
 		t.Fatalf("no offer: %v", err)
 	}

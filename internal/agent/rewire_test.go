@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // setPort is Settings' gateway port set to p, as the Settings page saves it.
@@ -37,7 +37,7 @@ func filesWith(home, s string) []string {
 }
 
 // The gateway's port set in Settings (Magic_zero on Discord) moves every
-// agent magpie connected: each one's config is written with the gateway's
+// agent magpie-friday connected: each one's config is written with the gateway's
 // URL on the new port, none keeps the old one, and each is still connected
 // with nothing off.
 func TestPortMovesEveryAgent(t *testing.T) {
@@ -79,7 +79,7 @@ func TestPortMovesEveryAgent(t *testing.T) {
 			}
 		}
 		if want == "" {
-			t.Fatalf("%s: no field takes magpie's models", a.ID)
+			t.Fatalf("%s: no field takes magpie-friday's models", a.ID)
 		}
 		if err := a.Apply(key, want); err != nil {
 			t.Fatalf("%s: %v", a.ID, err)
@@ -130,9 +130,9 @@ func containsAgent(as []*Agent, id string) bool {
 	return false
 }
 
-// Codex signed in with ChatGPT is joined to magpie beside its own models:
+// Codex signed in with ChatGPT is joined to magpie-friday beside its own models:
 // the move writes its base URL on the new port and keeps the model it was
-// on, rather than putting it on one of magpie's.
+// on, rather than putting it on one of magpie-friday's.
 func TestPortMovesJoinedCodex(t *testing.T) {
 	t.Setenv("MAGPIE_ADDR", "")
 	home, read := codexHome(t, `{"auth_mode":"chatgpt","tokens":{"access_token":"at","refresh_token":"rt","id_token":"x.e30.x","account_id":"acc"}}`, "model = \"gpt-5.1\"\n")
@@ -159,7 +159,7 @@ func TestPortMovesJoinedCodex(t *testing.T) {
 	}
 }
 
-// An agent taken off magpie before the port moved is left as it is: it is
+// An agent taken off magpie-friday before the port moved is left as it is: it is
 // the user's to set again, not the move's.
 func TestPortLeavesAnUnwiredAgent(t *testing.T) {
 	t.Setenv("MAGPIE_ADDR", "")
@@ -177,11 +177,11 @@ func TestPortLeavesAnUnwiredAgent(t *testing.T) {
 		t.Fatal(err)
 	}
 	if strings.Contains(read(), "127.0.0.1:3592") {
-		t.Fatalf("an agent taken off magpie was moved:\n%s", read())
+		t.Fatalf("an agent taken off magpie-friday was moved:\n%s", read())
 	}
 }
 
-// A magpie MAGPIE_ADDR puts beside the installed one tells the installed
+// A magpie-friday MAGPIE_ADDR puts beside the installed one tells the installed
 // one's wiring by the port the installed one's Settings have, not 3425.
 func TestDriftInstalledMagpieOnItsPort(t *testing.T) {
 	home, _ := codexHome(t, "", "")
@@ -194,12 +194,12 @@ func TestDriftInstalledMagpieOnItsPort(t *testing.T) {
 	cfg := filepath.Join(home, ".codex", "config.toml")
 	os.WriteFile(cfg, []byte("openai_base_url = \"http://127.0.0.1:3591"+gateway.CodexPath+"\"\nmodel = \"fake/m1\"\n"), 0o644)
 	if d := cx.Drift(); d != nil {
-		t.Fatalf("the installed magpie's wiring taken for drift: %+v", d)
+		t.Fatalf("the installed magpie-friday's wiring taken for drift: %+v", d)
 	}
 }
 
-// Moved, an agent still puts back what it had before magpie when switched
-// off: its own endpoint and token, not magpie's at the old port, which
+// Moved, an agent still puts back what it had before magpie-friday when switched
+// off: its own endpoint and token, not magpie-friday's at the old port, which
 // setting it again there would otherwise have noted as its own.
 func TestPortKeepsWhatAnAgentHadBefore(t *testing.T) {
 	t.Setenv("MAGPIE_ADDR", "")

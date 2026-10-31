@@ -36,7 +36,7 @@ func fakeWSLNet(t *testing.T, cidrs ...string) {
 // with the WSL key is served as one from this computer, its key the
 // gateway's token (with the agent's id when the key has one); without the
 // key, from elsewhere, or at another of this computer's addresses, it is
-// judged as one from another machine and refused while magpie isn't
+// judged as one from another machine and refused while magpie-friday isn't
 // shared.
 func TestWSLCallerServedWithSharingOff(t *testing.T) {
 	fresh(t)

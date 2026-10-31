@@ -28,7 +28,7 @@ var rowDecodes = sync.Pool{New: func() any { return new([]byte) }}
 // S2's output. s2.Encode makes its output as large as the worst case
 // (MaxEncodedLen, more than the input), and an archive cut from it kept
 // that whole allocation, several times the compressed bytes: the largest
-// thing a started magpie held, ~17 MB for ~380k calls, and uncounted in
+// thing a started magpie-friday held, ~17 MB for ~380k calls, and uncounted in
 // Bytes. The archive is copied out of the scratch at its own length.
 var rowEncodes = sync.Pool{New: func() any { return new([2][]byte) }}
 

@@ -3,16 +3,16 @@ package agent
 // Mister Morph (morph) keeps its settings in ~/.morph/config.yaml, or the
 // file $MISTER_MORPH_CONFIG names: the main model under llm.model, asked of
 // the vendor llm.inference_provider names at llm.endpoint with llm.api_key.
-// It has no list of providers to add one to, so magpie takes llm over:
+// It has no list of providers to add one to, so magpie-friday takes llm over:
 // inference_provider openai_response_compatible at the gateway's /v1 (morph
 // adds no second /v1 to a base ending in one), spoken to on OpenAI's Responses
 // API, morph's own default, which the gateway serves for every vendor; its
-// token as the key, and the catalog id as the model; a model through magpie
-// is "magpie/<provider>/<model>" here. llm.provider is left as it is: morph
+// token as the key, and the catalog id as the model; a model through magpie-friday
+// is "magpie-friday/<provider>/<model>" here. llm.provider is left as it is: morph
 // derives it from inference_provider. Morph knows a model's window only from a list of its own, by the id
-// after its last slash, so magpie hands it the window it knows in
+// after its last slash, so magpie-friday hands it the window it knows in
 // llm.context_window_tokens. What the user had under those keys is stashed
-// and put back when magpie steps out. llm.profiles and llm.routes are the
+// and put back when magpie-friday steps out. llm.profiles and llm.routes are the
 // user's: a route that sends the main loop to another profile is left so.
 
 import (
@@ -20,14 +20,14 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
-// morphUA is the User-Agent magpie has morph send, in llm.headers: its
+// morphUA is the User-Agent magpie-friday has morph send, in llm.headers: its
 // requests otherwise carry the OpenAI SDK's, which tells them from no one's.
 const morphUA = "mistermorph"
 
-// morphKeys are the keys under llm magpie writes, in the order they are put
+// morphKeys are the keys under llm magpie-friday writes, in the order they are put
 // back.
 var morphKeys = []string{"inference_provider", "endpoint", "api_key", "model", "context_window_tokens", "headers.User-Agent"}
 
@@ -43,10 +43,10 @@ func morphIn(at place) *Agent {
 	}
 	key := "morph:" + path + ":"
 	getKey := func(k string) string { v, _ := edit.GetYAML(path, "llm."+k); return v }
-	// the token is magpie's alone, where the endpoint moves with the
+	// the token is magpie-friday's alone, where the endpoint moves with the
 	// gateway's port
 	onMagpie := func() bool { return ourKey(getKey("api_key")) }
-	// restore puts back what the user had under llm before magpie
+	// restore puts back what the user had under llm before magpie-friday
 	restore := func() error {
 		var del []string
 		var kvs []edit.KV
@@ -68,7 +68,7 @@ func morphIn(at place) *Agent {
 		if err := edit.DelYAML(path, del...); err != nil {
 			return err
 		}
-		// the headers magpie's User-Agent was alone in
+		// the headers magpie-friday's User-Agent was alone in
 		if m := edit.GetYAMLMap(path, "llm.headers"); m != nil && len(m) == 0 {
 			if err := edit.DelYAML(path, "llm.headers"); err != nil {
 				return err
@@ -79,7 +79,7 @@ func morphIn(at place) *Agent {
 		}
 		return edit.SetYAML(path, kvs...)
 	}
-	// window is the context magpie knows ref to take, 0 when unknown
+	// window is the context magpie-friday knows ref to take, 0 when unknown
 	window := func(ref string) int {
 		for _, m := range magpieModels("morph") {
 			if m.ID == ref {

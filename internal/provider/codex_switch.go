@@ -2,14 +2,14 @@ package provider
 
 // Signing Codex or Claude Code in to the next of its accounts when the one
 // it is on has used its allowance up. Codex's requests on its own models go
-// through magpie while more of its accounts are on there, and move on to
+// through magpie-friday while more of its accounts are on there, and move on to
 // the next account when one is out — but the Codex app, once it knows the
 // account it is signed in to is out, may not send at all, so no request
-// reaches magpie to move on. Claude Code on its own models never comes
-// through magpie: it asks Anthropic as the account it is signed in to, and
+// reaches magpie-friday to move on. Claude Code on its own models never comes
+// through magpie-friday: it asks Anthropic as the account it is signed in to, and
 // that account being out ends its turns with "You've hit your session
 // limit" while the gateway has long moved on to another (#208). So
-// whichever magpie runs the gateway signs the agent in to the next account
+// whichever magpie-friday runs the gateway signs the agent in to the next account
 // that is on and has room, as switching it on the Accounts page would: a
 // session started after that is on it from the first turn.
 //
@@ -38,8 +38,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/lastgood"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/lastgood"
 )
 
 // loginSwitchEvery is how often the account each agent is on is looked at.
@@ -61,7 +61,7 @@ func SpentShareOf(routing string) float64 {
 	return SpentShare
 }
 
-// loginSwitching is how magpie moves agent's sign-in, as its subscription
+// loginSwitching is how magpie-friday moves agent's sign-in, as its subscription
 // says: the share the account it is on is moved off at, and whether it is
 // kept on the first instead (KeepLogin).
 func loginSwitching(agent string) (share float64, keep bool) {
@@ -73,12 +73,12 @@ func loginSwitching(agent string) (share float64, keep bool) {
 	return SpentShare, false
 }
 
-// backShare is the share below which the account magpie moved the agent
+// backShare is the share below which the account magpie-friday moved the agent
 // off is signed back in to: no longer low, as Smart counts it (the
 // gateway's lowShare), so it doesn't go back and forth at the edge.
 const backShare = 90
 
-// switchedAgents are the agents whose account magpie moves on.
+// switchedAgents are the agents whose account magpie-friday moves on.
 var switchedAgents = []string{"codex", "claude"}
 
 // usedUp reports whether an account's allowance is used up at now: a
@@ -87,7 +87,7 @@ func usedUp(q SubscriptionQuota, now time.Time) bool {
 	return usedPast(q, 100, now)
 }
 
-// UsedUp is usedUp for the CLI's magpie quota wait, so what it waits out
+// UsedUp is usedUp for the CLI's magpie-friday quota wait, so what it waits out
 // is what stops an account here.
 func UsedUp(q SubscriptionQuota, now time.Time) bool { return usedUp(q, now) }
 
@@ -138,13 +138,13 @@ func usedPast(q SubscriptionQuota, share float64, now time.Time) bool {
 }
 
 // NextLogin is the account agent should be signed in to instead of the
-// one it is on: the account magpie moved it off, once that has room again
+// one it is on: the account magpie-friday moved it off, once that has room again
 // (back); else, when the one it is on is spent, the first of its other
-// accounts that are on in magpie, in the order they were saved, whose
+// accounts that are on in magpie-friday, in the order they were saved, whose
 // allowance is known and not spent. ok is false when the agent should stay.
 func NextLogin(ctx context.Context, agent string) (from, to string, back, ok bool) {
 	if leftAlone(agent) {
-		return "", "", false, false // magpie has no say in its sign-in, or was told to leave it be
+		return "", "", false, false // magpie-friday has no say in its sign-in, or was told to leave it be
 	}
 	var spares []Login
 	var first *Login
@@ -252,7 +252,7 @@ func SwitchWhenSpent(ctx context.Context, agent string) (string, error) {
 	return to, nil
 }
 
-// loginReturn is the account magpie signed an agent out of when it was
+// loginReturn is the account magpie-friday signed an agent out of when it was
 // spent (Back), and the one it signed it in to (To): while the agent is
 // still on To, Back is signed in again once it has room.
 type loginReturn struct {
@@ -273,7 +273,7 @@ func readLoginReturns() map[string]loginReturn {
 }
 
 // loginReturnOf is the account to sign agent back in to, when it is still
-// on the one magpie moved it to (active): one signed in otherwise since,
+// on the one magpie-friday moved it to (active): one signed in otherwise since,
 // by the user or the agent itself, is the user's choice.
 func loginReturnOf(agent, active string) (loginReturn, bool) {
 	loginReturnsMu.Lock()
@@ -319,8 +319,8 @@ var codexWasUsedUp atomic.Bool
 // noteCodexUsedUp tells the agents' files when the account Codex is signed
 // in to runs out (CodexUsedUp: of its allowance and its credits), or has
 // room again: the Codex app sends nothing at all for an account that is
-// out, a magpie model's turn included, so the agent package then makes
-// magpie Codex's provider, and puts it back beside the sign-in after
+// out, a magpie-friday model's turn included, so the agent package then makes
+// magpie-friday Codex's provider, and puts it back beside the sign-in after
 // (#540). Only a change is told.
 func noteCodexUsedUp(now bool) {
 	if codexWasUsedUp.Swap(now) != now {

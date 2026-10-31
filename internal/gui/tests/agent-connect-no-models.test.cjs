@@ -1,10 +1,10 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // Tystem on Discord: switching Codex on with no provider or subscription in
-// magpie said only "Codex can't be connected to magpie", in English whatever
+// magpie-friday said only "Codex can't be connected to magpie-friday", in English whatever
 // the language. The server answers that case with code no_models, and the
 // toast says what to do in the reader's language; the switch goes back off.
 // No click moves the page. No backend, the API is faked here.
-// znuaibot (#1989): with models in magpie but none left in the agent's
+// znuaibot (#1989): with models in magpie-friday but none left in the agent's
 // model list (its one picked model's provider switched off), the code is
 // all_hidden, and the toast says to pick one; the list to pick from opens
 // there (94942f9f3, #2435), which agent-connect-all-hidden.test.cjs covers.
@@ -15,7 +15,7 @@ const { test } = require("node:test");
 const { chromium, webkit } = require("playwright");
 
 const assets = path.resolve(__dirname, "../assets");
-const options = [{ value: "gpt-5.4", label: "GPT-5.4" }, { value: "relay/m1", label: "m1", ref: "relay/m1", note: "Relay · via magpie" }];
+const options = [{ value: "gpt-5.4", label: "GPT-5.4" }, { value: "relay/m1", label: "m1", ref: "relay/m1", note: "Relay · via magpie-friday" }];
 const state = { agents: [{ id: "codex", name: "Codex", icon: "generic", path: "/fixture/codex", fields: [{ key: "model", label: "model", value: "gpt-5.4", options }] }], profiles: [] };
 
 function server(lang, posts, answer) {
@@ -44,21 +44,21 @@ function server(lang, posts, answer) {
 
 const cases = {
   no_models: {
-    answer: { error: "Add a provider or subscription in magpie first, then connect Codex", code: "no_models", agent: "Codex" },
+    answer: { error: "Add a provider or subscription in magpie-friday first, then connect Codex", code: "no_models", agent: "Codex" },
     said: {
-      en: "Add a provider or subscription in magpie first, then connect Codex",
-      zh: "请先在 magpie 中添加一个供应商或订阅，再接入 Codex",
-      ja: "先に magpie でプロバイダかサブスクリプションを追加してから、Codex を接続してください",
-      de: "Fügen Sie zuerst in magpie einen Anbieter oder ein Abo hinzu und verbinden Sie dann Codex",
+      en: "Add a provider or subscription in magpie-friday first, then connect Codex",
+      zh: "请先在 magpie-friday 中添加一个供应商或订阅，再接入 Codex",
+      ja: "先に magpie-friday でプロバイダかサブスクリプションを追加してから、Codex を接続してください",
+      de: "Fügen Sie zuerst in magpie-friday einen Anbieter oder ein Abo hinzu und verbinden Sie dann Codex",
     },
   },
   all_hidden: {
-    answer: { error: "None of magpie's models is left in Codex's model list: pick one under Model list → Pick on the Agents page, then connect Codex", code: "all_hidden", agent: "Codex" },
+    answer: { error: "None of magpie-friday's models is left in Codex's model list: pick one under Model list → Pick on the Agents page, then connect Codex", code: "all_hidden", agent: "Codex" },
     said: {
-      en: "None of magpie's models is left in Codex's model list: pick one, then connect Codex",
-      zh: "magpie 的模型都不在 Codex 的模型列表里：先选一个，再接入 Codex",
-      ja: "Codex のモデル一覧に magpie のモデルが一つも残っていません：一つ選んでから、Codex を接続してください",
-      de: "In der Modellliste von Codex ist keines der Modelle von magpie übrig: Wählen Sie eines aus und verbinden Sie dann Codex",
+      en: "None of magpie-friday's models is left in Codex's model list: pick one, then connect Codex",
+      zh: "magpie-friday 的模型都不在 Codex 的模型列表里：先选一个，再接入 Codex",
+      ja: "Codex のモデル一覧に magpie-friday のモデルが一つも残っていません：一つ選んでから、Codex を接続してください",
+      de: "In der Modellliste von Codex ist keines der Modelle von magpie-friday übrig: Wählen Sie eines aus und verbinden Sie dann Codex",
     },
   },
 };

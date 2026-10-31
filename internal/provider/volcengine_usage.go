@@ -166,7 +166,7 @@ func volcPlanQuota(ctx context.Context, p Provider, action, plan, region string)
 		ws = volcReadCodingPlan(env.Result)
 	}
 	if len(ws) == 0 {
-		q.Error = fmt.Sprintf("this Volcengine account has no %s, or Ark answered %s in a form magpie doesn't know: %s", plan, action, volcHead(raw))
+		q.Error = fmt.Sprintf("this Volcengine account has no %s, or Ark answered %s in a form magpie-friday doesn't know: %s", plan, action, volcHead(raw))
 		return q
 	}
 	q.Windows = ws

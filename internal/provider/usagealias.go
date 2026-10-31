@@ -9,7 +9,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // A model alias is a name the user counts a model's usage under, so that
@@ -22,7 +22,7 @@ import (
 
 // SetUsageAlias counts usage of the model from under the name to, or, with
 // to "", under its own id again. Both are model ids as any vendor spells
-// them, matched as the groups magpie finds match them (sameModel: a
+// them, matched as the groups magpie-friday finds match them (sameModel: a
 // vendor's prefix, case, "_" or a snapshot date make no difference). It
 // refuses an alias of a model to itself and one that would loop back to
 // from through the others. changed is false when there was nothing to

@@ -7,12 +7,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/middleware"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/middleware"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
-// magpie plugin says which plugins are gateway middleware and their hooks,
+// magpie-friday plugin says which plugins are gateway middleware and their hooks,
 // or why one didn't load; a middleware plugin has no provider to sign in
 // to, so the list had nothing under it.
 func TestPluginListSaysMiddleware(t *testing.T) {
@@ -56,8 +56,8 @@ func TestPluginListSaysMiddleware(t *testing.T) {
 	}
 }
 
-// magpie plugin off, on and rm take a plugin's short name, as options
-// does: `magpie plugin off think-tags` said there was no such plugin.
+// magpie-friday plugin off, on and rm take a plugin's short name, as options
+// does: `magpie-friday plugin off think-tags` said there was no such plugin.
 func TestPluginOnOffRmShortName(t *testing.T) {
 	groupsHome(t)
 	t.Cleanup(plugin.Settle)

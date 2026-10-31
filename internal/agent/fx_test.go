@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 func TestFx(t *testing.T) {
@@ -35,13 +35,13 @@ func TestFx(t *testing.T) {
 	if f.Get() != "anthropic/claude-sonnet-5" {
 		t.Fatalf("get: %q", f.Get())
 	}
-	if err := f.Set("magpie/deepseek/flash"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
 	s := read()
 	ps := s["providers"].(map[string]any)
-	m, ok := ps["magpie"].(map[string]any)
-	if !ok || ps["local"] == nil || s["provider"] != "magpie" || s["models"].(map[string]any)["magpie"] != "deepseek/flash" || s["theme"] != "dark" {
+	m, ok := ps["magpie-friday"].(map[string]any)
+	if !ok || ps["local"] == nil || s["provider"] != "magpie-friday" || s["models"].(map[string]any)["magpie-friday"] != "deepseek/flash" || s["theme"] != "dark" {
 		t.Fatalf("settings: %v", s)
 	}
 	if m["protocol"] != "openai-chat-completions" || m["base_url"] != gatewayV1() || m["auth"].(map[string]any)["type"] != "none" {
@@ -50,16 +50,16 @@ func TestFx(t *testing.T) {
 	if ms := m["model_metadata"].(map[string]any); ms["deepseek/pro"] == nil || ms["deepseek/flash"] == nil {
 		t.Fatalf("models: %v", ms)
 	}
-	if f.Get() != "magpie/deepseek/flash" || a.Check() != "" {
+	if f.Get() != "magpie-friday/deepseek/flash" || a.Check() != "" {
 		t.Fatalf("get: %q, check: %q", f.Get(), a.Check())
 	}
 
-	// its own model: magpie steps out, and the gateway's model is set
+	// its own model: magpie-friday steps out, and the gateway's model is set
 	if err := f.Set("openai/gpt-6-sol"); err != nil {
 		t.Fatal(err)
 	}
 	s = read()
-	if s["provider"] != nil || s["providers"].(map[string]any)["magpie"] != nil || s["providers"].(map[string]any)["local"] == nil ||
+	if s["provider"] != nil || s["providers"].(map[string]any)["magpie-friday"] != nil || s["providers"].(map[string]any)["local"] == nil ||
 		s["models"].(map[string]any)["gateway"] != "openai/gpt-6-sol" || f.Get() != "openai/gpt-6-sol" {
 		t.Fatalf("own: %v", s)
 	}
@@ -70,13 +70,13 @@ func TestFx(t *testing.T) {
 		t.Fatalf("local: %q", f.Get())
 	}
 
-	// through magpie, then reset
-	f.Set("magpie/deepseek/pro")
+	// through magpie-friday, then reset
+	f.Set("magpie-friday/deepseek/pro")
 	if err := f.Set(""); err != nil {
 		t.Fatal(err)
 	}
 	s = read()
-	if s["provider"] != nil || s["providers"].(map[string]any)["magpie"] != nil || s["models"].(map[string]any)["magpie"] != nil {
+	if s["provider"] != nil || s["providers"].(map[string]any)["magpie-friday"] != nil || s["models"].(map[string]any)["magpie-friday"] != nil {
 		t.Fatalf("reset: %v", s)
 	}
 }
@@ -106,10 +106,10 @@ func TestFxDetected(t *testing.T) {
 	}
 }
 
-// What the user set on magpie's provider in fx's settings stays through
+// What the user set on magpie-friday's provider in fx's settings stays through
 // every sync and pick, as T3 Code's did after #2030: the reviewer model fx's
 // auto permission mode asks, and a tool_choice_mode turned to omit. The
-// address, auth and model list stay magpie's; an auth the user changed goes
+// address, auth and model list stay magpie-friday's; an auth the user changed goes
 // back whole, as fx refuses an env beside type none.
 func TestFxKeepsTheUsersSettings(t *testing.T) {
 	home := syncHome(t)
@@ -118,15 +118,15 @@ func TestFxKeepsTheUsersSettings(t *testing.T) {
 	os.WriteFile(path, []byte(`{"theme":"dark","providers":{"local":{"protocol":"openai-chat-completions","base_url":"http://localhost:11434/v1","auth":{"type":"none"}}}}`), 0o644)
 	a := fx(home)
 	f := a.Field("model")
-	if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	if err := edit.SetJSON(path,
-		edit.KV{Path: "providers.magpie.reviewer_model", Value: "relay/glm-4.6"},
-		edit.KV{Path: "providers.magpie.tool_choice_mode", Value: "omit"},
-		edit.KV{Path: "providers.magpie.auth", Value: map[string]any{"type": "bearer", "env": "MY_KEY"}},
-		edit.KV{Path: "providers.magpie.base_url", Value: "http://127.0.0.1:1/v1"},
-		edit.KV{Path: "providers.magpie.model_metadata", Value: map[string]any{"gone/old": map[string]any{}}},
+		edit.KV{Path: "providers.magpie-friday.reviewer_model", Value: "relay/glm-4.6"},
+		edit.KV{Path: "providers.magpie-friday.tool_choice_mode", Value: "omit"},
+		edit.KV{Path: "providers.magpie-friday.auth", Value: map[string]any{"type": "bearer", "env": "MY_KEY"}},
+		edit.KV{Path: "providers.magpie-friday.base_url", Value: "http://127.0.0.1:1/v1"},
+		edit.KV{Path: "providers.magpie-friday.model_metadata", Value: map[string]any{"gone/old": map[string]any{}}},
 	); err != nil {
 		t.Fatal(err)
 	}
@@ -159,14 +159,14 @@ func TestFxKeepsTheUsersSettings(t *testing.T) {
 			t.Errorf("%s: the user's settings not kept:\n%s", when, raw)
 		}
 		if p.BaseURL == "http://127.0.0.1:1/v1" || p.BaseURL == "" || len(p.Auth) != 1 || p.Auth["type"] != "none" || p.ModelMetadata["gone/old"] != nil || p.ModelMetadata["deepseek/pro"] == nil {
-			t.Errorf("%s: magpie's own parts not written:\n%s", when, raw)
+			t.Errorf("%s: magpie-friday's own parts not written:\n%s", when, raw)
 		}
 		if s.Theme != "dark" || s.Providers["local"].BaseURL == "" {
 			t.Errorf("%s: the user's other settings changed:\n%s", when, raw)
 		}
 	}
 	check("sync")
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	check("pick")

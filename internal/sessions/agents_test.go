@@ -59,7 +59,7 @@ func zcMakeDB(t *testing.T, path string) {
 	// the first user message ZCode's own, a reminder; the second typed
 	ocInsert(t, db, "ses_zcA", "msg_z1", 1790496001000, 1790496001000, `{"id":"msg_z1","role":"user","time":{"created":1790496001000},"semantics":{"origin":"system_reminder"}}`)
 	ocInsert(t, db, "ses_zcA", "msg_z2", 1790496002000, 1790496002000, `{"id":"msg_z2","role":"user","time":{"created":1790496002000},"semantics":{"origin":"real_user"}}`)
-	ocInsert(t, db, "ses_zcA", "msg_z3", 1790496003000, 1790496030000, `{"id":"msg_z3","role":"assistant","modelId":"glm-5.1","providerID":"magpie","tokens":{"total":1540,"input":1500,"output":40,"reasoning":10,"cache":{"read":1000,"write":200}},"time":{"created":1790496003000,"completed":1790496030000}}`)
+	ocInsert(t, db, "ses_zcA", "msg_z3", 1790496003000, 1790496030000, `{"id":"msg_z3","role":"assistant","modelId":"glm-5.1","providerID":"magpie-friday","tokens":{"total":1540,"input":1500,"output":40,"reasoning":10,"cache":{"read":1000,"write":200}},"time":{"created":1790496003000,"completed":1790496030000}}`)
 	ocInsert(t, db, "ses_zcB", "msg_z4", 1790496010000, 1790496020000, `{"id":"msg_z4","role":"assistant","modelID":"glm-5.1-air","tokens":{"input":50,"output":5,"reasoning":0,"cache":{"read":0,"write":0}},"time":{"created":1790496010000,"completed":1790496020000}}`)
 	ocInsert(t, db, "ses_zcC", "msg_z5", 1790496100000, 1790496110000, `{"id":"msg_z5","role":"assistant","modelId":"glm-5.1","tokens":{"input":10,"output":1,"reasoning":0,"cache":{"read":0,"write":0}},"time":{"created":1790496100000,"completed":1790496110000}}`)
 	for _, p := range [][3]string{
@@ -85,7 +85,7 @@ func count(ss []Session, agent string) int {
 // CodeBuddy Code's own sessions are listed as its own agent's, read from
 // ~/.codebuddy/projects as WorkBuddy's are from ~/.workbuddy/projects
 // (#1779): the two `codebuddy -p` runs in testdata/codebuddy, one on a model
-// of the user's own, one on a model magpie wired.
+// of the user's own, one on a model magpie-friday wired.
 func TestCodeBuddy(t *testing.T) {
 	inZone(t, 0)
 	setupAgents(t)

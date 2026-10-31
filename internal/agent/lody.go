@@ -11,9 +11,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // LodyScheme opens Lody's local-machine provider confirmation dialog.
@@ -61,7 +61,7 @@ func LodyLink(base string) string {
 		Auth      map[string]string `json:"auth"`
 		Endpoints []endpoint        `json:"endpoints"`
 	}{
-		Kind: "custom", ID: "magpie", Name: "Magpie",
+		Kind: "custom", ID: "magpie-friday", Name: "magpie-friday",
 		Auth: map[string]string{"method": "apiKey", "apiKey": gateway.TokenFor("lody")},
 		Endpoints: []endpoint{
 			{"anthropic-messages", base, []string{"claude-code"}, base + "/v1/models"},

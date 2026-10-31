@@ -57,26 +57,26 @@ func TestLookPathSeesAnInstallAndARemoval(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("PATH", dir)
 	lookWindowFor(t, 0)
-	if p, err := LookPath("magpie-fake-agent"); err == nil {
+	if p, err := LookPath("magpie-friday-fake-agent"); err == nil {
 		t.Fatalf("found %q before it was installed", p)
 	}
-	if p := FindTool("magpie-fake-agent"); p != "" {
+	if p := FindTool("magpie-friday-fake-agent"); p != "" {
 		t.Fatalf("FindTool found %q before it was installed", p)
 	}
 	time.Sleep(20 * time.Millisecond) // a folder time a coarse clock tells apart
-	want := installTool(t, dir, "magpie-fake-agent")
-	if p, err := LookPath("magpie-fake-agent"); err != nil || p != want {
+	want := installTool(t, dir, "magpie-friday-fake-agent")
+	if p, err := LookPath("magpie-friday-fake-agent"); err != nil || p != want {
 		t.Fatalf("after installing: %q, %v; want %q", p, err, want)
 	}
-	if p := FindTool("magpie-fake-agent"); p != want {
+	if p := FindTool("magpie-friday-fake-agent"); p != want {
 		t.Fatalf("FindTool after installing: %q, want %q", p, want)
 	}
 	time.Sleep(20 * time.Millisecond)
 	os.Remove(want)
-	if p, err := LookPath("magpie-fake-agent"); err == nil {
+	if p, err := LookPath("magpie-friday-fake-agent"); err == nil {
 		t.Fatalf("after removing it, still found %q", p)
 	}
-	if p := FindTool("magpie-fake-agent"); p != "" {
+	if p := FindTool("magpie-friday-fake-agent"); p != "" {
 		t.Fatalf("FindTool after removing it, still found %q", p)
 	}
 }
@@ -88,21 +88,21 @@ func TestLookPathWindowPathAndForget(t *testing.T) {
 	a, b := t.TempDir(), t.TempDir()
 	t.Setenv("PATH", a)
 	lookWindowFor(t, time.Hour)
-	if _, err := LookPath("magpie-fake-agent"); err == nil {
+	if _, err := LookPath("magpie-friday-fake-agent"); err == nil {
 		t.Fatal("found before installing")
 	}
-	inA := installTool(t, a, "magpie-fake-agent")
-	if p, err := LookPath("magpie-fake-agent"); err == nil {
+	inA := installTool(t, a, "magpie-friday-fake-agent")
+	if p, err := LookPath("magpie-friday-fake-agent"); err == nil {
 		t.Fatalf("within the window the miss is kept, found %q", p)
 	}
 	Forget()
-	if p, err := LookPath("magpie-fake-agent"); err != nil || p != inA {
+	if p, err := LookPath("magpie-friday-fake-agent"); err != nil || p != inA {
 		t.Fatalf("after Forget: %q, %v; want %q", p, err, inA)
 	}
 
-	inB := installTool(t, b, "magpie-fake-agent")
+	inB := installTool(t, b, "magpie-friday-fake-agent")
 	t.Setenv("PATH", b+string(os.PathListSeparator)+a)
-	if p, err := LookPath("magpie-fake-agent"); err != nil || p != inB {
+	if p, err := LookPath("magpie-friday-fake-agent"); err != nil || p != inB {
 		t.Fatalf("after PATH changed: %q, %v; want %q", p, err, inB)
 	}
 }
@@ -111,7 +111,7 @@ func TestLookPathWindowPathAndForget(t *testing.T) {
 func TestLookPathConcurrent(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("PATH", dir)
-	installTool(t, dir, "magpie-fake-agent")
+	installTool(t, dir, "magpie-friday-fake-agent")
 	lookWindowFor(t, 0)
 	var wg sync.WaitGroup
 	for i := 0; i < 16; i++ {
@@ -122,11 +122,11 @@ func TestLookPathConcurrent(t *testing.T) {
 				if i == 0 && j%10 == 0 {
 					Forget()
 				}
-				if _, err := LookPath("magpie-fake-agent"); err != nil {
+				if _, err := LookPath("magpie-friday-fake-agent"); err != nil {
 					t.Error(err)
 					return
 				}
-				FindTool("magpie-no-such-tool")
+				FindTool("magpie-friday-no-such-tool")
 			}
 		}(i)
 	}

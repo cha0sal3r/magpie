@@ -4,8 +4,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 func TestSpell(t *testing.T) {
@@ -19,21 +19,21 @@ func TestSpell(t *testing.T) {
 	}
 	get := func() string { return "" }
 	bare := &Agent{Fields: []Field{{Key: "model", Get: get, Options: opts("")}}}
-	prefixed := &Agent{Fields: []Field{{Key: "model", Get: get, Options: opts("magpie/")}}}
+	prefixed := &Agent{Fields: []Field{{Key: "model", Get: get, Options: opts("magpie-friday/")}}}
 	for _, c := range []struct {
 		a       *Agent
 		in, out string
 		err     bool
 	}{
 		{bare, "copilot/gpt-6-sol", "copilot/gpt-6-sol", false},
-		{bare, "magpie/copilot/gpt-6-sol", "copilot/gpt-6-sol", false},
-		{prefixed, "copilot/gpt-6-sol", "magpie/copilot/gpt-6-sol", false},
-		{prefixed, "magpie/copilot/gpt-6-sol", "magpie/copilot/gpt-6-sol", false},
+		{bare, "magpie-friday/copilot/gpt-6-sol", "copilot/gpt-6-sol", false},
+		{prefixed, "copilot/gpt-6-sol", "magpie-friday/copilot/gpt-6-sol", false},
+		{prefixed, "magpie-friday/copilot/gpt-6-sol", "magpie-friday/copilot/gpt-6-sol", false},
 		{bare, "gpt-6", "gpt-6", false},
 		{bare, "some-unlisted-model", "some-unlisted-model", false},
 		{bare, "", "", false},
-		{bare, "magpie/copilot/nope", "", true},
-		{prefixed, "magpie/copilot/nope", "", true},
+		{bare, "magpie-friday/copilot/nope", "", true},
+		{prefixed, "magpie-friday/copilot/nope", "", true},
 	} {
 		got, err := c.a.Spell("model", c.in)
 		if got != c.out || (err != nil) != c.err {
@@ -42,15 +42,15 @@ func TestSpell(t *testing.T) {
 	}
 }
 
-// #2376: a model of a remote magpie that the agent's picker doesn't offer,
-// kept from it by magpie visible or not on the remote's list yet, was
+// #2376: a model of a remote magpie-friday that the agent's picker doesn't offer,
+// kept from it by magpie-friday visible or not on the remote's list yet, was
 // taken as the agent's own: Pi read remote/group/smart as its provider
-// "remote" and model "group/smart", and was taken out of magpie. It is
+// "remote" and model "group/smart", and was taken out of magpie-friday. It is
 // refused, and one the picker offers, or the agent's own, is spelled as
 // before.
 func TestSpellRefusesMagpieModelNotOffered(t *testing.T) {
 	syncHome(t)
-	if err := provider.Save(provider.Provider{ID: "remote", Name: "Remote magpie", Key: "k", Chat: "http://127.0.0.1:1/v1", Models: []string{"group/smart", "codex/gpt-5.5"}}); err != nil {
+	if err := provider.Save(provider.Provider{ID: "remote", Name: "Remote magpie-friday", Key: "k", Chat: "http://127.0.0.1:1/v1", Models: []string{"group/smart", "codex/gpt-5.5"}}); err != nil {
 		t.Fatal(err)
 	}
 	if err := settings.Save(settings.Settings{Visible: map[string][]string{"pi": {"relay"}, "codex": {"relay"}}}); err != nil {
@@ -66,21 +66,21 @@ func TestSpellRefusesMagpieModelNotOffered(t *testing.T) {
 		}
 		want := "relay/glm-4.6"
 		if a.ID == "pi" {
-			want = "magpie/" + want
+			want = "magpie-friday/" + want
 		}
 		if got, err := a.Spell(a.Fields[0].Key, "relay/glm-4.6"); err != nil || got != want {
 			t.Errorf("%s: relay/glm-4.6 spelled %q, %v; want %q", a.ID, got, err, want)
 		}
 	}
-	// a provider of the agent's own that magpie hasn't is the agent's
+	// a provider of the agent's own that magpie-friday hasn't is the agent's
 	if got, err := pi(home).Spell("model", "my-own/some-model"); err != nil || got != "my-own/some-model" {
 		t.Errorf("pi's own: %q, %v", got, err)
 	}
-	// shown it every model, the remote's are offered and spelled as magpie's
+	// shown it every model, the remote's are offered and spelled as magpie-friday's
 	if err := settings.Save(settings.Settings{}); err != nil {
 		t.Fatal(err)
 	}
-	if got, err := pi(home).Spell("model", "remote/group/smart"); err != nil || got != "magpie/remote/group/smart" {
+	if got, err := pi(home).Spell("model", "remote/group/smart"); err != nil || got != "magpie-friday/remote/group/smart" {
 		t.Errorf("pi, shown every model: %q, %v", got, err)
 	}
 }

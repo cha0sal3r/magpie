@@ -4,7 +4,7 @@ package provider
 // wallechfox/qoder-checkin claims them): Qoder and Qoder CN list an
 // account's campaigns on their openapi host, the day's credits among them
 // (actionType CLAIM_BENEFIT), and claim one with a POST. While the setting
-// is on, whichever magpie runs the gateway claims each claimable one for
+// is on, whichever magpie-friday runs the gateway claims each claimable one for
 // each account of @magpie-community/opencode-qoder-auth. Campaigns are
 // checked every 30 minutes and on a Beijing day change: their daily
 // rollover need not be midnight. The server decides which can be claimed.
@@ -30,8 +30,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // qoderCampaignURLs are the campaigns of each site, by the plugin's

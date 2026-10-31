@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // withExtraBody gives the saved provider id the extraBody written.
@@ -92,7 +92,7 @@ func TestExtraBodyResponsesRelayed(t *testing.T) {
 	}
 }
 
-// Without a session header, ${sessionId} is the id magpie derives from the
+// Without a session header, ${sessionId} is the id magpie-friday derives from the
 // conversation's first user message: never the literal, the same on every
 // turn of one conversation, different for another.
 func TestExtraBodyChatDerivedSession(t *testing.T) {
@@ -114,12 +114,12 @@ func TestExtraBodyChatDerivedSession(t *testing.T) {
 	one := ask(`[{"role":"user","content":"first"}]`)
 	again := ask(`[{"role":"user","content":"first"},{"role":"assistant","content":"OK"},{"role":"user","content":"next"}]`)
 	other := ask(`[{"role":"user","content":"another"}]`)
-	if !strings.HasPrefix(one, "magpie-") || one != again || one == other {
+	if !strings.HasPrefix(one, "magpie-friday-") || one != again || one == other {
 		t.Errorf("derived ids: %q %q %q", one, again, other)
 	}
 }
 
-// A request magpie translates gets the fields too, on top of the
+// A request magpie-friday translates gets the fields too, on top of the
 // translated body: Messages to a Chat provider, Chat to a Responses one.
 func TestExtraBodyTranslated(t *testing.T) {
 	t.Run("messages to chat", func(t *testing.T) {

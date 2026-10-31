@@ -12,7 +12,7 @@ import (
 // a call), "final_answer" for the answer that ends the turn. Codex folds a
 // finished turn's commentary and calls under "Worked for …" and leaves the
 // final answer out, and reads a message with no phase as an answer, so a
-// model magpie translates had every progress line left unfolded (#2437).
+// model magpie-friday translates had every progress line left unfolded (#2437).
 //
 // A message's phase is known only from what comes after it: a call, a
 // search or another message makes it commentary; the reply ending with

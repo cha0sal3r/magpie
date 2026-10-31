@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // ownIPv4 is an IPv4 address of one of this computer's interfaces that
@@ -144,7 +144,7 @@ func TestOnlyALiveRunsCallbackSkipsTheKey(t *testing.T) {
 		{"POST", "/x" + claudeMCPPath + token},
 		{"GET", claudeMCPPath + token},
 		{"POST", "/v1/messages"}, {"POST", "/v1/chat/completions"}, {"GET", "/v1/models"},
-		{"GET", "/v1/magpie/quotas"}, {"POST", "/mcp/neon"},
+		{"GET", "/v1/magpie-friday/quotas"}, {"POST", "/mcp/neon"},
 	} {
 		if c, b := call(p[0], p[1]); c != http.StatusUnauthorized {
 			t.Errorf("%s %s: %d %.120s", p[0], p[1], c, b)

@@ -1,7 +1,7 @@
-// Package webview2env keeps WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS as magpie
+// Package webview2env keeps WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS as magpie-friday
 // was started with. Wails' WebView2 loader blanks the variable in its own
 // init (webviewloader.preventEnvAndRegistryOverrides, so neither it nor the
-// registry's policy can change the browser's arguments), before magpie's
+// registry's policy can change the browser's arguments), before magpie-friday's
 // code runs, and a user's --disable-features=RendererCodeIntegrity never
 // reached the renderer (#2753). This package reads it first. Go
 // initializes, at each step, the first package by import path whose
@@ -15,5 +15,5 @@ import "syscall"
 // Name is the variable WebView2 reads extra browser arguments from.
 const Name = "WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS"
 
-// Args is the variable's value when magpie started, "" when it wasn't set.
+// Args is the variable's value when magpie-friday started, "" when it wasn't set.
 var Args, _ = syscall.Getenv(Name)

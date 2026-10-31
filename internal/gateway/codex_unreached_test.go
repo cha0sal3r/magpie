@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // One of Codex's own models, when OpenAI can't be reached, fails saying so
@@ -24,7 +24,7 @@ func TestCodexOwnModelUnreached(t *testing.T) {
 	New().Handler().ServeHTTP(rec, req)
 	body := rec.Body.String()
 	if rec.Code != 502 || !strings.Contains(body, "OpenAI can't be reached") || !strings.Contains(body, "gpt-5.5 is one of Codex's own models") ||
-		!strings.Contains(body, "pick one of magpie's models") {
+		!strings.Contains(body, "pick one of magpie-friday's models") {
 		t.Fatalf("%d %s", rec.Code, body)
 	}
 }

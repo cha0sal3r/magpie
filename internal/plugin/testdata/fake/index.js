@@ -115,7 +115,7 @@ export const FakePlugin = async ({ client }) => ({
     if (process.env.FAKE_SEARCHES) cfg.provider[ID].searches = true
     // $FAKE_DECIDE: the provider serves a decision API too (#1514), asked
     // at its base /systemone through the loader's fetch: fake-clef is a
-    // decision model it marks, jev-9 one magpie knows by its name.
+    // decision model it marks, jev-9 one magpie-friday knows by its name.
     // "models" marks them without saying decide.
     if (process.env.FAKE_DECIDE) {
       if (process.env.FAKE_DECIDE !== "models") cfg.provider[ID].decide = true
@@ -187,17 +187,17 @@ export const FakePlugin = async ({ client }) => ({
         // own requests from a stray that reached a port the kernel handed
         // on (testenv.FakeVendor)
         if (process.env.FAKE_RUN) h.set("x-fake-run", process.env.FAKE_RUN)
-        // where magpie said the agent works, as the plugin read it; its own
+        // where magpie-friday said the agent works, as the plugin read it; its own
         // headers go on too, as a plugin that sends on what it got sends
         // them, for the host to take off
-        for (const k of ["x-magpie-work-dir", "x-magpie-work-git"]) if (h.has(k)) h.set("x-saw-" + k.slice(9), h.get(k))
+        for (const k of ["x-magpie-friday-work-dir", "x-magpie-friday-work-git"]) if (h.has(k)) h.set("x-saw-" + k.slice(9), h.get(k))
         // $FAKE_H2: the request goes on node:http2 to that origin, as
         // Cursor's plugin runs its chats
         if (process.env.FAKE_H2) return h2(process.env.FAKE_H2, new URL(url).pathname)
         return fetch(url, { ...init, headers: h })
       },
     }),
-    // magpie's: the account's allowance; "full@fake" has used its five
+    // magpie-friday's: the account's allowance; "full@fake" has used its five
     // hours, which count only fake-claude
     usage: async (getAuth) => {
       const a = await getAuth()
@@ -251,7 +251,7 @@ export const FakePlugin = async ({ client }) => ({
     // account's name/uid, so two of one name tell apart), and the
     // answer said by the key: ck-claim gives 50 on a 3-day streak, ck-done
     // is in already, ck-captcha is asked a captcha, ck-throw can't reach
-    // the vendor, ck-odd answers no outcome magpie knows
+    // the vendor, ck-odd answers no outcome magpie-friday knows
     ...(process.env.FAKE_CHECKIN
       ? {
           checkin: async (getAuth) => {

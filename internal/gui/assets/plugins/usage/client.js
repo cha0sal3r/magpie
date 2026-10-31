@@ -40,6 +40,8 @@ magpie.plugin("usage", (ctx) => {
     <p class="usage-note" id="usageScope" data-t>Gateway calls only; session-log calls are in Requests. Local rejections are excluded from totals.</p>
     <section class="stats" id="stats"></section>
     <section class="chart" id="chart"></section>
+    <div class="row-head" id="usagePlannerHead"><span class="label" data-t>What another model would cost</span></div>
+    <section class="usage-planner" id="usagePlanner"></section>
     <div class="row-head"><button class="fold" type="button" data-fold="agents" aria-expanded="true" aria-controls="usageAgents"><span class="label" data-t>Agents</span></button></div>
     <div class="list" id="usageAgents"></div>
     <div class="us-hid" id="usageAgentsHid" hidden><button class="text us-hidline" type="button" aria-expanded="false"></button><div class="list" hidden></div></div>

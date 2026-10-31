@@ -8,12 +8,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
-// An agent uninstalled outside magpie leaves its folder behind (#2177,
+// An agent uninstalled outside magpie-friday leaves its folder behind (#2177,
 // #2173): the Agents page calls it gone (CLIMissing) and offers none of
 // its settings, since nothing reads them. The Library kept it as a place
 // to give skills, MCP servers and instructions to, and sync carried on
@@ -33,14 +33,14 @@ func TestTargetsLeaveGoneAgentsOut(t *testing.T) {
 	if got := ids(Targets()); slices.Contains(got, "hermes") {
 		t.Fatalf("hermes is a target with its CLI gone: %v", got)
 	}
-	// named for one (magpie library mcp add … agents=hermes), it is
+	// named for one (magpie-friday library mcp add … agents=hermes), it is
 	// refused, not recorded and then given nothing
 	if _, err := Takes("hermes", "mcp"); err == nil || !strings.Contains(err.Error(), "isn't installed") {
 		t.Fatalf("Takes(hermes, mcp) with its CLI gone: %v", err)
 	}
 }
 
-// An agent that goes keeps what magpie and the user wrote into its folder:
+// An agent that goes keeps what magpie-friday and the user wrote into its folder:
 // a later change writes nothing there and takes nothing away, and its
 // instructions file is still its own, never a file a set is kept in. Pi's,
 // which goes on every system: on Windows a ~\.codex whose CLI isn't
@@ -69,7 +69,7 @@ func TestGoneAgentKeepsWhatItHas(t *testing.T) {
 	if got := read(t, file); got != before {
 		t.Errorf("a change after pi went rewrote its instructions:\n%s\nwas:\n%s", got, before)
 	}
-	// with no part of magpie's in it, only its being pi's own refuses it
+	// with no part of magpie-friday's in it, only its being pi's own refuses it
 	write(t, file, "my own notes\n")
 	if _, err := SaveInstructions(InstructionsChange{Create: &InstrSet{ID: "b", Name: "B", File: file}}); err == nil {
 		t.Error("a set was kept in a gone agent's own instructions file")

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
 )
 
 // A ClinePass API key's card has the 5-hour, weekly and monthly limits

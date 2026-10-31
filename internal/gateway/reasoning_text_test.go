@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // openaiStrict is a Responses upstream that checks reasoning as OpenAI does
@@ -250,7 +250,7 @@ func (u *openaiItems) asked() ([]string, [][]map[string]any) {
 // switchedBackFromDeepSeek is jue's Codex thread (Discord, #feedback): a
 // turn on GPT, whose reasoning OpenAI sealed (content null, as Codex
 // writes a reasoning item without text), then a turn on DeepSeek set for
-// Codex on magpie's Agents page, whose reasoning DeepSeek's Responses API
+// Codex on magpie-friday's Agents page, whose reasoning DeepSeek's Responses API
 // gave with its text and nothing sealed (encrypted_content null), then
 // back on GPT. input[8] is DeepSeek's reasoning, with one content entry.
 func switchedBackFromDeepSeek(model string) string {
@@ -271,8 +271,8 @@ func switchedBackFromDeepSeek(model string) string {
 // jue on Discord: Codex on DeepSeek, then back on its own GPT, failed its
 // next turn with OpenAI's 400 over input[8].content, the reasoning
 // DeepSeek wrote. Every way a request for one of OpenAI's models reaches
-// OpenAI's Responses endpoint through magpie — Codex's turn and its
-// compaction, on its own sign-in, its API key or a magpie account, and a
+// OpenAI's Responses endpoint through magpie-friday — Codex's turn and its
+// compaction, on its own sign-in, its API key or a magpie-friday account, and a
 // client of the gateway's own /v1/responses — goes without that item,
 // asked once, OpenAI's own sealed reasoning and the rest kept.
 func TestForeignReasoningNeverReachesOpenAI(t *testing.T) {
@@ -284,8 +284,8 @@ func TestForeignReasoningNeverReachesOpenAI(t *testing.T) {
 		{name: "compaction on Codex's sign-in", path: CodexPath + "/responses/compact", model: "gpt-6.1-sol", auth: "Bearer chatgpt-token"},
 		{name: "turn on Codex's API key", path: CodexPath + "/responses", model: "gpt-6.1-sol", auth: "Bearer sk-test"},
 		{name: "compaction on Codex's API key", path: CodexPath + "/responses/compact", model: "gpt-6.1-sol", auth: "Bearer sk-test"},
-		{name: "turn on a magpie account", path: CodexPath + "/responses", model: "gpt-6.1-sol", auth: "Bearer chatgpt-token", spare: true, pauseOwn: true},
-		{name: "compaction on a magpie account", path: CodexPath + "/responses/compact", model: "gpt-6.1-sol", auth: "Bearer chatgpt-token", spare: true, pauseOwn: true},
+		{name: "turn on a magpie-friday account", path: CodexPath + "/responses", model: "gpt-6.1-sol", auth: "Bearer chatgpt-token", spare: true, pauseOwn: true},
+		{name: "compaction on a magpie-friday account", path: CodexPath + "/responses/compact", model: "gpt-6.1-sol", auth: "Bearer chatgpt-token", spare: true, pauseOwn: true},
 		{name: "the gateway's own Responses API", path: "/v1/responses", model: "codex/gpt-6.1-sol", auth: ""},
 	} {
 		t.Run(tc.name, func(t *testing.T) {

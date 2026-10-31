@@ -1,4 +1,4 @@
-/* Omarchy: magpie drawn in Omarchy's own design language, only on Omarchy.
+/* Omarchy: magpie-friday drawn in Omarchy's own design language, only on Omarchy.
    omarchy.js puts the class on <html> and the theme's colours, font, border
    and rounding (from ~/.local/state/omarchy/current/theme and Hyprland) in
    the variables; everything here is scoped under html.omarchy, so no other

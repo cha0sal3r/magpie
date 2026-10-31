@@ -6,10 +6,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// A distro with no agent magpie sets up, only the Copilot CLI signed in
+// A distro with no agent magpie-friday sets up, only the Copilot CLI signed in
 // (#723, jia2), is kept: provider reads the CLI's sign-in in its home
 // while it runs, and never once it is stopped.
 func TestWSLCopilotHome(t *testing.T) {

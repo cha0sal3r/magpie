@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // A ChatGPT account lists the models of its own plan, asked with its own
@@ -82,7 +82,7 @@ func TestCodexVersion(t *testing.T) {
 	}
 }
 
-// A Codex that came through the gateway newer than any magpie can find
+// A Codex that came through the gateway newer than any magpie-friday can find
 // counts at once, the cached lookup notwithstanding: the account's model
 // list is asked for as that Codex, and its turns say they are it. Only
 // Codex's requests count, and never an older version.

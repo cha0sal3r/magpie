@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-// fakePeer is another magpie's gateway as RemoteCards asks it: its kept
+// fakePeer is another magpie-friday's gateway as RemoteCards asks it: its kept
 // cards at RemoteCardsPath, a card read again at RemoteRefreshPath.
 type fakePeer struct {
 	sync.Mutex
@@ -20,7 +20,7 @@ type fakePeer struct {
 	gets      int
 	refreshes []string // provider|user of each refresh asked
 	// limits are RemoteKeyLimitPath's answers by the key asking (#1547);
-	// nil is a magpie too old to answer it. limitAsks counts them.
+	// nil is a magpie-friday too old to answer it. limitAsks counts them.
 	limits    map[string]string
 	limitAsks int
 	// held is a remote that holds the key to a budget, models or
@@ -57,7 +57,7 @@ func (f *fakePeer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(body))
 		return
 	}
-	if r.Header.Get("Authorization") != "Bearer sk-magpie-office" {
+	if r.Header.Get("Authorization") != "Bearer sk-magpie-friday-office" {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -75,7 +75,7 @@ func (f *fakePeer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		f.gets++
 	case "POST " + RemoteRefreshPath:
 		f.refreshes = append(f.refreshes, r.URL.Query().Get("provider")+"|"+r.URL.Query().Get("user"))
-	case "GET /v1/magpie/quotas/history":
+	case "GET /v1/magpie-friday/quotas/history":
 		json.NewEncoder(w).Encode(map[string]any{"object": "list", "data": []QuotaHistory{{Provider: "codex", User: "a@x.com", Lines: []QuotaLine{{Name: "5h"}}}}})
 		return
 	default:
@@ -90,18 +90,18 @@ func remoteQuotaHome(t *testing.T, peer http.Handler) {
 	azureHome(t)
 	srv := httptest.NewServer(peer)
 	t.Cleanup(srv.Close)
-	if err := Save(Provider{ID: "office", Name: "Office", Preset: RemoteMagpiePreset, Key: "sk-magpie-office", Chat: srv.URL}); err != nil {
+	if err := Save(Provider{ID: "office", Name: "Office", Preset: RemoteMagpiePreset, Key: "sk-magpie-friday-office", Chat: srv.URL}); err != nil {
 		t.Fatal(err)
 	}
 	ForgetRemoteCardsForTest()
 	t.Cleanup(ForgetRemoteCardsForTest)
 }
 
-// 莫 on Discord: a computer whose providers are another's magpie showed
-// no quota at all. It now shows the other magpie's cards, named with it
+// 莫 on Discord: a computer whose providers are another's magpie-friday showed
+// no quota at all. It now shows the other magpie-friday's cards, named with it
 // and kept apart from its own by id, in their kinds; what a card's
 // buttons would do to this computer's accounts is left off, and a card
-// the other magpie has from a third isn't passed on.
+// the other magpie-friday has from a third isn't passed on.
 func TestRemoteMagpieCards(t *testing.T) {
 	peer := &fakePeer{cards: []SubscriptionQuota{
 		{Provider: "codex", Name: "Codex", Icon: "codex", User: "a@x.com", Kind: "subscription", Windows: []QuotaWindow{{Name: "5h", Used: 40}},
@@ -137,18 +137,18 @@ func TestRemoteMagpieCards(t *testing.T) {
 	for _, qs := range [][]SubscriptionQuota{subs, plans, balances} {
 		for _, q := range qs {
 			if strings.Contains(q.Provider, "home") {
-				t.Errorf("a third magpie's card passed on: %+v", q)
+				t.Errorf("a third magpie-friday's card passed on: %+v", q)
 			}
 		}
 	}
-	// the menu bar and alerts ask often; the other magpie is asked once in
+	// the menu bar and alerts ask often; the other magpie-friday is asked once in
 	// remoteCardsFor
 	Quotas(ctx)
 	RemoteCards(ctx)
 	if peer.gets != 1 {
 		t.Errorf("asked %d times, want 1", peer.gets)
 	}
-	// magpie quota names it too
+	// magpie-friday quota names it too
 	var found bool
 	for _, q := range QuotaReport(ctx, time.Now()) {
 		if q.Provider == "office/codex" {
@@ -160,7 +160,7 @@ func TestRemoteMagpieCards(t *testing.T) {
 	}
 }
 
-// A remote card's refresh asks the other magpie to read that card again,
+// A remote card's refresh asks the other magpie-friday to read that card again,
 // and then what it has now; the remote's own card (nothing read there
 // yet) asks it to read every card.
 func TestRemoteMagpieCardRefresh(t *testing.T) {
@@ -168,7 +168,7 @@ func TestRemoteMagpieCardRefresh(t *testing.T) {
 	remoteQuotaHome(t, peer)
 	ctx := context.Background()
 	cs := peerCards(RemoteCards(ctx))
-	if len(cs) != 1 || cs[0].Provider != "office" || cs[0].Error != errRemoteNothingRead || cs[0].Icon != "magpie" {
+	if len(cs) != 1 || cs[0].Provider != "office" || cs[0].Error != errRemoteNothingRead || cs[0].Icon != "magpie-friday" {
 		t.Fatalf("nothing read there: %+v", cs)
 	}
 	peer.Lock()
@@ -194,7 +194,7 @@ func TestRemoteMagpieCardRefresh(t *testing.T) {
 }
 
 // A remote that can't be asked keeps its last cards, as old as they are;
-// with none, its card says why, and a magpie too old to share its quotas
+// with none, its card says why, and a magpie-friday too old to share its quotas
 // is told to be updated.
 func TestRemoteMagpieUnreachable(t *testing.T) {
 	peer := &fakePeer{cards: []SubscriptionQuota{{Provider: "codex", Name: "Codex", Windows: []QuotaWindow{{Name: "5h", Used: 5}}}}}
@@ -212,7 +212,7 @@ func TestRemoteMagpieUnreachable(t *testing.T) {
 	peer.status = http.StatusNotFound
 	peer.Unlock()
 	if cs := peerCards(RemoteCards(ctx)); len(cs) != 1 || cs[0].Error != errRemoteNoShare {
-		t.Errorf("an old magpie: %+v", cs)
+		t.Errorf("an old magpie-friday: %+v", cs)
 	}
 	// one that serves models but keeps its quotas, or refuses the key,
 	// says which, so its card can say what to do there
@@ -227,8 +227,8 @@ func TestRemoteMagpieUnreachable(t *testing.T) {
 	}
 }
 
-// The cards told to another magpie are this one's as last read: nothing
-// is read for it, however old they are, and another magpie's aren't
+// The cards told to another magpie-friday are this one's as last read: nothing
+// is read for it, however old they are, and another magpie-friday's aren't
 // passed on.
 func TestCachedCardsAskNobody(t *testing.T) {
 	azureHome(t)
@@ -288,7 +288,7 @@ func TestKeptQuotaReportAsksNobody(t *testing.T) {
 	}
 }
 
-// A remote magpie's history comes with its cards' ids.
+// A remote magpie-friday's history comes with its cards' ids.
 func TestRemoteQuotaHistories(t *testing.T) {
 	remoteQuotaHome(t, &fakePeer{})
 	hs := RemoteQuotaHistories(context.Background(), "7")
@@ -309,17 +309,17 @@ func keyCards(cs []SubscriptionQuota) map[string]SubscriptionQuota {
 	return out
 }
 
-// #1547 (PennyVibe): a computer that uses another magpie with gateway
-// keys it gave saw that magpie's subscriptions, but not what each key may
+// #1547 (PennyVibe): a computer that uses another magpie-friday with gateway
+// keys it gave saw that magpie-friday's subscriptions, but not what each key may
 // still spend there. Each key now has a card of its own, asked with that
 // key alone: its caps, what it used and has left, when it resets; a key
-// held to no limit says so; a magpie too old to tell says that, and a
+// held to no limit says so; a magpie-friday too old to tell says that, and a
 // failed read is never shown as nothing used.
 func TestRemoteMagpieKeyLimits(t *testing.T) {
 	reset := time.Date(2026, 10, 12, 0, 0, 0, 0, time.UTC)
 	peer := &fakePeer{limits: map[string]string{
-		"sk-magpie-office": `{"limited":true,"key":"laptop","limit":{"period":"day","start":"2026-10-11T00:00:00Z","reset":"2026-10-12T00:00:00Z","calls":3,"tokens":1050,"cost":0.4567,"tokenLimit":10000,"costLimit":2,"tokensLeft":8950,"costLeft":1.5433}}`,
-		"sk-magpie-spare":  `{"limited":false,"key":"spare"}`,
+		"sk-magpie-friday-office": `{"limited":true,"key":"laptop","limit":{"period":"day","start":"2026-10-11T00:00:00Z","reset":"2026-10-12T00:00:00Z","calls":3,"tokens":1050,"cost":0.4567,"tokenLimit":10000,"costLimit":2,"tokensLeft":8950,"costLeft":1.5433}}`,
+		"sk-magpie-friday-spare":  `{"limited":false,"key":"spare"}`,
 	}}
 	remoteQuotaHome(t, peer)
 	p, err := Find("office")
@@ -327,7 +327,7 @@ func TestRemoteMagpieKeyLimits(t *testing.T) {
 		t.Fatal(err)
 	}
 	p.KeyName = "laptop"
-	p.Keys = []KeyAccount{{Name: "spare", Key: "sk-magpie-spare"}}
+	p.Keys = []KeyAccount{{Name: "spare", Key: "sk-magpie-friday-spare"}}
 	if err := Save(*p); err != nil {
 		t.Fatal(err)
 	}
@@ -358,7 +358,7 @@ func TestRemoteMagpieKeyLimits(t *testing.T) {
 	}
 	// its refresh reads again the key named
 	peer.Lock()
-	peer.limits["sk-magpie-office"] = `{"limited":true,"key":"laptop","limit":{"period":"day","reset":"2026-10-12T00:00:00Z","tokens":2000,"tokenLimit":10000,"tokensLeft":8000}}`
+	peer.limits["sk-magpie-friday-office"] = `{"limited":true,"key":"laptop","limit":{"period":"day","reset":"2026-10-12T00:00:00Z","tokens":2000,"tokenLimit":10000,"tokensLeft":8000}}`
 	peer.Unlock()
 	RefreshUsage(ctx, "office/"+remoteKeyCard, "laptop")
 	if peer.limitAsks != 3 {
@@ -384,38 +384,38 @@ func TestRemoteMagpieKeyLimits(t *testing.T) {
 			t.Errorf("%s unread: %+v", n, q)
 		}
 	}
-	// a magpie too old to tell a key its limit
+	// a magpie-friday too old to tell a key its limit
 	ForgetRemoteCardsForTest()
 	peer.Lock()
 	peer.status, peer.limits = 0, nil
 	peer.Unlock()
 	ks = keyCards(RemoteCards(ctx))
 	if len(ks) != 2 {
-		t.Errorf("old magpie: %+v", ks)
+		t.Errorf("old magpie-friday: %+v", ks)
 	}
 	for n, q := range ks {
 		if q.Error != errRemoteNoKeyLimit || q.GatewayKey != nil {
-			t.Errorf("%s on an old magpie: %+v", n, q)
+			t.Errorf("%s on an old magpie-friday: %+v", n, q)
 		}
 	}
 }
 
 // Two keys under one name each show their own, told apart by the key.
 func TestRemoteKeyNames(t *testing.T) {
-	names, _ := remoteKeys(Provider{KeyName: "a", Key: "sk-magpie-1111111111", Keys: []KeyAccount{{Name: "a", Key: "sk-magpie-2222222222"}, {Key: "sk-magpie-3333333333"}, {Name: "off", Key: "x", Off: true}}})
-	if len(names) != 3 || names[0] == names[1] || !strings.HasPrefix(names[0], "a · ") || names[2] != Mask("sk-magpie-3333333333") {
+	names, _ := remoteKeys(Provider{KeyName: "a", Key: "sk-magpie-friday-1111111111", Keys: []KeyAccount{{Name: "a", Key: "sk-magpie-friday-2222222222"}, {Key: "sk-magpie-friday-3333333333"}, {Name: "off", Key: "x", Off: true}}})
+	if len(names) != 3 || names[0] == names[1] || !strings.HasPrefix(names[0], "a · ") || names[2] != Mask("sk-magpie-friday-3333333333") {
 		t.Errorf("%q", names)
 	}
 }
 
-// #1981: a remote magpie that holds this computer's key to a budget,
+// #1981: a remote magpie-friday that holds this computer's key to a budget,
 // models or accounts tells it none of its accounts. The cards read before
 // the key was held go, and only the key's own card stays; a 403 for that
 // reason doesn't say the remote isn't shared.
 func TestRemoteMagpieHeldKeyShowsOnlyItsOwnCard(t *testing.T) {
 	peer := &fakePeer{
 		cards:  []SubscriptionQuota{{Provider: "codex", Name: "Codex", User: "boss@x.com", Kind: "subscription", Windows: []QuotaWindow{{Name: "5h", Used: 40}}}},
-		limits: map[string]string{"sk-magpie-office": `{"limited":true,"key":"laptop","limit":{"period":"day","reset":"2026-10-12T00:00:00Z","tokens":10,"tokenLimit":100,"tokensLeft":90}}`},
+		limits: map[string]string{"sk-magpie-friday-office": `{"limited":true,"key":"laptop","limit":{"period":"day","reset":"2026-10-12T00:00:00Z","tokens":10,"tokenLimit":100,"tokensLeft":90}}`},
 	}
 	remoteQuotaHome(t, peer)
 	ctx := context.Background()
@@ -464,7 +464,7 @@ func TestRemoteMagpieCardsKeptByKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	p.Key = "sk-magpie-other"
+	p.Key = "sk-magpie-friday-other"
 	if err := Save(*p); err != nil {
 		t.Fatal(err)
 	}

@@ -5,13 +5,13 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
 // Azure OpenAI is reached at the user's own resource, never at one host
-// magpie knows: https://<resource>.openai.azure.com (or the
+// magpie-friday knows: https://<resource>.openai.azure.com (or the
 // cognitiveservices.azure.com and services.ai.azure.com hosts newer
-// resources are given). magpie asks it on the v1 API under /openai/v1 —
+// resources are given). magpie-friday asks it on the v1 API under /openai/v1 —
 // Azure's generally available one since August 2025 — where chat
 // completions, Responses and the model list sit at the paths OpenAI's do,
 // the model in the body is the deployment's name, and no api-version is

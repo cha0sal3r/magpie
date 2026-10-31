@@ -2,7 +2,7 @@ package agent
 
 // AionUi (an Electron app that runs Claude Code, Codex, Gemini CLI and its
 // own chat) keeps its model providers in its own database, their keys
-// encrypted, so there is nothing for magpie to write. It takes a new one
+// encrypted, so there is nothing for magpie-friday to write. It takes a new one
 // through its deeplink, which opens its add-model form filled in for the
 // user to confirm:
 //
@@ -10,7 +10,7 @@ package agent
 //
 // (parseDeepLinkUrl in AionUi 2.2.2's main process; the renderer takes
 // action "add-provider" to Settings → Model with base_url, api_key, name
-// and platform.) So magpie's row is that link, the gateway as one
+// and platform.) So magpie-friday's row is that link, the gateway as one
 // OpenAI-compatible ("custom") provider, and whether AionUi has it, read
 // from its database and never written.
 
@@ -23,16 +23,16 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/sessions"
-	_ "github.com/yetone/magpie/internal/sqlitedb"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
+	_ "github.com/cha0sal3r/magpie-friday/internal/sqlitedb"
 )
 
 // AionUiScheme begins every AionUi add-provider link.
 const AionUiScheme = "aionui://add-provider?"
 
 // AionUiLink is the link that opens AionUi's add-model form with the
-// gateway at gw as an OpenAI-compatible provider named magpie, keyed so
+// gateway at gw as an OpenAI-compatible provider named magpie-friday, keyed so
 // that its requests are counted as AionUi's. AionUi's OpenAI-compatible
 // base URLs end in /v1, as its own OpenAI preset does.
 func AionUiLink(gw string) string {

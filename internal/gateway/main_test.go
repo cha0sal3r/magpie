@@ -7,16 +7,16 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agentenv"
-	"github.com/yetone/magpie/internal/budget"
-	"github.com/yetone/magpie/internal/gwbudget"
-	"github.com/yetone/magpie/internal/gwmw"
-	"github.com/yetone/magpie/internal/gwtool"
-	"github.com/yetone/magpie/internal/masking"
-	"github.com/yetone/magpie/internal/middleware"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/routes"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/budget"
+	"github.com/cha0sal3r/magpie-friday/internal/gwbudget"
+	"github.com/cha0sal3r/magpie-friday/internal/gwmw"
+	"github.com/cha0sal3r/magpie-friday/internal/gwtool"
+	"github.com/cha0sal3r/magpie-friday/internal/masking"
+	"github.com/cha0sal3r/magpie-friday/internal/middleware"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/routes"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // standInsEnv names the folder of a test binary's stand-in CLIs, for a
@@ -41,7 +41,7 @@ func TestMain(m *testing.M) {
 // alone does not isolate the macOS Keychain, and account caches eventually
 // expire: discovery must keep finding only the test's sign-ins and CLIs.
 func isolatedTests(m *testing.M) (int, error) {
-	home, err := os.MkdirTemp("", "magpie-gateway-test-")
+	home, err := os.MkdirTemp("", "magpie-friday-gateway-test-")
 	if err != nil {
 		return 1, err
 	}
@@ -189,7 +189,7 @@ func withoutGroups(t *testing.T) {
 }
 
 // searchOn is plugins/search on: the gateway's tests offer and answer
-// magpie's web search, as a user with it on has.
+// magpie-friday's web search, as a user with it on has.
 var searchOn func()
 
 // limitsOn is plugins/budget on: the gateway's tests hold gateway keys to
@@ -204,7 +204,7 @@ func withoutLimits(t *testing.T) {
 }
 
 // withoutSearch is plugins/search off for t, in a process serving the
-// gateway (gwtool.Gate): magpie's web search is neither offered nor
+// gateway (gwtool.Gate): magpie-friday's web search is neither offered nor
 // answered.
 func withoutSearch(t *testing.T) {
 	searchOn()

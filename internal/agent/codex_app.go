@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // The Codex app on macOS keeps running, its app-server with it, when its
@@ -50,7 +50,7 @@ var ErrCodexAppStillOpen = errors.New("the Codex app is still open; it may be as
 // a path a request names otherwise.
 func ReopenCodexApp(ctx context.Context, bundle string) error {
 	if runtime.GOOS != "darwin" {
-		return errors.New("only the macOS Codex app is reopened by magpie")
+		return errors.New("only the macOS Codex app is reopened by magpie-friday")
 	}
 	a, err := Find("codex")
 	if err != nil {

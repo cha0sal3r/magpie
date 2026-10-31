@@ -10,14 +10,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/sessions"
-	stats "github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
+	stats "github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
-const sessionsUsage = "usage: magpie sessions [--days N|today|all] [--model <model>] [--folder <folder>] [--limit N] [--json]"
+const sessionsUsage = "usage: magpie-friday sessions [--days N|today|all] [--model <model>] [--folder <folder>] [--limit N] [--json]"
 
-// sessionsCmd: `magpie sessions` — the latest sessions of Claude Code and
+// sessionsCmd: `magpie-friday sessions` — the latest sessions of Claude Code and
 // Codex; with --days, what they spent day by day, as the app's Sessions
 // view shows it.
 func sessionsCmd(args []string) error {
@@ -28,7 +28,7 @@ func sessionsCmd(args []string) error {
 }
 
 func relocateClaudeTo(w io.Writer, args []string) error {
-	const usage = "usage: magpie sessions relocate-claude --from <absolute-path> --to <absolute-path> [--confirm <preview-token>]"
+	const usage = "usage: magpie-friday sessions relocate-claude --from <absolute-path> --to <absolute-path> [--confirm <preview-token>]"
 	var in sessions.ClaudeRelocation
 	for i := 0; i < len(args); i += 2 {
 		if i+1 >= len(args) || args[i+1] == "" {

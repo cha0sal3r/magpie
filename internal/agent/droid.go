@@ -6,19 +6,19 @@ package agent
 // apiKey, provider, …}, provider being "anthropic" (Messages), "openai"
 // (Responses) or "generic-chat-completion-api" (Chat Completions); the
 // older ~/.factory/config.json custom_models is still read, merged under
-// settings.json, and magpie leaves it alone. A custom model is picked as
+// settings.json, and magpie-friday leaves it alone. A custom model is picked as
 // "custom:<id>": its "id" when it has one, else its displayName with
 // whitespace as dashes and a count of the same names before it
 // ("custom:Kimi-K2-[Groq]-0"). The model sessions start on is
 // sessionDefaultSettings.model; a top-level "model", as the docs show it,
 // is moved there by droid when that is unset.
 //
-// magpie appends one entry per catalog model, id "custom:magpie/<ref>", so
+// magpie-friday appends one entry per catalog model, id "custom:magpie-friday/<ref>", so
 // the catalog joins droid's /model picker under Custom models, each on the
 // API its provider speaks natively so the gateway relays it as it is, and
 // sets sessionDefaultSettings.model; the user's entries stay as they were
 // and in front, so their own ids don't move, and the default they had is
-// stashed and put back when magpie steps out.
+// stashed and put back when magpie-friday steps out.
 
 import (
 	"encoding/json"
@@ -31,19 +31,19 @@ import (
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/jsonc"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 const (
 	droidModels = "customModels"
 	droidModel  = "sessionDefaultSettings.model"
-	// droidID is how every id magpie gives a custom model begins
+	// droidID is how every id magpie-friday gives a custom model begins
 	droidID = "custom:" + magpieID + "/"
 )
 
-// droidEntry is one custom model magpie writes, in droid's key order.
+// droidEntry is one custom model magpie-friday writes, in droid's key order.
 type droidEntry struct {
 	Model           string `json:"model"`
 	ID              string `json:"id"`
@@ -58,7 +58,7 @@ type droidEntry struct {
 	NoImageSupport bool `json:"noImageSupport"`
 }
 
-// droidEntries are magpie's custom models as the catalog is now.
+// droidEntries are magpie-friday's custom models as the catalog is now.
 func droidEntries() []droidEntry { return droidEntriesAt(gateway.URL()) }
 
 // droidEntriesAt are droidEntries for a droid reaching the gateway at gw.
@@ -150,7 +150,7 @@ func droidIn(at place) *Agent {
 		v, _ := edit.GetJSON(path, "model")
 		return v
 	}
-	// get spells magpie's custom models as the catalog does
+	// get spells magpie-friday's custom models as the catalog does
 	get := func() string {
 		v := raw()
 		if ref, ok := strings.CutPrefix(v, droidID); ok {
@@ -159,7 +159,7 @@ func droidIn(at place) *Agent {
 		return v
 	}
 	// setModels writes customModels with the user's own and, when with,
-	// magpie's after them; none left takes the key out
+	// magpie-friday's after them; none left takes the key out
 	setModels := func(with bool) error {
 		var ms []any
 		var had bool
@@ -195,7 +195,7 @@ func droidIn(at place) *Agent {
 		}
 		return nil
 	}
-	// mine finds a custom model of magpie's by id
+	// mine finds a custom model of magpie-friday's by id
 	mine := func(id string) (droidCustom, bool) {
 		for _, c := range droidCustoms(path, droidModels) {
 			if c.id == id {
@@ -230,7 +230,7 @@ func droidIn(at place) *Agent {
 			}
 			c, ok := mine(v)
 			if !ok {
-				return "Droid's custom model " + v + " (settings.json) is gone, so it no longer reaches magpie"
+				return "Droid's custom model " + v + " (settings.json) is gone, so it no longer reaches magpie-friday"
 			}
 			r := gjson.ParseBytes(c.raw)
 			base := at.v1()

@@ -20,7 +20,7 @@ import (
 var (
 	cursorSnapLinger       = 30 * time.Second
 	cursorSnapMin    int64 = 16 << 20
-	// a magpie-cursor-* folder older than this is a copy a killed magpie
+	// a magpie-friday-cursor-* folder older than this is a copy a killed magpie-friday
 	// left behind; a shared copy in use is touched on every reuse
 	cursorSnapStale = time.Hour
 	cursorCopies    atomic.Int64
@@ -119,11 +119,11 @@ func (s *cursorSnap) drop() {
 	os.RemoveAll(s.dir)
 }
 
-// snapshotCursorStore copies path and its -wal into a folder of magpie's
+// snapshotCursorStore copies path and its -wal into a folder of magpie-friday's
 // own, cloning where the file system can so the copy takes no space.
 func snapshotCursorStore(path string, open func(string, string) (*sql.DB, error)) (*sql.DB, string, error) {
 	cursorSnaps.sweep.Do(sweepCursorSnaps)
-	tmp, err := os.MkdirTemp("", "magpie-cursor-")
+	tmp, err := os.MkdirTemp("", "magpie-friday-cursor-")
 	if err != nil {
 		return nil, "", err
 	}
@@ -147,9 +147,9 @@ func snapshotCursorStore(path string, open func(string, string) (*sql.DB, error)
 	return db, tmp, nil
 }
 
-// sweepCursorSnaps removes copies an earlier magpie was killed holding.
+// sweepCursorSnaps removes copies an earlier magpie-friday was killed holding.
 func sweepCursorSnaps() {
-	old, _ := filepath.Glob(filepath.Join(os.TempDir(), "magpie-cursor-*"))
+	old, _ := filepath.Glob(filepath.Join(os.TempDir(), "magpie-friday-cursor-*"))
 	for _, d := range old {
 		if fi, err := os.Stat(d); err == nil && fi.IsDir() && time.Since(fi.ModTime()) > cursorSnapStale {
 			os.RemoveAll(d)

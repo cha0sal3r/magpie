@@ -11,7 +11,7 @@ import (
 )
 
 // A Node version manager keeps one folder per version, and a terminal runs
-// the one it was told to use, not the one whose name sorts last. magpie
+// the one it was told to use, not the one whose name sorts last. magpie-friday
 // picked nvm's "newest-looking" folder by name, and in plain string order
 // v9.11.2 comes after v22.12.0: a codex, claude or gemini installed under a
 // Node the terminal doesn't use was found, run and updated in place of the

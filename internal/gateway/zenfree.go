@@ -6,7 +6,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // OpenCode Zen's free models (-free) are served to OpenCode alone: a
@@ -16,7 +16,7 @@ import (
 // mid-October 2026 be asked at the inference API's URL, not Zen's
 // (provider.OpenCodeFreeURL), with bash and read each taking a parameter
 // (provider.OpenCodeToolSchemas). The user
-// allowed magpie to ask them as OpenCode does, on this route only. So a
+// allowed magpie-friday to ask them as OpenCode does, on this route only. So a
 // request to one is never relayed as it came: it is translated (which
 // always streams upstream, and gathers the stream into one reply for a
 // client that didn't ask for a stream), and on the way

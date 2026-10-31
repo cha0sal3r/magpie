@@ -1,9 +1,9 @@
-// Package daemon runs `magpie serve` as a service of the user's own: a
+// Package daemon runs `magpie-friday serve` as a service of the user's own: a
 // systemd user unit on Linux, a launch agent on the Mac. The system starts
 // it at boot or login and starts it again when it stops, with no window
 // and no desktop session, for a server or a machine reached over SSH.
 // Whether it is installed and running is the system's own record, read
-// each time, never a setting of magpie's.
+// each time, never a setting of magpie-friday's.
 package daemon
 
 import (
@@ -18,15 +18,15 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/agentenv"
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/autostart"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/autostart"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
-// Name is the service's name: magpie.service, com.yetone.magpie.serve.
-const Name = "magpie"
+// Name is the service's name: magpie-friday.service, com.cha0sal3r.magpie-friday.serve.
+const Name = "magpie-friday"
 
 // Status is what the system says of the service.
 type Status struct {
@@ -56,7 +56,7 @@ type manager interface {
 // goos picks the manager; a var so that the tests run both on any unix.
 var goos = runtime.GOOS
 
-// ErrUnsupported is for a system with no service manager magpie writes for.
+// ErrUnsupported is for a system with no service manager magpie-friday writes for.
 var ErrUnsupported = errors.New("unsupported")
 
 func current() (manager, error) {
@@ -66,16 +66,16 @@ func current() (manager, error) {
 	case "darwin":
 		return launchd{}, nil
 	case "windows":
-		return nil, fmt.Errorf("%w on Windows: `magpie autostart on` opens magpie, with its gateway, when you log in; or run `magpie daemon install` inside WSL", ErrUnsupported)
+		return nil, fmt.Errorf("%w on Windows: `magpie-friday autostart on` opens magpie-friday, with its gateway, when you log in; or run `magpie-friday daemon install` inside WSL", ErrUnsupported)
 	case "android":
-		return nil, fmt.Errorf("%w on Android: `magpie autostart on` starts the gateway at boot through Termux:Boot", ErrUnsupported)
+		return nil, fmt.Errorf("%w on Android: `magpie-friday autostart on` starts the gateway at boot through Termux:Boot", ErrUnsupported)
 	}
-	return nil, fmt.Errorf("%w on %s: run `magpie serve` under the system's own service manager", ErrUnsupported, goos)
+	return nil, fmt.Errorf("%w on %s: run `magpie-friday serve` under the system's own service manager", ErrUnsupported, goos)
 }
 
 // Options are what the service serves besides the gateway.
 type Options struct {
-	// Web is the address the app's page is served on (`magpie serve
+	// Web is the address the app's page is served on (`magpie-friday serve
 	// --web=…`), "" for none.
 	Web string
 	// Key is the page's MAGPIE_WEB_KEY, written into the service so its
@@ -83,9 +83,9 @@ type Options struct {
 	Key string
 }
 
-// Install writes the service for this copy of magpie, with the
+// Install writes the service for this copy of magpie-friday, with the
 // environment it was installed from, and starts it; again, it writes the
-// service anew (a moved magpie, a new PATH or proxy) and restarts it.
+// service anew (a moved magpie-friday, a new PATH or proxy) and restarts it.
 func Install(o Options) error {
 	m, err := current()
 	if err != nil {
@@ -94,7 +94,7 @@ func Install(o Options) error {
 	// the app opened at login serves the gateway too: the two would take
 	// turns failing on the port
 	if autostartEnabled() {
-		return errors.New("magpie already opens at login and serves the gateway: run `magpie autostart off` first, or keep that instead")
+		return errors.New("magpie-friday already opens at login and serves the gateway: run `magpie-friday autostart off` first, or keep that instead")
 	}
 	if o.Web != "" && o.Key == "" {
 		return errors.New("the page needs a key")
@@ -112,7 +112,7 @@ func Install(o Options) error {
 }
 
 // removedMark is there once the user removed the service (Uninstall): what
-// magpie puts in place by itself (the terminal's keepGateway, as it quits) is put there
+// magpie-friday puts in place by itself (the terminal's keepGateway, as it quits) is put there
 // no more.
 func removedMark() string { return filepath.Join(appdir.Config(), "daemon-removed") }
 
@@ -122,7 +122,7 @@ func Removed() bool {
 	return err == nil
 }
 
-// serveArgs is what the service runs magpie with.
+// serveArgs is what the service runs magpie-friday with.
 func serveArgs(o Options) []string {
 	if o.Web == "" {
 		return []string{"serve"}
@@ -130,7 +130,7 @@ func serveArgs(o Options) []string {
 	return []string{"serve", webFlag + o.Web}
 }
 
-// webFlag is `magpie serve`'s, naming the page's address.
+// webFlag is `magpie-friday serve`'s, naming the page's address.
 const webFlag = "--web="
 
 // webKeyVar is the page's key in the service's environment.
@@ -168,7 +168,7 @@ var (
 )
 
 // TLS is the certificate and key files the installed service serves
-// HTTPS with (`magpie daemon install --tls-cert … --tls-key …`), "" when
+// HTTPS with (`magpie-friday daemon install --tls-cert … --tls-key …`), "" when
 // it has none or isn't installed.
 func TLS() (cert, key string) {
 	m, err := current()
@@ -262,7 +262,7 @@ func Start() error { return installed(manager.start) }
 // Stop stops it, until the next boot or login, or Start.
 func Stop() error { return installed(manager.stop) }
 
-// Restart stops it and starts it again: a magpie updated in place serves
+// Restart stops it and starts it again: a magpie-friday updated in place serves
 // as the new version.
 func Restart() error { return installed(manager.restart) }
 
@@ -282,7 +282,7 @@ func Get() (Status, error) {
 }
 
 // ErrNotInstalled is Start, Stop or Restart before Install.
-var ErrNotInstalled = errors.New("the magpie service isn't installed: `magpie daemon install`")
+var ErrNotInstalled = errors.New("the magpie-friday service isn't installed: `magpie-friday daemon install`")
 
 func with(f func(manager) error) error {
 	m, err := current()
@@ -301,7 +301,7 @@ func installed(f func(manager) error) error {
 	})
 }
 
-// autostartEnabled: magpie's own record is there, whether or not the
+// autostartEnabled: magpie-friday's own record is there, whether or not the
 // user has it switched off in System Settings for now, since switching
 // it back on there opens the app with the service still installed. A
 // var for the tests.
@@ -309,7 +309,7 @@ var autostartEnabled = func() bool { return autostart.Enabled() != autostart.Off
 
 // self is the program the service runs: this one, by the name on PATH
 // when that is this same file, so a package manager's link (Homebrew's
-// /opt/homebrew/bin/magpie) still leads to the version it updates to. A
+// /opt/homebrew/bin/magpie-friday) still leads to the version it updates to. A
 // var for the tests, whose binary is a build Go deletes.
 var self = func() (string, error) {
 	if p := os.Getenv("APPIMAGE"); p != "" {
@@ -330,10 +330,10 @@ var self = func() (string, error) {
 // name it was started by.
 func pick(real, exe string) (string, error) {
 	if strings.Contains(real, "/AppTranslocation/") {
-		return "", errors.New("move magpie to Applications first, then install the service")
+		return "", errors.New("move magpie-friday to Applications first, then install the service")
 	}
 	if strings.Contains(real, string(filepath.Separator)+"go-build") {
-		return "", errors.New("this magpie is a build `go run` deletes when it ends: install magpie, then run `magpie daemon install` from it")
+		return "", errors.New("this magpie-friday is a build `go run` deletes when it ends: install magpie-friday, then run `magpie-friday daemon install` from it")
 	}
 	if p, err := exec.LookPath(Name); err == nil {
 		if abs, err := filepath.Abs(p); err == nil {
@@ -359,7 +359,7 @@ func sameFile(a, b string) bool {
 
 // carried are the variables the service gets from the shell it was
 // installed from: the PATH that finds the agents' CLIs and bun, the proxy,
-// magpie's own settings, and where each agent keeps its files. A service
+// magpie-friday's own settings, and where each agent keeps its files. A service
 // starts with the system's bare environment otherwise.
 var carried = []string{
 	"PATH",
@@ -367,7 +367,7 @@ var carried = []string{
 	"http_proxy", "https_proxy", "all_proxy", "no_proxy",
 	"XDG_CONFIG_HOME", "XDG_DATA_HOME", "XDG_CACHE_HOME", "XDG_STATE_HOME",
 	"MAGPIE_ADDR", "MAGPIE_TRUST_PROXY", "MAGPIE_BUN", "MAGPIE_WEB_URL",
-	// `magpie daemon install --tls-cert … --tls-key …` sets them
+	// `magpie-friday daemon install --tls-cert … --tls-key …` sets them
 	"MAGPIE_TLS_CERT", "MAGPIE_TLS_KEY",
 }
 

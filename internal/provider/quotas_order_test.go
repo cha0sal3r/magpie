@@ -8,7 +8,7 @@ import (
 // Zhenbao TONG on Discord: the providers moved on the window's Providers
 // page, and the tray panel's Allowances tab kept its own order. The cards
 // come in the providers' order now, each provider's as they came, and a
-// card of no provider here (a remote magpie's) after them.
+// card of no provider here (a remote magpie-friday's) after them.
 func TestQuotaCardsInProviderOrder(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
 	t.Setenv("USERPROFILE", t.TempDir())

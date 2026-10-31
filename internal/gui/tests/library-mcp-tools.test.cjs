@@ -17,7 +17,7 @@ const assets = path.resolve(__dirname, "../assets");
 const HOME = "/Users/nf";
 const LONG = "Read the complete contents of a file from the file system as text. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file.";
 const fixture = () => ({
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: [{ id: "claude", name: "Claude Code", icon: "claudecode-color", skills: `${HOME}/.claude/skills`, mcp: `${HOME}/.claude.json`, toolsOff: true }],
   instructions: { agents: [], sets: [] }, foundServers: [], projects: [], foundSkills: [], skills: [],
   servers: [
@@ -32,7 +32,7 @@ const tools = [
   { name: "a_tool_with_a_very_long_name_that_has_no_spaces_in_it_at_all_anywhere" },
 ];
 const found = (fresh) => ({
-  // 4 tools, 3 of them listed: one more than magpie keeps
+  // 4 tools, 3 of them listed: one more than magpie-friday keeps
   filesystem: fresh ? { state: "ok", tools: 1, toolList: [{ name: "only_one", description: "The one left." }] } : { state: "ok", tools: 4, toolList: tools },
   bare: { state: "ok", tools: 0 },
   ...Object.fromEntries(Array.from({ length: 6 }, (_, i) => ["more" + i, { state: "ok", tools: 0 }])),

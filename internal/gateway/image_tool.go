@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Codex offers its image tool, the namespace image_gen with its function
-// imagegen, to a provider it reads as the OpenAI actor, as magpie's is
+// imagegen, to a provider it reads as the OpenAI actor, as magpie-friday's is
 // (#870). A Codex backend (a ChatGPT sign-in, sub2api) takes it, and a
-// call to it is drawn through magpie (drawing_route.go). A vendor's
+// call to it is drawn through magpie-friday (drawing_route.go). A vendor's
 // Responses API that knows no namespaces turns the whole request away with
 // a bare 400, so a plain chat broke (#949). Such a vendor is asked again
 // without the tool, and once that works it isn't sent it again.

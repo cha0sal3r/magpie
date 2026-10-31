@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// A file of magpie's own a crash left unreadable (#1505: logins.json and
+// A file of magpie-friday's own a crash left unreadable (#1505: logins.json and
 // plugin-auth.json at their full length, every byte zero) is read back from
 // its last good copy, and /api/state's recovered says so: the window tells
 // the user once which file, from when, that a later change may be missing
@@ -15,8 +15,8 @@ const { chromium, webkit } = require("playwright");
 const assets = path.resolve(__dirname, "../assets");
 
 const BAK = "2026-10-09T21:14:03+08:00";
-const LOGINS = { file: "logins.json", path: "/home/u/.config/magpie/logins.json", why: "10783 bytes, every one zero", bak: BAK, at: "2026-10-10T08:00:00Z" };
-const AUTH = { file: "plugin-auth.json", path: "/home/u/.config/magpie/plugin-auth.json", why: "29926 bytes, every one zero", bak: BAK, at: "2026-10-10T08:00:05Z" };
+const LOGINS = { file: "logins.json", path: "/home/u/.config/magpie-friday/logins.json", why: "10783 bytes, every one zero", bak: BAK, at: "2026-10-10T08:00:00Z" };
+const AUTH = { file: "plugin-auth.json", path: "/home/u/.config/magpie-friday/plugin-auth.json", why: "29926 bytes, every one zero", bak: BAK, at: "2026-10-10T08:00:05Z" };
 
 function serve(lang, ctl) {
   return async (route) => {

@@ -10,9 +10,9 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // claudeProxy is the proxy a Claude Code run on an account's behalf goes
@@ -42,7 +42,7 @@ func askClaude(ctx context.Context, configDir, model string) error {
 	if err != nil {
 		return err
 	}
-	tmp, err := os.MkdirTemp("", "magpie-claude-")
+	tmp, err := os.MkdirTemp("", "magpie-friday-claude-")
 	if err != nil {
 		return err
 	}
@@ -87,7 +87,7 @@ func claudeUsage(ctx context.Context, configDir string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	tmp, err := os.MkdirTemp("", "magpie-claude-")
+	tmp, err := os.MkdirTemp("", "magpie-friday-claude-")
 	if err != nil {
 		return "", err
 	}
@@ -135,10 +135,10 @@ func claudeUsage(ctx context.Context, configDir string) (string, error) {
 
 // runClaudeTree runs a one-off Claude Code (a test, a /usage) and ends,
 // with it, whatever it started: its context ending kills only the
-// process magpie started, and on Windows that is cmd.exe running npm's
+// process magpie-friday started, and on Windows that is cmd.exe running npm's
 // claude.cmd, whose node went on running with nobody waiting for it
 // (#1894). In a tree, a job on Windows and a session elsewhere, what is
-// left once the head is gone is ended with it, and on Windows when magpie
+// left once the head is gone is ended with it, and on Windows when magpie-friday
 // exits mid-run.
 func runClaudeTree(ctx context.Context, cmd *exec.Cmd, what string) error {
 	room, err := claudeRoom.take(ctx, what)

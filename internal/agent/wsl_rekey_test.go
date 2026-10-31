@@ -5,16 +5,16 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 // Codex in a WSL distro under NAT connected while the gateway wasn't shared
 // was written gateway.Token, which the gateway turns away from beyond
 // loopback; turning sharing on afterwards left it there, and every request
-// was 401 "not an enabled magpie gateway key" (tried on Windows with
-// magpie-desktop). Rekey, run as sharing changes, gives it the sharing key,
+// was 401 "not an enabled magpie-friday gateway key" (tried on Windows with
+// magpie-friday-desktop). Rekey, run as sharing changes, gives it the sharing key,
 // and gateway.Token again once sharing is off.
 func TestRekeyGivesWSLAgentTheSharingKey(t *testing.T) {
 	t.Setenv("MAGPIE_ADDR", "")
@@ -109,7 +109,7 @@ func TestRekeyLeavesLoopback(t *testing.T) {
 	if moved, err := Rekey(as); err != nil || len(moved) != 0 {
 		t.Fatalf("moved %v, %v", moved, err)
 	}
-	if cfg := read(); strings.Contains(cfg, "magpie") {
+	if cfg := read(); strings.Contains(cfg, "magpie-friday") {
 		t.Fatalf("written:\n%s", cfg)
 	}
 }

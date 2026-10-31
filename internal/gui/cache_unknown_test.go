@@ -4,7 +4,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 // A Kiro request's prompt is counted as Kiro counts it, prompt tokens but

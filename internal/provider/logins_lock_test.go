@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/filememo"
+	"github.com/cha0sal3r/magpie-friday/internal/filememo"
 )
 
-// newProcess is what a magpie run from a terminal starts with: nothing
+// newProcess is what a magpie-friday run from a terminal starts with: nothing
 // remembered of when the accounts were last looked at.
 func newProcess() {
 	loginsMu.Lock()
@@ -36,7 +36,7 @@ func seenAgo(t *testing.T, d time.Duration) (raw []byte, mod time.Time) {
 		l["seen"] = time.Now().Add(-d).UTC().Truncate(time.Second)
 	}
 	writeFile(t, loginsPath(), ls)
-	// a time of its own each call, as another magpie's write has: the
+	// a time of its own each call, as another magpie-friday's write has: the
 	// same size at the same time would read as the file unchanged
 	seenAgoCalls++
 	mod = time.Now().Add(-time.Hour - time.Duration(seenAgoCalls)*time.Minute).Truncate(time.Second)
@@ -57,7 +57,7 @@ func loginsUnchanged(t *testing.T, raw []byte, mod time.Time) bool {
 	return bytes.Equal(b, raw) && fi.ModTime().Equal(mod)
 }
 
-// A magpie run from a terminal that only lists accounts (magpie ls,
+// A magpie-friday run from a terminal that only lists accounts (magpie-friday ls,
 // providers, sessions, usage) writes nothing to logins.json (#1674,
 // FaintGhost): each is a new process, so the 30 seconds between looks
 // never held, and every run wrote the file back with Seen moved on, over
@@ -132,7 +132,7 @@ func TestLoginsOtherMagpie(t *testing.T) {
 	}
 }
 
-// The gateway renews a saved account's sign-in while a magpie run from a
+// The gateway renews a saved account's sign-in while a magpie-friday run from a
 // terminal is between reading logins.json and writing it back (#1674): the
 // renewed sign-in stays. Codex's refresh tokens are spent by use, so the
 // old one written back would sign the account out.
@@ -146,7 +146,7 @@ func TestLoginsKeepAnotherMagpiesWrite(t *testing.T) {
 		t.Fatalf("work@example.com not saved: %s", b)
 	}
 
-	// Codex refreshed its own sign-in: this magpie has a change to write
+	// Codex refreshed its own sign-in: this magpie-friday has a change to write
 	codexSignIn(t, home, "me@example.com", "r-me-2")
 	newProcess()
 	var other *exec.Cmd
@@ -165,11 +165,11 @@ func TestLoginsKeepAnotherMagpiesWrite(t *testing.T) {
 		go func() {
 			err := other.Wait()
 			if err != nil {
-				t.Logf("the other magpie: %v\n%s", err, out.Bytes())
+				t.Logf("the other magpie-friday: %v\n%s", err, out.Bytes())
 			}
 			otherDone <- err
 		}()
-		// the other magpie writes now if it can; with the lock held here
+		// the other magpie-friday writes now if it can; with the lock held here
 		// it waits for this one's write instead
 		select {
 		case err := <-otherDone:
@@ -180,23 +180,23 @@ func TestLoginsKeepAnotherMagpiesWrite(t *testing.T) {
 	t.Cleanup(func() { beforeLoginsWrite = func() {} })
 	rememberLogins(false)
 	if other == nil {
-		t.Fatal("this magpie wrote nothing")
+		t.Fatal("this magpie-friday wrote nothing")
 	}
 	if err := <-otherDone; err != nil {
-		t.Fatal("the other magpie failed")
+		t.Fatal("the other magpie-friday failed")
 	}
 
 	b, _ := os.ReadFile(loginsPath())
 	if !bytes.Contains(b, []byte("r-rotated")) || bytes.Contains(b, []byte(`r-work"`)) {
-		t.Fatalf("the other magpie's renewed sign-in was written over:\n%s", b)
+		t.Fatalf("the other magpie-friday's renewed sign-in was written over:\n%s", b)
 	}
 	if !bytes.Contains(b, []byte("r-me-2")) {
-		t.Fatalf("this magpie's change was lost:\n%s", b)
+		t.Fatalf("this magpie-friday's change was lost:\n%s", b)
 	}
 }
 
 // A change is made from logins.json as it is on the disk, not as this
-// magpie parsed it before another wrote it: the GUI's state holds what
+// magpie-friday parsed it before another wrote it: the GUI's state holds what
 // was read for a second (filememo.Hold), and taking loginsMu looks again.
 func TestLoginsReadAfreshUnderLock(t *testing.T) {
 	home := signIn(t)
@@ -208,7 +208,7 @@ func TestLoginsReadAfreshUnderLock(t *testing.T) {
 	defer release()
 	readLogins()
 
-	// another magpie's write, which this one's filememo.Forget never hears of
+	// another magpie-friday's write, which this one's filememo.Forget never hears of
 	b, _ := os.ReadFile(loginsPath())
 	if err := os.WriteFile(loginsPath(), bytes.ReplaceAll(b, []byte("r-work"), []byte("r-rotated")), 0o600); err != nil {
 		t.Fatal(err)

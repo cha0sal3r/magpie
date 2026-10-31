@@ -1,11 +1,11 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// #1839 (kensenzhao): the requests magpie makes by itself — a routing
+// #1839 (kensenzhao): the requests magpie-friday makes by itself — a routing
 // group's classifier, a web search — go to the same accounts as the agents'
-// and count against them, so the Usage page tells them apart: magpie's row
-// among the agents and its rows in the ledger carry a "magpie's own" mark,
-// an account's, a key's or a model's row says how many of its calls magpie
+// and count against them, so the Usage page tells them apart: magpie-friday's row
+// among the agents and its rows in the ledger carry a "magpie-friday's own" mark,
+// an account's, a key's or a model's row says how many of its calls magpie-friday
 // made itself, and the account's card says how many of the period's
-// requests were magpie's own. The Routing page says, beside a classifier on
+// requests were magpie-friday's own. The Routing page says, beside a classifier on
 // a subscription (or a group whose first model is one), that every turn
 // starts with a request to it; a classifier on a key says nothing of it.
 // In every language, in Chromium and WebKit at 1100 and 390 wide, no click
@@ -24,10 +24,10 @@ const later = new Date(now + 3 * 3600e3).toISOString();
 
 const tot = (calls, input, output) => ({ calls, errors: 0, input, output, cache_read: 0, cache_write: 0, reasoning: 0, cost: 0, unpriced: 0 });
 const SUMMARY = {
-  ...tot(5, 2100, 210), bucket: "day", series: [], path: "~/.config/magpie/usage.jsonl",
+  ...tot(5, 2100, 210), bucket: "day", series: [], path: "~/.config/magpie-friday/usage.jsonl",
   agents: [
     { id: "codex", name: "Codex", icon: "codex-color", ...tot(3, 1600, 200) },
-    { id: "magpie", name: "magpie", icon: "generic", ...tot(2, 500, 10) },
+    { id: "magpie-friday", name: "magpie-friday", icon: "generic", ...tot(2, 500, 10) },
   ],
   models: [{ id: "codex/gpt-5", provider: "codex", model: "gpt-5", name: "gpt-5", sub: "Codex", icon: "codex-color", ...tot(5, 2100, 210), own: { calls: 2, tokens: 510, cost: 0 } }],
   accounts: [
@@ -42,7 +42,7 @@ const row = (i, extra) => ({
 });
 const ROWS = [
   row(0),
-  row(1, { agent: "magpie", agentName: "magpie", icon: "generic", in: 300, out: 2, kind: "routing" }),
+  row(1, { agent: "magpie-friday", agentName: "magpie-friday", icon: "generic", in: 300, out: 2, kind: "routing" }),
   row(2),
 ];
 
@@ -60,7 +60,7 @@ function serveUsage(lang) {
     if (url.pathname === "/api/groups") return json({ groups: [], models: [] });
     if (url.pathname === "/api/providers") return json({ providers: [], excluded: [], gateway: { running: true, window: true } });
     if (url.pathname === "/api/plugins") return json({ plugins: [] });
-    if (url.pathname === "/api/usage/requests") return json({ period: url.searchParams.get("period"), rows: ROWS, offset: 0, total: ROWS.length, calls: ROWS.length, errors: 0, input: 1900, output: 202, cache_read: 0, cache_write: 0, reasoning: 0, cost: 0, unpriced: 0, agents: [{ id: "codex", name: "Codex", icon: "codex-color" }, { id: "magpie", name: "magpie", icon: "generic" }] });
+    if (url.pathname === "/api/usage/requests") return json({ period: url.searchParams.get("period"), rows: ROWS, offset: 0, total: ROWS.length, calls: ROWS.length, errors: 0, input: 1900, output: 202, cache_read: 0, cache_write: 0, reasoning: 0, cost: 0, unpriced: 0, agents: [{ id: "codex", name: "Codex", icon: "codex-color" }, { id: "magpie-friday", name: "magpie-friday", icon: "generic" }] });
     if (url.pathname === "/api/usage/requests/content") return json({ found: false, why: "read" });
     if (url.pathname === "/api/usage/quotas") return json([
       { provider: "codex", name: "Codex", icon: "codex-color", user: "me@example.com", plan: "Plus", windows: [{ name: "5 hours", used: 40, resetsAt: later }] },
@@ -142,7 +142,7 @@ const leftStripe = (loc) => loc.evaluate((e) => {
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
   for (const width of [1100, 390]) {
-    test(`${engine} ${width}: magpie's own requests are told apart on the Usage page`, async (t) => {
+    test(`${engine} ${width}: magpie-friday's own requests are told apart on the Usage page`, async (t) => {
       const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: "chromium" }));
       t.after(() => browser.close());
       for (const lang of LANGS) {
@@ -156,32 +156,32 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
           try {
             await page.goto("http://magpie.test/?view=usage");
             const n = (v) => page.evaluate((x) => fmtN(x), v);
-            const own = await say(page, lang, "magpie's own");
-            // magpie's row among the agents is marked, the agent's not
+            const own = await say(page, lang, "magpie-friday's own");
+            // magpie-friday's row among the agents is marked, the agent's not
             const agents = page.locator("#usageAgents .row");
             await agents.nth(1).waitFor({ timeout: 15000 });
-            const mine = page.locator('#usageAgents .row[data-id="magpie"] .own-badge');
+            const mine = page.locator('#usageAgents .row[data-id="magpie-friday"] .own-badge');
             assert.equal(await mine.textContent(), own);
             assert.equal(await page.locator('#usageAgents .row[data-id="codex"] .own-badge').count(), 0);
             assert.equal(await leftStripe(mine), false, "no left-border accent");
-            // an account's row says how many of its calls magpie made itself
-            const by = await say(page, lang, "{n} by magpie itself", { n: await n(2) });
+            // an account's row says how many of its calls magpie-friday made itself
+            const by = await say(page, lang, "{n} by magpie-friday itself", { n: await n(2) });
             const acct = page.locator('#usageAccounts .row[data-id="codex@me@example.com"] .sub');
             assert((await acct.textContent()).includes(by), await acct.textContent());
             assert(!(await page.locator('#usageAccounts .row[data-id="codex@you@example.com"] .sub').textContent()).includes(by), "the other account had none");
             assert((await page.locator('#usageModels .row .sub').first().textContent()).includes(by), "and the model's row");
-            // the account's card says how many of the period's were magpie's own
+            // the account's card says how many of the period's were magpie-friday's own
             const line = page.locator("#subscriptionUsage .quota-own");
             await line.waitFor();
             assert.equal(await line.count(), 1, "only the account with any");
-            const said = await say(page, lang, "{n} requests in this period were magpie's own", { n: await n(2) });
+            const said = await say(page, lang, "{n} requests in this period were magpie-friday's own", { n: await n(2) });
             assert.equal(await line.locator(":scope > span:not(.own-badge)").textContent(), said);
             assert.equal(await line.locator(".own-badge").textContent(), own);
             const lb = await line.boundingBox(), cb = await page.locator("#subscriptionUsage .subscription-card").first().boundingBox();
             assert(lb.x >= cb.x - 0.5 && lb.x + lb.width <= cb.x + cb.width + 0.5, `the line inside its card: ${JSON.stringify(lb)} in ${JSON.stringify(cb)}`);
             assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), "the overview scrolls sideways");
 
-            // the ledger: magpie's request is marked, the agent's not
+            // the ledger: magpie-friday's request is marked, the agent's not
             await page.locator(":is(#usageTab .opt, .nav-s):visible").nth(1).click();
             const rows = page.locator(".led tbody tr.led-row");
             await rows.nth(ROWS.length - 1).waitFor({ timeout: 15000 });

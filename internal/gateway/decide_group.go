@@ -17,8 +17,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // decisionGroupOf is the decision group a System One request's model names:
@@ -42,9 +42,9 @@ func decisionGroupOf(asked string) (g provider.Group, ms []provider.Member, ok b
 			return g, nil, false, 0, nil
 		}
 		if off, isOff := provider.DisabledGroup(ref); isOff {
-			return g, nil, false, http.StatusNotFound, fmt.Errorf("the routing group %s is switched off in Magpie, so %q is not served; switch it on again on Magpie's Routing page to use it", off.Name, asked)
+			return g, nil, false, http.StatusNotFound, fmt.Errorf("the routing group %s is switched off in magpie-friday, so %q is not served; switch it on again on magpie-friday's Routing page to use it", off.Name, asked)
 		}
-		return g, nil, false, http.StatusNotFound, fmt.Errorf("magpie has no routing group %q", strings.TrimPrefix(ref, provider.GroupPrefix))
+		return g, nil, false, http.StatusNotFound, fmt.Errorf("magpie-friday has no routing group %q", strings.TrimPrefix(ref, provider.GroupPrefix))
 	}
 	if !g.Decides() {
 		if !explicit {
@@ -218,7 +218,7 @@ func (s *Server) serveDecideTries(w http.ResponseWriter, r *http.Request, body [
 			}
 		}
 		last = true
-		took := time.Since(start).Milliseconds() // before what magpie writes down of it (#1939)
+		took := time.Since(start).Milliseconds() // before what magpie-friday writes down of it (#1939)
 		tried(status, errMsg, fail, rest, used)
 		if status < 400 {
 			servedCandidate(c, used.Input+used.Output)

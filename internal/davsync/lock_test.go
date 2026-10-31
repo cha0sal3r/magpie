@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-// TestLockHolder is the other magpie of TestLock: it takes the lock, says
+// TestLockHolder is the other magpie-friday of TestLock: it takes the lock, says
 // so, and holds it until it is killed.
 func TestLockHolder(t *testing.T) {
 	if os.Getenv("MAGPIE_LOCK_HOLDER") == "" {
@@ -31,7 +31,7 @@ func TestLock(t *testing.T) {
 	newComputer(t).use(t)
 	ctx := context.Background()
 
-	// another magpie holds it: this one waits, and gives up when told to
+	// another magpie-friday holds it: this one waits, and gives up when told to
 	holder := exec.Command(os.Args[0], "-test.run=^TestLockHolder$")
 	holder.Env = append(os.Environ(), "MAGPIE_LOCK_HOLDER=1")
 	out, _ := holder.StdoutPipe()
@@ -40,14 +40,14 @@ func TestLock(t *testing.T) {
 	}
 	defer holder.Process.Kill()
 	if line, _ := bufio.NewReader(out).ReadString('\n'); line != "locked\n" {
-		t.Fatalf("the other magpie: %q", line)
+		t.Fatalf("the other magpie-friday: %q", line)
 	}
 	short, cancel := context.WithTimeout(ctx, 300*time.Millisecond)
 	defer cancel()
 	if _, err := lock(short); !errors.Is(err, ErrBusy) {
-		t.Fatalf("taken while another magpie held it: %v", err)
+		t.Fatalf("taken while another magpie-friday held it: %v", err)
 	}
-	// a wait called off, not run out, isn't another magpie's doing
+	// a wait called off, not run out, isn't another magpie-friday's doing
 	called, stop := context.WithCancel(ctx)
 	time.AfterFunc(100*time.Millisecond, stop)
 	if _, err := lock(called); !errors.Is(err, context.Canceled) {
@@ -62,7 +62,7 @@ func TestLock(t *testing.T) {
 	defer cancel()
 	unlock, err := lock(short)
 	if err != nil {
-		t.Fatalf("after the other magpie was killed: %v", err)
+		t.Fatalf("after the other magpie-friday was killed: %v", err)
 	}
 
 	// Off waits for a sync in progress, and goes on once it is done
@@ -80,8 +80,8 @@ func TestLock(t *testing.T) {
 }
 
 // What reads or writes the setup does it under the lock: a sync that
-// waited for another magpie's reads the setup again, and does nothing when
-// that magpie turned sync off meanwhile; Configure waits its turn.
+// waited for another magpie-friday's reads the setup again, and does nothing when
+// that magpie-friday turned sync off meanwhile; Configure waits its turn.
 func TestLockedSetup(t *testing.T) {
 	newComputer(t).use(t)
 	var reqs atomic.Int32
@@ -96,7 +96,7 @@ func TestLockedSetup(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	unlock, err := lock(ctx) // another magpie's sync
+	unlock, err := lock(ctx) // another magpie-friday's sync
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -122,7 +122,7 @@ func TestLockedSetup(t *testing.T) {
 	go func() { done <- Configure(cfg) }()
 	select {
 	case err := <-done:
-		t.Fatalf("configured while another magpie held the lock: %v", err)
+		t.Fatalf("configured while another magpie-friday held the lock: %v", err)
 	case <-time.After(300 * time.Millisecond):
 	}
 	unlock()

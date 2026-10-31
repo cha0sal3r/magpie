@@ -1,13 +1,13 @@
 // Package agentplug runs the agents plugins add: a module, named by a
-// plugin's package.json magpie.agent, that says where an agent magpie has
+// plugin's package.json magpie-friday.agent, that says where an agent magpie-friday has
 // no wiring of its own keeps its model, and what else to write there for
-// it to use magpie's gateway. internal/agent makes each one an Agent.
+// it to use magpie-friday's gateway. internal/agent makes each one an Agent.
 //
 // A module exports
 //
 //	export const agent = {
 //	  id: "aider", name: "Aider",
-//	  config: "~/.aider.conf.yml", // the file magpie edits
+//	  config: "~/.aider.conf.yml", // the file magpie-friday edits
 //	  model: "model",              // the key path of the model in it
 //	  prefix: "openai/",           // what the agent wants before the id
 //	}
@@ -15,15 +15,15 @@
 //	  return { "openai-api-base": gateway.v1, "openai-api-key": gateway.key }
 //	}
 //
-// and it runs in moejs in magpie's own process, as gateway middleware
+// and it runs in moejs in magpie-friday's own process, as gateway middleware
 // does: there is no Node here, so a package it imports is bundled into it.
 //
 // An agent whose model is picked in the agent itself (Raycast's own
 // picker, among the models connect writes) leaves model out: it is connect
-// only, a switch on the Agents page as an app whose one setting is magpie
+// only, a switch on the Agents page as an app whose one setting is magpie-friday
 // as its provider is, and connect is called without a model (#2374).
 //
-// The agent export may also say where its agent reads what magpie's
+// The agent export may also say where its agent reads what magpie-friday's
 // Library gives (internal/library): an instructions file, an MCP file in
 // one of MCPFormats, and a skills folder; each is optional.
 //
@@ -50,8 +50,8 @@ import (
 	"time"
 
 	"github.com/Calcium-Ion/moejs"
-	"github.com/yetone/magpie/internal/jsmod"
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/jsmod"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
 )
 
 // Formats are the config files an agent plugin's file may be, by the
@@ -263,7 +263,7 @@ func Compile(spec, file string) (*Agent, error) {
 			}
 		}
 	}
-	// connect only: with no model key, connect's keys are all magpie
+	// connect only: with no model key, connect's keys are all magpie-friday
 	// writes, so a module with neither would write nothing
 	if a.Desc.Model == "" && !a.has {
 		return nil, errors.New("agent.model names no key, and there is no connect to write the gateway: say one or both")

@@ -33,7 +33,7 @@ func (g *gw) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	g.mu.Lock()
 	g.path, g.body, g.ua = append(g.path, r.URL.Path), append(g.body, string(b)), append(g.ua, r.Header.Get("User-Agent"))
 	g.mu.Unlock()
-	if r.Header.Get("Authorization") != "Bearer magpie" {
+	if r.Header.Get("Authorization") != "Bearer magpie-friday" {
 		w.WriteHeader(401)
 		return
 	}
@@ -63,7 +63,7 @@ func start(t *testing.T, g http.Handler, root string) *client {
 	t.Cleanup(up.Close)
 	inR, inW := io.Pipe()
 	outR, outW := io.Pipe()
-	s := &server{gateway: up.URL, client: http.DefaultClient, enc: json.NewEncoder(outW), agent: "magpie-image/1", pending: map[string]chan rpc{}}
+	s := &server{gateway: up.URL, client: http.DefaultClient, enc: json.NewEncoder(outW), agent: "magpie-friday-image/1", pending: map[string]chan rpc{}}
 	go s.serve(inR)
 	t.Cleanup(func() { inW.Close(); outW.Close() })
 	c := &client{t: t, in: inW, out: bufio.NewScanner(outR), root: root}
@@ -128,19 +128,19 @@ func TestGenerateSavesInTheProject(t *testing.T) {
 	if b, _ := json.Marshal(tools); !strings.Contains(string(b), `"generate_image"`) {
 		t.Fatalf("tools %s", b)
 	}
-	r := c.call("tools/call", map[string]any{"name": "generate_image", "arguments": map[string]any{"prompt": "A Magpie, on a branch!", "n": 2}})
+	r := c.call("tools/call", map[string]any{"name": "generate_image", "arguments": map[string]any{"prompt": "A magpie-friday, on a branch!", "n": 2}})
 	out := text(r)
 	if r["isError"] == true || strings.Count(out, filepath.Join(project, Folder)) != 2 {
 		t.Fatalf("%v", r)
 	}
-	files, _ := filepath.Glob(filepath.Join(project, Folder, "a-magpie-on-a-branch-*.png"))
+	files, _ := filepath.Glob(filepath.Join(project, Folder, "a-magpie-friday-on-a-branch-*.png"))
 	if len(files) != 2 {
 		t.Fatalf("saved %v", files)
 	}
 	if b, _ := os.ReadFile(files[0]); string(b) != string(png) {
 		t.Fatalf("file %q", b)
 	}
-	if g.ua[0] != "claude-code/2.1.0 magpie-image/1" || g.path[0] != "/v1/images/generations" {
+	if g.ua[0] != "claude-code/2.1.0 magpie-friday-image/1" || g.path[0] != "/v1/images/generations" {
 		t.Fatalf("asked %v as %v", g.path, g.ua)
 	}
 	// a path, and a reference image: an edit, the file sent as a data URL
@@ -251,7 +251,7 @@ func startVideo(t *testing.T, g *vgw, root string) *client {
 	t.Cleanup(up.Close)
 	inR, inW := io.Pipe()
 	outR, outW := io.Pipe()
-	s := &server{gateway: up.URL, client: http.DefaultClient, enc: json.NewEncoder(outW), agent: "magpie-image/1", pending: map[string]chan rpc{}}
+	s := &server{gateway: up.URL, client: http.DefaultClient, enc: json.NewEncoder(outW), agent: "magpie-friday-image/1", pending: map[string]chan rpc{}}
 	go s.serve(inR)
 	t.Cleanup(func() { inW.Close(); outW.Close() })
 	c := &client{t: t, in: inW, out: bufio.NewScanner(outR), root: root}
@@ -289,7 +289,7 @@ func TestVideoToolSaysEveryVideoModel(t *testing.T) {
 	if desc == "" {
 		t.Fatalf("no generate_video in %v", res)
 	}
-	for _, want := range []string{"Grok", "Seedance", "another Magpie", "model list marks video models"} {
+	for _, want := range []string{"Grok", "Seedance", "another magpie-friday", "model list marks video models"} {
 		if !strings.Contains(desc, want) {
 			t.Errorf("description leaves out %q: %s", want, desc)
 		}

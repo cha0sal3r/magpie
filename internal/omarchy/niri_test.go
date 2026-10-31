@@ -21,7 +21,7 @@ import (
 
 // panelJSON is a Window as niri-ipc's Window and WindowLayout have it.
 func panelJSON(id, pid int, title string, floating bool) string {
-	return `{"id":` + itoa(id) + `,"title":` + quote(title) + `,"app_id":"magpie","pid":` + itoa(pid) +
+	return `{"id":` + itoa(id) + `,"title":` + quote(title) + `,"app_id":"magpie-friday","pid":` + itoa(pid) +
 		`,"workspace_id":1,"is_focused":true,"is_floating":` + map[bool]string{true: "true", false: "false"}[floating] +
 		`,"is_urgent":false,"layout":{"pos_in_scrolling_layout":null,"tile_size":[440.0,520.0],"window_size":[440,520],` +
 		`"tile_pos_in_workspace_view":[633.0,273.5],"window_offset_in_tile":[0.0,0.0]},"focus_timestamp":{"secs":12,"nanos":5000}}`
@@ -71,16 +71,16 @@ func TestWatchWindows(t *testing.T) {
 	stream := strings.Join([]string{
 		`{"Ok":"Handled"}`,
 		`{"WorkspacesChanged":{"workspaces":[]}}`,
-		`{"WindowsChanged":{"windows":[` + panelJSON(3, pid, "magpie", false) + `,` + panelJSON(7, pid, "magpie panel", true) + `,` + panelJSON(8, 99, "magpie panel", true) + `]}}`,
+		`{"WindowsChanged":{"windows":[` + panelJSON(3, pid, "magpie-friday", false) + `,` + panelJSON(7, pid, "magpie-friday panel", true) + `,` + panelJSON(8, 99, "magpie-friday panel", true) + `]}}`,
 		`{"WindowFocusChanged":{"id":7}}`,
-		`{"WindowOpenedOrChanged":{"window":` + panelJSON(7, pid, "magpie panel", true) + `}}`,
+		`{"WindowOpenedOrChanged":{"window":` + panelJSON(7, pid, "magpie-friday panel", true) + `}}`,
 		`{"WindowLayoutsChanged":{"changes":[[7,{"pos_in_scrolling_layout":null,"tile_size":[440.0,520.0],"window_size":[440,520],"tile_pos_in_workspace_view":[1000.0,6.0],"window_offset_in_tile":[0.0,0.0]}]]}}`,
 		`{"WindowClosed":{"id":7}}`,
-		`{"WindowOpenedOrChanged":{"window":` + panelJSON(9, pid, "magpie", false) + `}}`,
-		`{"WindowOpenedOrChanged":{"window":` + panelJSON(9, pid, "magpie panel", false) + `}}`,
-		`{"WindowOpenedOrChanged":{"window":` + panelJSON(9, pid, "magpie panel", false) + `}}`,
+		`{"WindowOpenedOrChanged":{"window":` + panelJSON(9, pid, "magpie-friday", false) + `}}`,
+		`{"WindowOpenedOrChanged":{"window":` + panelJSON(9, pid, "magpie-friday panel", false) + `}}`,
+		`{"WindowOpenedOrChanged":{"window":` + panelJSON(9, pid, "magpie-friday panel", false) + `}}`,
 		`{"SomeEventNiriAddsLater":{"x":1}}`,
-		`{"WindowsChanged":{"windows":[` + panelJSON(9, pid, "magpie panel", false) + `]}}`,
+		`{"WindowsChanged":{"windows":[` + panelJSON(9, pid, "magpie-friday panel", false) + `]}}`,
 		``,
 	}, "\n")
 	var sent bytes.Buffer
@@ -89,7 +89,7 @@ func TestWatchWindows(t *testing.T) {
 		io.Writer
 	}{strings.NewReader(stream), &sent}
 	var placed []uint64
-	if err := watchWindows(c, "magpie panel", pid, func(w niriWindow) { placed = append(placed, w.ID) }); err != io.EOF {
+	if err := watchWindows(c, "magpie-friday panel", pid, func(w niriWindow) { placed = append(placed, w.ID) }); err != io.EOF {
 		t.Fatalf("watchWindows: %v, want EOF at the stream's end", err)
 	}
 	if sent.String() != "\"EventStream\"\n" {
@@ -105,7 +105,7 @@ func TestWatchWindowsRefused(t *testing.T) {
 		io.Reader
 		io.Writer
 	}{strings.NewReader(`{"Err":"unknown request"}` + "\n"), io.Discard}
-	if err := watchWindows(c, "magpie panel", 1, func(niriWindow) { t.Fatal("placed") }); err == nil || !strings.Contains(err.Error(), "unknown request") {
+	if err := watchWindows(c, "magpie-friday panel", 1, func(niriWindow) { t.Fatal("placed") }); err == nil || !strings.Contains(err.Error(), "unknown request") {
 		t.Fatalf("watchWindows: %v, want niri's error", err)
 	}
 }
@@ -174,7 +174,7 @@ func TestPlacePanel(t *testing.T) {
 			`"FocusedOutput"`,
 			`{"Action":{"MoveFloatingWindow":{"id":7,"x":{"SetFixed":980},"y":{"SetFixed":6}}}}`,
 		}},
-		{"opened by magpie panel, tiled", nil, false, []string{
+		{"opened by magpie-friday panel, tiled", nil, false, []string{
 			`"FocusedOutput"`,
 			`{"Action":{"MoveWindowToFloating":{"id":7}}}`,
 			`{"Action":{"MoveFloatingWindow":{"id":7,"x":{"SetFixed":1261},"y":{"SetFixed":6}}}}`,
@@ -182,7 +182,7 @@ func TestPlacePanel(t *testing.T) {
 	} {
 		got := fakeNiri(t, answer)
 		var w niriWindow
-		if err := json.Unmarshal([]byte(panelJSON(7, 1, "magpie panel", c.floating)), &w); err != nil {
+		if err := json.Unmarshal([]byte(panelJSON(7, 1, "magpie-friday panel", c.floating)), &w); err != nil {
 			t.Fatal(err)
 		}
 		var p NiriPanel

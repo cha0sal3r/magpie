@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// magpie provider account-cap caps a subscription account at a share of
+// magpie-friday provider account-cap caps a subscription account at a share of
 // each usage window (70, 70%), off lifts it; a share out of 1–99, an
 // account the subscription hasn't, or a provider with keys is an error.
 func TestAccountCapCmd(t *testing.T) {

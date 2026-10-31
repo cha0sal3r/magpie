@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // freePort is a port nothing listens on now.
@@ -26,7 +26,7 @@ func freePort(t *testing.T) int {
 	return ln.Addr().(*net.TCPAddr).Port
 }
 
-// answers says whether a magpie gateway answers on port p. Keep-alive is
+// answers says whether a magpie-friday gateway answers on port p. Keep-alive is
 // off: a moved gateway finishes the connections it has (Relisten), so a
 // pooled one from the polls above would answer from the old port forever
 // and say nothing about new connections to it.
@@ -41,8 +41,8 @@ func answers(p int) bool {
 }
 
 // Settings' gateway port (Magic_zero on Discord) moves the gateway this
-// magpie serves: it answers on the new port and no longer on the old one,
-// and magpie's URL, the CLI's and the agents', follows. A port another
+// magpie-friday serves: it answers on the new port and no longer on the old one,
+// and magpie-friday's URL, the CLI's and the agents', follows. A port another
 // program has is refused with its reason, the gateway left where it was;
 // one out of range or under MAGPIE_ADDR is refused too.
 func TestSetPortMovesTheGateway(t *testing.T) {
@@ -116,7 +116,7 @@ func TestSetPortMovesTheGateway(t *testing.T) {
 		t.Fatal("the gateway still answers on the old port")
 	}
 	if !gateway.Running() {
-		t.Fatal("magpie doesn't find its own gateway on the new port")
+		t.Fatal("magpie-friday doesn't find its own gateway on the new port")
 	}
 
 	// the Settings page's other choices, saved, leave the port as it is
@@ -138,7 +138,7 @@ func TestSetPortMovesTheGateway(t *testing.T) {
 	}
 }
 
-// The port magpie was on taken by another program (Magic_zero's 3425), it
+// The port magpie-friday was on taken by another program (Magic_zero's 3425), it
 // serves nothing: setting another port starts the gateway there.
 func TestSetPortServesWhenTheOldOneWasTaken(t *testing.T) {
 	sandboxHome(t)
@@ -159,7 +159,7 @@ func TestSetPortServesWhenTheOldOneWasTaken(t *testing.T) {
 	served.Store(nil)
 	t.Cleanup(func() { served.Store(nil) })
 	if gateway.Running() {
-		t.Fatal("another program taken for magpie")
+		t.Fatal("another program taken for magpie-friday")
 	}
 	to := freePort(t)
 	if _, err := setPort(to); err != nil {

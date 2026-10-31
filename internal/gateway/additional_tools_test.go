@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // liteRequest is a request as Codex's Responses Lite sends it: no tools and
@@ -54,7 +54,7 @@ func TestAdditionalToolsRelayed(t *testing.T) {
 		n, _ := tl["name"].(string)
 		names = append(names, tl["type"].(string)+":"+n)
 	}
-	// tool search as the function magpie serves it; Codex's own tools out
+	// tool search as the function magpie-friday serves it; Codex's own tools out
 	// of their namespace; an MCP server's namespace as it was
 	if want := "function:tool_search function:shell custom:apply_patch namespace:mcp__probe"; strings.Join(names, " ") != want {
 		t.Fatalf("tools %v, want %s\n%s", names, want, f.got)

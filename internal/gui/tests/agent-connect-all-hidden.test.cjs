@@ -41,7 +41,7 @@ function fixture(lang, guide) {
     if (url.pathname === "/api/agents/connect/grok") {
       connects++;
       // the gateway's answer to Connect's AllHiddenError (api.go)
-      if (!list.some((m) => !m.hidden)) return json({ error: "None of magpie's models is left in Grok Build's model list", code: "all_hidden", agent: "Grok Build" }, 400);
+      if (!list.some((m) => !m.hidden)) return json({ error: "None of magpie-friday's models is left in Grok Build's model list", code: "all_hidden", agent: "Grok Build" }, 400);
       wired = true;
       return json({ ...state(), connected: { how: "first", field: "model", value: list.find((m) => !m.hidden).id } });
     }
@@ -66,8 +66,8 @@ function fixture(lang, guide) {
 }
 
 const W = {
-  en: { pick: "None of magpie's models is left in Grok Build's model list: pick one, then connect Grok Build" },
-  zh: { pick: "magpie 的模型都不在 Grok Build 的模型列表里：先选一个，再接入 Grok Build" },
+  en: { pick: "None of magpie-friday's models is left in Grok Build's model list: pick one, then connect Grok Build" },
+  zh: { pick: "magpie-friday 的模型都不在 Grok Build 的模型列表里：先选一个，再接入 Grok Build" },
 };
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {

@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-// The list built in is what a magpie that can't reach the market shows:
+// The list built in is what a magpie-friday that can't reach the market shows:
 // every entry a real package name, said in English and Chinese, once.
 func TestBuiltinMarket(t *testing.T) {
 	l, err := parseMarket(builtinMarket)
@@ -27,7 +27,7 @@ func TestBuiltinMarket(t *testing.T) {
 			t.Errorf("%s: summary needs en and zh", x.Package)
 		}
 		if !x.Community {
-			t.Errorf("%s: only magpie's community's plugins are listed", x.Package)
+			t.Errorf("%s: only magpie-friday's community's plugins are listed", x.Package)
 		}
 		// gateway middleware signs in to nothing
 		if x.Kind == "middleware" {

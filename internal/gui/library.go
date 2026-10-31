@@ -10,8 +10,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/library"
-	"github.com/yetone/magpie/internal/mcpauth"
+	"github.com/cha0sal3r/magpie-friday/internal/library"
+	"github.com/cha0sal3r/magpie-friday/internal/mcpauth"
 )
 
 // The problems of the last change to the library stay on the page until the
@@ -82,7 +82,7 @@ func instructionsView(res *library.Result) (instructionsJSON, error) {
 }
 
 // marketJSON is a market's list, and why it may be short: a search that
-// couldn't reach the registry still shows what magpie has of its own.
+// couldn't reach the registry still shows what magpie-friday has of its own.
 type marketJSON struct {
 	Items any    `json:"items"`
 	Error string `json:"error,omitempty"`
@@ -281,7 +281,7 @@ func libraryRoutes(mux *http.ServeMux, w Windows) {
 		}
 		writeJSON(rw, v)
 	})
-	// rtk put on the PATH the agents get, when magpie found it off it
+	// rtk put on the PATH the agents get, when magpie-friday found it off it
 	mux.HandleFunc("POST /api/library/rtk/path", func(rw http.ResponseWriter, r *http.Request) {
 		v, err := library.PathRTK()
 		if err != nil {
@@ -341,7 +341,7 @@ func libraryRoutes(mux *http.ServeMux, w Windows) {
 		}
 		rw.WriteHeader(http.StatusNoContent)
 	})
-	// magpie signs in to a remote server once, for every agent given it (#615)
+	// magpie-friday signs in to a remote server once, for every agent given it (#615)
 	mux.HandleFunc("POST /api/library/mcp-signin", func(rw http.ResponseWriter, r *http.Request) {
 		var in struct{ Name string }
 		if err := json.NewDecoder(r.Body).Decode(&in); err != nil || in.Name == "" {
@@ -403,7 +403,7 @@ func libraryRoutes(mux *http.ServeMux, w Windows) {
 		writeJSON(rw, map[string]any{"servers": m})
 	})
 	// the servers as an agent's project file has them, for the user to
-	// paste into a project magpie doesn't keep (#1478); nothing is written
+	// paste into a project magpie-friday doesn't keep (#1478); nothing is written
 	mux.HandleFunc("POST /api/library/mcp/config", func(rw http.ResponseWriter, r *http.Request) {
 		var in struct {
 			Agent string
@@ -440,7 +440,7 @@ func libraryRoutes(mux *http.ServeMux, w Windows) {
 			Values   map[string]string // what a market server needs
 			Dir      string            // a project's folder
 			Copy     bool              // a project gets copies, not links
-			Keep     bool              // a project removed keeps what magpie put in it
+			Keep     bool              // a project removed keeps what magpie-friday put in it
 			On       bool              // every skill or server given to the agents, or taken from them
 			How      string            // link or copy: how skills are given to Agent, or to every agent with none (#896)
 			// Replace updates a skill changed here all the same, its

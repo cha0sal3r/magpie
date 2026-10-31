@@ -117,7 +117,7 @@ func (r piReply) seen(t *testing.T) map[string]any {
 // installed with it, its extensions load with their commands and tools
 // left aside, its providers list their models, sign in as pi signs in
 // (the OAuth login's questions asked one at a time, the code pasted
-// back; a key), renew through magpie, and answer Anthropic's Messages
+// back; a key), renew through magpie-friday, and answer Anthropic's Messages
 // from pi's stream: text, thinking with its signature, tool calls and
 // their thought signatures back, usage, and a failure's status.
 func TestPiPackage(t *testing.T) {
@@ -205,7 +205,7 @@ func TestPiPackage(t *testing.T) {
 		t.Fatalf("Finish = %+v, %v", got, err)
 	}
 	if b, err := os.ReadFile(filepath.Join(filepath.Dir(AuthPath()), "pi", "stolen")); err == nil {
-		t.Fatalf("a program the login started read magpie's messages: %s", b)
+		t.Fatalf("a program the login started read magpie-friday's messages: %s", b)
 	}
 	var saved map[string]map[string]any
 	b, _ := os.ReadFile(AuthPath())
@@ -304,7 +304,7 @@ func TestPiPackage(t *testing.T) {
 		t.Fatalf("message_delta = %v", md)
 	}
 	// and back: the signatures go with the turn (the call's kept by
-	// magpie, as tool_use has no field for it), the result named
+	// magpie-friday, as tool_use has no field for it), the result named
 	r = piAsk(t, ctx, "fakepi", "fp-think", map[string]any{"max_tokens": 100, "stream": false, "messages": []map[string]any{
 		{"role": "user", "content": "think, then use a tool"},
 		{"role": "assistant", "content": []map[string]any{
@@ -342,7 +342,7 @@ func TestPiPackage(t *testing.T) {
 		t.Fatalf("fakepi-key was handed %v", s)
 	}
 
-	// a sign-in about to expire is renewed by magpie, with pi's refresh,
+	// a sign-in about to expire is renewed by magpie-friday, with pi's refresh,
 	// and kept
 	b, _ = os.ReadFile(AuthPath())
 	var all map[string]map[string]any

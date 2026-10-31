@@ -7,8 +7,8 @@ import (
 	"testing"
 )
 
-// `magpie qwen a/m` writes its provider entries and the gateway's key,
-// `magpie qwen default` takes magpie back out and restores the model the
+// `magpie-friday qwen a/m` writes its provider entries and the gateway's key,
+// `magpie-friday qwen default` takes magpie-friday back out and restores the model the
 // user had, their own provider entry and settings kept.
 func TestAgentQwenDefault(t *testing.T) {
 	groupsHome(t)

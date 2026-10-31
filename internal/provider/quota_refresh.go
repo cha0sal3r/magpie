@@ -100,7 +100,7 @@ func RefreshUsage(ctx context.Context, provider, user string) {
 }
 
 // RefreshReport is RefreshUsage answering the cards it read, as
-// QuotaReport tells them: magpie quota refresh (#2104), which reads the
+// QuotaReport tells them: magpie-friday quota refresh (#2104), which reads the
 // card the Usage page's refresh button does and shows only it. A process
 // that has read no other card yet (the CLI) has nothing to merge it into,
 // so the cards come from the read itself, not from the caches.
@@ -114,7 +114,7 @@ func RefreshReport(ctx context.Context, provider, user string, now time.Time) []
 // refreshCards is RefreshUsage, with the cards it read: only the asked
 // card's provider (and account), each kind apart.
 func refreshCards(ctx context.Context, provider, user string) (subs, plans, balances []SubscriptionQuota) {
-	// a remote magpie's card is read again there (remote_quotas.go)
+	// a remote magpie-friday's card is read again there (remote_quotas.go)
 	if p, card, ok := remoteOf(provider); ok {
 		refreshRemote(ctx, p, card, user)
 		for _, q := range append(remoteCards(ctx, p, false), remoteKeyCards(ctx, p, false, "")...) {

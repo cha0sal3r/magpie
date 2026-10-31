@@ -7,8 +7,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Which of the catalog an agent's lists show, picked one model at a time
@@ -57,11 +57,11 @@ type agentModelJSON struct {
 	// InUse: the agent is set to it, so it can't be taken out
 	InUse bool `json:"inUse,omitempty"`
 	// Own: one of Codex's own, a ChatGPT account's, which Codex lists
-	// ahead of magpie's until the user puts them in an order (#855)
+	// ahead of magpie-friday's until the user puts them in an order (#855)
 	Own bool `json:"own,omitempty"`
 }
 
-// takesCatalog reports whether an agent picks among magpie's catalog: some
+// takesCatalog reports whether an agent picks among magpie-friday's catalog: some
 // option of a field of its is a catalog entry.
 func takesCatalog(fields []fieldJSON) bool {
 	for _, f := range fields {
@@ -135,7 +135,7 @@ func modelCount(id string) *modelCountJSON {
 }
 
 // usedBy reports whether one of the agent's values is the entry: its id,
-// with a prefix the agent's files give it (magpie/…), or, for the agent's
+// with a prefix the agent's files give it (magpie-friday/…), or, for the agent's
 // own account, the vendor's model id alone.
 func usedBy(a *agent.Agent, vals map[string]string, e provider.Entry) bool {
 	for _, v := range vals {
@@ -212,7 +212,7 @@ func agentModelsAPI(mux *http.ServeMux) {
 		}
 		_, only := provider.PickedModels(a.ListsFor())
 		// own: its pickers offer models of the agent's own beside
-		// magpie's, which ownHidden leaves out (#1642)
+		// magpie-friday's, which ownHidden leaves out (#1642)
 		writeJSON(rw, map[string]any{"models": agentModelList(a), "ordered": len(provider.ModelOrder(a.ListsFor())) > 0, "only": only,
 			"own": a.OwnModels(a.Values()), "ownHidden": provider.OwnModelsHidden(a.ListsFor())})
 	})
@@ -220,8 +220,8 @@ func agentModelsAPI(mux *http.ServeMux) {
 	// are shown, and one the agent is set to is kept in whatever is asked
 	//
 	// order, instead, is the order the agent's list puts them in (#855):
-	// the ones named first, as named; none puts back magpie's own. Every
-	// agent's (#1052): its list, the gateway's /models and the files magpie
+	// the ones named first, as named; none puts back magpie-friday's own. Every
+	// agent's (#1052): its list, the gateway's /models and the files magpie-friday
 	// writes for it all come from provider.CatalogFor, which keeps it
 	//
 	// only switches the agent between being shown new models and being
@@ -231,7 +231,7 @@ func agentModelsAPI(mux *http.ServeMux) {
 	// among them
 	//
 	// ownHidden switches the agent's pickers between offering its own
-	// models beside magpie's and offering magpie's alone (#1642)
+	// models beside magpie-friday's and offering magpie-friday's alone (#1642)
 	mux.HandleFunc("POST /api/agent-models/{id}", func(rw http.ResponseWriter, r *http.Request) {
 		var in struct {
 			Hidden []string

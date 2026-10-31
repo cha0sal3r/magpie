@@ -1,9 +1,9 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// #1478 (xiaozhu1337): a project the user doesn't keep in magpie had no way
+// #1478 (xiaozhu1337): a project the user doesn't keep in magpie-friday had no way
 // to get the library's servers but adding it as a project first. The
 // servers picked (Select), and a server's own editor, have Copy config…: a
 // menu of the agents that read a project's servers from a file, each with
-// that file, and a pick asks magpie for the file's text
+// that file, and a pick asks magpie-friday for the file's text
 // (library/mcp/config, nothing written) and puts it on the clipboard. The
 // status names the file to paste it into, and a server the agent can't take
 // there (SSE for Codex) as left out. At 440px wide in en, zh, ja and de:
@@ -20,7 +20,7 @@ const HOME = "/Users/xz";
 const agent = (id, name, more = {}) => ({ id, name, icon: "", skills: `${HOME}/.${id}/skills`, mcp: `${HOME}/.${id}/mcp.json`, ...more });
 const sv = (name, transport, agents, more = {}) => ({ name, transport, command: transport === "stdio" ? name + "-mcp" : "", url: transport === "stdio" ? "" : "http://localhost:9/" + name, agents, ...more });
 const lib = (servers) => ({
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: [
     agent("claude", "Claude Code", { projectMCP: ".mcp.json" }),
     agent("codex", "Codex", { noSSE: true, projectMCP: ".codex/config.toml", projectNoSSE: true }),

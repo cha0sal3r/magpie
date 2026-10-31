@@ -10,11 +10,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // The Usage page's routes read days and hours in the zone the page names
-// in ?tz=, the browser's, not the computer's: `magpie web` read from UTC+8
+// in ?tz=, the browser's, not the computer's: `magpie-friday web` read from UTC+8
 // showed a call at 9:00 under 1:00 (Outvi V on Discord). Without ?tz= the
 // computer's, as the tray and the TUI read them. Run under TZ=UTC and
 // TZ=Asia/Shanghai.

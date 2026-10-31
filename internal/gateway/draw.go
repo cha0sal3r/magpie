@@ -21,10 +21,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // The gateway draws: /v1/images/generations and /v1/images/edits take
@@ -34,10 +34,10 @@ import (
 // those models; its chat image models (gemini-*-image, gpt-5-image) stay on
 // chat completions with modalities. Gemini at Google is asked on its own
 // generateContent. A request that names no model draws with the Settings'
-// image generation model, or one magpie picks (AutoDrawer).
+// image generation model, or one magpie-friday picks (AutoDrawer).
 
-// DrawAgent is the User-Agent magpie's generate_image tool adds to its own.
-const DrawAgent = "magpie-image/1"
+// DrawAgent is the User-Agent magpie-friday's generate_image tool adds to its own.
+const DrawAgent = "magpie-friday-image/1"
 
 // drawTimeout is how long a vendor is given to draw: to answer, and to send
 // all of its answer. It is Settings' Image generation timeout (neighbads on
@@ -106,7 +106,7 @@ func Drawer() string {
 }
 
 // DrawerMissing is the model Settings › Models › Image generation names
-// when magpie can't find it any more, so that AutoDrawer's draws in its
+// when magpie-friday can't find it any more, so that AutoDrawer's draws in its
 // place, as VisionMissing is Image recognition's. "" when none is named,
 // it is off, or it resolves.
 func DrawerMissing() string { return pickedMissing(settings.Load().ImageGen) }
@@ -125,7 +125,7 @@ func resolveDrawing(id string) (provider.Provider, string, bool) {
 			}
 		}
 	}
-	// a subscription's newer image model, named before magpie lists it
+	// a subscription's newer image model, named before magpie-friday lists it
 	// (grok-imagine-image-2.0, #1857): its vendor draws it, or says why not
 	for _, p := range provider.All() {
 		if p.On() && !p.DecideOnly() && drawsFamily(p, id) {
@@ -135,10 +135,10 @@ func resolveDrawing(id string) (provider.Provider, string, bool) {
 	return provider.Resolve(id)
 }
 
-// drawsFamily is whether a subscription whose image models magpie lists
+// drawsFamily is whether a subscription whose image models magpie-friday lists
 // itself (codexDrawers, grokDrawers) draws id, a model of the family those
 // are of: any grok-imagine-image* on a Grok subscription, any gpt-image-*
-// on a ChatGPT account. The vendor's newer ones work before magpie names
+// on a ChatGPT account. The vendor's newer ones work before magpie-friday names
 // them, as grok-imagine-video* do for videos; one it doesn't serve is
 // refused by the vendor, in its own words.
 func drawsFamily(p provider.Provider, id string) bool {
@@ -190,7 +190,7 @@ func ListedDrawer(ref string) string {
 	return pid + "/" + codexDrawer
 }
 
-// listsCantName is whether p's image models are ones magpie names itself
+// listsCantName is whether p's image models are ones magpie-friday names itself
 // (a ChatGPT account's GPT Image, a Grok subscription's Grok Imagine, a
 // WorkBuddy plan's those its config lists), apart from its chat models:
 // an account's own list of models (#474), picked in the editor from the
@@ -256,7 +256,7 @@ func Drawers(p provider.Provider) []catalog.Model {
 		return out
 	}
 	// any other subscription is asked through its agent's own API, which
-	// draws nothing magpie can ask for yet. A Responses-only relay (a Codex
+	// draws nothing magpie-friday can ask for yet. A Responses-only relay (a Codex
 	// backend such as sub2api) has no chat base but serves the images API
 	// under the same root as its Responses endpoint, so it draws all the same.
 	if p.Account != nil || (p.Base(provider.Chat) == "" && p.Base(provider.Responses) == "") {
@@ -312,7 +312,7 @@ func kindModel(p provider.Provider, id string) catalog.Model {
 	return catalog.Model{ID: id, Provider: p.ID}
 }
 
-// AutoDrawer is the model magpie draws with when the Settings name none:
+// AutoDrawer is the model magpie-friday draws with when the Settings name none:
 // a ChatGPT account's, which its plan pays for, else the cheapest of the
 // models the API keys set up can draw with, the newest of those whose price
 // isn't known. "" when none can.
@@ -414,10 +414,10 @@ func (s *Server) images(edit bool) http.HandlerFunc {
 			m, ok := drawer()
 			if !ok {
 				if v := DrawerMissing(); v != "" {
-					fail(400, fmt.Sprintf("no model to draw with: the Image generation model picked in magpie's Settings, %q, isn't set up any more: pick another in Settings → Models → Image generation, or name one", v))
+					fail(400, fmt.Sprintf("no model to draw with: the Image generation model picked in magpie-friday's Settings, %q, isn't set up any more: pick another in Settings → Models → Image generation, or name one", v))
 					return
 				}
-				fail(400, "no model to draw with: pick one in magpie's Settings → Images → Image generation, or name one")
+				fail(400, "no model to draw with: pick one in magpie-friday's Settings → Images → Image generation, or name one")
 				return
 			}
 			d.Model, call.Model = m, m
@@ -425,14 +425,14 @@ func (s *Server) images(edit bool) http.HandlerFunc {
 		p, model, ok := s.drawingModel(r, d.Model)
 		if !ok {
 			if agentOf(r) == "codex" && !strings.Contains(d.Model, "/") {
-				fail(400, "no model to draw with: Codex's provider has no matching image model and magpie's Settings → Images → Image generation has none enabled")
+				fail(400, "no model to draw with: Codex's provider has no matching image model and magpie-friday's Settings → Images → Image generation has none enabled")
 				return
 			}
 			if off, isOff := provider.SwitchedOff(d.Model); isOff {
 				fail(404, switchedOff(off, d.Model))
 				return
 			}
-			fail(404, fmt.Sprintf("magpie knows no model %q to draw with", d.Model))
+			fail(404, fmt.Sprintf("magpie-friday knows no model %q to draw with", d.Model))
 			return
 		}
 		g, ms, isGroup := drawingGroup(d.Model, p, model)
@@ -809,7 +809,7 @@ func isOpenRouter(p provider.Provider) bool {
 func viaFor(p provider.Provider, model string) drawVia {
 	switch {
 	case p.IsRemoteMagpie():
-		// another magpie's images API asks the model's vendor the way
+		// another magpie-friday's images API asks the model's vendor the way
 		// that model draws there
 		return viaImages
 	case isGoogle(p) && strings.Contains(strings.ToLower(model), "gemini"):
@@ -983,7 +983,7 @@ func (s *Server) draw(ctx context.Context, p provider.Provider, model string, d 
 		return s.drawCodeAssist(ctx, p, model, d)
 	}
 	if p.Base(provider.Chat) == "" && p.Base(provider.Responses) == "" {
-		return drawn{}, 400, fmt.Errorf("%s can't draw: magpie draws only through an OpenAI-compatible API, and %s has none", p.Name, p.Name)
+		return drawn{}, 400, fmt.Errorf("%s can't draw: magpie-friday draws only through an OpenAI-compatible API, and %s has none", p.Name, p.Name)
 	}
 	via := viaFor(p, model)
 	out, code, err := s.drawOn(ctx, p, model, d, via)
@@ -1047,10 +1047,10 @@ func (s *Server) sendWith(ctx context.Context, p provider.Provider, method, url,
 	if contentType != "" {
 		req.Header.Set("Content-Type", contentType)
 	}
-	// magpie's, or the agent's own where the provider passes it on (#1851)
+	// magpie-friday's, or the agent's own where the provider passes it on (#1851)
 	stampUA(ctx, p, req.Header)
 	if p.IsRemoteMagpie() {
-		req.Header.Set("User-Agent", "magpie/"+Version)
+		req.Header.Set("User-Agent", "magpie-friday/"+Version)
 		passOnCaller(ctx, req)
 	}
 	if sign {

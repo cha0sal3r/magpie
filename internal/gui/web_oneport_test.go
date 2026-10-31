@@ -8,12 +8,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// onePortHome is a fresh magpie home for one test: settings and keys of
+// onePortHome is a fresh magpie-friday home for one test: settings and keys of
 // its own.
 func onePortHome(t *testing.T) {
 	t.Helper()
@@ -27,7 +27,7 @@ func onePortHome(t *testing.T) {
 	t.Setenv("MAGPIE_TRUST_PROXY", "")
 }
 
-// onePortKey shares magpie and makes an enabled gateway key.
+// onePortKey shares magpie-friday and makes an enabled gateway key.
 func onePortKey(t *testing.T) string {
 	t.Helper()
 	s := settings.Load()
@@ -69,8 +69,8 @@ func onePortCall(t *testing.T, h http.Handler, method, target, peer, host, cooki
 
 var chromeMarks = []string{"User-Agent", "Mozilla/5.0 (Macintosh) Chrome/140", "Sec-Fetch-Site", "same-origin", "Sec-Fetch-Mode", "cors"}
 
-// onePortCases checks what `magpie web`'s port answers, the gateway being
-// reached through gw (this process's, or another magpie's): its client
+// onePortCases checks what `magpie-friday web`'s port answers, the gateway being
+// reached through gw (this process's, or another magpie-friday's): its client
 // routes as the gateway's own port would, and the page's API never without
 // the page's key, whatever route, Origin or Host a request takes.
 func onePortCases(t *testing.T, h http.Handler, reached *bool) {
@@ -92,7 +92,7 @@ func onePortCases(t *testing.T, h http.Handler, reached *bool) {
 	api("from a foreign Origin", "POST", "/api/settings", lo, here, "Origin", "https://evil.example")
 	api("under a rebound Host", "GET", "/api/settings", lo, evil, chromeMarks...)
 	api("under a rebound Host, a POST", "POST", "/api/settings", lo, evil, append([]string{"Origin", "http://" + evil}, chromeMarks...)...)
-	api("through a proxy", "GET", "/api/settings", lo, "magpie.example.com", "X-Forwarded-For", "203.0.113.9")
+	api("through a proxy", "GET", "/api/settings", lo, "magpie-friday.example.com", "X-Forwarded-For", "203.0.113.9")
 	api("from another machine", "GET", "/api/settings", "10.0.0.5:50001", here)
 	// nor by a path that names a client route on its way to the API
 	api("by /v1/../api", "GET", "/v1/../api/settings", lo, here)
@@ -123,10 +123,10 @@ func onePortCases(t *testing.T, h http.Handler, reached *bool) {
 	gw("under a rebound Host, a POST", 403, "POST", "/v1/chat/completions", lo, evil, "", append([]string{"Origin", "http://" + evil}, chromeMarks...)...)
 	// the page's own cookie is no gateway key either
 	gw("under a rebound Host with the page's cookie", 403, "GET", "/v1/models", lo, evil, onePortWebKey, chromeMarks...)
-	gw("through a proxy without a key", 401, "GET", "/v1/models", lo, "magpie.example.com", "", "X-Forwarded-For", "203.0.113.9")
-	gw("through a proxy with the page's cookie", 401, "GET", "/v1/models", lo, "magpie.example.com", onePortWebKey, "X-Forwarded-For", "203.0.113.9")
+	gw("through a proxy without a key", 401, "GET", "/v1/models", lo, "magpie-friday.example.com", "", "X-Forwarded-For", "203.0.113.9")
+	gw("through a proxy with the page's cookie", 401, "GET", "/v1/models", lo, "magpie-friday.example.com", onePortWebKey, "X-Forwarded-For", "203.0.113.9")
 	gw("from another machine without a key", 401, "GET", "/v1/models", "10.0.0.5:50001", here, "")
-	gw("through a proxy with a gateway key", 200, "GET", "/v1/models", lo, "magpie.example.com", "", "X-Forwarded-For", "203.0.113.9", "Authorization", "Bearer "+key)
+	gw("through a proxy with a gateway key", 200, "GET", "/v1/models", lo, "magpie-friday.example.com", "", "X-Forwarded-For", "203.0.113.9", "Authorization", "Bearer "+key)
 	gw("from another machine with a gateway key", 200, "GET", "/v1/models", "10.0.0.5:50001", here, "", "Authorization", "Bearer "+key)
 
 	// not shared: another machine, or a proxy, isn't answered at all
@@ -135,7 +135,7 @@ func onePortCases(t *testing.T, h http.Handler, reached *bool) {
 	if err := settings.Save(s); err != nil {
 		t.Fatal(err)
 	}
-	gw("through a proxy, not shared", 403, "GET", "/v1/models", lo, "magpie.example.com", "", "X-Forwarded-For", "203.0.113.9", "Authorization", "Bearer "+key)
+	gw("through a proxy, not shared", 403, "GET", "/v1/models", lo, "magpie-friday.example.com", "", "X-Forwarded-For", "203.0.113.9", "Authorization", "Bearer "+key)
 	gw("from another machine, not shared", 403, "GET", "/v1/models", "10.0.0.5:50001", here, "", "Authorization", "Bearer "+key)
 }
 
@@ -149,7 +149,7 @@ func onePortPage(reached *bool) http.Handler {
 }
 
 // zgcwkj on Discord: one reverse-proxy location for the page and the
-// agents. `magpie web`'s port hands the gateway's client routes to the
+// agents. `magpie-friday web`'s port hands the gateway's client routes to the
 // gateway this process serves, through the gateway's own guards.
 func TestWebOnePortServedHere(t *testing.T) {
 	onePortHome(t)
@@ -160,7 +160,7 @@ func TestWebOnePortServedHere(t *testing.T) {
 	onePortCases(t, onePortPage(&reached), &reached)
 }
 
-// With another magpie serving the gateway (the service, the app), the page
+// With another magpie-friday serving the gateway (the service, the app), the page
 // passes the client routes on to it, and they are judged there as they
 // came: Host, Origin and a proxy's forwarding headers kept, and one from
 // another machine marked as such.

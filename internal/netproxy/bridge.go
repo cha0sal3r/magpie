@@ -30,7 +30,7 @@ var (
 func IsSOCKS(u *url.URL) bool { return u != nil && (u.Scheme == "socks5" || u.Scheme == "socks5h") }
 
 // Bridge is the http:// address of a proxy on loopback carrying what it is
-// given through the SOCKS5 proxy socks, one for each, kept while magpie
+// given through the SOCKS5 proxy socks, one for each, kept while magpie-friday
 // runs.
 func Bridge(socks *url.URL) (string, error) {
 	key := socks.String()
@@ -300,7 +300,7 @@ func ForBun(proxy string) string {
 	return proxy
 }
 
-// EnvForBun is env for a bun that magpie starts (bun add, update, remove,
+// EnvForBun is env for a bun that magpie-friday starts (bun add, update, remove,
 // run, or an agent CLI's bun add -g): its *_PROXY with a SOCKS5 one
 // bridged (ForBun). Bun takes only http:// and https:// proxies, and with
 // a socks5:// one every registry fetch failed as UnsupportedProxyProtocol
@@ -321,7 +321,7 @@ func EnvForBun(env []string) []string {
 }
 
 // EnvForBunWith is EnvWith's env (the proxy choice names, see With) for a
-// Bun-built CLI magpie runs on a provider's behalf — Claude Code, for its
+// Bun-built CLI magpie-friday runs on a provider's behalf — Claude Code, for its
 // subscription's requests, warm-ups, usage and sign-ins — with a SOCKS5
 // proxy bridged as EnvForBun bridges it. Given socks5:// as it was, Claude
 // Code failed every request as UnsupportedProxyProtocol, after minutes of
@@ -342,11 +342,11 @@ func EnvForBunWith(choice string, env []string, loopback bool) ([]string, error)
 				break
 			}
 			if !loopback {
-				return nil, fmt.Errorf("the proxy %s is SOCKS, which Claude Code can't use (UnsupportedProxyProtocol), and magpie's HTTP bridge to it is on this computer's loopback, which Claude Code in WSL doesn't reach: set an http:// proxy for it instead", Redact(v))
+				return nil, fmt.Errorf("the proxy %s is SOCKS, which Claude Code can't use (UnsupportedProxyProtocol), and magpie-friday's HTTP bridge to it is on this computer's loopback, which Claude Code in WSL doesn't reach: set an http:// proxy for it instead", Redact(v))
 			}
 			a, err := Bridge(u)
 			if err != nil {
-				return nil, fmt.Errorf("the proxy %s is SOCKS, which Claude Code can't use (UnsupportedProxyProtocol), and magpie's HTTP bridge to it didn't start (%v): set an http:// proxy for it instead", Redact(v), err)
+				return nil, fmt.Errorf("the proxy %s is SOCKS, which Claude Code can't use (UnsupportedProxyProtocol), and magpie-friday's HTTP bridge to it didn't start (%v): set an http:// proxy for it instead", Redact(v), err)
 			}
 			e = k + "=" + a
 		}

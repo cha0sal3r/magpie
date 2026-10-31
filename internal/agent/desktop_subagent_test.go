@@ -3,12 +3,12 @@ package agent
 import (
 	"testing"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// Claude Desktop's subagent model field: offered magpie's models once
-// Desktop is on magpie, a pick connecting it as any model pick does, an
+// Claude Desktop's subagent model field: offered magpie-friday's models once
+// Desktop is on magpie-friday, a pick connecting it as any model pick does, an
 // alias kept by its catalog id, one not served now kept, a bare name
 // refused. Desktop's tiers and Codex's subagent model aren't Live, and a
 // stopped WSL copy keeps the flag.
@@ -76,7 +76,7 @@ func TestDesktopSubagentEffortField(t *testing.T) {
 	if len(f.Options(nil)) != 0 || f.Set("high") != nil || a.Wired() {
 		t.Fatal("saving an unwired effort offered choices or connected Desktop")
 	}
-	if err := a.Pick("provider", "magpie"); err != nil {
+	if err := a.Pick("provider", "magpie-friday"); err != nil {
 		t.Fatal(err)
 	}
 	if len(f.Options(nil)) != len(provider.MemberEfforts) {

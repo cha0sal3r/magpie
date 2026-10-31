@@ -82,7 +82,7 @@ func TestSubscriptionsOnAtOnce(t *testing.T) {
 		t.Fatalf("the agent's own sign-in changed: %+v", live.Tokens)
 	}
 	if _, ok, _ := p.Account.Token(context.Background()); ok {
-		t.Fatal("the agent's own account has a token of magpie's")
+		t.Fatal("the agent's own account has a token of magpie-friday's")
 	}
 
 	// switching keeps the one it replaces in use

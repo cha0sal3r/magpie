@@ -148,7 +148,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
     for (const lang of ["en", "zh", "zh-TW", "ja", "de"]) for (const width of [980, 420]) for (const k of kinds) {
       await t.test(`${lang} ${width}px: ${k.name}`, async () => {
         // the window is no narrower than 560px (windowMinW); narrower, it
-        // is the browser page (magpie web, a phone)
+        // is the browser page (magpie-friday web, a phone)
         const web = k.mode === "window" && width < 560;
         const viewport = k.mode === "panel" ? { width: Math.min(width, 440), height: 640 } : { width, height: 760 };
         const ctx = await browser.newContext({ viewport, reducedMotion: "reduce" });

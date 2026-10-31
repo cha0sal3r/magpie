@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // AI Studio's Gemini thinks silently unless asked for its thoughts: Claude
@@ -176,7 +176,7 @@ func TestGeminiCompat(t *testing.T) {
 	}
 }
 
-// Claude Desktop through magpie to a local proxy in front of AI Studio:
+// Claude Desktop through magpie-friday to a local proxy in front of AI Studio:
 // the proxy is asked for Gemini's thoughts and the client sees them as a
 // thinking block. A proxy that turns the fields away is asked again as
 // before, with reasoning_effort, and not sent them again.
@@ -381,7 +381,7 @@ func askGemini(s *Server, model, thinking string) (int, string) {
 // OpenAI-compatible API with aiStudioRefusal's 400 and Vertex AI's with the
 // one below. Each names thinking, and was taken for thinking_config turned
 // away, so the provider wasn't asked for Gemini's thoughts again, for any
-// model, until magpie restarted. Reasoning off goes at the model's lowest
+// model, until magpie-friday restarted. Reasoning off goes at the model's lowest
 // level instead: at once where its levels are known, as models.dev's list
 // for AI Studio gives them, and after the refusal where they aren't; the
 // thoughts are still asked for.

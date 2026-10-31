@@ -3,15 +3,15 @@ package provider
 // Codex's background app-server. Codex CLI (0.156 on) can keep one running
 // for its sessions to attach to — `codex app-server --managed-daemon`,
 // started by the CLI and left running — and it reads the ChatGPT sign-in
-// once, when it starts. So when magpie switches the account Codex is signed
+// once, when it starts. So when magpie-friday switches the account Codex is signed
 // in to, a Codex session opened after that still runs on the account before
-// until the daemon is restarted. magpie doesn't restart it on its own:
+// until the daemon is restarted. magpie-friday doesn't restart it on its own:
 // that ends the sessions running on it. It says so instead, and restarts it
 // when asked (RestartCodexDaemon).
 //
 // The daemon is told apart by --managed-daemon: the app-servers other apps
 // run for themselves (the ChatGPT app's own codex, an editor's) are started
-// without it, and they are none of magpie's business.
+// without it, and they are none of magpie-friday's business.
 
 import (
 	"bytes"
@@ -28,7 +28,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // CodexDaemonRestart is the command that restarts Codex's app-server, for
@@ -60,7 +60,7 @@ var processCodexHome = func(pid int) (home string, ok bool) {
 	return "", true
 }
 
-// codexHome is the Codex home magpie signs Codex in through.
+// codexHome is the Codex home magpie-friday signs Codex in through.
 func codexHome() string { return filepath.Dir(codexAuthPath()) }
 
 // isManagedDaemon reports whether a command line is Codex's managed
@@ -287,7 +287,7 @@ func findCodexApp(ps []proc.Process) int {
 
 // RestartCodexDaemon has Codex restart its app-server, which reads the
 // sign-in again: `codex app-server daemon restart`, run with the codex CLI
-// magpie finds and the Codex home it signs Codex in through. Codex 0.162's
+// magpie-friday finds and the Codex home it signs Codex in through. Codex 0.162's
 // sessions attached to it reconnect to the new one, a turn running is let
 // finish first (for up to a minute); an older Codex's are ended.
 func RestartCodexDaemon(ctx context.Context) error {
@@ -315,12 +315,12 @@ func restartCodexDaemon(ctx context.Context, home string) error {
 }
 
 // codexDaemonCommand is `codex app-server daemon <verb>`, with CODEX_HOME
-// set to the home magpie switches, and nothing to read on stdin (Codex
+// set to the home magpie-friday switches, and nothing to read on stdin (Codex
 // waits on a stdin left open).
 func codexDaemonCommand(ctx context.Context, home, verb string) (*exec.Cmd, error) {
 	exe := codexExecutable()
 	if exe == "" {
-		return nil, errors.New("the codex CLI isn't installed, or magpie can't find it")
+		return nil, errors.New("the codex CLI isn't installed, or magpie-friday can't find it")
 	}
 	cmd := proc.CommandContext(ctx, exe, "app-server", "daemon", verb)
 	env := slices.DeleteFunc(codexDaemonEnv(os.Environ()), func(kv string) bool { return strings.HasPrefix(kv, "CODEX_HOME=") })
@@ -343,17 +343,17 @@ var (
 // codexDaemonEnv is env with the PATH and proxy variables a terminal opened
 // now has, from the login shell: the daemon outlives the restart and
 // serves every codex started after it, so it runs as one started from a
-// terminal would. magpie opened from the desktop has neither: on Linux,
-// with the proxy set in .zshrc, the daemon magpie restarted after a
+// terminal would. magpie-friday opened from the desktop has neither: on Linux,
+// with the proxy set in .zshrc, the daemon magpie-friday restarted after a
 // ChatGPT sign-in reached chatgpt.com directly, and every codex after it
 // stopped at "account/read failed: workspace routing discovery timed out"
 // until the daemon was restarted from a terminal (guotianci6 on X, Codex
 // 0.164). The proxy variables are taken as a set: when the login shell
-// names any, magpie's own are dropped, so a NO_PROXY only magpie has
+// names any, magpie-friday's own are dropped, so a NO_PROXY only magpie-friday has
 // doesn't ride along; when it names none, env's stay.
 func codexDaemonEnv(env []string) []string {
 	if runtime.GOOS == "windows" {
-		return env // a terminal's environment is the registry's, as magpie's is
+		return env // a terminal's environment is the registry's, as magpie-friday's is
 	}
 	var login []string
 	for _, k := range daemonProxyVars {
@@ -378,12 +378,12 @@ func codexDaemonEnv(env []string) []string {
 
 // The daemon also builds Codex's model list once, as it starts, from
 // config.toml and the catalog it names (codex-rs app-server's models
-// manager): a codex session started after magpie wires Codex in, or takes
+// manager): a codex session started after magpie-friday wires Codex in, or takes
 // it out, attaches to the daemon left running and shows the list from
-// before — Codex's own models, or magpie's — until it restarts (luci on
+// before — Codex's own models, or magpie-friday's — until it restarts (luci on
 // Discord, Codex 0.162). It runs per CODEX_HOME, not per terminal, and
 // has no idle exit. Restarting it with no codex session attached ends
-// nothing, so magpie does that itself (KeepCodexDaemonCurrent); with one
+// nothing, so magpie-friday does that itself (KeepCodexDaemonCurrent); with one
 // attached, the Agents page offers it.
 
 // A CodexDaemonCheck is what KeepCodexDaemonCurrent found and did.
@@ -392,10 +392,10 @@ type CodexDaemonCheck struct {
 	Behind bool
 	// Since is when that daemon started
 	Since time.Time
-	// Attached is how many codex sessions may be on it, which magpie
+	// Attached is how many codex sessions may be on it, which magpie-friday
 	// doesn't restart it under
 	Attached int
-	// Restarted: magpie restarted it, and new sessions get the new list
+	// Restarted: magpie-friday restarted it, and new sessions get the new list
 	Restarted bool
 	Err       error
 }
@@ -404,7 +404,7 @@ type CodexDaemonCheck struct {
 var codexRestarting sync.Mutex
 
 // KeepCodexDaemonCurrent restarts the managed app-server of the Codex home
-// home when it started before changed (when magpie last changed what Codex
+// home when it started before changed (when magpie-friday last changed what Codex
 // reads at start) and no codex session is attached to it. One that can't
 // be found or timed, or a restart already under way, is left as it is.
 func KeepCodexDaemonCurrent(ctx context.Context, home string, changed time.Time) CodexDaemonCheck {
@@ -441,7 +441,7 @@ func KeepCodexDaemonCurrent(ctx context.Context, home string, changed time.Time)
 // changed: only a daemon one names can be found behind (daemonStarted), so
 // with none the processes aren't listed at all. Listing them is a
 // PowerShell run on Windows, which every look did every codexDaemonEvery
-// for as long as magpie ran (#2341).
+// for as long as magpie-friday ran (#2341).
 func pidFileBehind(home string, changed time.Time) bool {
 	for _, pid := range daemonPIDs(home) {
 		if since, ok := daemonStarted(home, pid); ok && since.Before(changed.Add(-time.Second)) {
@@ -530,5 +530,5 @@ func splitExe(args string) (exe, rest string) {
 	return exe, rest
 }
 
-// CodexHome is the Codex home magpie wires and signs Codex in through.
+// CodexHome is the Codex home magpie-friday wires and signs Codex in through.
 func CodexHome() string { return codexHome() }

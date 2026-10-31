@@ -6,12 +6,12 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/yetone/magpie/internal/codexcat"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/codexcat"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// The Codex CLI that names magpie its provider reads its models from
-// magpie-models.json (model_catalog_json), which Codex prefers over any
+// The Codex CLI that names magpie-friday its provider reads its models from
+// magpie-friday-models.json (model_catalog_json), which Codex prefers over any
 // model_catalog_url. Its /fast is there only when the model's entry has
 // service_tiers. A provider the user added by its address was offered
 // Fast in the gateway's lists (#1234) but every entry in the file had
@@ -35,7 +35,7 @@ func TestCodexCatalogTiersReachDisk(t *testing.T) {
 			} `json:"service_tiers"`
 		} `json:"models"`
 	}
-	raw := readFile(filepath.Join(home, ".codex", "magpie-models.json"))
+	raw := readFile(filepath.Join(home, ".codex", "magpie-friday-models.json"))
 	if err := json.Unmarshal([]byte(raw), &got); err != nil {
 		t.Fatalf("%v: %s", err, raw)
 	}
@@ -49,15 +49,15 @@ func TestCodexCatalogTiersReachDisk(t *testing.T) {
 	}
 	for slug, want := range map[string]string{"sub/gpt-6.1-sol": "priority:Fast ", "sub/glm-4.6": "", "relay/glm-4.6": ""} {
 		if g, ok := tiers[slug]; !ok {
-			t.Errorf("%s is not in magpie-models.json: %s", slug, raw)
+			t.Errorf("%s is not in magpie-friday-models.json: %s", slug, raw)
 		} else if g != want {
-			t.Errorf("magpie-models.json offers %s %q, want %q", slug, g, want)
+			t.Errorf("magpie-friday-models.json offers %s %q, want %q", slug, g, want)
 		}
 	}
 
 	// the file offers each model what GET /v1/codex/models offers it
 	shown, _ := provider.CatalogFor("codex")
 	if disk, api := codexcat.ServiceTiers(magpieModels("codex")), codexcat.ServiceTiers(provider.CodexCatalog(shown)); !reflect.DeepEqual(disk, api) {
-		t.Errorf("tiers in magpie-models.json %v, in /v1/codex/models %v", disk, api)
+		t.Errorf("tiers in magpie-friday-models.json %v, in /v1/codex/models %v", disk, api)
 	}
 }

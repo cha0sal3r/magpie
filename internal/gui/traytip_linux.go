@@ -14,7 +14,7 @@ import (
 
 // setTrayTip puts the tooltip on the tray's StatusNotifierItem. Wails
 // (v3.0.0-beta.24) leaves SetTooltip on Linux a no-op ("TBD"): the item's
-// ToolTip stays the "magpie" it was made with and no NewToolTip is sent, so
+// ToolTip stays the "magpie-friday" it was made with and no NewToolTip is sent, so
 // a bar never had the quotas to show (atie on Discord: Omarchy's bar showed
 // none on hover with 菜单栏显示额度 on). This sets the property Wails
 // exported, through its own prop.Properties (which keeps the (sa(iiay)ss)
@@ -79,7 +79,7 @@ func trayClick(tray *application.SystemTray) (x int, ok bool) {
 }
 
 // setTrayPassive takes the tray's StatusNotifierItem out of the bar's tray
-// (Status "Passive") while magpie's icon is in Omarchy's bar as its widget,
+// (Status "Passive") while magpie-friday's icon is in Omarchy's bar as its widget,
 // and puts it back ("Active") when it isn't. Omarchy's tray and waybar's both
 // leave a Passive item out. Wails exports Status read-only and has no Hide
 // on Linux, so it is set through Wails' own properties, as the tooltip is,

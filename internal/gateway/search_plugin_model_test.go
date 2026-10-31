@@ -13,7 +13,7 @@ import (
 
 // A plugin that marks a model of its list as one that searches the web by
 // itself (m.searches) is offered in Settings' searcher picker with that
-// model alone, is the searcher magpie picks when nothing better is on, and
+// model alone, is the searcher magpie-friday picks when nothing better is on, and
 // searches when asked in plain words. Every plugin's provider was left out
 // of the picker whatever its models did, so Trae's search model couldn't
 // be picked (01huadalang on Discord, 10-20).

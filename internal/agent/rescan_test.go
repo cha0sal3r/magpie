@@ -9,7 +9,7 @@ import (
 )
 
 // The Agents page's refresh looks again at once (#844): Cursor Private
-// Inference installed after magpie last looked used to wait out the half
+// Inference installed after magpie-friday last looked used to wait out the half
 // minute its apps folder was kept for, and a WSL distro's agents a minute.
 func TestRescanLooksAgain(t *testing.T) {
 	h := t.TempDir()

@@ -18,8 +18,8 @@ const ROW = { t: new Date(now).toISOString(), agent: "codex", agentName: "Codex"
 const ROWS = [
   { ...ROW, route_id: "r-1" },
   { ...ROW, t: new Date(now - 60000).toISOString(), agent: "claude", agentName: "Claude Code", icon: "claudecode-color", req: "claude-sonnet-5" },
-  // magpie's own request carries a badge after the name (#1839)
-  { ...ROW, t: new Date(now - 120000).toISOString(), agent: "magpie", agentName: "magpie", icon: "", req: "" },
+  // magpie-friday's own request carries a badge after the name (#1839)
+  { ...ROW, t: new Date(now - 120000).toISOString(), agent: "magpie-friday", agentName: "magpie-friday", icon: "", req: "" },
 ];
 
 function server(lang, theme) {
@@ -35,7 +35,7 @@ function server(lang, theme) {
       agents: [{ id: "codex", name: "Codex", icon: "codex-color" }], providers: [{ id: "openai", name: "OpenAI", icon: "openai" }],
     });
     if (url.pathname === "/api/usage/quotas") return json([]);
-    if (url.pathname === "/api/usage") return json({ calls: 1, errors: 0, input: 1, output: 1, cache_read: 0, cache_write: 0, reasoning: 0, unpriced: 0, cost: 1, bucket: "day", series: [], agents: [], models: [], path: "~/.config/magpie/usage.jsonl" });
+    if (url.pathname === "/api/usage") return json({ calls: 1, errors: 0, input: 1, output: 1, cache_read: 0, cache_write: 0, reasoning: 0, unpriced: 0, cost: 1, bucket: "day", series: [], agents: [], models: [], path: "~/.config/magpie-friday/usage.jsonl" });
     if (url.pathname === "/api/sessions") return json({ sessions: [], dirs: [] });
     if (url.pathname === "/api/sessions/stats") return json({ from: "", to: "", days: [], agents: {} });
     if (url.pathname === "/api/groups") return json({ groups: [], models: [] });

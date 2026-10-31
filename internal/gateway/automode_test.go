@@ -19,10 +19,10 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
-	"github.com/yetone/magpie/internal/wslrun"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/wslrun"
 )
 
 // autoModeAsk is Claude Code's auto mode classifier's first stage as it
@@ -304,7 +304,7 @@ func TestAutoModeReviewOnlyForClaude(t *testing.T) {
 
 // TestAutoModeReviewedRoutes: the models whose requests can carry auto
 // mode's review to Anthropic, the rule Claude Code's wiring turns the
-// review off by while none of them is behind magpie (1EFLOPS on X): the
+// review off by while none of them is behind magpie-friday (1EFLOPS on X): the
 // Claude subscription, a Claude model under any vendor's spelling of it,
 // and Anthropic's own API. Codex, DeepSeek's Anthropic API and an
 // OpenAI-compatible relay's GPT are not.
@@ -870,7 +870,7 @@ func askedEffort(proto provider.Protocol, body []byte) any {
 }
 
 // classifierProvider saves an OpenAI-compatible relay the user added by
-// its address, serving gpt6.1-sol, a model whose levels magpie doesn't
+// its address, serving gpt6.1-sol, a model whose levels magpie-friday doesn't
 // know, on proto (CyberCaius on Discord: a new-api relay).
 func classifierProvider(t *testing.T, proto provider.Protocol, f *fake) {
 	t.Helper()
@@ -904,7 +904,7 @@ func askClassifier(t *testing.T, s *Server, body string) (int, string) {
 }
 
 // Auto mode's classifier waits 60 seconds for its verdict (Claude Code
-// 2.1.310, per attempt). A reasoning model whose levels magpie doesn't
+// 2.1.310, per attempt). A reasoning model whose levels magpie-friday doesn't
 // know, asked with no effort, reasoned at its vendor's default over the
 // whole policy and transcript, past those 60 seconds, and Claude Code
 // closed the request (CyberCaius on Discord: every classifier request
@@ -928,7 +928,7 @@ func TestAutoModeClassifierReasonsLeastOnAnUnknownModel(t *testing.T) {
 	}
 }
 
-// The effort magpie adds is its own ask, not the client's: an upstream
+// The effort magpie-friday adds is its own ask, not the client's: an upstream
 // that takes no none is asked at low, one that takes no reasoning effort
 // at all is asked without it, as it was before, and each is remembered,
 // so the next classifier ask goes once.
@@ -990,7 +990,7 @@ func TestAutoModeClassifierEffortRefusedGoesWithout(t *testing.T) {
 // CyberCaius on Discord: after a switch in /model, the first auto mode
 // classifier request went to the model before it. Claude Code names its
 // sonnet tier for the classifier, and that tier followed the old main
-// model until magpie moved it. The classifier goes to the model the tier
+// model until magpie-friday moved it. The classifier goes to the model the tier
 // follows now (ClassifierStandIn); a turn of the conversation naming the
 // same model, another session still on it, goes as asked.
 func TestAutoModeClassifierFollowsTheSwitchedModel(t *testing.T) {

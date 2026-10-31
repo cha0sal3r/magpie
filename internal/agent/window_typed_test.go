@@ -5,15 +5,15 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A window the user typed is the one Codex and Claude Code run to (#1809,
 // a DeepSeek V4.1 Flash group set to 500K): a routing group's own size, or
-// one set on the provider for a model, isn't cut to magpie's default
+// one set on the provider for a model, isn't cut to magpie-friday's default
 // working window (272K, which Codex ran to 95% of: ~258K). Codex is told
 // it as its context_window, on disk and in the gateway's list, with no
 // max_context_window; Claude Code is handed no CLAUDE_CODE_AUTO_COMPACT_
@@ -46,7 +46,7 @@ func TestTypedWindowReachesCodexAndClaudeCode(t *testing.T) {
 				Max     int    `json:"max_context_window"`
 			} `json:"models"`
 		}
-		raw := readFile(filepath.Join(home, ".codex", "magpie-models.json"))
+		raw := readFile(filepath.Join(home, ".codex", "magpie-friday-models.json"))
 		if err := json.Unmarshal([]byte(raw), &got); err != nil {
 			t.Fatalf("%v: %s", err, raw)
 		}
@@ -117,7 +117,7 @@ func TestTypedWindowReachesCodexAndClaudeCode(t *testing.T) {
 // #2224 (Zypixh): a group that follows its smallest member is told that
 // member's window, and when the user typed it (500K on the provider for
 // gpt-6.1-sol) Claude Desktop and Codex run to it whole, as they do for a
-// group set to 500K itself, not to magpie's default 272K. A group in a
+// group set to 500K itself, not to magpie-friday's default 272K. A group in a
 // group passes it on. A group whose smallest member's window nobody typed
 // keeps the default.
 func TestSmallestMemberTypedWindow(t *testing.T) {
@@ -148,7 +148,7 @@ func TestSmallestMemberTypedWindow(t *testing.T) {
 	}
 
 	// Claude Desktop: each group's own autoCompactWindow
-	must(claudeDesktop(home).Field("provider").Set("magpie"))
+	must(claudeDesktop(home).Field("provider").Set("magpie-friday"))
 	ids := map[string]string{}
 	for _, e := range provider.Catalog() {
 		ids[e.ID] = gateway.DesktopID(e)
@@ -164,7 +164,7 @@ func TestSmallestMemberTypedWindow(t *testing.T) {
 // its largest member's window, and when the user typed that one (872K on
 // the provider for GPT-6 Astra, its most) Codex and Claude run to it
 // whole, as for a group following its smallest member (#2224), not to
-// magpie's default 272K (Codex showed "258k", 95% of it). A group whose
+// magpie-friday's default 272K (Codex showed "258k", 95% of it). A group whose
 // largest member's window nobody typed keeps the default, even with a
 // typed member smaller than it.
 func TestLargestMemberTypedWindow(t *testing.T) {
@@ -199,7 +199,7 @@ func TestLargestMemberTypedWindow(t *testing.T) {
 			Max     int    `json:"max_context_window"`
 		} `json:"models"`
 	}
-	raw := readFile(filepath.Join(home, ".codex", "magpie-models.json"))
+	raw := readFile(filepath.Join(home, ".codex", "magpie-friday-models.json"))
 	must(json.Unmarshal([]byte(raw), &disk))
 	for _, m := range disk.Models {
 		want := map[string][2]int{"group/ultra": {872000, 0}, "group/loose": {272000, 1000000}}
@@ -223,7 +223,7 @@ func TestLargestMemberTypedWindow(t *testing.T) {
 
 	// Claude Desktop: the typed group's own autoCompactWindow; the
 	// other is left to the top-level one, the default
-	must(claudeDesktop(home).Field("provider").Set("magpie"))
+	must(claudeDesktop(home).Field("provider").Set("magpie-friday"))
 	ids := map[string]string{}
 	for _, e := range provider.Catalog() {
 		ids[e.ID] = gateway.DesktopID(e)

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
 )
 
 // The Agents page calls cursor-agent Cursor CLI (@G_Z_Y on X), but the

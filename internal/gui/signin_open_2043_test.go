@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/library"
-	"github.com/yetone/magpie/internal/mcpauth"
-	"github.com/yetone/magpie/internal/mcpauth/mcpauthtest"
+	"github.com/cha0sal3r/magpie-friday/internal/library"
+	"github.com/cha0sal3r/magpie-friday/internal/mcpauth"
+	"github.com/cha0sal3r/magpie-friday/internal/mcpauth/mcpauthtest"
 )
 
 // browserDown is a desktop whose browser doesn't start, as Windows'

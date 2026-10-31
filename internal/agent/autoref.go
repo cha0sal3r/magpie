@@ -3,19 +3,19 @@ package agent
 import (
 	"strings"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// A group magpie found is listed as auto/<model> (provider.Group.Ref); it
-// was group/auto-<slug>, and agents magpie set to it then still say so.
-// The gateway serves that id as it did, but the lists magpie writes into
+// A group magpie-friday found is listed as auto/<model> (provider.Group.Ref); it
+// was group/auto-<slug>, and agents magpie-friday set to it then still say so.
+// The gateway serves that id as it did, but the lists magpie-friday writes into
 // an agent's files name the group by its new id only, so an agent that
 // checks its model against its list (OpenCode) would find it gone. On its
-// next write of the agent's lists (SyncCatalog), magpie moves each field
+// next write of the agent's lists (SyncCatalog), magpie-friday moves each field
 // it set to the old id onto the new one; a field the user set themselves,
-// or changed since magpie set it, stays as they left it.
+// or changed since magpie-friday set it, stays as they left it.
 
-// setToFoundGroups are the agents magpie set a field of to a found
+// setToFoundGroups are the agents magpie-friday set a field of to a found
 // group's group/auto-<slug>, by id: those renameFoundGroups looks at, so
 // a sync reads no other agent's files for it. None while a provider of
 // the user's is called auto, and auto/<model> is its.
@@ -40,7 +40,7 @@ func setToFoundGroups() map[string]bool {
 	return out
 }
 
-// renameFoundGroups moves a's fields that magpie set to a found group's
+// renameFoundGroups moves a's fields that magpie-friday set to a found group's
 // group/auto-<slug> onto the group's auto/<model>, the agent's prefix and
 // suffix kept. It answers whether it moved any.
 func (a *Agent) renameFoundGroups() bool {
@@ -55,7 +55,7 @@ func (a *Agent) renameFoundGroups() bool {
 	vals := a.Values()
 	for _, f := range a.Fields {
 		v := vals[f.Key]
-		// what magpie set, as it set it: a value of the user's own, or
+		// what magpie-friday set, as it set it: a value of the user's own, or
 		// one changed since, is theirs
 		if want, ok := rec[f.Key]; !ok || v == "" || v != want || f.Set == nil {
 			continue
@@ -74,8 +74,8 @@ func (a *Agent) renameFoundGroups() bool {
 
 // publicValue is v, an agent's value for a field, with a found group's
 // group/auto-<slug> in it as the group's auto/<model>: its prefix
-// (magpie/), an effort or [1m] after the id, and the agent's own suffix
-// kept. ok is false when v names no such group, or one magpie has no
+// (magpie-friday/), an effort or [1m] after the id, and the agent's own suffix
+// kept. ok is false when v names no such group, or one magpie-friday has no
 // group for now.
 func (a *Agent) publicValue(v string) (string, bool) {
 	model, suffix, one := a.split(v)

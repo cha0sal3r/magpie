@@ -9,10 +9,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/budget"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/budget"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // mcpPost sends one JSON-RPC body to the web search MCP server through h,
@@ -65,7 +65,7 @@ func readMCP(t *testing.T, w *httptest.ResponseRecorder) mcpReply {
 
 const mcpSearchCall = `{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"web_search","arguments":{"query":"latest go"}}}`
 
-// magpie's web search is an MCP server of its own on the gateway (Kayphoon
+// magpie-friday's web search is an MCP server of its own on the gateway (Kayphoon
 // on Discord): an MCP client initializes, lists its web_search tool and
 // calls it, and the search goes where a model's web_search would go — here
 // the search API the user set up — the pages it found in the tool's text.
@@ -79,7 +79,7 @@ func TestSearchMCPServesWebSearch(t *testing.T) {
 	const here = "127.0.0.1:50000"
 
 	init := readMCP(t, mcpPost(h, here, `{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"cursor","version":"1"}}}`))
-	if init.Error != nil || init.Result.ProtocolVersion != "2025-03-26" || init.Result.ServerInfo.Name != "magpie-web-search" || string(init.ID) != "1" {
+	if init.Error != nil || init.Result.ProtocolVersion != "2025-03-26" || init.Result.ServerInfo.Name != "magpie-friday-web-search" || string(init.ID) != "1" {
 		t.Fatalf("initialize: %+v", init)
 	}
 	// a version it doesn't speak is answered in its newest
@@ -140,7 +140,7 @@ func TestSearchMCPWithNoSearcher(t *testing.T) {
 }
 
 // The server is a gateway route like the others: another computer reaches
-// it only while magpie is shared and with an enabled gateway key, a web
+// it only while magpie-friday is shared and with an enabled gateway key, a web
 // page — one rebound to 127.0.0.1, or one on this computer — is turned
 // away, and the search API is asked for none of them.
 func TestSearchMCPGuarded(t *testing.T) {
@@ -156,11 +156,11 @@ func TestSearchMCPGuarded(t *testing.T) {
 	if w := mcpPost(h, there, mcpSearchCall); w.Code != http.StatusForbidden {
 		t.Fatalf("not shared: %d %s", w.Code, w.Body.String())
 	}
-	_, secrets := newCaller(t, "Laptop") // shares magpie
+	_, secrets := newCaller(t, "Laptop") // shares magpie-friday
 	if w := mcpPost(h, there, mcpSearchCall); w.Code != http.StatusUnauthorized {
 		t.Fatalf("shared, no key: %d %s", w.Code, w.Body.String())
 	}
-	if w := mcpPost(h, there, mcpSearchCall, "Authorization", "Bearer sk-magpie-wrong"); w.Code != http.StatusUnauthorized {
+	if w := mcpPost(h, there, mcpSearchCall, "Authorization", "Bearer sk-magpie-friday-wrong"); w.Code != http.StatusUnauthorized {
 		t.Fatalf("shared, a wrong key: %d %s", w.Code, w.Body.String())
 	}
 	chrome := []string{"User-Agent", "Mozilla/5.0 (Macintosh) Chrome/140", "Sec-Fetch-Site", "same-origin", "Sec-Fetch-Mode", "cors"}

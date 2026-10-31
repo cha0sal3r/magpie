@@ -42,7 +42,7 @@ func TestProbeDownloadEndsWithIt(t *testing.T) {
 	}
 }
 
-// #2321: a download a magpie that quit left behind goes at the next probe;
+// #2321: a download a magpie-friday that quit left behind goes at the next probe;
 // one that may be in use, and what isn't ours, stays.
 func TestStaleDownloadsSwept(t *testing.T) {
 	dir := t.TempDir()

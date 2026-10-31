@@ -7,16 +7,16 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agentplug"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/agentplug"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 	"gopkg.in/yaml.v3"
 )
 
-// pluggedHome is a home of its own with DeepSeek's two models in magpie
+// pluggedHome is a home of its own with DeepSeek's two models in magpie-friday
 // and the plugins whose agent modules are srcs, each in a folder with a
 // package.json naming it.
 func pluggedHome(t *testing.T, srcs ...string) string {
@@ -77,10 +77,10 @@ func TestPluggedYAML(t *testing.T) {
 	if f.Get() != "gpt-5" || a.Check() != "" {
 		t.Fatalf("get %q, check %q", f.Get(), a.Check())
 	}
-	if !containsOption(f.Options(map[string]string{"model": f.Get()}), "magpie/deepseek/pro") {
-		t.Fatal("magpie's models aren't offered")
+	if !containsOption(f.Options(map[string]string{"model": f.Get()}), "magpie-friday/deepseek/pro") {
+		t.Fatal("magpie-friday's models aren't offered")
 	}
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	c, raw := read()
@@ -88,11 +88,11 @@ func TestPluggedYAML(t *testing.T) {
 		c["map-tokens"] != 2048 || c["dark-mode"] != true || !strings.Contains(raw, "# mine") {
 		t.Fatalf("wired:\n%s", raw)
 	}
-	if f.Get() != "magpie/deepseek/pro" || a.Check() != "" {
+	if f.Get() != "magpie-friday/deepseek/pro" || a.Check() != "" {
 		t.Fatalf("get %q, check %q", f.Get(), a.Check())
 	}
-	// another of magpie's models keeps what was stashed first
-	if err := f.Set("magpie/deepseek/flash"); err != nil {
+	// another of magpie-friday's models keeps what was stashed first
+	if err := f.Set("magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
 	if c, raw := read(); c["model"] != "openai/deepseek/flash" || c["map-tokens"] != 4096 {
@@ -139,7 +139,7 @@ export default {
 		t.Fatal("found with no file")
 	}
 	f := a.Field("model")
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	var c struct {
@@ -151,7 +151,7 @@ export default {
 	}
 	b, _ := os.ReadFile(path)
 	json.Unmarshal(b, &c)
-	if c.LLM.Model != "deepseek/pro" || c.LLM.Endpoint.URL != gateway.URL()+"/v1" || c.LLM.Count < 2 || f.Get() != "magpie/deepseek/pro" {
+	if c.LLM.Model != "deepseek/pro" || c.LLM.Endpoint.URL != gateway.URL()+"/v1" || c.LLM.Count < 2 || f.Get() != "magpie-friday/deepseek/pro" {
 		t.Fatalf("wired: %s", b)
 	}
 	// Disconnect takes every key out, as there was nothing before
@@ -180,7 +180,7 @@ export function connect() { throw new Error("no gateway for me"); }`,
 		got = append(got, e)
 	}
 	all := strings.Join(got, "\n")
-	if !strings.Contains(all, `"codex" is magpie's own`) || !strings.Contains(all, "agent.format") || len(errs) != 3 {
+	if !strings.Contains(all, `"codex" is magpie-friday's own`) || !strings.Contains(all, "agent.format") || len(errs) != 3 {
 		t.Fatalf("errors: %v", errs)
 	}
 	codex, _ := Find("codex")
@@ -192,7 +192,7 @@ export function connect() { throw new Error("no gateway for me"); }`,
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := a.Field("model").Set("magpie/deepseek/pro"); err == nil || !strings.Contains(err.Error(), "no gateway for me") {
+	if err := a.Field("model").Set("magpie-friday/deepseek/pro"); err == nil || !strings.Contains(err.Error(), "no gateway for me") {
 		t.Fatalf("set: %v", err)
 	}
 	if _, err := os.Stat(a.Path); err == nil {

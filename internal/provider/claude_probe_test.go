@@ -11,7 +11,7 @@ import (
 )
 
 // A Claude account is tested by Claude Code, with a saved account's own
-// sign-in, and nothing magpie sends reaches Anthropic's API in its name.
+// sign-in, and nothing magpie-friday sends reaches Anthropic's API in its name.
 func TestClaudeTestRunsThroughClaudeCode(t *testing.T) {
 	api := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		t.Errorf("asked the API directly: %s %s", r.Method, r.URL)

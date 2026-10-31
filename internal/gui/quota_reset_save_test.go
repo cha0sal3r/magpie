@@ -6,12 +6,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // #2008: the editor knows nothing of the time of day a provider's daily
-// allowance comes back, set by `magpie provider quota-rest <id> until
-// 08:00`, nor of its rest cap (`magpie provider rest-cap`), so its save
+// allowance comes back, set by `magpie-friday provider quota-rest <id> until
+// 08:00`, nor of its rest cap (`magpie-friday provider rest-cap`), so its save
 // keeps both.
 func TestSaveKeepsQuotaResetAt(t *testing.T) {
 	home := t.TempDir()

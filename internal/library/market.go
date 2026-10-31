@@ -21,12 +21,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/iconproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/iconproxy"
 )
 
 // The market is where the page finds MCP servers and skills to add in one
-// click: servers magpie picked and checked itself, then the MCP Registry's;
+// click: servers magpie-friday picked and checked itself, then the MCP Registry's;
 // skills from skills.sh, which counts how often each is installed.
 
 // ---- servers ----------------------------------------------------------------
@@ -88,7 +88,7 @@ func secretEnv(key, label, where string) Input {
 	return Input{Key: key, Where: "env", Label: label, Description: where, Secret: true, Required: true}
 }
 
-// featured are the servers magpie offers first. Every one was checked: its
+// featured are the servers magpie-friday offers first. Every one was checked: its
 // package is published, its endpoint answers.
 var featured = []MarketServer{
 	selfServer(),
@@ -152,27 +152,27 @@ var featured = []MarketServer{
 		secretEnv("TAVILY_API_KEY", "API key", "app.tavily.com")),
 }
 
-// magpieCommand stands for this magpie's own binary in a featured server's
+// magpieCommand stands for this magpie-friday's own binary in a featured server's
 // command, which InstallServer puts in when it is added, and in a library
 // carried to another computer, which reads it as its own (self_here.go).
-const magpieCommand = "magpie"
+const magpieCommand = "magpie-friday"
 
-// selfServerName is the name magpie's own image generation server is written
+// selfServerName is the name magpie-friday's own image generation server is written
 // under, in every agent's config.
-const selfServerName = "magpie-image"
+const selfServerName = "magpie-friday-image"
 
-// selfServer is magpie's own image generation server: generate_image makes
+// selfServer is magpie-friday's own image generation server: generate_image makes
 // an image with the model Settings → Images → Image generation names, saved
 // in the project. It costs what the model does, so it is given only to the
 // agents picked for it.
 func selfServer() MarketServer {
-	m := localServer(selfServerName, "Magpie Image", "Magpie", "https://usemagpie.ai/favicon.png", "https://usemagpie.ai",
-		"Generate and edit images with the image model set in Magpie (Settings → Images), and make short videos with a video model set up in Magpie (Grok Imagine, Seedance), saved in the project.", magpieCommand, []string{"mcp", "image"})
+	m := localServer(selfServerName, "magpie-friday Image", "magpie-friday", "https://usemagpie.ai/favicon.png", "https://usemagpie.ai",
+		"Generate and edit images with the image model set in magpie-friday (Settings → Images), and make short videos with a video model set up in magpie-friday (Grok Imagine, Seedance), saved in the project.", magpieCommand, []string{"mcp", "image"})
 	m.OptIn = true
 	return m
 }
 
-// selfCommand is the server's command and env for this magpie: its binary
+// selfCommand is the server's command and env for this magpie-friday: its binary
 // by full path, and the gateway's address when it isn't the default one.
 func selfCommand(s *Server) {
 	if s.Command != magpieCommand {
@@ -281,7 +281,7 @@ func serverKey(s *Server) string {
 		return strings.TrimSuffix(strings.ToLower(s.URL), "/")
 	}
 	if len(s.Args) == 2 && s.Args[0] == "mcp" && s.Args[1] == "image" {
-		return "magpie mcp image" // magpie's own, wherever its binary is
+		return "magpie-friday mcp image" // magpie-friday's own, wherever its binary is
 	}
 	for _, a := range s.Args {
 		if a == "" || strings.HasPrefix(a, "-") || a == "run" {
@@ -605,7 +605,7 @@ func fromRegistry(r *registryServer) (MarketServer, bool) {
 					}
 					m.Inputs = append(m.Inputs, Input{Key: fmt.Sprintf("arg%d", i), Where: "arg", Label: label, Description: a.Description, Required: true})
 				case a.IsRequired:
-					return MarketServer{}, false // a named argument magpie can't fill
+					return MarketServer{}, false // a named argument magpie-friday can't fill
 				}
 			}
 			return m, true
@@ -775,7 +775,7 @@ type MarketSkill struct {
 	Name     string `json:"name"`
 	Installs int    `json:"installs"`
 	Official bool   `json:"official,omitempty"`
-	// Featured is magpie's own, not one skills.sh lists
+	// Featured is magpie-friday's own, not one skills.sh lists
 	Featured bool   `json:"featured,omitempty"`
 	Icon     string `json:"icon"`
 	// Description is known once it has been fetched
@@ -783,17 +783,17 @@ type MarketSkill struct {
 	Have        string `json:"have,omitempty"`
 }
 
-// featuredSkills are magpie's own skills, first in the market: in
-// magpie-community/plugins, beside its plugins. magpie-setup has an agent
-// set magpie up as the user asks, through its commands (Leyuu_5 on X: so
-// many features that an AI could do the setting up); magpie-quota reads
-// what magpie quota tells (ttmouse on X).
+// featuredSkills are magpie-friday's own skills, first in the market: in
+// magpie-community/plugins, beside its plugins. magpie-friday-setup has an agent
+// set magpie-friday up as the user asks, through its commands (Leyuu_5 on X: so
+// many features that an AI could do the setting up); magpie-friday-quota reads
+// what magpie-friday quota tells (ttmouse on X).
 var featuredSkills = []MarketSkill{{
-	Source: "magpie-community/plugins", SkillID: "magpie-setup", Name: "magpie-setup", Official: true, Featured: true,
-	Description: "Set magpie up as you ask, through its own commands: add keys and subscriptions, point agents at models, build routing groups with fallbacks and time-of-day rules, give devices gateway keys with budgets, and share MCP servers and instructions with every agent.",
+	Source: "magpie-community/plugins", SkillID: "magpie-friday-setup", Name: "magpie-friday-setup", Official: true, Featured: true,
+	Description: "Set magpie-friday up as you ask, through its own commands: add keys and subscriptions, point agents at models, build routing groups with fallbacks and time-of-day rules, give devices gateway keys with budgets, and share MCP servers and instructions with every agent.",
 }, {
-	Source: "magpie-community/plugins", SkillID: "magpie-quota", Name: "magpie-quota", Official: true, Featured: true,
-	Description: "Check how much is left of the user's AI subscriptions, coding plans and API key balances through magpie: each usage window's percent used and when it resets, each key's balance, and wait until a subscription has allowance again.",
+	Source: "magpie-community/plugins", SkillID: "magpie-friday-quota", Name: "magpie-friday-quota", Official: true, Featured: true,
+	Description: "Check how much is left of the user's AI subscriptions, coding plans and API key balances through magpie-friday: each usage window's percent used and when it resets, each key's balance, and wait until a subscription has allowance again.",
 }}
 
 type skillsShEntry struct {
@@ -828,7 +828,7 @@ func marketCache(name string) string {
 
 // popularSkills are skills.sh's most installed, read off its front page,
 // which lists them for itself; kept for six hours, and on disk for when
-// it can't be reached, else what magpie shipped with.
+// it can't be reached, else what magpie-friday shipped with.
 func popularSkills() []skillsShEntry {
 	popular.Lock()
 	defer popular.Unlock()
@@ -881,7 +881,7 @@ func searchSkillsSh(q string) ([]skillsShEntry, error) {
 	return slices.DeleteFunc(body.Skills, func(e skillsShEntry) bool { return !repoRe.MatchString(e.Source) || e.SkillID == "" }), nil
 }
 
-// MarketSkills is what the market shows for a search: magpie's own skills
+// MarketSkills is what the market shows for a search: magpie-friday's own skills
 // that match it, the most installed skills that do, then what skills.sh
 // finds for it.
 func MarketSkills(q string) ([]MarketSkill, error) {
@@ -1070,7 +1070,7 @@ func InstallMarketSkill(source, id string, agents []string) (*Result, error) {
 // ---- icons ------------------------------------------------------------------
 
 // Icon is a market icon, fetched once and kept on disk: only an icon the
-// market gave out is fetched, so the page can't have magpie fetch anything else.
+// market gave out is fetched, so the page can't have magpie-friday fetch anything else.
 func Icon(u string) ([]byte, string, error) {
 	sum := sha256.Sum256([]byte(u))
 	file := marketCache(filepath.Join("icons", hex.EncodeToString(sum[:16])))
@@ -1170,7 +1170,7 @@ func get(u, accept string, limit int64) ([]byte, error) {
 		return nil, err
 	}
 	// skills.sh answers a client it doesn't know with a page of its own
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 magpie")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 magpie-friday")
 	req.Header.Set("Accept", accept)
 	resp, err := client.Do(req)
 	if err != nil {

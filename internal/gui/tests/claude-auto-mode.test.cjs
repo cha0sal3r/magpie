@@ -5,7 +5,7 @@
 // unset it says default, a click opens the app's model picker with Default
 // first, noted as Claude Code's own pick, and a model picked is posted;
 // Default posts it empty. It is no square of the row's own. Before Claude
-// Code goes through magpie it has no options, so neither line nor square
+// Code goes through magpie-friday it has no options, so neither line nor square
 // shows. No click scrolls the page. In English and Chinese, at a normal
 // and a narrow width. No backend: the API is faked here.
 const assert = require("node:assert/strict");
@@ -15,12 +15,12 @@ const { test } = require("node:test");
 const { chromium, webkit } = require("playwright");
 
 const assets = path.resolve(__dirname, "../assets");
-const models = [{ value: "magpie/v/glm", label: "GLM", ref: "v/glm" }, { value: "magpie/v/flash", label: "Flash", ref: "v/flash" }];
+const models = [{ value: "magpie-friday/v/glm", label: "GLM", ref: "v/glm" }, { value: "magpie-friday/v/flash", label: "Flash", ref: "v/flash" }];
 const tiers = ["opus", "sonnet", "haiku", "fable"];
 const claude = (id, routed) => ({
   id, name: "Claude Code", path: "/test/settings.json", icon: "claudecode-color", wired: routed,
   fields: [
-    { key: "model", label: "model", value: routed ? "magpie/v/glm" : "opus", options: routed ? models : [{ value: "opus" }] },
+    { key: "model", label: "model", value: routed ? "magpie-friday/v/glm" : "opus", options: routed ? models : [{ value: "opus" }] },
     ...tiers.map((tier) => ({ key: tier, label: tier, value: "", options: models })),
     { key: "subagent", label: "subagents", value: "", options: routed ? models : [] },
     { key: "auto_mode", label: "auto mode", value: "", options: routed ? models : [] },
@@ -56,8 +56,8 @@ function server(lang, sets) {
 
 // the words as i18n.js has them
 const W = {
-  en: { line: "Auto mode", hint: "the model that checks each action in auto mode", def: "Default", note: "the model Claude Code picks for its auto mode classifier", unset: "auto mode: agent default", set: "auto mode: magpie/v/flash" },
-  zh: { line: "自动模式", hint: "自动模式下检查每个操作的模型", def: "默认", note: "Claude Code 为自动模式分类器挑选的模型", unset: "自动模式：Agent 默认值", set: "自动模式：magpie/v/flash" },
+  en: { line: "Auto mode", hint: "the model that checks each action in auto mode", def: "Default", note: "the model Claude Code picks for its auto mode classifier", unset: "auto mode: agent default", set: "auto mode: magpie-friday/v/flash" },
+  zh: { line: "自动模式", hint: "自动模式下检查每个操作的模型", def: "默认", note: "Claude Code 为自动模式分类器挑选的模型", unset: "自动模式：Agent 默认值", set: "自动模式：magpie-friday/v/flash" },
 };
 
 const cc = '.row.agent[data-id="claude"]';
@@ -82,7 +82,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         });
         await page.goto("http://magpie.test/");
         await page.locator(cc).waitFor();
-        // not through magpie: nothing to pick, so nothing shows
+        // not through magpie-friday: nothing to pick, so nothing shows
         assert.equal(await page.locator('.row.agent[data-id="cc-own"] [data-key="auto_mode"]').count(), 0);
         await page.locator(`${cc} .ag-link`).click();
         await page.locator(`${cc} .ag-exp`).waitFor();
@@ -109,7 +109,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         assert.ok(first.includes(w.def) && first.includes(w.note), first);
         await page.locator("#pop #list li", { hasText: "Flash" }).first().click();
         await page.waitForFunction(() => document.querySelector('.row.agent[data-id="claude"] .ag-exp .field[data-key="auto_mode"] .v:not(.empty)'));
-        assert.deepEqual(sets, [{ agent: "claude", field: "auto_mode", value: "magpie/v/flash" }]);
+        assert.deepEqual(sets, [{ agent: "claude", field: "auto_mode", value: "magpie-friday/v/flash" }]);
         assert.equal(await page.locator(`${cc} .ag-exp .field.ag-pick[data-key="auto_mode"]`).getAttribute("title"), w.set);
 
         // Default takes it out again

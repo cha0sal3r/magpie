@@ -12,13 +12,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // One event a day, under the same id, with nothing but the id, the version
-// and the system, and what magpie is used with by built-in ids; none once
+// and the system, and what magpie-friday is used with by built-in ids; none once
 // the user turns it off.
 func TestSend(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
@@ -57,13 +57,13 @@ func TestSend(t *testing.T) {
 	}
 	a := got[0][0]
 	p := a["properties"].(map[string]any)
-	if a["event"] != "magpie active" || p["version"] != "0.1.300" || p["kind"] != "app" || p["agents"] != 2.0 || p["providers"] != 2.0 || p["models"] != 1.0 || p["groups"] != 2.0 || len(p) != 10 {
+	if a["event"] != "magpie-friday active" || p["version"] != "0.1.300" || p["kind"] != "app" || p["agents"] != 2.0 || p["providers"] != 2.0 || p["models"] != 1.0 || p["groups"] != 2.0 || len(p) != 10 {
 		t.Fatalf("active: %v", a)
 	}
 	var uses []string
 	for _, e := range got[0][1:] {
 		p := e["properties"].(map[string]any)
-		if e["event"] != "magpie uses" || e["distinct_id"] != a["distinct_id"] || p["$process_person_profile"] != false || len(p) != 4 {
+		if e["event"] != "magpie-friday uses" || e["distinct_id"] != a["distinct_id"] || p["$process_person_profile"] != false || len(p) != 4 {
 			t.Fatalf("use: %v", e)
 		}
 		uses = append(uses, p["kind"].(string)+" "+p["id"].(string))
@@ -89,7 +89,7 @@ func TestSend(t *testing.T) {
 	}
 }
 
-// A provider is named by what magpie built in, never by what the user
+// A provider is named by what magpie-friday built in, never by what the user
 // typed: a preset's id, a subscription's agent, a known plugin's id;
 // anything else is "custom" or "plugin".
 func TestProviderLabel(t *testing.T) {
@@ -159,7 +159,7 @@ func TestModelLabelKeepsTheUsersOwnModelIDs(t *testing.T) {
 }
 
 // The partners' counts of the days ended go with the day's event, each as
-// one "magpie partner" at its own day, and are sent once; with what magpie
+// one "magpie-friday partner" at its own day, and are sent once; with what magpie-friday
 // is used with turned off they don't go.
 func TestSendPartnerCounts(t *testing.T) {
 	home := t.TempDir()
@@ -171,7 +171,7 @@ func TestSendPartnerCounts(t *testing.T) {
 	defer func() { usage = readUsage }()
 	counts := `{"days":{"2026-09-27":{"acme":{"shown":12,"opened":2}},"2026-09-28":{"acme":{"shown":3}}}}`
 	write := func() {
-		f := filepath.Join(home, ".cache", "magpie", "partner-counts.json")
+		f := filepath.Join(home, ".cache", "magpie-friday", "partner-counts.json")
 		if err := os.MkdirAll(filepath.Dir(f), 0o755); err != nil {
 			t.Fatal(err)
 		}
@@ -194,7 +194,7 @@ func TestSendPartnerCounts(t *testing.T) {
 	partners := func(batch []map[string]any) []string {
 		var out []string
 		for _, e := range batch {
-			if e["event"] != "magpie partner" {
+			if e["event"] != "magpie-friday partner" {
 				continue
 			}
 			p := e["properties"].(map[string]any)

@@ -11,11 +11,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
 )
 
-// A started magpie reads the session files' chunks from the file the last
+// A started magpie-friday reads the session files' chunks from the file the last
 // one wrote, and reads again only the session files that changed since; a
 // file of other prices, or a bad one, is read past. Every page is the one
 // the ledger gives.

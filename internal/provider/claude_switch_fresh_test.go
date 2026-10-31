@@ -11,7 +11,7 @@ import (
 // A switch saves the account it switches away from with the credentials
 // Claude Code has for it now: one Claude Code refreshed a moment ago (its
 // refresh token rotated, the old one dead) is saved as refreshed, not as
-// magpie's look at the credentials up to 10 s before, which Anthropic then
+// magpie-friday's look at the credentials up to 10 s before, which Anthropic then
 // refuses when the account is used again.
 func TestClaudeSwitchSavesTheFreshCredential(t *testing.T) {
 	home := claudeHome(t)
@@ -26,7 +26,7 @@ func TestClaudeSwitchSavesTheFreshCredential(t *testing.T) {
 	b("b")
 	writeFile(t, profile, map[string]any{"oauthAccount": map[string]any{"emailAddress": "b@example.com", "accountUuid": "u-b"}})
 	forgetClaudeCredential()
-	rememberLogins(true) // magpie has looked at b's credentials just now
+	rememberLogins(true) // magpie-friday has looked at b's credentials just now
 
 	b("b2") // Claude Code refreshes b's sign-in
 	old := ClaudeHandedOver

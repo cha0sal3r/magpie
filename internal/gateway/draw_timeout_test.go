@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // slowDrawer is a vendor whose images API answers after wait, as one does
@@ -79,7 +79,7 @@ func TestImageTimeoutSettingReachesTheVendor(t *testing.T) {
 		s := slowDrawer(t, c.minutes, 0)
 		rec := &deadlines{next: s.client.Transport}
 		s.client = &http.Client{Transport: rec}
-		code, _, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"slow/gpt-image-1","prompt":"a magpie"}`)
+		code, _, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"slow/gpt-image-1","prompt":"a magpie-friday"}`)
 		if code != 200 {
 			t.Fatalf("%d minutes: %d %s", c.minutes, code, raw)
 		}
@@ -100,7 +100,7 @@ func TestLongImageTimeoutLetsASlowVendorFinish(t *testing.T) {
 	const slow = 300 * time.Millisecond
 
 	s := slowDrawer(t, 30, slow)
-	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"slow/gpt-image-1","prompt":"a magpie"}`)
+	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"slow/gpt-image-1","prompt":"a magpie-friday"}`)
 	if code != 200 || len(a.Data) != 1 {
 		t.Fatalf("given 30: %d %s", code, raw)
 	}
@@ -109,7 +109,7 @@ func TestLongImageTimeoutLetsASlowVendorFinish(t *testing.T) {
 	}
 
 	s = slowDrawer(t, 0, slow)
-	code, _, raw = postImages(t, s, "/v1/images/generations", "application/json", `{"model":"slow/gpt-image-1","prompt":"a magpie"}`)
+	code, _, raw = postImages(t, s, "/v1/images/generations", "application/json", `{"model":"slow/gpt-image-1","prompt":"a magpie-friday"}`)
 	if code != 504 || !strings.Contains(raw, "Slow didn't answer in 100ms") {
 		t.Fatalf("given the default: %d %s", code, raw)
 	}

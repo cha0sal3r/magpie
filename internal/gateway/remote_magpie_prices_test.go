@@ -10,16 +10,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
-// Sorghum on Discord: a magpie with another computer's magpie as its
-// provider counts the calls it makes there at what that magpie counts
+// Sorghum on Discord: a magpie-friday with another computer's magpie-friday as its
+// provider counts the calls it makes there at what that magpie-friday counts
 // them at — the price its user set for the model by hand — so the two
-// Usage pages give one cost. A price this magpie's user set for the model
-// still wins, and a magpie from before the list told prices changes
+// Usage pages give one cost. A price this magpie-friday's user set for the model
+// still wins, and a magpie-friday from before the list told prices changes
 // nothing here.
 func TestRemoteMagpiePrices(t *testing.T) {
 	fresh(t)
@@ -46,7 +46,7 @@ func TestRemoteMagpiePrices(t *testing.T) {
 	}
 	gw := httptest.NewServer(lanGuard(New().Handler()))
 	t.Cleanup(gw.Close)
-	id, err := provider.Add(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemoteMagpiePreset, Key: "sk-magpie-office", Chat: strings.TrimPrefix(gw.URL, "http://")})
+	id, err := provider.Add(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemoteMagpiePreset, Key: "sk-magpie-friday-office", Chat: strings.TrimPrefix(gw.URL, "http://")})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -94,7 +94,7 @@ func TestRemoteMagpiePrices(t *testing.T) {
 		t.Errorf("the remote's price %+v won over the one set here %+v", pr, mine)
 	}
 
-	// a magpie from before the list told prices: the model stays unpriced
+	// a magpie-friday from before the list told prices: the model stays unpriced
 	old := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		io.WriteString(w, `{"object":"list","data":[{"id":"relay-a/house-model-1","object":"model","owned_by":"relay-a","display_name":"House Model","native_endpoints":["/v1/chat/completions"]}]}`)
@@ -113,7 +113,7 @@ func TestRemoteMagpiePrices(t *testing.T) {
 	}
 }
 
-// What the list tells of prices, and to whom: only to a magpie that asks
+// What the list tells of prices, and to whom: only to a magpie-friday that asks
 // for them, and only from this computer or with a gateway key — never to
 // another machine let in without one (MAGPIE_ADDR open to the network).
 func TestRemoteMagpiePricesTold(t *testing.T) {
@@ -155,9 +155,9 @@ func TestRemoteMagpiePricesTold(t *testing.T) {
 		t.Errorf("this computer, asking: %d, priced %v", code, got)
 	}
 	if _, got := priced("127.0.0.1:5000", "", false); got {
-		t.Error("prices told to a list that didn't ask (an older magpie, an agent)")
+		t.Error("prices told to a list that didn't ask (an older magpie-friday, an agent)")
 	}
-	t.Setenv("MAGPIE_ADDR", "0.0.0.0:0") // on the network, magpie not shared
+	t.Setenv("MAGPIE_ADDR", "0.0.0.0:0") // on the network, magpie-friday not shared
 	if code, got := priced("192.168.1.9:5000", "", true); code != http.StatusUnauthorized || got {
 		t.Errorf("another machine without a key: %d, priced %v", code, got)
 	}

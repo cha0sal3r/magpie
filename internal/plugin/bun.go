@@ -23,13 +23,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/yetone/magpie/internal/ghtoken"
-	"github.com/yetone/magpie/internal/libc"
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/source"
+	"github.com/cha0sal3r/magpie-friday/internal/ghtoken"
+	"github.com/cha0sal3r/magpie-friday/internal/libc"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/source"
 )
 
-// BunVersion is the Bun magpie downloads to run plugins with the first
+// BunVersion is the Bun magpie-friday downloads to run plugins with the first
 // time one is needed, and the oldest it runs them on: newer releases are
 // taken as they come (see CheckBun). Update bunSums below, testenv.MinBun
 // and test.yml's bun-version when it changes.
@@ -180,7 +180,7 @@ func cantStart(bun string, err error) error {
 		return fmt.Errorf("this system can't start $MAGPIE_BUN (%s), though it is there: it is likely a build for another C library than this system's (glibc or musl), whose loader isn't here: %w", bun, err)
 	}
 	target, _ := bunTarget()
-	return fmt.Errorf("this system can't start the Bun magpie downloaded (%s, %s), though it is there: the build doesn't match this system's C library (glibc or musl). Set MAGPIE_BUN to a bun built for this system to run plugins on it: %w", target, bun, err)
+	return fmt.Errorf("this system can't start the Bun magpie-friday downloaded (%s, %s), though it is there: the build doesn't match this system's C library (glibc or musl). Set MAGPIE_BUN to a bun built for this system to run plugins on it: %w", target, bun, err)
 }
 
 // The statuses Windows ends a program with when it can't load it.
@@ -195,7 +195,7 @@ const (
 
 // BunUnstartableError is a bun this machine can't run at all: Windows is
 // older than Bun needs, or the processor lacks an instruction Bun is
-// built for. No Bun magpie can download runs here, so an install isn't
+// built for. No Bun magpie-friday can download runs here, so an install isn't
 // tried again from elsewhere and the GUI says it in the reader's language.
 type BunUnstartableError struct {
 	Bun string
@@ -208,7 +208,7 @@ func (e *BunUnstartableError) Error() string {
 	if e.Why == "windows" {
 		return fmt.Sprintf("Bun can't start on this version of Windows: it needs Windows 10 version 1809 or later, or Windows Server 2019 or later, and this one lacks a function it uses (%s exited with 0xc0000139, entry point not found). Update Windows to run plugins, or set MAGPIE_BUN to a bun that runs here: %v", e.Bun, e.Err)
 	}
-	return fmt.Sprintf("Bun can't start on this computer's processor: it lacks an instruction Bun uses (%s: %v). Bun's x64 build needs SSE4.2 (an Intel or AMD processor from 2008 on; in a virtual machine, a CPU type that passes it through). Run magpie on such a processor to run plugins, or set MAGPIE_BUN to a bun that runs here", e.Bun, e.Err)
+	return fmt.Sprintf("Bun can't start on this computer's processor: it lacks an instruction Bun uses (%s: %v). Bun's x64 build needs SSE4.2 (an Intel or AMD processor from 2008 on; in a virtual machine, a CPU type that passes it through). Run magpie-friday on such a processor to run plugins, or set MAGPIE_BUN to a bun that runs here", e.Bun, e.Err)
 }
 
 func (e *BunUnstartableError) Unwrap() error { return e.Err }
@@ -240,7 +240,7 @@ func wontLoad(bun string, err error) *BunUnstartableError {
 }
 
 // Bun is the bun to run plugins with: $MAGPIE_BUN when set, else the one
-// magpie downloaded and keeps up to date, downloading it now when there
+// magpie-friday downloaded and keeps up to date, downloading it now when there
 // is none yet.
 func Bun(ctx context.Context) (string, error) {
 	if b := os.Getenv("MAGPIE_BUN"); b != "" {
@@ -348,7 +348,7 @@ func getURLFrom(ctx context.Context, url string, limit int64, mirror bool) ([]by
 		return nil, err
 	}
 	// Bun's newest release is asked of GitHub's API: with the user's
-	// GitHub token, as every request magpie makes to it is (#1942)
+	// GitHub token, as every request magpie-friday makes to it is (#1942)
 	res, _, err := ghtoken.Do(req, githubAPI, func(r *http.Request) (*http.Response, error) {
 		if mirror {
 			return source.Do(http.DefaultClient, r)

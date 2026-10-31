@@ -12,8 +12,8 @@ import (
 	"testing"
 
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // piAddedTool is Pi 1.2.0's own Chat request for the turn after an
@@ -54,7 +54,7 @@ func namesAt(body, path string) []string {
 	return out
 }
 
-// noEmptySystem fails when a system text magpie sent upstream is empty, or
+// noEmptySystem fails when a system text magpie-friday sent upstream is empty, or
 // when the two system texts were joined around an empty one.
 func noEmptySystem(t *testing.T, texts []string) {
 	t.Helper()
@@ -177,7 +177,7 @@ func TestPiAddedToolReachesEveryRoute(t *testing.T) {
 }
 
 // Through a Claude subscription, whose Claude Code is offered the client's
-// tools by magpie's MCP helper, the added tool is offered too, once.
+// tools by magpie-friday's MCP helper, the added tool is offered too, once.
 func TestPiAddedToolOfferedToClaudeCode(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("a shell script stands in for Claude Code")

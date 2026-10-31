@@ -18,10 +18,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
-// fakeGoogle is Google's token endpoint and Code Assist, as far as magpie
+// fakeGoogle is Google's token endpoint and Code Assist, as far as magpie-friday
 // uses them.
 type fakeGoogle struct {
 	mu        sync.Mutex
@@ -195,7 +195,7 @@ func TestGeminiOwnLoginOnlyGeminiCLIsClient(t *testing.T) {
 }
 
 // Google turns individuals away from Gemini CLI's sign-in; the account
-// then needs a project, and magpie says how to name one.
+// then needs a project, and magpie-friday says how to name one.
 func TestGeminiNeedsAProject(t *testing.T) {
 	f := &fakeGoogle{load: `{"allowedTiers":[{"id":"standard-tier","name":"Gemini Code Assist","userDefinedCloudaicompanionProject":true,"isDefault":true}],
 		"ineligibleTiers":[{"reasonCode":"UNSUPPORTED_CLIENT","reasonMessage":"This client is no longer supported","tierId":"free-tier"}]}`}
@@ -203,9 +203,9 @@ func TestGeminiNeedsAProject(t *testing.T) {
 	writeGeminiLogin(t, "")
 	g, _ := geminiOwnLogin()
 	_, err := g.project(context.Background())
-	if err == nil || !strings.Contains(err.Error(), "magpie accounts project gemini me@example.com") ||
+	if err == nil || !strings.Contains(err.Error(), "magpie-friday accounts project gemini me@example.com") ||
 		!strings.Contains(err.Error(), "no longer supported") || !strings.Contains(err.Error(), "~/.gemini/.env") ||
-		!strings.Contains(err.Error(), "add it under Antigravity in magpie") {
+		!strings.Contains(err.Error(), "add it under Antigravity in magpie-friday") {
 		t.Fatalf("err = %v", err)
 	}
 	if len(f.onboards) != 0 {
@@ -235,7 +235,7 @@ func TestGeminiProjectFromEnv(t *testing.T) {
 	}
 }
 
-// An account named in magpie gets its project from `magpie accounts project`.
+// An account named in magpie-friday gets its project from `magpie-friday accounts project`.
 func TestSetGoogleProject(t *testing.T) {
 	f := &fakeGoogle{load: `{"currentTier":{"id":"standard-tier","name":"Gemini Code Assist Standard"}}`}
 	googleSandbox(t, f)
@@ -601,7 +601,7 @@ func TestPooledWindowsPartialAggregateKeepsModelFallback(t *testing.T) {
 }
 
 // Antigravity's list is taken as Antigravity gives it (0000FF on Discord:
-// Claude Opus 5.5 and Sonnet 5.5 in Antigravity, not in magpie): in its
+// Claude Opus 5.5 and Sonnet 5.5 in Antigravity, not in magpie-friday): in its
 // picker's order, so a model it adds comes where it puts it, not after
 // older ones by id; with the context, output and images it says, so a
 // model it adds isn't given those of a model of that name elsewhere
@@ -643,7 +643,7 @@ func TestAntigravityModelsAsItListsThem(t *testing.T) {
 	if strings.Join(got, "\n") != strings.Join(want, "\n") {
 		t.Fatalf("models\n%s\nwant\n%s", strings.Join(got, "\n"), strings.Join(want, "\n"))
 	}
-	// what magpie offers: the family first, Claude 5.5 before 4.6, Antigravity's 250k kept
+	// what magpie-friday offers: the family first, Claude 5.5 before 4.6, Antigravity's 250k kept
 	var offered []string
 	for _, m := range collapseAntigravityModels(catalog.Decorate(ms, []catalog.Model{{ID: "claude-opus-5-5", Context: 1000000, Output: 128000}})) {
 		offered = append(offered, fmt.Sprintf("%s|%d", m.ID, m.Context))

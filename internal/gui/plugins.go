@@ -11,13 +11,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/ghtoken"
-	"github.com/yetone/magpie/internal/middleware"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/ghtoken"
+	"github.com/cha0sal3r/magpie-friday/internal/middleware"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // OpenCode's provider plugins (internal/plugin): the providers they sign
@@ -26,7 +26,7 @@ import (
 
 // pluginSubJSON is a plugin's provider as the add sheet lists it.
 type pluginSubJSON struct {
-	ID       string          `json:"id"`  // magpie's
+	ID       string          `json:"id"`  // magpie-friday's
 	PID      string          `json:"pid"` // OpenCode's, which the plugin knows it by
 	Name     string          `json:"name"`
 	Icon     string          `json:"icon"`
@@ -97,7 +97,7 @@ type pluginEntryJSON struct {
 	Providers []string `json:"providers"`         // the names of those it signs in to
 	Version   string   `json:"version,omitempty"` // installed
 	Latest    string   `json:"latest,omitempty"`  // on npm, when the market asked
-	// Icon is the picture its own package.json gives (magpie.icon), as
+	// Icon is the picture its own package.json gives (magpie-friday.icon), as
 	// the page can show it: the plugin's, which its row shows before any
 	// of its providers' own (#1775)
 	Icon string `json:"icon,omitempty"`
@@ -113,7 +113,7 @@ type pluginEntryJSON struct {
 	// Moved are the built-in subscriptions moved onto it, which stop
 	// with it when it is removed or turned off (no built-in to go back to)
 	Moved []string `json:"moved"`
-	// AutoUpdated is the update magpie made to it by itself lately
+	// AutoUpdated is the update magpie-friday made to it by itself lately
 	AutoUpdated *plugin.Updated `json:"autoUpdated,omitempty"`
 	// Middleware is the gateway middleware it has, run in the gateway
 	// rather than the host: its hooks, how often they ran and how long
@@ -136,29 +136,29 @@ type pluginEntryJSON struct {
 	MiddlewareOnly bool `json:"middlewareOnly,omitempty"`
 	// Agent is the agent it adds (internal/agentplug), or why it isn't
 	// listed; IsAgent is whether its package has one, said of one switched
-	// off too; InMagpieOnly is whether all it has runs in magpie itself,
+	// off too; InMagpieOnly is whether all it has runs in magpie-friday itself,
 	// middleware and an agent, no provider to sign in to
 	Agent        *pluginAgentJSON `json:"agent,omitempty"`
 	IsAgent      bool             `json:"isAgent,omitempty"`
 	InMagpieOnly bool             `json:"inMagpieOnly,omitempty"`
-	// Page is the page it adds to the window (magpie.page), said of one
+	// Page is the page it adds to the window (magpie-friday.page), said of one
 	// switched off too: what the row shows before it is turned on, with
-	// what the page may read of magpie's
+	// what the page may read of magpie-friday's
 	Page *pluginPageInfoJSON `json:"page,omitempty"`
-	// Panels are the panels it adds to magpie's own pages
-	// (magpie.panels), said of one switched off too, and PanelReads what
-	// they may read of magpie's
+	// Panels are the panels it adds to magpie-friday's own pages
+	// (magpie-friday.panels), said of one switched off too, and PanelReads what
+	// they may read of magpie-friday's
 	Panels     []pluginPanelInfoJSON `json:"panels,omitempty"`
 	PanelReads []string              `json:"panelReads,omitempty"`
-	// Actions are the items its page adds to magpie's menus
-	// (magpie.actions), said of one switched off too
+	// Actions are the items its page adds to magpie-friday's menus
+	// (magpie-friday.actions), said of one switched off too
 	Actions []pluginActionInfoJSON `json:"actions,omitempty"`
 	// Clashes are the providers it signs in to that another plugin signs
 	// in to as well (a plugin of the user's own beside a third party's):
 	// the host runs one plugin for each, and the row says which, with a
 	// way to pick this one
 	Clashes []pluginClashJSON `json:"clashes,omitempty"`
-	// Tools are the tools it gives, which magpie's plugin tools MCP server
+	// Tools are the tools it gives, which magpie-friday's plugin tools MCP server
 	// offers every agent under MCP's name: with their descriptions while
 	// the host runs, by name alone from what it noted last when it doesn't
 	Tools []pluginToolJSON `json:"tools,omitempty"`
@@ -197,7 +197,7 @@ type pluginClashJSON struct {
 	Name string `json:"name"` // the provider's, as the plugin serving it names it
 }
 
-// autoUpdatedFor is how long a plugin's row says magpie updated it.
+// autoUpdatedFor is how long a plugin's row says magpie-friday updated it.
 const autoUpdatedFor = 3 * 24 * time.Hour
 
 type pluginsJSON struct {
@@ -205,8 +205,8 @@ type pluginsJSON struct {
 	Bun     bool              `json:"bun"` // Bun is here; adding the first plugin downloads it otherwise
 	BunVer  string            `json:"bunVersion"`
 	Error   string            `json:"error,omitempty"` // the plugins couldn't be asked
-	// Picker is whether this magpie can show the system's folder picker:
-	// `magpie web` has none, and the page then offers no button for it
+	// Picker is whether this magpie-friday can show the system's folder picker:
+	// `magpie-friday web` has none, and the page then offers no button for it
 	Picker bool `json:"picker"`
 	// Movable are the built-ins with accounts a plugin could run, which
 	// its card and its row offer to move
@@ -386,7 +386,7 @@ func npmNames(es []plugin.Entry) []string {
 	return out
 }
 
-// pluginListings are the plugins magpie suggests, each with what npm said
+// pluginListings are the plugins magpie-friday suggests, each with what npm said
 // of it last (asking npm again is /api/plugins/npm's), so Discover is drawn
 // without waiting on npm.
 func pluginListings(ctx context.Context) []pluginListingJSON {
@@ -413,7 +413,7 @@ func pluginListings(ctx context.Context) []pluginListingJSON {
 	return out
 }
 
-// npmIcons puts the picture each package gives (magpie.icon) as the page
+// npmIcons puts the picture each package gives (magpie-friday.icon) as the page
 // can show it, kept here as a GitHub-tagged plugin's is: a data URI or an
 // https URL isn't sent on to the page. One not kept by wait is left out.
 func npmIcons(ns []*plugin.NPM, wait time.Duration) {
@@ -430,7 +430,7 @@ func npmIcons(ns []*plugin.NPM, wait time.Duration) {
 	}
 }
 
-// pluginMarketJSON is the plugin market: the plugins magpie suggests, what npm
+// pluginMarketJSON is the plugin market: the plugins magpie-friday suggests, what npm
 // says of each, and those added.
 type pluginMarketJSON struct {
 	Listings []pluginListingJSON `json:"listings"`
@@ -633,7 +633,7 @@ func pluginRoutes(mux *http.ServeMux, w Windows) {
 		}
 		// a first plugin downloads Bun, and npm installs it. It goes on
 		// though the page's connection goes: a proxy or tunnel in front of
-		// magpie web gives up first (Cloudflare after 100 seconds, #2032),
+		// magpie-friday web gives up first (Cloudflare after 100 seconds, #2032),
 		// and bun stopped halfway leaves plugins/ half-written
 		ctx, cancel := context.WithTimeout(context.WithoutCancel(r.Context()), 5*time.Minute)
 		defer cancel()
@@ -803,7 +803,7 @@ func pluginAgentOf(spec string, errs map[string]string) *pluginAgentJSON {
 
 // taggedWhyKind is what kind of failure keeps GitHub's list from being
 // whole: "slow" when GitHub didn't answer in time, "limited" when it
-// turned magpie away for its rate limit, "" for anything else (the page
+// turned magpie-friday away for its rate limit, "" for anything else (the page
 // shows that error as it is).
 func taggedWhyKind(err error) string {
 	var lim ghtoken.Limited

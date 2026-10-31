@@ -18,12 +18,12 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 	"gopkg.in/yaml.v3"
 )
 
-// hanakoTestHome is a sandbox HOME with magpie's catalog (relay/glm-4.6,
+// hanakoTestHome is a sandbox HOME with magpie-friday's catalog (relay/glm-4.6,
 // which reasons up to xhigh and takes images) and a HANA_HOME apart from it.
 func hanakoTestHome(t *testing.T) (home, dir string) {
 	t.Helper()
@@ -68,10 +68,10 @@ func hanakoChatOf(t *testing.T, path string) (map[string]any, string) {
 	return chat, string(b)
 }
 
-// what magpie's provider says for the sandbox's catalog, as JSON
+// what magpie-friday's provider says for the sandbox's catalog, as JSON
 func hanakoWant(t *testing.T) string {
 	t.Helper()
-	return `{"display_name":"magpie","base_url":"` + gatewayV1() + `","api":"openai-completions","api_key":"magpie-hanako",` +
+	return `{"display_name":"magpie-friday","base_url":"` + gatewayV1() + `","api":"openai-completions","api_key":"magpie-friday-hanako",` +
 		`"models":[{"id":"relay/glm-4.6","name":"GLM-4.6 · Relay","context":204800,"maxOutput":131072,"image":true,"reasoning":true,"xhigh":true}]}`
 }
 
@@ -95,7 +95,7 @@ func TestHanakoHome(t *testing.T) {
 	}
 }
 
-// OpenHanako not running: magpie writes its files, keeping all else in them.
+// OpenHanako not running: magpie-friday writes its files, keeping all else in them.
 func TestHanakoFiles(t *testing.T) {
 	home, dir := hanakoTestHome(t)
 	catalogPath := filepath.Join(dir, "provider-catalog.json")
@@ -106,12 +106,12 @@ func TestHanakoFiles(t *testing.T) {
     "mine": { "base_url": "https://x/v1", "api": "openai-completions", "api_key": "k", "models": ["m1", { "id": "m2", "name": "M2" }] }
   },
   "capabilities": { "x": 1 },
-  "meta": { "deletedProviders": ["magpie", "old"] }
+  "meta": { "deletedProviders": ["magpie-friday", "old"] }
 }
 `, 0o600)
-	// a plugin left from an older magpie, and one of the user's
-	stale := filepath.Join(dir, "provider-plugins", "magpie", "providers", "magpie.json")
-	hanakoWrite(t, stale, `{"id":"magpie","defaultBaseUrl":"http://127.0.0.1:1/v1","models":[{"id":"gone"}]}`, 0o600)
+	// a plugin left from an older magpie-friday, and one of the user's
+	stale := filepath.Join(dir, "provider-plugins", "magpie-friday", "providers", "magpie-friday.json")
+	hanakoWrite(t, stale, `{"id":"magpie-friday","defaultBaseUrl":"http://127.0.0.1:1/v1","models":[{"id":"gone"}]}`, 0o600)
 	hanakoWrite(t, filepath.Join(dir, "provider-plugins", "other", "providers", "other.json"), `{"id":"other","models":[{"id":"o1"}]}`, 0o600)
 	hanakoWrite(t, filepath.Join(dir, "user", "preferences.json"), `{"primaryAgent":"hana"}`, 0o644)
 	cfg := filepath.Join(dir, "agents", "hana", "config.yaml")
@@ -128,21 +128,21 @@ func TestHanakoFiles(t *testing.T) {
 	for _, o := range f.Options(a.Values()) {
 		vals[o.Value] = o.Group
 	}
-	for _, v := range []string{"mine/m1", "mine/m2", "other/o1", "openai/gpt-5", "magpie/relay/glm-4.6"} {
+	for _, v := range []string{"mine/m1", "mine/m2", "other/o1", "openai/gpt-5", "magpie-friday/relay/glm-4.6"} {
 		if _, ok := vals[v]; !ok {
 			t.Errorf("options lack %s: %v", v, vals)
 		}
 	}
-	if _, ok := vals["magpie/gone"]; ok {
-		t.Errorf("options list magpie's own: %v", vals)
+	if _, ok := vals["magpie-friday/gone"]; ok {
+		t.Errorf("options list magpie-friday's own: %v", vals)
 	}
-	if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	c := hanakoJSON(t, catalogPath)
-	got, _ := json.Marshal(c["providers"].(map[string]any)["magpie"])
+	got, _ := json.Marshal(c["providers"].(map[string]any)["magpie-friday"])
 	if !sameJSON(string(got), json.RawMessage(hanakoWant(t))) {
-		t.Fatalf("magpie's provider:\n%s\nwant\n%s", got, hanakoWant(t))
+		t.Fatalf("magpie-friday's provider:\n%s\nwant\n%s", got, hanakoWant(t))
 	}
 	ps := c["providers"].(map[string]any)
 	if c["catalogVersion"] != float64(2) || ps["openai"].(map[string]any)["api_key"] != "sk-x" || ps["mine"] == nil ||
@@ -162,27 +162,27 @@ func TestHanakoFiles(t *testing.T) {
 		t.Fatal("the user's plugin went")
 	}
 	chat, raw := hanakoChatOf(t, cfg)
-	if chat["id"] != "relay/glm-4.6" || chat["provider"] != "magpie" || !strings.Contains(raw, "# mine") ||
+	if chat["id"] != "relay/glm-4.6" || chat["provider"] != "magpie-friday" || !strings.Contains(raw, "# mine") ||
 		!strings.Contains(raw, "utility: x") || !strings.Contains(raw, "name: Hana") {
 		t.Fatalf("config:\n%s", raw)
 	}
 	if b, _ := os.ReadFile(first); string(b) != "models:\n  chat: {id: m1, provider: mine}\n" {
 		t.Fatalf("another agent changed:\n%s", b)
 	}
-	if f.Get() != "magpie/relay/glm-4.6" || a.Check() != "" {
+	if f.Get() != "magpie-friday/relay/glm-4.6" || a.Check() != "" {
 		t.Fatalf("get %q, check %q", f.Get(), a.Check())
 	}
-	// another magpie model keeps what was stashed first
-	if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+	// another magpie-friday model keeps what was stashed first
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 
 	// once OpenHanako has moved the definition into a plugin of its own,
-	// what magpie wrote is still read from there
-	hanakoWrite(t, filepath.Join(dir, "provider-plugins", "magpie", "providers", "magpie.json"),
-		`{"id":"magpie","displayName":"magpie","authType":"api-key","defaultBaseUrl":"`+gatewayV1()+`","defaultApi":"openai-completions",`+
+	// what magpie-friday wrote is still read from there
+	hanakoWrite(t, filepath.Join(dir, "provider-plugins", "magpie-friday", "providers", "magpie-friday.json"),
+		`{"id":"magpie-friday","displayName":"magpie-friday","authType":"api-key","defaultBaseUrl":"`+gatewayV1()+`","defaultApi":"openai-completions",`+
 			`"models":[{"id":"relay/glm-4.6","name":"GLM-4.6 · Relay","context":204800,"maxOutput":131072,"image":true,"reasoning":true,"xhigh":true}]}`, 0o600)
-	hanakoWrite(t, catalogPath, `{"catalogVersion":2,"providers":{"openai":{"api_key":"sk-x"},"magpie":{"api_key":"magpie-hanako"}}}`, 0o600)
+	hanakoWrite(t, catalogPath, `{"catalogVersion":2,"providers":{"openai":{"api_key":"sk-x"},"magpie-friday":{"api_key":"magpie-friday-hanako"}}}`, 0o600)
 	before, _ := os.ReadFile(catalogPath)
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
@@ -190,38 +190,38 @@ func TestHanakoFiles(t *testing.T) {
 	if after, _ := os.ReadFile(catalogPath); string(after) != string(before) || a.Check() != "" {
 		t.Fatalf("sync rewrote a current provider:\n%s\ncheck %q", after, a.Check())
 	}
-	// its key changed behind magpie's back
-	hanakoWrite(t, catalogPath, `{"catalogVersion":2,"providers":{"openai":{"api_key":"sk-x"},"magpie":{"api_key":"sk-other"}}}`, 0o600)
+	// its key changed behind magpie-friday's back
+	hanakoWrite(t, catalogPath, `{"catalogVersion":2,"providers":{"openai":{"api_key":"sk-x"},"magpie-friday":{"api_key":"sk-other"}}}`, 0o600)
 	if !strings.Contains(a.Check(), "api_key") {
 		t.Fatalf("check: %q", a.Check())
 	}
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	got, _ = json.Marshal(hanakoJSON(t, catalogPath)["providers"].(map[string]any)["magpie"])
+	got, _ = json.Marshal(hanakoJSON(t, catalogPath)["providers"].(map[string]any)["magpie-friday"])
 	if !sameJSON(string(got), json.RawMessage(hanakoWant(t))) || a.Check() != "" {
 		t.Fatalf("sync: %s", got)
 	}
 
-	// reset: the model the agent had comes back, magpie's provider goes
+	// reset: the model the agent had comes back, magpie-friday's provider goes
 	if err := f.Set(""); err != nil {
 		t.Fatal(err)
 	}
 	c = hanakoJSON(t, catalogPath)
-	if _, ok := c["providers"].(map[string]any)["magpie"]; ok || c["providers"].(map[string]any)["openai"] == nil {
+	if _, ok := c["providers"].(map[string]any)["magpie-friday"]; ok || c["providers"].(map[string]any)["openai"] == nil {
 		t.Fatalf("reset catalog: %v", c)
 	}
 	// marked deleted, or OpenHanako's start-up brings it back from models.json
-	if d, _ := json.Marshal(c["meta"].(map[string]any)["deletedProviders"]); string(d) != `["magpie"]` {
+	if d, _ := json.Marshal(c["meta"].(map[string]any)["deletedProviders"]); string(d) != `["magpie-friday"]` {
 		t.Fatalf("reset deletedProviders: %s", d)
 	}
 	if _, ok := hanakoCurrent(dir); ok {
-		t.Fatal("magpie's provider is still there")
+		t.Fatal("magpie-friday's provider is still there")
 	}
 	if chat, raw := hanakoChatOf(t, cfg); chat["id"] != "gpt-5" || chat["provider"] != "openai" || !strings.Contains(raw, "# mine") {
 		t.Fatalf("reset config:\n%s", raw)
 	}
-	// and again: nothing of magpie's left to take out
+	// and again: nothing of magpie-friday's left to take out
 	if err := f.Set(""); err != nil {
 		t.Fatal(err)
 	}
@@ -238,12 +238,12 @@ func TestHanakoFiles(t *testing.T) {
 	}
 }
 
-// A fresh HANA_HOME: the catalog magpie starts is one OpenHanako takes,
+// A fresh HANA_HOME: the catalog magpie-friday starts is one OpenHanako takes,
 // and the agent is the first there is when none is primary.
 func TestHanakoFresh(t *testing.T) {
 	home, dir := hanakoTestHome(t)
 	f := hanako(home).Field("model")
-	if err := f.Set("magpie/relay/glm-4.6"); err == nil {
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err == nil {
 		t.Fatal("set with no agent")
 	}
 	if _, err := os.Stat(filepath.Join(dir, "provider-catalog.json")); !os.IsNotExist(err) {
@@ -256,9 +256,9 @@ func TestHanakoFresh(t *testing.T) {
 		t.Fatal(err)
 	}
 	if _, err := os.Stat(filepath.Join(dir, "provider-catalog.json")); !os.IsNotExist(err) {
-		t.Fatal("sync wired an OpenHanako magpie wasn't in")
+		t.Fatal("sync wired an OpenHanako magpie-friday wasn't in")
 	}
-	if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	path := filepath.Join(dir, "provider-catalog.json")
@@ -269,7 +269,7 @@ func TestHanakoFresh(t *testing.T) {
 	if st, _ := os.Stat(path); runtime.GOOS != "windows" && st.Mode().Perm() != 0o600 { // Windows has no such bits
 		t.Fatalf("mode %v", st.Mode())
 	}
-	if chat, raw := hanakoChatOf(t, filepath.Join(dir, "agents", "a", "config.yaml")); chat["id"] != "relay/glm-4.6" || chat["provider"] != "magpie" {
+	if chat, raw := hanakoChatOf(t, filepath.Join(dir, "agents", "a", "config.yaml")); chat["id"] != "relay/glm-4.6" || chat["provider"] != "magpie-friday" {
 		t.Fatalf("a:\n%s", raw)
 	}
 	if b, _ := os.ReadFile(filepath.Join(dir, "agents", "b", "config.yaml")); string(b) != "agent:\n  name: B\n" {
@@ -282,11 +282,11 @@ func TestHanakoFresh(t *testing.T) {
 	if chat, raw := hanakoChatOf(t, filepath.Join(dir, "agents", "a", "config.yaml")); chat != nil || !strings.Contains(raw, "name: A") {
 		t.Fatalf("reset:\n%s", raw)
 	}
-	if c := hanakoJSON(t, path); len(c["providers"].(map[string]any)) != 0 || c["meta"].(map[string]any)["deletedProviders"].([]any)[0] != "magpie" {
+	if c := hanakoJSON(t, path); len(c["providers"].(map[string]any)) != 0 || c["meta"].(map[string]any)["deletedProviders"].([]any)[0] != "magpie-friday" {
 		t.Fatalf("reset catalog: %v", c)
 	}
 	// wired again: no longer deleted
-	if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	if c := hanakoJSON(t, path); len(c["meta"].(map[string]any)["deletedProviders"].([]any)) != 0 {
@@ -295,7 +295,7 @@ func TestHanakoFresh(t *testing.T) {
 
 	// only a plugin left, no catalog: the plugin goes, no catalog is started
 	os.Remove(path)
-	hanakoWrite(t, filepath.Join(dir, "provider-plugins", "magpie", "providers", "magpie.json"), `{"id":"magpie"}`, 0o600)
+	hanakoWrite(t, filepath.Join(dir, "provider-plugins", "magpie-friday", "providers", "magpie-friday.json"), `{"id":"magpie-friday"}`, 0o600)
 	if err := hanakoRemove(dir); err != nil {
 		t.Fatal(err)
 	}
@@ -309,7 +309,7 @@ func TestHanakoFresh(t *testing.T) {
 
 type hanakoCall struct{ Method, Path, Auth, Body string }
 
-// fakeHanako is OpenHanako's API as far as magpie uses it, recording
+// fakeHanako is OpenHanako's API as far as magpie-friday uses it, recording
 // what it is sent; token is the one it takes.
 func fakeHanako(t *testing.T, dir, token string, answer func(hanakoCall) (int, string)) (*[]hanakoCall, *sync.Mutex) {
 	t.Helper()
@@ -341,7 +341,7 @@ func fakeHanako(t *testing.T, dir, token string, answer func(hanakoCall) (int, s
 }
 
 // OpenHanako running: every change goes through its API, with its token,
-// and magpie writes none of its files.
+// and magpie-friday writes none of its files.
 func TestHanakoLive(t *testing.T) {
 	home, dir := hanakoTestHome(t)
 	catalogPath := filepath.Join(dir, "provider-catalog.json")
@@ -352,7 +352,7 @@ func TestHanakoLive(t *testing.T) {
 	hanakoWrite(t, cfg, cfgYAML, 0o644)
 	calls, mu := fakeHanako(t, dir, "tok", func(c hanakoCall) (int, string) {
 		if c.Path == "/api/models" {
-			return 200, `{"models":[{"id":"relay/glm-4.6","provider":"magpie"},{"id":"gpt-5","provider":"openai"}]}`
+			return 200, `{"models":[{"id":"relay/glm-4.6","provider":"magpie-friday"},{"id":"gpt-5","provider":"openai"}]}`
 		}
 		return 200, `{"ok":true}`
 	})
@@ -374,17 +374,17 @@ func TestHanakoLive(t *testing.T) {
 
 	a := hanako(home)
 	f := a.Field("model")
-	if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	p := puts()
 	if len(p) != 2 || p[0].Path != "/api/config" || p[1].Path != "/api/agents/hana/config" {
 		t.Fatalf("puts: %+v", p)
 	}
-	if !sameJSON(p[0].Body, json.RawMessage(`{"providers":{"magpie":`+hanakoWant(t)+`}}`)) {
+	if !sameJSON(p[0].Body, json.RawMessage(`{"providers":{"magpie-friday":`+hanakoWant(t)+`}}`)) {
 		t.Fatalf("provider: %s", p[0].Body)
 	}
-	if !sameJSON(p[1].Body, json.RawMessage(`{"models":{"chat":{"id":"relay/glm-4.6","provider":"magpie"}}}`)) {
+	if !sameJSON(p[1].Body, json.RawMessage(`{"models":{"chat":{"id":"relay/glm-4.6","provider":"magpie-friday"}}}`)) {
 		t.Fatalf("model: %s", p[1].Body)
 	}
 	if b, _ := os.ReadFile(catalogPath); string(b) != catalogJSON {
@@ -395,31 +395,31 @@ func TestHanakoLive(t *testing.T) {
 	}
 
 	// as OpenHanako would have saved it
-	hanakoWrite(t, catalogPath, `{"catalogVersion":2,"providers":{"openai":{"api_key":"sk-x"},"magpie":{"api_key":"magpie-hanako"}}}`, 0o600)
-	hanakoWrite(t, filepath.Join(dir, "provider-plugins", "magpie", "providers", "magpie.json"),
-		`{"id":"magpie","displayName":"magpie","defaultBaseUrl":"`+gatewayV1()+`","defaultApi":"openai-completions","models":[{"id":"old"}]}`, 0o600)
-	hanakoWrite(t, cfg, "models:\n  chat:\n    id: relay/glm-4.6\n    provider: magpie\n", 0o644)
+	hanakoWrite(t, catalogPath, `{"catalogVersion":2,"providers":{"openai":{"api_key":"sk-x"},"magpie-friday":{"api_key":"magpie-friday-hanako"}}}`, 0o600)
+	hanakoWrite(t, filepath.Join(dir, "provider-plugins", "magpie-friday", "providers", "magpie-friday.json"),
+		`{"id":"magpie-friday","displayName":"magpie-friday","defaultBaseUrl":"`+gatewayV1()+`","defaultApi":"openai-completions","models":[{"id":"old"}]}`, 0o600)
+	hanakoWrite(t, cfg, "models:\n  chat:\n    id: relay/glm-4.6\n    provider: magpie-friday\n", 0o644)
 
 	// a catalog change goes through it too
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	if p := puts(); len(p) != 1 || p[0].Path != "/api/config" || !sameJSON(p[0].Body, json.RawMessage(`{"providers":{"magpie":`+hanakoWant(t)+`}}`)) {
+	if p := puts(); len(p) != 1 || p[0].Path != "/api/config" || !sameJSON(p[0].Body, json.RawMessage(`{"providers":{"magpie-friday":`+hanakoWant(t)+`}}`)) {
 		t.Fatalf("sync: %+v", p)
 	}
 
-	// reset: the model it had, then magpie's provider out
+	// reset: the model it had, then magpie-friday's provider out
 	if err := f.Set(""); err != nil {
 		t.Fatal(err)
 	}
 	p = puts()
 	if len(p) != 2 || p[0].Path != "/api/agents/hana/config" || p[1].Path != "/api/config" ||
 		!sameJSON(p[0].Body, json.RawMessage(`{"models":{"chat":{"id":"gpt-5","provider":"openai"}}}`)) ||
-		!sameJSON(p[1].Body, json.RawMessage(`{"providers":{"magpie":null}}`)) {
+		!sameJSON(p[1].Body, json.RawMessage(`{"providers":{"magpie-friday":null}}`)) {
 		t.Fatalf("reset: %+v", p)
 	}
-	if _, err := os.Stat(filepath.Join(dir, "provider-plugins", "magpie")); err != nil {
-		t.Fatal("magpie removed the plugin behind OpenHanako's back")
+	if _, err := os.Stat(filepath.Join(dir, "provider-plugins", "magpie-friday")); err != nil {
+		t.Fatal("magpie-friday removed the plugin behind OpenHanako's back")
 	}
 }
 
@@ -428,7 +428,7 @@ func TestHanakoLiveRefused(t *testing.T) {
 	home, dir := hanakoTestHome(t)
 	hanakoWrite(t, filepath.Join(dir, "agents", "hana", "config.yaml"), "agent:\n  name: Hana\n", 0o644)
 	fakeHanako(t, dir, "tok", func(hanakoCall) (int, string) { return 400, `{"error":"base_url is not allowed"}` })
-	err := hanako(home).Field("model").Set("magpie/relay/glm-4.6")
+	err := hanako(home).Field("model").Set("magpie-friday/relay/glm-4.6")
 	if err == nil || !strings.Contains(err.Error(), "base_url is not allowed") {
 		t.Fatalf("err: %v", err)
 	}
@@ -444,7 +444,7 @@ func TestHanakoStale(t *testing.T) {
 	cfg := filepath.Join(dir, "agents", "hana", "config.yaml")
 	hanakoWrite(t, cfg, "agent:\n  name: Hana\n", 0o644)
 	calls, _ := fakeHanako(t, dir, "another", func(hanakoCall) (int, string) { return 200, `{}` })
-	if err := hanako(home).Field("model").Set("magpie/relay/glm-4.6"); err != nil {
+	if err := hanako(home).Field("model").Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	for _, c := range *calls {
@@ -452,7 +452,7 @@ func TestHanakoStale(t *testing.T) {
 			t.Fatalf("sent %s %s to a server that isn't its", c.Method, c.Path)
 		}
 	}
-	if chat, raw := hanakoChatOf(t, cfg); chat["provider"] != "magpie" {
+	if chat, raw := hanakoChatOf(t, cfg); chat["provider"] != "magpie-friday" {
 		t.Fatalf("config:\n%s", raw)
 	}
 
@@ -465,22 +465,22 @@ func TestHanakoStale(t *testing.T) {
 	}
 }
 
-// The key magpie gives OpenHanako is the one the gateway knows it by.
+// The key magpie-friday gives OpenHanako is the one the gateway knows it by.
 func TestHanakoKey(t *testing.T) {
 	if k := hanakoProvider().APIKey; k != gateway.TokenFor("hanako") {
 		t.Fatal(k)
 	}
 }
 
-// One of OpenHanako's own providers named as one of magpie's (its own
-// DeepSeek, and magpie's deepseek): its model isn't magpie's, so the row
-// isn't connected on it, and Disconnect from magpie puts it back and is
+// One of OpenHanako's own providers named as one of magpie-friday's (its own
+// DeepSeek, and magpie-friday's deepseek): its model isn't magpie-friday's, so the row
+// isn't connected on it, and Disconnect from magpie-friday puts it back and is
 // done, rather than leaving the row connected on the model it went back to
 // (Hu9956, #835).
 func TestHanakoOwnProviderNamedAsMagpies(t *testing.T) {
 	home, dir := hanakoTestHome(t)
 	catalogPath := filepath.Join(dir, "provider-catalog.json")
-	// the user's own relay provider, which magpie has one of too
+	// the user's own relay provider, which magpie-friday has one of too
 	hanakoWrite(t, catalogPath, `{"catalogVersion":2,"providers":{"relay":{"base_url":"https://x/v1","api":"openai-completions","api_key":"k","models":["glm-4.6"]}}}`, 0o600)
 	hanakoWrite(t, filepath.Join(dir, "user", "preferences.json"), `{"primaryAgent":"hana"}`, 0o644)
 	cfg := filepath.Join(dir, "agents", "hana", "config.yaml")
@@ -488,7 +488,7 @@ func TestHanakoOwnProviderNamedAsMagpies(t *testing.T) {
 
 	a := hanako(home)
 	if a.Wired() {
-		t.Fatal("its own relay/glm-4.6 reads as magpie's")
+		t.Fatal("its own relay/glm-4.6 reads as magpie-friday's")
 	}
 	if err := a.Connect(); err != nil {
 		t.Fatal(err)
@@ -503,7 +503,7 @@ func TestHanakoOwnProviderNamedAsMagpies(t *testing.T) {
 		t.Fatalf("disconnected config:\n%s", raw)
 	}
 	if _, ok := hanakoCurrent(dir); ok {
-		t.Fatal("magpie's provider is still there")
+		t.Fatal("magpie-friday's provider is still there")
 	}
 	if a.Wired() {
 		t.Fatalf("still connected after Disconnect: %v", a.Values())
@@ -523,21 +523,21 @@ func hanakoSeal(t *testing.T, s string) string {
 	return header + "." + base64.StdEncoding.EncodeToString(nonce) + "." + base64.StdEncoding.EncodeToString(body) + "\n"
 }
 
-// Since 1.0 OpenHanako seals its catalog: magpie never writes over it, keeps
+// Since 1.0 OpenHanako seals its catalog: magpie-friday never writes over it, keeps
 // its own definition current in its plugin file, and says that adding or
-// taking magpie out needs OpenHanako open.
+// taking magpie-friday out needs OpenHanako open.
 func TestHanakoSealed(t *testing.T) {
 	home, dir := hanakoTestHome(t)
 	catalogPath := filepath.Join(dir, "provider-catalog.json")
-	sealed := hanakoSeal(t, `{"catalogVersion":2,"providers":{"openai":{"api_key":"sk-x"},"magpie":{"api_key":"magpie-hanako"}}}`)
+	sealed := hanakoSeal(t, `{"catalogVersion":2,"providers":{"openai":{"api_key":"sk-x"},"magpie-friday":{"api_key":"magpie-friday-hanako"}}}`)
 	hanakoWrite(t, catalogPath, sealed, 0o600)
-	plugin := filepath.Join(dir, "provider-plugins", "magpie", "providers", "magpie.json")
-	// as OpenHanako 1.0 moved it there, from an older magpie on another port
-	hanakoWrite(t, plugin, `{"id":"magpie","displayName":"magpie","authType":"api-key","defaultBaseUrl":"http://127.0.0.1:1/v1",`+
+	plugin := filepath.Join(dir, "provider-plugins", "magpie-friday", "providers", "magpie-friday.json")
+	// as OpenHanako 1.0 moved it there, from an older magpie-friday on another port
+	hanakoWrite(t, plugin, `{"id":"magpie-friday","displayName":"magpie-friday","authType":"api-key","defaultBaseUrl":"http://127.0.0.1:1/v1",`+
 		`"defaultApi":"openai-completions","models":[{"id":"old"}]}`, 0o600)
-	hanakoWrite(t, filepath.Join(dir, "provider-plugins", "magpie", "manifest.json"), `{"id":"magpie","type":"provider-plugin","schemaVersion":1,"provider":"magpie"}`, 0o600)
+	hanakoWrite(t, filepath.Join(dir, "provider-plugins", "magpie-friday", "manifest.json"), `{"id":"magpie-friday","type":"provider-plugin","schemaVersion":1,"provider":"magpie-friday"}`, 0o600)
 	cfg := filepath.Join(dir, "agents", "hana", "config.yaml")
-	cfgYAML := "models:\n  chat:\n    id: relay/glm-4.6\n    provider: magpie\n"
+	cfgYAML := "models:\n  chat:\n    id: relay/glm-4.6\n    provider: magpie-friday\n"
 	hanakoWrite(t, cfg, cfgYAML, 0o644)
 	unchanged := func(what string) {
 		t.Helper()
@@ -547,7 +547,7 @@ func TestHanakoSealed(t *testing.T) {
 	}
 
 	a := hanako(home)
-	if c := a.Check(); !strings.Contains(c, "base_url (magpie.json)") || strings.Contains(c, "api_key") {
+	if c := a.Check(); !strings.Contains(c, "base_url (magpie-friday.json)") || strings.Contains(c, "api_key") {
 		t.Fatalf("check: %q", c)
 	}
 	if err := a.Sync(); err != nil {
@@ -559,7 +559,7 @@ func TestHanakoSealed(t *testing.T) {
 	want := map[string]any{}
 	json.Unmarshal([]byte(hanakoWant(t)), &want)
 	wantMs, _ := json.Marshal(want["models"])
-	if p["defaultBaseUrl"] != gatewayV1() || p["defaultApi"] != "openai-completions" || p["id"] != "magpie" || p["authType"] != "api-key" || !sameJSON(string(ms), json.RawMessage(wantMs)) {
+	if p["defaultBaseUrl"] != gatewayV1() || p["defaultApi"] != "openai-completions" || p["id"] != "magpie-friday" || p["authType"] != "api-key" || !sameJSON(string(ms), json.RawMessage(wantMs)) {
 		t.Fatalf("plugin: %v", p)
 	}
 	if st, _ := os.Stat(plugin); runtime.GOOS != "windows" && st.Mode().Perm() != 0o600 {
@@ -577,7 +577,7 @@ func TestHanakoSealed(t *testing.T) {
 		t.Fatalf("sync rewrote a current plugin:\n%s", after)
 	}
 
-	// taking magpie out needs OpenHanako: nothing changes meanwhile
+	// taking magpie-friday out needs OpenHanako: nothing changes meanwhile
 	f := a.Field("model")
 	if err := f.Set(""); err == nil || !strings.Contains(err.Error(), "open OpenHanako") {
 		t.Fatalf("reset: %v", err)
@@ -590,10 +590,10 @@ func TestHanakoSealed(t *testing.T) {
 		t.Fatal("reset took the plugin")
 	}
 
-	// nor can magpie be added with no plugin to keep it in
+	// nor can magpie-friday be added with no plugin to keep it in
 	os.RemoveAll(filepath.Join(dir, "provider-plugins"))
 	hanakoWrite(t, cfg, "models:\n  chat:\n    id: gpt-5\n    provider: openai\n", 0o644)
-	if err := f.Set("magpie/relay/glm-4.6"); err == nil || !strings.Contains(err.Error(), "open OpenHanako") {
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err == nil || !strings.Contains(err.Error(), "open OpenHanako") {
 		t.Fatalf("add: %v", err)
 	}
 	unchanged("add")
@@ -603,7 +603,7 @@ func TestHanakoSealed(t *testing.T) {
 
 	// while it runs, its API does it all
 	calls, mu := fakeHanako(t, dir, "tok", func(hanakoCall) (int, string) { return 200, `{"ok":true}` })
-	if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	mu.Lock()
@@ -662,28 +662,28 @@ func fakeHanako10(t *testing.T, dir string, models ...string) (*[]hanakoCall, *s
 	})
 }
 
-// #1040: taking magpie out of a running OpenHanako 1.0 puts the agent on
-// one of OpenHanako's own models, as provider/id, whatever magpie stashed:
-// nothing (the agent was put on magpie in OpenHanako), an id alone, or a
+// #1040: taking magpie-friday out of a running OpenHanako 1.0 puts the agent on
+// one of OpenHanako's own models, as provider/id, whatever magpie-friday stashed:
+// nothing (the agent was put on magpie-friday in OpenHanako), an id alone, or a
 // model whose provider has gone. With no model of its own to go to it says
-// so, and leaves magpie's provider and the stash as they were.
+// so, and leaves magpie-friday's provider and the stash as they were.
 func TestHanakoLiveBackNeedsProviderID(t *testing.T) {
 	for _, tc := range []struct {
 		name, stashed string
 		models        []string
 		want, err     string
 	}{
-		{name: "nothing stashed", models: []string{"magpie/relay/glm-4.6", "openai/gpt-5", "zai/glm-4.6"}, want: `{"id":"gpt-5","provider":"openai"}`},
-		{name: "an id alone", stashed: "glm-4.6", models: []string{"magpie/relay/glm-4.6", "openai/gpt-5", "zai/glm-4.6"}, want: `{"id":"glm-4.6","provider":"zai"}`},
+		{name: "nothing stashed", models: []string{"magpie-friday/relay/glm-4.6", "openai/gpt-5", "zai/glm-4.6"}, want: `{"id":"gpt-5","provider":"openai"}`},
+		{name: "an id alone", stashed: "glm-4.6", models: []string{"magpie-friday/relay/glm-4.6", "openai/gpt-5", "zai/glm-4.6"}, want: `{"id":"glm-4.6","provider":"zai"}`},
 		{name: "provider/id", stashed: "openrouter/anthropic/claude", models: []string{"openai/gpt-5", "openrouter/anthropic/claude"}, want: `{"id":"anthropic/claude","provider":"openrouter"}`},
-		{name: "provider gone", stashed: "gone/x", models: []string{"magpie/relay/glm-4.6", "openai/gpt-5"}, want: `{"id":"gpt-5","provider":"openai"}`},
-		{name: "only magpie's", stashed: "gone/x", models: []string{"magpie/relay/glm-4.6"}, err: "no model of its own"},
+		{name: "provider gone", stashed: "gone/x", models: []string{"magpie-friday/relay/glm-4.6", "openai/gpt-5"}, want: `{"id":"gpt-5","provider":"openai"}`},
+		{name: "only magpie-friday's", stashed: "gone/x", models: []string{"magpie-friday/relay/glm-4.6"}, err: "no model of its own"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			home, dir := hanakoTestHome(t)
 			hanakoWrite(t, filepath.Join(dir, "provider-catalog.json"),
-				`{"catalogVersion":2,"providers":{"openai":{"api_key":"sk-x"},"magpie":{"api_key":"magpie-hanako"}}}`, 0o600)
-			hanakoWrite(t, filepath.Join(dir, "agents", "xiaojing", "config.yaml"), "models:\n  chat:\n    id: relay/glm-4.6\n    provider: magpie\n", 0o644)
+				`{"catalogVersion":2,"providers":{"openai":{"api_key":"sk-x"},"magpie-friday":{"api_key":"magpie-friday-hanako"}}}`, 0o600)
+			hanakoWrite(t, filepath.Join(dir, "agents", "xiaojing", "config.yaml"), "models:\n  chat:\n    id: relay/glm-4.6\n    provider: magpie-friday\n", 0o644)
 			a := hanako(home)
 			k := "hanako:" + dir + ":xiaojing:chat"
 			if tc.stashed != "" {
@@ -716,7 +716,7 @@ func TestHanakoLiveBackNeedsProviderID(t *testing.T) {
 			}
 			if len(puts) != 2 || puts[0].Path != "/api/agents/xiaojing/config" || puts[1].Path != "/api/config" ||
 				!sameJSON(puts[0].Body, json.RawMessage(`{"models":{"chat":`+tc.want+`}}`)) ||
-				!sameJSON(puts[1].Body, json.RawMessage(`{"providers":{"magpie":null}}`)) {
+				!sameJSON(puts[1].Body, json.RawMessage(`{"providers":{"magpie-friday":null}}`)) {
 				t.Fatalf("puts: %+v", puts)
 			}
 			if _, there := stashLoad()[k]; there {

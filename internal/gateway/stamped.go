@@ -4,11 +4,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // stampedFor is how long what a stamped keeps is used while the stamp
-// stays the same: a list another magpie fetched, or an account another
+// stays the same: a list another magpie-friday fetched, or an account another
 // program signed in to, moves no stamp, and is seen this long after.
 const stampedFor = time.Minute
 

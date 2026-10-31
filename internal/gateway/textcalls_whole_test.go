@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // issueDSML is #1845's reply: DeepSeek's DSML for a call of the request's
@@ -184,7 +184,7 @@ func TestTextWrittenCallWhole(t *testing.T) {
 }
 
 // The issue's DSML through each translation of a Chat upstream, which
-// magpie always asks streamed: a Responses or Anthropic client, streamed
+// magpie-friday always asks streamed: a Responses or Anthropic client, streamed
 // or whole, and a Chat client's request for one body that is asked
 // streamed (DashScope's thinking models), all get the call.
 func TestTextWrittenCallWholeTranslated(t *testing.T) {

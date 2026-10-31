@@ -12,7 +12,7 @@ import (
 // before exercising a real cross-device move in both directions.
 func TestMoveCrossDevice(t *testing.T) {
 	dir := t.TempDir()
-	other, err := os.MkdirTemp("/dev/shm", "magpie-session-")
+	other, err := os.MkdirTemp("/dev/shm", "magpie-friday-session-")
 	if err != nil {
 		t.Skip("no writable shared-memory filesystem:", err)
 	}

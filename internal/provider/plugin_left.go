@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
 )
 
 // A plugin's provider leaves a record in providers.json once the user picks
 // its models or changes a setting on it: its id, and no endpoint or key of
 // its own (OnlyPicks). Removing the plugin left that record behind, where
-// nothing listed it and `magpie provider rm` couldn't find it, and a sync
+// nothing listed it and `magpie-friday provider rm` couldn't find it, and a sync
 // or a backup then asked for a sign-in to it on every run (#2057, dawn1095).
 // So removing a plugin sets its records aside, and adding it again puts
 // them back.
@@ -25,7 +25,7 @@ type LeftRecord struct {
 }
 
 // pluginRecordIDs are the ids the records in providers.json that the
-// plugin spec made have: its providers' ids as magpie lists them, apart
+// plugin spec made have: its providers' ids as magpie-friday lists them, apart
 // from a built-in's (whose picks are the built-in's own) and one another
 // installed plugin serves too. false when the plugins' listing isn't
 // known, which sets nothing aside.
@@ -47,7 +47,7 @@ func pluginRecordIDs(spec string) ([]string, bool) {
 	var ids []string
 	for _, pp := range listed {
 		id := PluginID(pp.ID)
-		if pp.Spec != spec || id == "" || id == "magpie" || slices.Contains(accountIDs, id) || others[id] || slices.Contains(ids, id) {
+		if pp.Spec != spec || id == "" || id == "magpie-friday" || slices.Contains(accountIDs, id) || others[id] || slices.Contains(ids, id) {
 			continue
 		}
 		ids = append(ids, id)

@@ -93,7 +93,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         await how.click();
         for (let i = 0; i < 50 && !opened.length; i++) await page.waitForTimeout(20);
         assert.deepEqual(opened, [w.docs]);
-        assert.equal(page.url(), "http://magpie.test/?view=plugins", "the window stays on magpie");
+        assert.equal(page.url(), "http://magpie.test/?view=plugins", "the window stays on magpie-friday");
 
         const over = await page.evaluate(() => document.scrollingElement.scrollWidth - document.scrollingElement.clientWidth);
         assert.ok(over <= 0, "page scrolls sideways by " + over);

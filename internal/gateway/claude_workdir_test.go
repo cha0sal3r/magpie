@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // claudeWorkDirs runs two Claude subscription requests through a script
@@ -129,8 +129,8 @@ func TestClaudeWorkDirSymlinkIsAvoided(t *testing.T) {
 
 // A caller that says which folder it works in has Claude Code run there:
 // Claude Code tells its model the folder it runs in as the working
-// directory, and a model told magpie's own folder wrote the caller's files
-// into it (a pelican.html left in magpie-claude-work), through tools that
+// directory, and a model told magpie-friday's own folder wrote the caller's files
+// into it (a pelican.html left in magpie-friday-claude-work), through tools that
 // run in the caller's. Each client's way of saying it is read, the last
 // said counting. The caller's folder keeps sessions of its own, which are
 // never swept, and its repository's status is not added to the prompt.
@@ -186,7 +186,7 @@ func TestClaudeRunsInTheCallersWorkDir(t *testing.T) {
 }
 
 // A folder the caller names that isn't one here (a caller on another
-// computer), or isn't absolute, leaves the runs in magpie's own folder.
+// computer), or isn't absolute, leaves the runs in magpie-friday's own folder.
 // Claude Code's prompt then gives this computer's platform and folder, and
 // the caller's another's, so the run is told after the caller's
 // instructions that theirs is where the tools run (vv_nil on X: a Mac

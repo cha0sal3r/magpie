@@ -1,4 +1,4 @@
-// Package ghtoken has magpie's requests to GitHub's REST API carry the
+// Package ghtoken has magpie-friday's requests to GitHub's REST API carry the
 // user's GitHub token, and says plainly when GitHub turns them away.
 //
 // GitHub's API answers an address 60 requests an hour without a token,
@@ -12,7 +12,7 @@
 //
 // A token from the environment that GitHub refuses (401) is one the user
 // may not know is there, often stale: the request is asked again without
-// it, and the token isn't sent again while magpie runs (till on Discord).
+// it, and the token isn't sent again while magpie-friday runs (till on Discord).
 // The token set in Settings is the user's own choice, so a refusal of it
 // is said (Refused).
 package ghtoken
@@ -28,7 +28,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // Env names the environment variables a token is taken from when Settings
@@ -52,7 +52,7 @@ func Token() (token, from string) {
 }
 
 // refused holds the environment's tokens GitHub answered 401, for as long
-// as magpie runs: keyed by the token, so a variable set to another one is
+// as magpie-friday runs: keyed by the token, so a variable set to another one is
 // tried afresh.
 var refused = struct {
 	sync.Mutex

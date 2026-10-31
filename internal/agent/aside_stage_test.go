@@ -12,13 +12,13 @@ func TestAsideOfflineWriteRequiresExplicitStage(t *testing.T) {
 	asideSet = func(string, string) error { return errors.New("offline") }
 	a := mustFindAside(t)
 	before := readFile(settings)
-	if err := a.Apply("model", "magpie/relay/glm-4.6"); err == nil {
+	if err := a.Apply("model", "magpie-friday/relay/glm-4.6"); err == nil {
 		t.Fatal("offline apply reported success")
 	}
 	if readFile(settings) != before {
 		t.Fatal("apply silently staged setting")
 	}
-	if err := a.Native.Stage("model", "magpie/relay/glm-4.6"); err != nil {
+	if err := a.Native.Stage("model", "magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	a = mustFindAside(t)

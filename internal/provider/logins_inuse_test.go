@@ -30,7 +30,7 @@ func TestInUseOf(t *testing.T) {
 }
 
 // A provider's account A is spent and the gateway has moved its requests to
-// B, but magpie has not switched the sign-in yet (it does that only every
+// B, but magpie-friday has not switched the sign-in yet (it does that only every
 // few minutes). The card must show B's remaining allowance, not A's already
 // gone (a user report: the menu bar kept showing the exhausted account). So
 // the account in use follows the gateway to the next one on with room —
@@ -140,7 +140,7 @@ func TestInUseOfFollowsGatewayWhenSpent(t *testing.T) {
 func TestLoginRoom(t *testing.T) {
 	signIn(t)
 	// Inject the allowances as the gateway would see them: Codex's signed-in
-	// account at the vendor's edge, a spare with room, and an account magpie
+	// account at the vendor's edge, a spare with room, and an account magpie-friday
 	// has no reading for. Marked fresh so Allowances answers from them rather
 	// than refetching over a test's fake home.
 	usedCache.Lock()

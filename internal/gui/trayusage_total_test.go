@@ -7,11 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/sessions"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
-// #1984: the menu bar shows magpie's own total for today or the last 7
+// #1984: the menu bar shows magpie-friday's own total for today or the last 7
 // days, tokens over cost, beside the allowances or alone, without asking
 // any vendor.
 func TestTrayTotals(t *testing.T) {
@@ -50,8 +50,8 @@ func TestTrayTotals(t *testing.T) {
 			t.Errorf("cell %d: plain %v icon %d bytes letter %q", i, c.Plain, len(c.Icon), c.Letter)
 		}
 	}
-	if want := "Last 7 days in magpie\n47M tokens (41M in · 6.2M out)\n≈$128\n2310 requests\n\n" +
-		"Today in magpie\n6.3M tokens (912K in · 318K out · 5.1M cached)\n≈$3.40+\n152 requests, 2 with no known price"; tip != want {
+	if want := "Last 7 days in magpie-friday\n47M tokens (41M in · 6.2M out)\n≈$128\n2310 requests\n\n" +
+		"Today in magpie-friday\n6.3M tokens (912K in · 318K out · 5.1M cached)\n≈$3.40+\n152 requests, 2 with no known price"; tip != want {
 		t.Errorf("tooltip %q\nwant %q", tip, want)
 	}
 

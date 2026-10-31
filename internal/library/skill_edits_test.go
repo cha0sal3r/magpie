@@ -10,7 +10,7 @@ import (
 )
 
 // Joren on Discord: with skills given as copies, an agent's edit of one was
-// undone at magpie's next start, the sync making the copy again from the
+// undone at magpie-friday's next start, the sync making the copy again from the
 // library's. The newest edit goes to the library and every other agent
 // instead; the library's own change wins when it is newer, and an edit that
 // loses is kept with the backups.
@@ -41,7 +41,7 @@ func TestSkillCopyEditReachesTheOthers(t *testing.T) {
 			}
 		}
 		if !ours(cl, "pdf") || !ours(cx, "pdf") || isLink(t, cx) {
-			t.Fatal("the copies aren't magpie's any more")
+			t.Fatal("the copies aren't magpie-friday's any more")
 		}
 	}
 	if !backedUp(t, "Read PDFs") {

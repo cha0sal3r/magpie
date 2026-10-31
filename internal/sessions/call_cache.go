@@ -28,7 +28,7 @@ import (
 // v7: reconcile recent Claude message revisions.
 // v8: a Claude Code call's 1-hour cache writes.
 // v9: a dsh call carries the provider it named and the model that answered,
-// and a call through magpie's own gateway is left out of dsh's (the gateway
+// and a call through magpie-friday's own gateway is left out of dsh's (the gateway
 // logs it itself).
 // v10: the calls ZCode's and WorkBuddy's session files hold are read too, and
 // WorkBuddy's that went through the gateway are left out of them as a dsh

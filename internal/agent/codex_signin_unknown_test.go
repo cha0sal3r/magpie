@@ -11,8 +11,8 @@ import (
 // (codex-rs FileAuthStorage::save opens it with truncate), so a read in
 // that moment finds it empty or cut off. That says nothing about the
 // sign-in, and must not move Codex off it: Sync took such a read for "no
-// ChatGPT sign-in" and made magpie Codex's provider, and the Codex app
-// then showed "magpie" for its account and magpie's catalog for its
+// ChatGPT sign-in" and made magpie-friday Codex's provider, and the Codex app
+// then showed "magpie-friday" for its account and magpie-friday's catalog for its
 // models (lucy on Discord, v0.1.1394, on and off). Nothing put it back,
 // as codex.out wasn't marked. A half-written file is unknown, and unknown
 // is the sign-in as last read.
@@ -62,10 +62,10 @@ func TestCodexHalfWrittenAuthKeepsSignIn(t *testing.T) {
 	}
 }
 
-// The same while the Codex app holds the account and magpie is Codex's
+// The same while the Codex app holds the account and magpie-friday is Codex's
 // provider for that (codex.out): a pick in that moment keeps the mark, so
-// Sync puts magpie back beside the sign-in once the account has room. It
-// was forgotten, and Codex stayed on magpie as its provider.
+// Sync puts magpie-friday back beside the sign-in once the account has room. It
+// was forgotten, and Codex stayed on magpie-friday as its provider.
 func TestCodexHalfWrittenAuthKeepsOut(t *testing.T) {
 	const signedIn = `{"tokens":{"access_token":"x","id_token":"x.e30.x"}}`
 	home, read := codexHome(t, signedIn, "")
@@ -74,8 +74,8 @@ func TestCodexHalfWrittenAuthKeepsOut(t *testing.T) {
 	if err := cx.Fields[0].Set("fake/m1"); err != nil {
 		t.Fatal(err)
 	}
-	if cfg := read(); !strings.Contains(cfg, `model_provider = "magpie"`) {
-		t.Fatalf("held: magpie its provider:\n%s", cfg)
+	if cfg := read(); !strings.Contains(cfg, `model_provider = "magpie-friday"`) {
+		t.Fatalf("held: magpie-friday its provider:\n%s", cfg)
 	}
 	auth := filepath.Join(home, ".codex", "auth.json")
 	os.WriteFile(auth, nil, 0o600)
@@ -93,7 +93,7 @@ func TestCodexHalfWrittenAuthKeepsOut(t *testing.T) {
 }
 
 // A sign-in really gone (auth.json removed: codex logout) or one with no
-// ChatGPT tokens (an API key) is known, and still moves Codex onto magpie
+// ChatGPT tokens (an API key) is known, and still moves Codex onto magpie-friday
 // as its provider, as before.
 func TestCodexSignInGoneStillKnown(t *testing.T) {
 	for name, after := range map[string]string{
@@ -115,8 +115,8 @@ func TestCodexSignInGoneStillKnown(t *testing.T) {
 			if err := cx.Sync(); err != nil {
 				t.Fatal(err)
 			}
-			if cfg := read(); !strings.Contains(cfg, `model_provider = "magpie"`) {
-				t.Fatalf("no ChatGPT sign-in: magpie its provider:\n%s", cfg)
+			if cfg := read(); !strings.Contains(cfg, `model_provider = "magpie-friday"`) {
+				t.Fatalf("no ChatGPT sign-in: magpie-friday its provider:\n%s", cfg)
 			}
 		})
 	}

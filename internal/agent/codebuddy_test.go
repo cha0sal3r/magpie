@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 func codebuddyHome(t *testing.T) string {
@@ -35,7 +35,7 @@ func readJSON(t *testing.T, path string) map[string]any {
 	return m
 }
 
-// #980: CodeBuddy Code (the China edition's CLI too) uses magpie's models
+// #980: CodeBuddy Code (the China edition's CLI too) uses magpie-friday's models
 // through ~/.codebuddy/models.json, its session model in settings.json, and
 // the user's own models and settings stay as they were.
 func TestCodeBuddyCode(t *testing.T) {
@@ -62,7 +62,7 @@ func TestCodeBuddyCode(t *testing.T) {
 	if f.Get() != "gpt-5" {
 		t.Fatalf("get: %q", f.Get())
 	}
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	m := readJSON(t, models)
@@ -71,9 +71,9 @@ func TestCodeBuddyCode(t *testing.T) {
 		t.Fatalf("models: %v", m)
 	}
 	pro := ms[1].(map[string]any)
-	if pro["id"] != "deepseek/pro" || pro["vendor"] != "magpie" || pro["apiKey"] != "magpie-codebuddy" ||
+	if pro["id"] != "deepseek/pro" || pro["vendor"] != "magpie-friday" || pro["apiKey"] != "magpie-friday-codebuddy" ||
 		pro["url"] != gatewayV1()+"/chat/completions" || pro["supportsToolCall"] != true {
-		t.Fatalf("magpie model: %v", pro)
+		t.Fatalf("magpie-friday model: %v", pro)
 	}
 	if av, _ := json.Marshal(m["availableModels"]); string(av) != `["my-model","deepseek/pro"]` {
 		t.Fatalf("availableModels: %s", av)
@@ -82,7 +82,7 @@ func TestCodeBuddyCode(t *testing.T) {
 	if s["model"] != "deepseek/pro" || s["language"] != "中文" || s["permissions"] == nil {
 		t.Fatalf("settings: %v", s)
 	}
-	if f.Get() != "magpie/deepseek/pro" {
+	if f.Get() != "magpie-friday/deepseek/pro" {
 		t.Fatalf("get: %q", f.Get())
 	}
 	if err := a.Sync(); err != nil {
@@ -92,7 +92,7 @@ func TestCodeBuddyCode(t *testing.T) {
 		t.Fatalf("after sync: %v", ms)
 	}
 
-	// back to one of CodeBuddy's own: magpie's models come out
+	// back to one of CodeBuddy's own: magpie-friday's models come out
 	if err := f.Set("gpt-5"); err != nil {
 		t.Fatal(err)
 	}
@@ -131,7 +131,7 @@ func TestCodeBuddyCodeNewFile(t *testing.T) {
 	if a.Path != filepath.Join(dir, "models.json") {
 		t.Fatalf("path: %s", a.Path)
 	}
-	if err := a.Field("model").Set("magpie/deepseek/pro"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	m := readJSON(t, a.Path)

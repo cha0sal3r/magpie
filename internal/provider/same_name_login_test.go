@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
 )
 
-// Two ZCode accounts of one name, the ZCode app's own removed in magpie
-// (hidden) and one signed in through magpie beside it: Remove on the one
+// Two ZCode accounts of one name, the ZCode app's own removed in magpie-friday
+// (hidden) and one signed in through magpie-friday beside it: Remove on the one
 // listed takes that one, by its slot, and leaves the hidden one as it was
 // (dev on Discord). The own account's saved id is the mover's "ZCode",
 // named after the app's sign-in now, so the two read alike unless the
@@ -30,7 +30,7 @@ func TestRemoveListedAccountLeavesHiddenNamesake(t *testing.T) {
 	})
 	ls := Logins("zcode")
 	if len(ls) != 1 || ls[0].Own {
-		t.Fatalf("listed %+v, want the one magpie signed in", ls)
+		t.Fatalf("listed %+v, want the one magpie-friday signed in", ls)
 	}
 	if err := ForgetLogin("zcode", ls[0].User); err != nil {
 		t.Fatal(err)
@@ -78,8 +78,8 @@ func TestPluginOwnNameKeepsSlotApart(t *testing.T) {
 	}
 }
 
-// The built-in path: an agent's own account hidden in magpie and one of
-// magpie's of the same name, the latter listed. Removing it removes it,
+// The built-in path: an agent's own account hidden in magpie-friday and one of
+// magpie-friday's of the same name, the latter listed. Removing it removes it,
 // not the hidden one.
 func TestForgetSideLoginTakesTheListedOne(t *testing.T) {
 	claudeHome(t)
@@ -90,14 +90,14 @@ func TestForgetSideLoginTakesTheListedOne(t *testing.T) {
 	usable := func(savedLogin) bool { return true }
 	ls := sideLogins("side", "a@x", usable)
 	if len(ls) != 1 || ls[0].saved.own() {
-		t.Fatalf("listed %+v, want magpie's", ls)
+		t.Fatalf("listed %+v, want magpie-friday's", ls)
 	}
 	var gone savedLogin
 	if err := forgetSideLogin("side", "a@x", ls, func(l savedLogin) { gone = l }); err != nil {
 		t.Fatal(err)
 	}
 	if len(gone.Auth) == 0 {
-		t.Errorf("told of %+v going, not magpie's", gone)
+		t.Errorf("told of %+v going, not magpie-friday's", gone)
 	}
 	var left []savedLogin
 	for _, l := range readLogins() {

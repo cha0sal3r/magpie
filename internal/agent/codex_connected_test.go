@@ -6,15 +6,15 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
-// Codex signed in with ChatGPT, connected on one of magpie's models beside
+// Codex signed in with ChatGPT, connected on one of magpie-friday's models beside
 // its sign-in, stays connected when Codex writes one of its own models in
 // (its /model, or a Codex app still running on its old pick): its own
-// models are in its list beside magpie's, as when it joined (#940: Codex
-// read as not connected then, its config still on magpie's gateway).
-// Disconnect leaves it on that model. Made magpie's provider (the Codex
+// models are in its list beside magpie-friday's, as when it joined (#940: Codex
+// read as not connected then, its config still on magpie-friday's gateway).
+// Disconnect leaves it on that model. Made magpie-friday's provider (the Codex
 // app blocking its account), it is not beside the sign-in.
 func TestCodexOwnPickAfterMagpieModelStaysConnected(t *testing.T) {
 	home, read := codexHome(t, `{"tokens":{"access_token":"x","id_token":"x.e30.x"}}`, "model = \"gpt-5.5\"\n")
@@ -31,7 +31,7 @@ func TestCodexOwnPickAfterMagpieModelStaysConnected(t *testing.T) {
 	if !cx.Wired() {
 		t.Fatalf("Codex's own pick disconnected it:\n%s", read())
 	}
-	// a pick beside magpie's models, not a change from outside (#2424)
+	// a pick beside magpie-friday's models, not a change from outside (#2424)
 	if d := cx.Drift(); d != nil {
 		t.Fatalf("drift on Codex's own pick beside its sign-in: %+v", d)
 	}
@@ -42,8 +42,8 @@ func TestCodexOwnPickAfterMagpieModelStaysConnected(t *testing.T) {
 		t.Fatalf("disconnected:\n%s", cfg)
 	}
 
-	// out of its allowance, magpie is its provider: an own model written
-	// back is a change from outside, not a pick beside magpie's
+	// out of its allowance, magpie-friday is its provider: an own model written
+	// back is a change from outside, not a pick beside magpie-friday's
 	codexUsedUp = func() bool { return true }
 	if err := cx.Fields[0].Set("fake/m1"); err != nil {
 		t.Fatal(err)
@@ -56,14 +56,14 @@ func TestCodexOwnPickAfterMagpieModelStaysConnected(t *testing.T) {
 		t.Fatal(err)
 	}
 	if cx.Wired() {
-		t.Fatalf("still beside the sign-in after magpie became its provider:\n%s", read())
+		t.Fatalf("still beside the sign-in after magpie-friday became its provider:\n%s", read())
 	}
 }
 
 // Connected while Codex can't join (the Codex app blocking its ChatGPT
 // account, or a provider of its own in config.toml), Codex stays on the
-// model it was on as magpie serves it on the ChatGPT account, not the first
-// of magpie's other models (#940: it went to Grok 4.7, "magpie doesn't
+// model it was on as magpie-friday serves it on the ChatGPT account, not the first
+// of magpie-friday's other models (#940: it went to Grok 4.7, "magpie-friday doesn't
 // serve the model it was on").
 func TestCodexConnectKeepsItsOwnModelThroughMagpie(t *testing.T) {
 	home, read := codexHome(t, `{"tokens":{"access_token":"x","id_token":"x.e30.x"}}`, "model = \"gpt-b\"\n")

@@ -7,11 +7,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// claudeAboutSetup is #1227's settings.json before magpie: every tier on the
+// claudeAboutSetup is #1227's settings.json before magpie-friday: every tier on the
 // user's own model, each named for it, two with a description and
 // capabilities of their own.
 const claudeAboutSetup = `{"model":"opus","env":{
@@ -56,11 +56,11 @@ func claudeAboutLeft(path string) map[string]string {
 	return out
 }
 
-// Routed through magpie, the names, descriptions and capabilities the user
+// Routed through magpie-friday, the names, descriptions and capabilities the user
 // wrote for their own tier models no longer name the model each tier runs
 // (#1227: every tier on deepseek-flash, shown as grok-4.5): they go while
-// magpie's models are there, and come back with the user's models when
-// magpie steps out, by its default or by Disconnect.
+// magpie-friday's models are there, and come back with the user's models when
+// magpie-friday steps out, by its default or by Disconnect.
 func TestClaudeTierNamesGoWithTheirModel(t *testing.T) {
 	for _, out := range []string{"default", "disconnect"} {
 		t.Run(out, func(t *testing.T) {
@@ -71,12 +71,12 @@ func TestClaudeTierNamesGoWithTheirModel(t *testing.T) {
 				t.Fatal(err)
 			}
 			// the user's own fable model goes too, and on a model that is
-			// no Fable magpie leaves the tier unset (#2090)
+			// no Fable magpie-friday leaves the tier unset (#2090)
 			if v, has := edit.GetJSON(path, "env.ANTHROPIC_DEFAULT_FABLE_MODEL"); has {
 				t.Fatalf("fable left on %q:\n%s", v, readFile(path))
 			}
 			if left := claudeAboutLeft(path); len(left) > 0 {
-				t.Fatalf("the user's own models' names left on magpie's: %v", left)
+				t.Fatalf("the user's own models' names left on magpie-friday's: %v", left)
 			}
 			if out == "default" {
 				if err := a.Apply("model", ""); err != nil {
@@ -93,8 +93,8 @@ func TestClaudeTierNamesGoWithTheirModel(t *testing.T) {
 	}
 }
 
-// Claude Code routed by an older magpie, which left the names of the
-// models before it in place (#1227 as reported): magpie's next look takes
+// Claude Code routed by an older magpie-friday, which left the names of the
+// models before it in place (#1227 as reported): magpie-friday's next look takes
 // them out and keeps them to give back.
 func TestClaudeTierNamesLeftByAnOlderMagpie(t *testing.T) {
 	home, path, _ := claudeAboutHome(t, `{"model":"opus"}`)
@@ -111,13 +111,13 @@ func TestClaudeTierNamesLeftByAnOlderMagpie(t *testing.T) {
 	if err := edit.SetJSON(path, kvs...); err != nil {
 		t.Fatal(err)
 	}
-	// as an older magpie left it: nothing kept of having looked
+	// as an older magpie-friday left it: nothing kept of having looked
 	forget("claude.tier_about")
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
 	if left := claudeAboutLeft(path); len(left) > 0 {
-		t.Fatalf("the names before magpie are left: %v", left)
+		t.Fatalf("the names before magpie-friday are left: %v", left)
 	}
 	if err := a.Apply("model", ""); err != nil {
 		t.Fatal(err)
@@ -127,8 +127,8 @@ func TestClaudeTierNamesLeftByAnOlderMagpie(t *testing.T) {
 	}
 }
 
-// A name the user writes for magpie's model is theirs: it stays while the
-// tier is on that model, whatever else magpie writes, and goes when the
+// A name the user writes for magpie-friday's model is theirs: it stays while the
+// tier is on that model, whatever else magpie-friday writes, and goes when the
 // tier moves to another.
 func TestClaudeOwnTierNameOnMagpie(t *testing.T) {
 	home, path, _ := claudeAboutHome(t, `{"model":"opus"}`)
@@ -156,7 +156,7 @@ func TestClaudeOwnTierNameOnMagpie(t *testing.T) {
 	}
 	want := map[string]string{"ANTHROPIC_DEFAULT_OPUS_MODEL_NAME": "DeepSeek Pro", "ANTHROPIC_DEFAULT_SONNET_MODEL_NAME": "DeepSeek Flash"}
 	if got := claudeAboutLeft(path); !reflect.DeepEqual(got, want) {
-		t.Fatalf("the user's names for magpie's models: %v\n%s", got, readFile(path))
+		t.Fatalf("the user's names for magpie-friday's models: %v\n%s", got, readFile(path))
 	}
 	// the main model moves: sonnet, following it, moves too; opus stays
 	if err := a.Apply("model", "opencode-go/deepseek-pro"); err != nil {

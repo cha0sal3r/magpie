@@ -1,9 +1,9 @@
-// Package provider holds the model vendors magpie can reach: where each one
+// Package provider holds the model vendors magpie-friday can reach: where each one
 // lives, which protocols it speaks, the API key the user typed in, and which
 // of its models should show up in the agents' pickers.
 //
 // Provider keys are never read from environment variables. A provider is
-// exactly what the user entered, kept in ~/.config/magpie/providers.json
+// exactly what the user entered, kept in ~/.config/magpie-friday/providers.json
 // (mode 0600).
 package provider
 
@@ -25,14 +25,14 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/lastgood"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/steady"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/lastgood"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/steady"
 )
 
-// Protocol is a wire API magpie can speak to an upstream.
+// Protocol is a wire API magpie-friday can speak to an upstream.
 type Protocol string
 
 const (
@@ -42,7 +42,7 @@ const (
 	Gemini    Protocol = "gemini"    // Google Gemini's generateContent: served to clients; spoken upstream at a custom provider's Gemini URL, Vertex AI and Factory's generate route
 )
 
-// Protocols in the order magpie prefers them when it has to translate.
+// Protocols in the order magpie-friday prefers them when it has to translate.
 var Protocols = []Protocol{Chat, Responses, Anthropic}
 
 // Provider is one configured vendor.
@@ -81,7 +81,7 @@ type Provider struct {
 	// KeyWeight is the first key's weight (see KeyAccount.Weight).
 	KeyWeight int `json:"keyWeight,omitempty"`
 
-	// Base URLs, one per protocol the vendor serves natively. magpie appends
+	// Base URLs, one per protocol the vendor serves natively. magpie-friday appends
 	// the usual paths: chat/responses bases end in /v1 (OpenAI style),
 	// the Anthropic base is the root (what ANTHROPIC_BASE_URL takes).
 	Chat      string `json:"chat,omitempty"`
@@ -136,7 +136,7 @@ type Provider struct {
 	Affinity string `json:"affinity,omitempty"`
 
 	// KeepLogin, on Codex's or Claude Code's subscription, keeps the agent
-	// signed in to the account the user made first: magpie doesn't sign it
+	// signed in to the account the user made first: magpie-friday doesn't sign it
 	// in to another when that one runs low or out (#524). The gateway still
 	// spreads its requests over the accounts that are on, as Routing says.
 	KeepLogin bool `json:"keepLogin,omitempty"`
@@ -145,7 +145,7 @@ type Provider struct {
 	// the user uses the agent as, while the first is only the one whose
 	// allowance is spent first (#524). Empty, it is the first.
 	KeepLoginAs string `json:"keepLoginAs,omitempty"`
-	// SwitchOnly, on Codex's subscription, has magpie only move Codex's
+	// SwitchOnly, on Codex's subscription, has magpie-friday only move Codex's
 	// own sign-in (auth.json) to the next account with room and back:
 	// Codex's requests then go straight to OpenAI, never through the
 	// gateway for account failover, however many of its accounts are on
@@ -199,7 +199,7 @@ type Provider struct {
 	// they are out of quota or answers 429 (zoecats on Discord: a local
 	// aggregator says "quota exhausted" for a moment while it switches
 	// upstreams, and a rest of half an hour held every request back until
-	// magpie restarted). Off by default: such a refusal rests it as ever.
+	// magpie-friday restarted). Off by default: such a refusal rests it as ever.
 	LimitRestOff bool `json:"limitRestOff,omitempty"`
 
 	// PriceRate is what the provider charges against the official price
@@ -210,7 +210,7 @@ type Provider struct {
 	PriceRate float64 `json:"priceRate,omitempty"`
 
 	// Headers are extra HTTP request headers sent to the vendor, exactly as
-	// the user typed them. They ride on every request magpie makes to a plain
+	// the user typed them. They ride on every request magpie-friday makes to a plain
 	// key+URL provider — forwarded calls, connectivity tests, and model-list
 	// fetches — applied after the auth headers, so the user can override those
 	// when a gateway insists on a private scheme. Signed-in agent accounts
@@ -226,14 +226,14 @@ type Provider struct {
 	// Searches says the vendor answers a web search tool offered on its
 	// Anthropic or Responses API by itself (web_search_20250305,
 	// web_search): a relay in front of Anthropic's or OpenAI's API, which
-	// magpie can't tell from its host. A request offering one then goes to
-	// it as the client sent it, rather than given magpie's search (#359).
+	// magpie-friday can't tell from its host. A request offering one then goes to
+	// it as the client sent it, rather than given magpie-friday's search (#359).
 	Searches bool `json:"searches,omitempty"`
 
 	// CodexAsSent has a request Codex sends on the Responses API go to it
 	// as Codex sent it, its model name alone swapped: a relay that checks
 	// it is Codex's own (#1758: "Codex 客户端请求特征无效", 10014), which
-	// the shape magpie fits it to for another backend (Responses Lite's
+	// the shape magpie-friday fits it to for another backend (Responses Lite's
 	// additional_tools lifted into tools, the tool search as a function,
 	// OpenAI-only fields left out) fails. Off, the default, keeps that
 	// fitting, which a backend that isn't OpenAI's needs (#350).
@@ -250,22 +250,22 @@ type Provider struct {
 
 	// NativeCompaction has Codex's compaction_trigger go to the provider
 	// as Codex sent it, and the compaction the provider writes back go to
-	// Codex as it came (#1099), where magpie otherwise asks the model for
+	// Codex as it came (#1099), where magpie-friday otherwise asks the model for
 	// a summary and hands Codex that (its "magpie1:" compaction). Only a
 	// provider whose wire carries it takes it (CarriesCompaction): a
-	// Responses API (Sub2API, a remote magpie), a ChatGPT account, GitHub
+	// Responses API (Sub2API, a remote magpie-friday), a ChatGPT account, GitHub
 	// Copilot's GPT models. Such a compaction is sealed by the key or
 	// account that wrote it, so its conversation stays there, or is
 	// refused, never sent elsewhere to be dropped. Off, the default,
-	// keeps magpie's summary.
+	// keeps magpie-friday's summary.
 	NativeCompaction bool `json:"nativeCompaction,omitempty"`
 
 	// PassUserAgent has a request go to the vendor with the User-Agent the
 	// agent that sent it gave (pi, opencode, Claude Code…), in place of
-	// magpie's own (#1851): a coding plan that serves only agents it names
-	// knows them by it. One the agent didn't give, or magpie's own
-	// requests, go as magpie. Off, the default, every request goes as
-	// magpie. Only a key+URL provider takes it: a signed-in account, a
+	// magpie-friday's own (#1851): a coding plan that serves only agents it names
+	// knows them by it. One the agent didn't give, or magpie-friday's own
+	// requests, go as magpie-friday. Off, the default, every request goes as
+	// magpie-friday. Only a key+URL provider takes it: a signed-in account, a
 	// plugin's and one that goes as a client of its vendor's own keep the
 	// identity their signing gives (see PassesUserAgent).
 	PassUserAgent bool `json:"passUserAgent,omitempty"`
@@ -294,14 +294,14 @@ type Provider struct {
 	// See SkipsRedaction.
 	Unredacted bool `json:"unredacted,omitempty"`
 
-	// InsecureTLS has magpie take the certificate of the provider's own
+	// InsecureTLS has magpie-friday take the certificate of the provider's own
 	// HTTPS host as it is, unchecked (#2383, fangzhengjin: a vLLM on the
 	// LAN, Ollama behind a self-signed cert). Only a provider the user
 	// added takes it (TakesInsecureTLS), and only for the hosts of its own
 	// base URLs (UncheckedHosts); see Via.
 	InsecureTLS bool `json:"insecureTLS,omitempty"`
 
-	// Proxy is the proxy magpie's requests to this provider go through
+	// Proxy is the proxy magpie-friday's requests to this provider go through
 	// (#237: Codex through one, a vendor at home without): "" follows
 	// the global one (Settings' Proxy, the environment's, the system's),
 	// "direct" none, anything else the proxy's address (http://, https://,
@@ -332,14 +332,14 @@ type Provider struct {
 	// AccountNames is, for a subscription, the name the user gave each
 	// account they named (#1515: a team's seats told apart by who holds
 	// them, not by a masked email), by the account's name in lower case.
-	// It is magpie's own: the vendor's or plugin's sign-in never sees it
+	// It is magpie-friday's own: the vendor's or plugin's sign-in never sees it
 	// (see account_names.go).
 	AccountNames map[string]string `json:"accountNames,omitempty"`
 
 	// BalanceURL, when set, is where the vendor tells what is left on a
 	// key, asked with the key the way a chat request carries it; BalancePath
 	// picks the amount out of the JSON reply (see balance.go). The vendors
-	// magpie knows need neither.
+	// magpie-friday knows need neither.
 	BalanceURL  string `json:"balanceURL,omitempty"`
 	BalancePath string `json:"balancePath,omitempty"`
 	// BalanceMethod is how BalanceURL is asked: "" (or GET), or POST with
@@ -423,8 +423,8 @@ type Provider struct {
 	// fetch: Save drops it, so it never reaches providers.json.
 	IconURL string `json:"iconUrl,omitempty"`
 
-	// Hidden is set on an account the user removed from magpie; the
-	// agent stays signed in, magpie just leaves it alone.
+	// Hidden is set on an account the user removed from magpie-friday; the
+	// agent stays signed in, magpie-friday just leaves it alone.
 	Hidden bool `json:"hidden,omitempty"`
 	// Quiet is set on a removed account whose "Add it back" line the user
 	// dismissed: it is offered again only from the Add sheet (#116).
@@ -445,7 +445,7 @@ type file struct {
 	// Searches are the web search APIs a model's search goes to when no
 	// provider can search (see search_api.go).
 	Searches []SearchAPI `json:"searches,omitempty"`
-	// NoAutoGroups: the user turned off the groups magpie finds on its
+	// NoAutoGroups: the user turned off the groups magpie-friday finds on its
 	// own (SetAutoGroups); the groups they made or changed stay.
 	NoAutoGroups bool `json:"noAutoGroups,omitempty"`
 	// Order is the order the user put the providers in on the Providers
@@ -484,7 +484,7 @@ type unreadableError struct {
 }
 
 func (e *unreadableError) Error() string {
-	return fmt.Sprintf("%s can't be read (%v); magpie left it unchanged — fix it or move it aside", e.path, e.err)
+	return fmt.Sprintf("%s can't be read (%v); magpie-friday left it unchanged — fix it or move it aside", e.path, e.err)
 }
 
 func (e *unreadableError) Unwrap() []error { return []error{ErrUnreadable, e.err} }
@@ -597,7 +597,7 @@ func All() []Provider {
 	// asked once, from the settings a held look has read already: asked for
 	// each account, settings.json was parsed for every account of every
 	// model's price (agent.magpieModels, the GUI's drift every 15s and dsh's
-	// round every 30s), most of an idle magpie's CPU (xsw on Discord)
+	// round every 30s), most of an idle magpie-friday's CPU (xsw on Discord)
 	off := sync.OnceValue(func() bool { return settings.AccountDiscoveryOffIn(heldSettings()) })
 	for _, p := range held {
 		if p.Account != nil && off() {
@@ -716,7 +716,7 @@ func withPicks(a, pk Provider) Provider {
 	return a
 }
 
-// Hidden lists the signed-in accounts the user removed from magpie.
+// Hidden lists the signed-in accounts the user removed from magpie-friday.
 func Hidden() []Provider {
 	var out []Provider
 	for _, a := range Accounts() {
@@ -761,19 +761,19 @@ func findIn(all []Provider, id string) (*Provider, error) {
 			return &p, nil
 		}
 	}
-	return nil, fmt.Errorf("no provider %q — magpie providers lists them%s", id, readElsewhere())
+	return nil, fmt.Errorf("no provider %q — magpie-friday providers lists them%s", id, readElsewhere())
 }
 
-// readElsewhere says, for a provider not found, that this magpie reads its
+// readElsewhere says, for a provider not found, that this magpie-friday reads its
 // files from another folder than the app's when XDG_CONFIG_HOME moves them
-// and the app's has some (蒙面人 on Discord: a terminal's magpie had no
+// and the app's has some (蒙面人 on Discord: a terminal's magpie-friday had no
 // Antigravity, which the window showed signed in).
 func readElsewhere() string {
 	def := appdir.Redirected()
 	if def == "" || !isFile(filepath.Join(def, "providers.json")) && !isFile(filepath.Join(def, "logins.json")) {
 		return ""
 	}
-	return fmt.Sprintf("\n  this magpie reads its files from %s, as XDG_CONFIG_HOME says; the app opened from the Dock or Start menu keeps them in %s. Run it with XDG_CONFIG_HOME unset (env -u XDG_CONFIG_HOME magpie …) to use those", appdir.Config(), def)
+	return fmt.Sprintf("\n  this magpie-friday reads its files from %s, as XDG_CONFIG_HOME says; the app opened from the Dock or Start menu keeps them in %s. Run it with XDG_CONFIG_HOME unset (env -u XDG_CONFIG_HOME magpie-friday …) to use those", appdir.Config(), def)
 }
 
 var idRe = regexp.MustCompile(`[^a-z0-9]+`)
@@ -802,8 +802,8 @@ func Save(p Provider) error {
 	if p.ID == "" || p.ID != Slug(p.ID) && !stored(p.ID) {
 		return fmt.Errorf("provider id must be lowercase letters, digits and dashes, not %q", p.ID)
 	}
-	if p.ID == "magpie" {
-		return errors.New(`"magpie" is what agents call the gateway itself; pick another id`)
+	if p.ID == "magpie-friday" {
+		return errors.New(`"magpie-friday" is what agents call the gateway itself; pick another id`)
 	}
 	if p.ID == strings.TrimSuffix(GroupPrefix, "/") {
 		return errors.New(`"group" starts the ids of routing groups; pick another id`)
@@ -987,7 +987,7 @@ func add(p Provider, once bool) (string, error) {
 	// A copy the user asked for is taken (AddCopy).
 	for _, h := range All() {
 		if once && h.Account == nil && sameProvider(h, normalize(p)) {
-			return "", fmt.Errorf("%s is already added with that key (%s); magpie provider key %s <key> changes its key", h.Name, h.ID, h.ID)
+			return "", fmt.Errorf("%s is already added with that key (%s); magpie-friday provider key %s <key> changes its key", h.Name, h.ID, h.ID)
 		}
 	}
 	p.ID, p.Name = freeID(p.ID), freeName(p.Name)
@@ -1096,7 +1096,7 @@ func freeName(name string) string {
 	}
 }
 
-// accountIDs are the ids of the subscriptions magpie can list (account.go).
+// accountIDs are the ids of the subscriptions magpie-friday can list (account.go).
 var accountIDs = []string{"antigravity", "claude", "codex", CommandCodePlanID, "copilot", "cursor", "devin", "factory", "gemini", "grok", "kiro", MiMoID, ChatGPTAPIID, "qoder", QoderCNID, "workbuddy", WorkBuddyAIID, "zcode", "zed"}
 
 func stored(id string) bool {
@@ -1136,7 +1136,7 @@ func tuckedAccount(id string) bool {
 }
 
 // TuckAccount hides a removed account from the Add sheet's "Removed from
-// magpie" too (on), or lists it there again (off). Tucked, it is quiet as
+// magpie-friday" too (on), or lists it there again (off). Tucked, it is quiet as
 // well: no reminder line either (#116).
 func TuckAccount(id string, on bool) error {
 	f, err := read()
@@ -1172,7 +1172,7 @@ func QuietAccount(id string) error {
 }
 
 // ShowAccount brings back the signed-in account of an agent the user had
-// removed from magpie.
+// removed from magpie-friday.
 func ShowAccount(id string) error {
 	f, err := read()
 	if err != nil {
@@ -1188,7 +1188,7 @@ func ShowAccount(id string) error {
 }
 
 // Delete removes a provider. An account, a built-in's or a plugin's, is
-// only hidden from magpie (its accounts and model picks kept, shown again
+// only hidden from magpie-friday (its accounts and model picks kept, shown again
 // from Hidden or by signing in); signing out is each account's Remove.
 func Delete(id string) error {
 	f, err := read()
@@ -1374,7 +1374,7 @@ func normalize(p Provider) Provider {
 			p.KeysURL = cmp.Or(r.KeysURL, p.KeysURL)
 			p.Website = cmp.Or(r.Website, p.Website)
 			// the catalog follows the region unless the user gave one
-			// of their own: the preset's or a region's is magpie's
+			// of their own: the preset's or a region's is magpie-friday's
 			if slices.ContainsFunc(pr.Regions, func(x Region) bool { return x.Catalog != "" }) &&
 				(p.Catalog == pr.Catalog || slices.ContainsFunc(pr.Regions, func(x Region) bool { return x.Catalog == p.Catalog })) {
 				p.Catalog = cmp.Or(r.Catalog, pr.Catalog)
@@ -1806,9 +1806,9 @@ func SetOff(id string, off bool) error {
 	return Save(*p)
 }
 
-// SwitchedOff is the provider switched off in magpie that a model id
+// SwitchedOff is the provider switched off in magpie-friday that a model id
 // names: as "provider/model", or a model only switched-off providers list.
-// A request for it is refused as that, not as a model magpie doesn't know.
+// A request for it is refused as that, not as a model magpie-friday doesn't know.
 func SwitchedOff(id string) (Provider, bool) {
 	id = strings.TrimSuffix(strings.TrimSpace(id), "[1m]")
 	if pid, _, ok := strings.Cut(id, "/"); ok {

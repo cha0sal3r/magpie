@@ -10,10 +10,10 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-// OthersEvery is how often a loop that follows magpie's files (Written)
-// looks for what another process (the CLI, a second magpie) wrote: every
+// OthersEvery is how often a loop that follows magpie-friday's files (Written)
+// looks for what another process (the CLI, a second magpie-friday) wrote: every
 // few seconds, or, while Watch is told of their changes, only now and then
-// for one it missed (#3185: the looks woke an idle magpie on each beat,
+// for one it missed (#3185: the looks woke an idle magpie-friday on each beat,
 // a dozen times every five seconds).
 func OthersEvery() time.Duration {
 	if watching.Load() {
@@ -31,7 +31,7 @@ const (
 var watching atomic.Bool
 
 // Watch has a change another process makes to one of paths seen at once,
-// as a write of magpie's own is (Written), until ctx ends. Their folders
+// as a write of magpie-friday's own is (Written), until ctx ends. Their folders
 // are watched, not the files: a file written whole is a new one put in
 // its place. Where the folders can't be watched, the loops go on looking
 // every few seconds.

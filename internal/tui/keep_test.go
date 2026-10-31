@@ -5,14 +5,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/daemon"
+	"github.com/cha0sal3r/magpie-friday/internal/daemon"
 )
 
-// zaidu259434 on X: magpie in WSL, its agents failed once magpie tui was
+// zaidu259434 on X: magpie-friday in WSL, its agents failed once magpie-friday tui was
 // closed, nothing serving the gateway. The terminal quitting with an agent
-// connected hands the gateway to magpie's service, installing it where
+// connected hands the gateway to magpie-friday's service, installing it where
 // systemd runs it and the user never removed it, starting it where it is
-// installed, else to a magpie serve in the background. Off Linux, with
+// installed, else to a magpie-friday serve in the background. Off Linux, with
 // nothing connected, or where the app opens at login, it only says the
 // gateway stopped.
 func TestKeepGatewayAsTheTerminalQuits(t *testing.T) {
@@ -36,7 +36,7 @@ func TestKeepGatewayAsTheTerminalQuits(t *testing.T) {
 	gone := gatewayGoneNote()
 
 	d := setup("linux", false, false, false, nil)
-	if msg := keepGateway(true); !d.installed || d.bg || !strings.Contains(msg, "magpie daemon uninstall") {
+	if msg := keepGateway(true); !d.installed || d.bg || !strings.Contains(msg, "magpie-friday daemon uninstall") {
 		t.Errorf("no service: %+v %q", *d, msg)
 	}
 	d = setup("linux", false, true, false, nil)

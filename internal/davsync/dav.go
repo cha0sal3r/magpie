@@ -14,13 +14,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/backup"
+	"github.com/cha0sal3r/magpie-friday/internal/backup"
 )
 
 // folder and file are where the backup lives under the address given.
 const (
-	folder = "magpie"
-	file   = "magpie.magpie-backup"
+	folder = "magpie-friday"
+	file   = "magpie-friday.magpie-friday-backup"
 )
 
 // errChanged is a PUT the server refused because the file changed since it
@@ -85,9 +85,9 @@ type rateLimited struct {
 
 func (e *rateLimited) Error() string {
 	if e.status == http.StatusTooManyRequests {
-		return fmt.Sprintf("the %s server is limiting how often magpie may reach it (HTTP 429 Too Many Requests): sync waits longer before trying again", e.kind)
+		return fmt.Sprintf("the %s server is limiting how often magpie-friday may reach it (HTTP 429 Too Many Requests): sync waits longer before trying again", e.kind)
 	}
-	return fmt.Sprintf("the %s server is busy, or limiting how often magpie may reach it (HTTP %d): sync waits longer before trying again", e.kind, e.status)
+	return fmt.Sprintf("the %s server is busy, or limiting how often magpie-friday may reach it (HTTP %d): sync waits longer before trying again", e.kind, e.status)
 }
 
 // limited is the error for an answer that says the server is limiting
@@ -273,7 +273,7 @@ func (d *dav) get(ctx context.Context, have version) (data []byte, v version, er
 		return nil, have, errNotModified
 	}
 	// a Synology answers 403, not 404, for a file in a folder that isn't
-	// there: before the first sync, magpie's folder isn't
+	// there: before the first sync, magpie-friday's folder isn't
 	if res.StatusCode == http.StatusForbidden {
 		if !d.there(ctx, d.url(folder)+"/") {
 			return nil, version{}, nil
@@ -313,7 +313,7 @@ func (d *dav) get(ctx context.Context, have version) (data []byte, v version, er
 
 // put writes the backup, only over the version read (etag) when there was
 // one, making the folder if the server has none. Relays and tunnels cut
-// long writes short, and the half that lands reads back as "not a magpie
+// long writes short, and the half that lands reads back as "not a magpie-friday
 // backup" on every sync after, so what a write kept is read back and
 // compared; a short write is tried again and told as itself in the end.
 func (d *dav) put(ctx context.Context, data []byte, etag string) (version, error) {
@@ -370,7 +370,7 @@ func (d *dav) put(ctx context.Context, data []byte, etag string) (version, error
 
 // check says so when the server kept less than what was sent: relays and
 // tunnels cut long writes short, and the half that lands reads back as
-// "not a magpie backup" on every sync after. The size is enough — a short
+// "not a magpie-friday backup" on every sync after. The size is enough — a short
 // file is the whole failure — so no download rides on a write. It gives
 // back the ETag it saw, for a retry to match the file as the short write
 // left it. A HEAD that can't be done — an error, or not a 200 — leaves the

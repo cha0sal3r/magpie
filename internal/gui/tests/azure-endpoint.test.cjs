@@ -1,8 +1,8 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// Azure OpenAI's editor asks for the resource's endpoint (no host magpie
+// Azure OpenAI's editor asks for the resource's endpoint (no host magpie-friday
 // knows serves it): a field above the key, focused first, with the portal's
 // shape as its placeholder and a hint on where to find it and that the
-// model ids are the deployments' names, which magpie asks the resource for
+// model ids are the deployments' names, which magpie-friday asks the resource for
 // with the key once it is added (#1995). The add page's Models row says no
 // typing is needed. Adding without an endpoint says so and sends nothing;
 // with one, the endpoint goes as both chat and Responses. A saved Azure
@@ -22,7 +22,7 @@ const presets = [
   { id: "openai", name: "OpenAI", icon: "openai", kind: "vendor", chat: "https://api.openai.com/v1", added: false },
   { id: "azure", name: "Azure OpenAI", icon: "azure-color", kind: "vendor", added: false, catalog: "azure, openai",
     note: "your resource's endpoint and key", endpoint: "https://<resource>.openai.azure.com",
-    endpointHint: "Your resource's endpoint, from Keys and Endpoint in the Azure portal. Once added, magpie asks the resource for its deployments with this key, over its v1 API; the deployments' names are the model ids." },
+    endpointHint: "Your resource's endpoint, from Keys and Endpoint in the Azure portal. Once added, magpie-friday asks the resource for its deployments with this key, over its v1 API; the deployments' names are the model ids." },
 ];
 const providers = [{ id: "openrouter", name: "OpenRouter", icon: "openai", preset: "openrouter", models: [], agents: [], key: { set: true, masked: "sk-…ab12" } }];
 
@@ -48,11 +48,11 @@ function server(lang, saves, list = { providers }) {
 }
 
 const L = {
-  en: { field: "Endpoint", hint: /Keys and Endpoint in the Azure portal\. Once added, magpie asks the resource for its deployments with this key.*deployments' names are the model ids/, needed: "Your resource's endpoint is needed", add: "Add",
-    models: "Models", modelsNote: /^No need to type them: once added, magpie lists the deployments this key can call/,
+  en: { field: "Endpoint", hint: /Keys and Endpoint in the Azure portal\. Once added, magpie-friday asks the resource for its deployments with this key.*deployments' names are the model ids/, needed: "Your resource's endpoint is needed", add: "Add",
+    models: "Models", modelsNote: /^No need to type them: once added, magpie-friday lists the deployments this key can call/,
     asking: "Asking your resource for its deployments with this key…", none: /^No deployments came back for this key\..*deployment's name as a model id/, empty: "The vendor's list is empty. Fetch models again, or type a model id." },
-  zh: { field: "终结点", hint: /Azure 门户的「密钥和终结点」。添加后，magpie 会用这把 key.*查询该资源的部署；部署名称就是模型 ID/, needed: "需要填写你的资源终结点", add: "添加",
-    models: "模型", modelsNote: /^不用手填：添加后 magpie 会列出这把 key 能调用的部署/,
+  zh: { field: "终结点", hint: /Azure 门户的「密钥和终结点」。添加后，magpie-friday 会用这把 key.*查询该资源的部署；部署名称就是模型 ID/, needed: "需要填写你的资源终结点", add: "添加",
+    models: "模型", modelsNote: /^不用手填：添加后 magpie-friday 会列出这把 key 能调用的部署/,
     asking: "正在用这把 key 查询该资源的部署…", none: /^这把 key 没有查到部署。.*部署名称当作模型 ID/, empty: "供应商列表为空。重新获取模型，或输入一个模型 ID。" },
 };
 

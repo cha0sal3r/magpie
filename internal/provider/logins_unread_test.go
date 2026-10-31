@@ -103,7 +103,7 @@ func TestUnreadLoginsFieldTypesKeptBeforeWrite(t *testing.T) {
 				t.Fatal(err)
 			}
 			lastLoginsMu.Lock()
-			lastLogins = nil // magpie just started: no previously read accounts
+			lastLogins = nil // magpie-friday just started: no previously read accounts
 			lastLoginsMu.Unlock()
 			if err := addGoogleLogin("antigravity", "new@example.com", "", googleAuth{RefreshToken: "new-refresh-token", Project: "p"}); err != nil {
 				t.Fatal(err)
@@ -184,7 +184,7 @@ func TestUnreadLoginsNotWrittenOver(t *testing.T) {
 		t.Fatalf("after an account added: %v", us)
 	}
 
-	// nothing read before (magpie just started): the file is kept aside
+	// nothing read before (magpie-friday just started): the file is kept aside
 	// before it is written over. The add above kept its own copy, named by
 	// the second it was made, so only the copies made from here count.
 	before, _ := filepath.Glob(p + ".bad-*")

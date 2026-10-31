@@ -1,9 +1,9 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // The Codex app reads its sign-in only as it opens. When the ChatGPT
-// account it is on runs out it greys its Send for every model, magpie's
-// too, even after magpie became Codex's provider (MasterYi on Discord).
+// account it is on runs out it greys its Send for every model, magpie-friday's
+// too, even after magpie-friday became Codex's provider (MasterYi on Discord).
 // Codex's accounts say so with the account, and what happens next: on
-// macOS magpie reopens the app once no turn is running; elsewhere, or once
+// macOS magpie-friday reopens the app once no turn is running; elsewhere, or once
 // that was tried, the user quits it and opens it again.
 // In every language, Chromium and WebKit, wide and narrow.
 const assert = require("node:assert/strict");
@@ -43,8 +43,8 @@ function serve(lang, reopening) {
 
 const keys = [
   "The Codex app can't send on {user}'s used-up account",
-  "magpie serves its turns now, but the app reads that only as it opens. magpie quits it and opens it again once no turn is running.",
-  "magpie serves its turns now, but the app reads that only as it opens. Quit it and open it again to send.",
+  "magpie-friday serves its turns now, but the app reads that only as it opens. magpie-friday quits it and opens it again once no turn is running.",
+  "magpie-friday serves its turns now, but the app reads that only as it opens. Quit it and open it again to send.",
 ];
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
@@ -66,8 +66,8 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
           const text = await box.textContent();
           assert.match(text, /spent@example\.com/);
           if (lang === "en") {
-            assert.match(text, reopening ? /magpie quits it and opens it again/ : /Quit it and open it again to send/);
-            assert.doesNotMatch(text, reopening ? /Quit it and open it again to send/ : /magpie quits it/);
+            assert.match(text, reopening ? /magpie-friday quits it and opens it again/ : /Quit it and open it again to send/);
+            assert.doesNotMatch(text, reopening ? /Quit it and open it again to send/ : /magpie-friday quits it/);
           } else {
             const missing = await page.evaluate(([l, ks]) => ks.filter((k) => !I18N[l][k]), [lang, keys]);
             assert.deepEqual(missing, [], `every string has its ${lang}`);

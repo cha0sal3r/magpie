@@ -18,7 +18,7 @@ const HOME = "/Users/liuweifeng";
 const agent = (id, name, icon) => ({ id, name, icon, skills: `${HOME}/.${id}/skills`, mcp: `${HOME}/.${id}/mcp.json` });
 const AGENTS = ["claude", "codex", "zcode", "pi", "gemini"];
 const lib = () => ({
-  dir: `${HOME}/.config/magpie/library`, backups: `${HOME}/.config/magpie/backups`, home: HOME,
+  dir: `${HOME}/.config/magpie-friday/library`, backups: `${HOME}/.config/magpie-friday/backups`, home: HOME,
   agents: [
     agent("claude", "Claude Code", "claudecode-color"),
     agent("codex", "Codex", "codex-color"),

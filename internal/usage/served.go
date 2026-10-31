@@ -5,7 +5,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Which model answered: a vendor may serve a request with another model
@@ -29,7 +29,7 @@ var vendorDot = regexp.MustCompile(`^(?:(?:global|us-gov|[a-z]{2,4})\.)?(?:anthr
 // its context: claude-opus-5[1m].
 var contextTail = regexp.MustCompile(`\[[^\]]*\]$`)
 
-// windowTail is the window magpie offers a model at beside its default
+// windowTail is the window magpie-friday offers a model at beside its default
 // (grok-4.7@500k, Cursor's grok-4.7@256k): the vendor answers under the
 // plain name, which is the same model (#1645).
 var windowTail = regexp.MustCompile(`@\d+[km]?$`)
@@ -56,7 +56,7 @@ func bareModel(m string) string {
 // reply names the family, not the variant (#462). Another level is another
 // model, as AntigravitySentID has it. A vendor's "auto" (Copilot's,
 // Cursor's) asked it to pick, so whichever answers wasn't swapped in, nor
-// is the member another magpie's routing group sent it to (GroupRouted),
+// is the member another magpie-friday's routing group sent it to (GroupRouted),
 // nor a vendor's own name for the deployment serving the model
 // (ServingName), nor the model a relay sold under a name of its own
 // (RelayRenamed).
@@ -166,8 +166,8 @@ func SameSpelled(sent, served string) bool {
 	return a != "" && a == squash(bareModel(served))
 }
 
-// GroupRouted reports whether sent is a routing group of another magpie
-// (a remote magpie's "group/<id>", the one name only a magpie answers
+// GroupRouted reports whether sent is a routing group of another magpie-friday
+// (a remote magpie-friday's "group/<id>", the one name only a magpie-friday answers
 // to) and served the model its reply named: the member the group routed
 // the request to, which is the group doing its job, not the vendor
 // serving another model than asked (莫 on Discord: group/auto-… answered
@@ -176,7 +176,7 @@ func GroupRouted(sent, served string) bool {
 	return strings.TrimSpace(served) != "" && remoteGroup(strings.TrimSpace(sent))
 }
 
-// remoteGroup reports whether id is a routing group's id as a magpie
+// remoteGroup reports whether id is a routing group's id as a magpie-friday
 // gives it: group/<id>, or auto/<model> for a group it found.
 func remoteGroup(id string) bool {
 	return strings.HasPrefix(id, provider.GroupPrefix) || strings.HasPrefix(id, provider.AutoPrefix)

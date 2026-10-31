@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // What each of a search API's keys has left (SlouchyQuill on Discord):
@@ -129,14 +129,14 @@ var searchQuotas sync.Map
 // quotaClient asks for quotas through the proxy settings searches use.
 var quotaClient = &http.Client{Transport: upstreamTransport()}
 
-// CanReadSearchQuota is whether magpie can read what a search API's keys
+// CanReadSearchQuota is whether magpie-friday can read what a search API's keys
 // have left: Tavily's, with a key.
 func CanReadSearchQuota(a provider.SearchAPI) bool {
 	return a.Vendor == "tavily" && len(a.Keys()) > 0
 }
 
 // SearchQuotas reads what each of a search API's keys has left, in the
-// order of its keys, nil for an API magpie can't ask (CanReadSearchQuota).
+// order of its keys, nil for an API magpie-friday can't ask (CanReadSearchQuota).
 // A read newer than searchQuotaKeep is used again unless fresh is set. A
 // key it finds used up rests (a search asks it last); one with credit
 // that rests for being out of it wakes.

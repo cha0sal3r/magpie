@@ -6,10 +6,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// discoveryOut runs `magpie accounts discovery` with args and returns what
+// discoveryOut runs `magpie-friday accounts discovery` with args and returns what
 // it printed.
 func discoveryOut(t *testing.T, args ...string) string {
 	t.Helper()
@@ -32,7 +32,7 @@ func discoveryOut(t *testing.T, args ...string) string {
 	return out
 }
 
-// `magpie accounts discovery off` saves the opt-out (#1535), `on` takes it
+// `magpie-friday accounts discovery off` saves the opt-out (#1535), `on` takes it
 // back, and with no argument it says which is in effect; it leaves every
 // other setting as it was.
 func TestAccountsDiscoveryCmd(t *testing.T) {

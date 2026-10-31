@@ -8,7 +8,7 @@ import (
 
 // Claude Code tells what an account has left as it answers (its
 // rate_limit_event, from Anthropic's anthropic-ratelimit-unified-* headers),
-// so an account whose usage endpoint keeps turning magpie away (429) is
+// so an account whose usage endpoint keeps turning magpie-friday away (429) is
 // known all the same once it has answered.
 
 // ClaudeLimit is one allowance window as Claude Code tells it: its kind

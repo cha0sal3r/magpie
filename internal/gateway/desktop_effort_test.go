@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // desktopPicker is Claude Desktop's tIt (index.chunk-D3OyLXgG.js, 2.7032):
@@ -43,11 +43,11 @@ func desktopSmallFast(id string) bool {
 
 // a model with reasoning levels is listed to Claude Desktop by an id it
 // offers its effort picker for (ARNO: 接入claude desktop后无法设置思考强度):
-// a Claude model by magpie-<n>.anthropic.<model>, any other by
-// mythos-magpie-<n>, and so a routing group whatever model leads it (else
+// a Claude model by magpie-friday-<n>.anthropic.<model>, any other by
+// mythos-magpie-friday-<n>, and so a routing group whatever model leads it (else
 // Desktop names it from its catalog, "Opus 5.5", not by the group's name);
 // one without levels as before. Each is kept by Desktop, served again by
-// magpie, with or without [1m], and none but a Claude model becomes
+// magpie-friday, with or without [1m], and none but a Claude model becomes
 // Desktop's small_fast pick.
 func TestClaudeDesktopEffortIDs(t *testing.T) {
 	levels := []string{"low", "medium", "high"}
@@ -56,22 +56,22 @@ func TestClaudeDesktopEffortIDs(t *testing.T) {
 		want   string // the id's form
 		picker bool
 	}{
-		{provider.Entry{ID: "zai/glm-5.3", Model: "glm-5.3", Efforts: levels}, `^mythos-magpie-\d{10}$`, true},
-		{provider.Entry{ID: "x/claude-sonnet-5-thinking", Model: "claude-sonnet-5-thinking", Efforts: levels}, `^mythos-magpie-\d{10}$`, true},
-		{provider.Entry{ID: "or/anthropic/claude-opus-4-8", Model: "anthropic/claude-opus-4-8", Efforts: levels}, `^magpie-\d{10}\.anthropic\.claude-opus-4-8$`, true},
-		{provider.Entry{ID: "x/Claude-Sonnet-4-6-20260101", Model: "Claude-Sonnet-4-6-20260101", Efforts: levels}, `^magpie-\d{10}\.anthropic\.claude-sonnet-4-6$`, true},
-		{provider.Entry{ID: "x/claude-haiku-4-5", Model: "claude-haiku-4-5", Efforts: levels}, `^magpie-\d{10}\.anthropic\.claude-haiku-4-5$`, false},
+		{provider.Entry{ID: "zai/glm-5.3", Model: "glm-5.3", Efforts: levels}, `^mythos-magpie-friday-\d{10}$`, true},
+		{provider.Entry{ID: "x/claude-sonnet-5-thinking", Model: "claude-sonnet-5-thinking", Efforts: levels}, `^mythos-magpie-friday-\d{10}$`, true},
+		{provider.Entry{ID: "or/anthropic/claude-opus-4-8", Model: "anthropic/claude-opus-4-8", Efforts: levels}, `^magpie-friday-\d{10}\.anthropic\.claude-opus-4-8$`, true},
+		{provider.Entry{ID: "x/Claude-Sonnet-4-6-20260101", Model: "Claude-Sonnet-4-6-20260101", Efforts: levels}, `^magpie-friday-\d{10}\.anthropic\.claude-sonnet-4-6$`, true},
+		{provider.Entry{ID: "x/claude-haiku-4-5", Model: "claude-haiku-4-5", Efforts: levels}, `^magpie-friday-\d{10}\.anthropic\.claude-haiku-4-5$`, false},
 		// Copilot, and the relays that follow it, write a Claude version with a
 		// dot; Desktop and Claude Code read a Claude model by its dashed id
-		{provider.Entry{ID: "copilot/claude-opus-4.6", Model: "claude-opus-4.6", Efforts: levels}, `^magpie-\d{10}\.anthropic\.claude-opus-4-6$`, true},
-		{provider.Entry{ID: "copilot/claude-opus-5.5", Model: "claude-opus-5.5", Efforts: levels}, `^magpie-\d{10}\.anthropic\.claude-opus-5-5$`, false},
-		{provider.Entry{ID: "copilot/claude-sonnet-5.5", Model: "claude-sonnet-5.5", Efforts: levels}, `^magpie-\d{10}\.anthropic\.claude-sonnet-5-5$`, false},
-		{provider.Entry{ID: "x/claude-mythos-5.1", Model: "claude-mythos-5.1", Efforts: levels}, `^magpie-\d{10}\.anthropic\.claude-mythos-5-1$`, true},
-		{provider.Entry{ID: "copilot/claude-haiku-4.5", Model: "claude-haiku-4.5", Efforts: []string{"none", "high"}}, `^magpie-\d{10}\.anthropic\.claude-haiku-4-5$`, false},
-		{provider.Entry{ID: "x/Claude-Sonnet-4.5-20250929", Model: "Claude-Sonnet-4.5-20250929", Efforts: levels}, `^magpie-\d{10}\.anthropic\.claude-sonnet-4-5$`, false},
-		{provider.Entry{ID: "x/claude-sonnet-4.5-thinking", Model: "claude-sonnet-4.5-thinking", Efforts: levels}, `^mythos-magpie-\d{10}$`, true},
-		{provider.Entry{ID: "group/coding", Model: "claude-opus-5-5", Group: "coding", Efforts: levels}, `^mythos-magpie-\d{10}$`, true},
-		{provider.Entry{ID: "zai/glm-4.5-air", Model: "glm-4.5-air"}, `^anthropic/magpie-\d{10}$`, false},
+		{provider.Entry{ID: "copilot/claude-opus-4.6", Model: "claude-opus-4.6", Efforts: levels}, `^magpie-friday-\d{10}\.anthropic\.claude-opus-4-6$`, true},
+		{provider.Entry{ID: "copilot/claude-opus-5.5", Model: "claude-opus-5.5", Efforts: levels}, `^magpie-friday-\d{10}\.anthropic\.claude-opus-5-5$`, false},
+		{provider.Entry{ID: "copilot/claude-sonnet-5.5", Model: "claude-sonnet-5.5", Efforts: levels}, `^magpie-friday-\d{10}\.anthropic\.claude-sonnet-5-5$`, false},
+		{provider.Entry{ID: "x/claude-mythos-5.1", Model: "claude-mythos-5.1", Efforts: levels}, `^magpie-friday-\d{10}\.anthropic\.claude-mythos-5-1$`, true},
+		{provider.Entry{ID: "copilot/claude-haiku-4.5", Model: "claude-haiku-4.5", Efforts: []string{"none", "high"}}, `^magpie-friday-\d{10}\.anthropic\.claude-haiku-4-5$`, false},
+		{provider.Entry{ID: "x/Claude-Sonnet-4.5-20250929", Model: "Claude-Sonnet-4.5-20250929", Efforts: levels}, `^magpie-friday-\d{10}\.anthropic\.claude-sonnet-4-5$`, false},
+		{provider.Entry{ID: "x/claude-sonnet-4.5-thinking", Model: "claude-sonnet-4.5-thinking", Efforts: levels}, `^mythos-magpie-friday-\d{10}$`, true},
+		{provider.Entry{ID: "group/coding", Model: "claude-opus-5-5", Group: "coding", Efforts: levels}, `^mythos-magpie-friday-\d{10}$`, true},
+		{provider.Entry{ID: "zai/glm-4.5-air", Model: "glm-4.5-air"}, `^anthropic/magpie-friday-\d{10}$`, false},
 		{provider.Entry{ID: "x/claude-opus-4-8", Model: "claude-opus-4-8"}, `^x/claude-opus-4-8$`, false},
 	} {
 		id := claudeLooking(c.e)
@@ -123,8 +123,8 @@ func TestClaudeDesktopEffortIDs(t *testing.T) {
 	}
 	for id, want := range map[string]string{
 		"fake/m1":              desktopEffortAlias + aliasNumber("fake/m1"),
-		"fake/claude-opus-4-8": "magpie-" + aliasNumber("fake/claude-opus-4-8") + ".anthropic.claude-opus-4-8",
-		"fake/claude-opus-5.5": "magpie-" + aliasNumber("fake/claude-opus-5.5") + ".anthropic.claude-opus-5-5",
+		"fake/claude-opus-4-8": "magpie-friday-" + aliasNumber("fake/claude-opus-4-8") + ".anthropic.claude-opus-4-8",
+		"fake/claude-opus-5.5": "magpie-friday-" + aliasNumber("fake/claude-opus-5.5") + ".anthropic.claude-opus-5-5",
 		"fake/m2":              aliasFor("fake/m2"),
 	} {
 		if got[id] != want {
@@ -136,7 +136,7 @@ func TestClaudeDesktopEffortIDs(t *testing.T) {
 			}
 		}
 	}
-	for _, bad := range []string{"mythos-magpie-0000000000", "magpie-0000000000.anthropic.claude-opus-4-8", "magpie-12.anthropic.claude-opus-4-8", "mythos-5"} {
+	for _, bad := range []string{"mythos-magpie-friday-0000000000", "magpie-friday-0000000000.anthropic.claude-opus-4-8", "magpie-friday-12.anthropic.claude-opus-4-8", "mythos-5"} {
 		if _, ok := aliased(bad); ok {
 			t.Errorf("aliased(%s) resolved", bad)
 		}
@@ -184,7 +184,7 @@ func TestClaudeDesktopEffortReachesModel(t *testing.T) {
 // a Claude model a provider spells with a dot is listed to Desktop by its
 // dashed id, so Claude Code knows it for the Claude model it is, and a turn
 // on that id reaches the provider's own spelling (Copilot's claude-opus-5.5
-// listed as mythos-magpie-<n> ran as a model Claude Code doesn't know: 32000
+// listed as mythos-magpie-friday-<n> ran as a model Claude Code doesn't know: 32000
 // output tokens, effort high, and claude-haiku-4.5 asked for an effort Copilot
 // answers with 400)
 func TestClaudeDesktopDottedClaudeReachesItsModel(t *testing.T) {
@@ -200,7 +200,7 @@ func TestClaudeDesktopDottedClaudeReachesItsModel(t *testing.T) {
 		t.Fatal(err)
 	}
 	listed := claudeLooking(provider.Entry{ID: "fake/claude-opus-5.5", Model: "claude-opus-5.5", Efforts: []string{"low", "medium", "high"}})
-	if want := "magpie-" + aliasNumber("fake/claude-opus-5.5") + ".anthropic.claude-opus-5-5"; listed != want {
+	if want := "magpie-friday-" + aliasNumber("fake/claude-opus-5.5") + ".anthropic.claude-opus-5-5"; listed != want {
 		t.Fatalf("listed as %q, want %q", listed, want)
 	}
 	for _, asked := range []string{listed, listed + "[1m]"} {

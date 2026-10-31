@@ -13,9 +13,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // Picking Claude Code's model answers at once, although /api/set answers
@@ -163,7 +163,7 @@ func TestSetAnswersWhileDevinAndProvidersHang(t *testing.T) {
 	}
 
 	// what is written is what it was: the last pick, Anthropic's own
-	// model, off magpie's gateway
+	// model, off magpie-friday's gateway
 	if m, _ := edit.GetJSON(settingsPath, "model"); m != "claude-sonnet-5-5" {
 		t.Errorf("settings.json model %q", m)
 	}

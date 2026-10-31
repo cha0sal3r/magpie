@@ -7,12 +7,12 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// magpie provider refresh-every and auto-include set a provider's list
+// magpie-friday provider refresh-every and auto-include set a provider's list
 // schedule and rules (#2135); auto-include takes the listed models its
-// rules match at once, none clears the rules, and a time or a rule magpie
+// rules match at once, none clears the rules, and a time or a rule magpie-friday
 // can't read is refused and changes nothing.
 func TestRefreshEveryAndAutoIncludeCmds(t *testing.T) {
 	home := t.TempDir()

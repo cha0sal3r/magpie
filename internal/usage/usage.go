@@ -1,5 +1,5 @@
 // Package usage keeps the token count of every call the gateway serves, so
-// magpie can show what each agent and model consumed and roughly what it cost.
+// magpie-friday can show what each agent and model consumed and roughly what it cost.
 // Records go to one JSON-lines file next to providers.json. Metadata leaves
 // the machine only when OTLP export is explicitly enabled.
 package usage
@@ -18,8 +18,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Record is one call.
@@ -27,7 +27,7 @@ type Record struct {
 	Operation       string    `json:"operation,omitempty"`
 	RouteID         int64     `json:"route_id,omitempty"` // the gateway Route, shared by its attempts
 	Time            time.Time `json:"t"`
-	Agent           string    `json:"agent"` // magpie agent id, or the client's product name
+	Agent           string    `json:"agent"` // magpie-friday agent id, or the client's product name
 	Provider        string    `json:"provider"`
 	Host            string    `json:"host,omitempty"`          // where the call went: provider.Where then
 	ProviderKeyID   string    `json:"providerKeyId,omitempty"` // fingerprint of the API key actually used
@@ -49,7 +49,7 @@ type Record struct {
 	// metadata, not this call's endpoint or billing authentication.
 	SessionOfficialLogin bool   `json:"session_official_login,omitempty"`
 	Model                string `json:"model"` // the provider's model id
-	// Requested is the model id the agent asked for (a magpie alias, a
+	// Requested is the model id the agent asked for (a magpie-friday alias, a
 	// routing group, provider/model…), and Served the model the vendor's
 	// reply says answered, when it named one: a ledger to set beside the
 	// vendor's own bill. Neither is in a record written before they were.
@@ -110,18 +110,18 @@ type Record struct {
 	FirstReasoning  int64 `json:"first_reasoning_ms,omitempty"`
 	ReasoningHidden bool  `json:"reasoning_hidden,omitempty"`
 	// Sent: ms from the request to its answering try going out to the
-	// vendor, its body written, as TTFT is counted: magpie's own time and
+	// vendor, its body written, as TTFT is counted: magpie-friday's own time and
 	// the tries that failed first are before it, and TTFT-Sent is how
 	// long the vendor took to its first content. 0 where it isn't known
-	// (a reply not streamed, or a vendor magpie doesn't reach over HTTP).
+	// (a reply not streamed, or a vendor magpie-friday doesn't reach over HTTP).
 	Sent int64 `json:"sent_ms,omitempty"`
-	// Of Sent, what was magpie's: Own is magpie's own work on the request
+	// Of Sent, what was magpie-friday's: Own is magpie-friday's own work on the request
 	// (reading it, translating it, choosing whom to ask), Retried the
 	// tries that failed first and the pauses after them, Queued the wait
 	// for a slot of a key's or account's MaxConcurrency or MaxRPM; the
 	// rest, Sent-Own-Retried-Queued, is connecting to the vendor and
 	// sending it the body. #1532: a vendor that held a try ~100 s and
-	// said 503 read as 104 s "In magpie". 0 in a record written before
+	// said 503 read as 104 s "In magpie-friday". 0 in a record written before
 	// they were, where Sent is all that is known.
 	Own     int64 `json:"own_ms,omitempty"`
 	Retried int64 `json:"retried_ms,omitempty"`
@@ -180,9 +180,9 @@ type Record struct {
 	// Kind is what the agent made the call for when it isn't a turn of
 	// the conversation: a Codex subagent's (review, compact, guardian…)
 	Kind string `json:"kind,omitempty"`
-	// Via is the computer whose magpie passed the call on to this one (a
-	// Remote magpie provider there), Agent being the agent's on it; "" when
-	// no other magpie forwarded it (including direct LAN/container clients).
+	// Via is the computer whose magpie-friday passed the call on to this one (a
+	// Remote magpie-friday provider there), Agent being the agent's on it; "" when
+	// no other magpie-friday forwarded it (including direct LAN/container clients).
 	Via string `json:"via,omitempty"`
 	// Archive is where the request archive keeps the call, "<date>/<id>"
 	// (gateway/archive.go), when it was on: the Usage page reads it back
@@ -192,14 +192,14 @@ type Record struct {
 	// a call brought here by sync (#542); "" for one made here, as every
 	// call in usage.jsonl is
 	Computer string `json:"computer,omitempty"`
-	// Source is SourceReported for a call a client told magpie of through
-	// POST /v1/magpie/usage/requests (#1874), one that went straight to its
-	// vendor and that magpie never saw; "" for the gateway's own. Reported
+	// Source is SourceReported for a call a client told magpie-friday of through
+	// POST /v1/magpie-friday/usage/requests (#1874), one that went straight to its
+	// vendor and that magpie-friday never saw; "" for the gateway's own. Reported
 	// calls count in the totals and are told apart, and filtered, on the
 	// page.
 	Source string `json:"source,omitempty"`
 	// OwnCost is what such a client said the call cost, in USD. nil when it
-	// said nothing: the call is then priced at magpie's own prices, as the
+	// said nothing: the call is then priced at magpie-friday's own prices, as the
 	// gateway's calls are, and priced again when those change.
 	OwnCost *float64 `json:"cost,omitempty"`
 	// Credits is what the vendor said the call cost in its plan's own
@@ -219,7 +219,7 @@ type Record struct {
 	BodyOut string `json:"-"`
 }
 
-// Path is the log file: ~/.config/magpie/usage.jsonl (XDG-aware).
+// Path is the log file: ~/.config/magpie-friday/usage.jsonl (XDG-aware).
 func Path() string { return filepath.Join(filepath.Dir(provider.Path()), "usage.jsonl") }
 
 var mu sync.Mutex
@@ -234,7 +234,7 @@ func Append(r Record) {
 	if r.Time.IsZero() {
 		r.Time = Clock()
 	}
-	if !r.IsProbe() { // magpie's own test is no call to export
+	if !r.IsProbe() { // magpie-friday's own test is no call to export
 		observeLedger(r)
 	}
 	b, err := json.Marshal(r)
@@ -262,11 +262,11 @@ func Append(r Record) {
 func (r Record) IsRejected() bool { return r.Rejected || r.Provider == "" && r.Status >= 400 }
 
 // IsReported is a call an app reported itself (#1874), which never went
-// through magpie. It is shown and counted on the Usage page only: nothing
+// through magpie-friday. It is shown and counted on the Usage page only: nothing
 // that acts on live traffic (a key's budget, a window's holds, the Sessions
 // page's gateway sessions, what a session was routed to, Codex's sealed
 // answers or remembered model) reads it, since it may be a backfill of
-// calls long past and none of them were magpie's to route.
+// calls long past and none of them were magpie-friday's to route.
 func (r Record) IsReported() bool { return r.Source == SourceReported }
 
 // Load streams complete records from the log. Historical request bodies are
@@ -302,7 +302,7 @@ type Known struct {
 	UA    []string // what its User-Agent begins with
 }
 
-// Agents lists the agents magpie knows. Package agent sets it from each
+// Agents lists the agents magpie-friday knows. Package agent sets it from each
 // agent's own description, so they are listed in one place only.
 var Agents func() []Known
 
@@ -317,7 +317,7 @@ var builtinAgents = sync.OnceValue(func() []Known {
 	return Agents()
 })
 
-// knownAgents are magpie's own agents, then those plugins add.
+// knownAgents are magpie-friday's own agents, then those plugins add.
 func knownAgents() []Known {
 	own := builtinAgents()
 	if PluginAgents == nil {
@@ -330,14 +330,14 @@ func knownAgents() []Known {
 	return append(slices.Clip(own), more...)
 }
 
-// IsAgent says whether id is an agent magpie knows, its own or a plugin's,
+// IsAgent says whether id is an agent magpie-friday knows, its own or a plugin's,
 // rather than the product name of some other client (Python-urllib).
 func IsAgent(id string) bool {
 	return slices.ContainsFunc(knownAgents(), func(k Known) bool { return k.ID == id || slices.Contains(k.Names, id) })
 }
 
 // AgentOf names the agent behind a client User-Agent. Known agents map to
-// their magpie id; anything else keeps its product name.
+// their magpie-friday id; anything else keeps its product name.
 func AgentOf(ua string) string {
 	ua = strings.TrimSpace(ua)
 	name, _, _ := strings.Cut(ua, "/")
@@ -394,7 +394,7 @@ type Totals struct {
 	Calls   int `json:"calls"`
 	Errors  int `json:"errors"`
 	Retried int `json:"retried,omitempty"`
-	// Loops are those of Errors magpie ended for looping (LoopErrType):
+	// Loops are those of Errors magpie-friday ended for looping (LoopErrType):
 	// a model's count of them says how often it got stuck (#1858)
 	Loops      int `json:"loops,omitempty"`
 	Input      int `json:"input"`
@@ -685,7 +685,7 @@ func (t *Totals) addFrom(row Row, price *catalog.Price) {
 	t.Cost += r.CostAt(*price)
 }
 
-// LoopErrType is a record's ErrType for a reply magpie ended because the
+// LoopErrType is a record's ErrType for a reply magpie-friday ended because the
 // model was stuck in a loop (#1359), told apart from what vendors call
 // their errors.
 const LoopErrType = "reply_loop"
@@ -740,7 +740,7 @@ type Group struct {
 	// Agent is the agent a session is of (sessions only).
 	Agent string `json:"agent,omitempty"`
 	Totals
-	// Own is the share of these calls magpie made by itself (Record.ByMagpie):
+	// Own is the share of these calls magpie-friday made by itself (Record.ByMagpie):
 	// a routing classifier's, a web search's or an image description's,
 	// counted in Totals too, since they went to the same key or account
 	// (#1839). Filled for models, keys and accounts; a value, so a
@@ -748,14 +748,14 @@ type Group struct {
 	Own OwnShare `json:"own,omitzero"`
 }
 
-// OwnShare is what magpie's own calls of a group came to.
+// OwnShare is what magpie-friday's own calls of a group came to.
 type OwnShare struct {
 	Calls  int     `json:"calls"`
 	Tokens int     `json:"tokens"` // in and out, cache aside, as Totals.Tokens
 	Cost   float64 `json:"cost"`
 }
 
-// addOwn counts r in g's own share when magpie made it by itself.
+// addOwn counts r in g's own share when magpie-friday made it by itself.
 func (g *Group) addOwn(r Record, price *catalog.Price) {
 	if !r.ByMagpie() {
 		return
@@ -769,14 +769,14 @@ func (g *Group) addOwn(r Record, price *catalog.Price) {
 	}
 }
 
-// ByMagpie is whether magpie made the call by itself rather than an agent:
+// ByMagpie is whether magpie-friday made the call by itself rather than an agent:
 // its routing classifier, System One's decision, a web search or an
 // image description it asked for (#1839).
 func (r Record) ByMagpie() bool {
 	id := AgentOf(r.Agent)
-	// "magpie" as the agents know it; its own User-Agents (magpie-router/1,
-	// magpie-search/1) where they aren't loaded
-	return id == "magpie" || strings.HasPrefix(id, "magpie-")
+	// "magpie-friday" as the agents know it; its own User-Agents (magpie-friday-router/1,
+	// magpie-friday-search/1) where they aren't loaded
+	return id == "magpie-friday" || strings.HasPrefix(id, "magpie-friday-")
 }
 
 // who is where a subscription's calls went as the account signed in
@@ -938,7 +938,7 @@ func summarizeFrom(p Period, now time.Time, first time.Time, historicalKeys map[
 		if i >= 0 && i < len(s.Series) {
 			s.Series[i].add(r, pr)
 		}
-		id := ReportedAs(r.Agent) // one kept before magpie knew the agent by name
+		id := ReportedAs(r.Agent) // one kept before magpie-friday knew the agent by name
 		a := agents[id]
 		if a == nil {
 			a = &Group{ID: id}

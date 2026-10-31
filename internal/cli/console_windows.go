@@ -8,7 +8,7 @@ import (
 // The desktop build is linked as a GUI program so double-clicking it opens
 // no console window; such a program starts with no standard streams. When it
 // is run from a terminal with a command, borrow that terminal's console so
-// `magpie ls` and friends still print. Output that is redirected already has
+// `magpie-friday ls` and friends still print. Output that is redirected already has
 // somewhere to go and is left alone.
 func init() {
 	if len(os.Args) < 2 {

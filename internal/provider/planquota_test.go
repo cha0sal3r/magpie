@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
 )
 
 func TestPlanQuotaSource(t *testing.T) {
@@ -79,7 +79,7 @@ func TestReadZhipuPlan(t *testing.T) {
 
 // cmdCreditsReply is /alpha/billing/credits as command-code 1.66's /usage
 // reads it: the credits, the windows beside them (resetAt in ms), and the
-// sandbox's minutes, which magpie has no use for.
+// sandbox's minutes, which magpie-friday has no use for.
 const cmdCreditsReply = `{"credits":{"planId":"individual-goat-monthly","monthlyCredits":41.2,"purchasedCredits":5,"freeCredits":0},
 	"windowLimits":{"limited":true,"fiveHour":{"used":3,"cap":10,"resetAt":1790000000000},"weekly":{"used":12,"cap":40,"resetAt":1790400000000}},
 	"sandboxMinutes":{"limitMinutes":0,"usedMinutes":0},"sandboxAccess":false}`

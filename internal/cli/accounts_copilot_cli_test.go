@@ -7,10 +7,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// magpie accounts switch|forget copilot tells one login on two hosts apart
+// magpie-friday accounts switch|forget copilot tells one login on two hosts apart
 // (#1220): by <login>@<host> or --host, the login alone only when it names
 // one account.
 func TestAccountsCopilotHosts(t *testing.T) {
@@ -25,7 +25,7 @@ func TestAccountsCopilotHosts(t *testing.T) {
 	if err := os.MkdirAll(filepath.Dir(logins), 0o700); err != nil {
 		t.Fatal(err)
 	}
-	// a.ghe.com's as magpie saved it before #1220, b.ghe.com's as after
+	// a.ghe.com's as magpie-friday saved it before #1220, b.ghe.com's as after
 	if err := os.WriteFile(logins, []byte(`[
   {"agent": "copilot", "user": "mona", "seen": "2026-10-05T10:00:00Z", "on": true, "auth": {"host": "a.ghe.com", "oauth_token": "gho_a"}},
   {"agent": "copilot", "user": "mona@b.ghe.com", "seen": "2026-10-06T10:00:00Z", "on": true, "auth": {"host": "b.ghe.com", "oauth_token": "gho_b"}},
@@ -52,7 +52,7 @@ func TestAccountsCopilotHosts(t *testing.T) {
 	if _, err := run("switch", "copilot", "mona@b.ghe.com"); err != nil || first() != "mona@b.ghe.com" {
 		t.Fatalf("switch mona@b.ghe.com: %v, first %s", err, first())
 	}
-	if out, err := run("switch", "copilot", "MONA", "--host", "https://a.ghe.com/"); err != nil || first() != "mona@a.ghe.com" || !strings.Contains(out, "magpie now uses mona@a.ghe.com") {
+	if out, err := run("switch", "copilot", "MONA", "--host", "https://a.ghe.com/"); err != nil || first() != "mona@a.ghe.com" || !strings.Contains(out, "magpie-friday now uses mona@a.ghe.com") {
 		t.Fatalf("switch --host: %v %q, first %s", err, out, first())
 	}
 	if _, err := run("switch", "copilot", "hubot", "--host", "evil.example.com"); err == nil {

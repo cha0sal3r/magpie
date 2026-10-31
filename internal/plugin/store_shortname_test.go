@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// The community's READMEs say `magpie plugin options model-map '<json>'`:
+// The community's READMEs say `magpie-friday plugin options model-map '<json>'`:
 // a package's short name finds it, as its full name and its spec do.
 func TestSetOptionsShortName(t *testing.T) {
 	storeSandbox(t)

@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // stubCheckin stands in for the WorkBuddy accounts signed in here: rs is
@@ -84,7 +84,7 @@ func stubQoder(t *testing.T, rs []provider.WorkBuddyCheckin) *int {
 }
 
 // c on the Usage page presses WorkBuddy's daily check-in (签到) for every
-// WorkBuddy (China) account signed in here at once, as the app's "Check in now" and magpie accounts
+// WorkBuddy (China) account signed in here at once, as the app's "Check in now" and magpie-friday accounts
 // checkin do, and says how each stands: the credits and streak, in already,
 // or why not (akic404 on Discord: the TUI had no way to check in).
 func TestTUIChecksWorkBuddyIn(t *testing.T) {
@@ -221,8 +221,8 @@ func TestTraeOwnAppSaysTraeRefused(t *testing.T) {
 	}
 }
 
-// #3326: an "already in" magpie asks again (Again: before noon Beijing,
-// with no claim magpie saw) may be the vendor's day before, so it is not
+// #3326: an "already in" magpie-friday asks again (Again: before noon Beijing,
+// with no claim magpie-friday saw) may be the vendor's day before, so it is not
 // shown as today's check-in.
 func TestCheckinAgainNotShownAsToday(t *testing.T) {
 	now := time.Date(2026, 10, 23, 0, 0, 28, 0, time.FixedZone("CST", 8*3600))

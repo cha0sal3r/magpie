@@ -14,11 +14,11 @@ const { chromium, webkit } = require("playwright");
 const { openPart } = require("./reader.cjs");
 
 const assets = path.resolve(__dirname, "../assets");
-const CUT = "the WebDAV server kept 0 of 6869 bytes of 5f0c-2026-08-29.magpie-usage: the write was cut short — sync again, and if it keeps happening the network to the server is dropping long uploads";
+const CUT = "the WebDAV server kept 0 of 6869 bytes of 5f0c-2026-08-29.magpie-friday-usage: the write was cut short — sync again, and if it keeps happening the network to the server is dropping long uploads";
 
 function serve(lang, sync) {
   const settings = {
-    theme: "light", lang, tray: "panel", version: "test", dir: "/tmp/magpie",
+    theme: "light", lang, tray: "panel", version: "test", dir: "/tmp/magpie-friday",
     gateway: "http://127.0.0.1:3425", visionModels: [], imageGenModels: [],
     fx: { rate: 7.2, stale: false },
   };

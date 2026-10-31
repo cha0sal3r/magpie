@@ -12,17 +12,17 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/update"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/update"
 )
 
 // #894: on Windows with Smart App Control on, the new unsigned exe was
-// put in and refused at the restart, and magpie never started again. A
+// put in and refused at the restart, and magpie-friday never started again. A
 // restart into a version that doesn't start leaves this one running and
 // says why; the clock's checks don't download that version again, and
 // a check asked for tries it once more.
 func TestUpdateThatWontStart(t *testing.T) {
-	body := []byte("new magpie")
+	body := []byte("new magpie-friday")
 	sum := sha256.Sum256(body)
 	var downloads atomic.Int32
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -43,8 +43,8 @@ func TestUpdateThatWontStart(t *testing.T) {
 	t.Cleanup(update.ClearBlocked)
 
 	// the running binary, in a folder of its own
-	exe := filepath.Join(t.TempDir(), "magpie")
-	os.WriteFile(exe, []byte("running magpie"), 0o755)
+	exe := filepath.Join(t.TempDir(), "magpie-friday")
+	os.WriteFile(exe, []byte("running magpie-friday"), 0o755)
 	self, _ := os.Stat(exe)
 	staged := exe + ".new"
 	os.WriteFile(staged, body, 0o755)
@@ -59,7 +59,7 @@ func TestUpdateThatWontStart(t *testing.T) {
 		relaunched.Add(1)
 		// what update.RelaunchBinary does when Windows refuses the new exe:
 		// the running one put back, and says so
-		os.WriteFile(exe, []byte("running magpie"), 0o755)
+		os.WriteFile(exe, []byte("running magpie-friday"), 0o755)
 		return &update.BlockedError{Err: &os.PathError{Op: "fork/exec", Path: exe, Err: syscall.Errno(4551)}}
 	}
 	defer func() { relaunchBinary = wasRelaunch }()
@@ -78,7 +78,7 @@ func TestUpdateThatWontStart(t *testing.T) {
 		t.Errorf("noted as updated in the app: %v", err)
 	}
 
-	// magpie starts again later (the note is on disk): the clock's check
+	// magpie-friday starts again later (the note is on disk): the clock's check
 	// leaves the version alone
 	u2 := &updater{exe: exe}
 	u2.self, _ = os.Stat(exe)

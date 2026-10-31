@@ -2,7 +2,7 @@
 // The window focused again, or shown again, reads what the page shows anew,
 // and must not blank or rebuild a chart that didn't change. Under a window
 // manager whose focus follows the mouse (Hyprland on omarchy; Zhenzhen on
-// Discord) the pointer crossing from a terminal into magpie focuses it every
+// Discord) the pointer crossing from a terminal into magpie-friday focuses it every
 // time, and the Usage page's bars flashed: the Overview put its skeleton up,
 // hid the chart and drew it again from nothing. Now the Overview, the
 // Requests tab and the tray panel's Usage tab keep their bars (the same
@@ -33,7 +33,7 @@ function overview(v) {
     calls, errors: 0, input, output, cache_read: 0, cache_write: 0, reasoning: 0, unpriced: 0, cost: 0.28, bucket: "day", series,
     agents: [{ name: "Codex", icon: "codex-color", calls, errors: 0, input, output, cache_read: 0, cost: 0.28 }],
     models: [{ name: "gpt-6-sol", calls, errors: 0, input, output, cache_read: 0, cost: 0.28 }],
-    path: "~/.config/magpie/usage.jsonl",
+    path: "~/.config/magpie-friday/usage.jsonl",
   };
 }
 

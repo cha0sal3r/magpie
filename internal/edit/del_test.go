@@ -76,7 +76,7 @@ func TestEnvFile(t *testing.T) {
 		t.Fatalf("got %q", got)
 	}
 	// the keys all it held: the file goes, not a blank line left
-	only := tmpFile(t, "only.env", "GEMINI_API_KEY=magpie\nGOOGLE_GEMINI_BASE_URL=http://127.0.0.1:3425\n")
+	only := tmpFile(t, "only.env", "GEMINI_API_KEY=magpie-friday\nGOOGLE_GEMINI_BASE_URL=http://127.0.0.1:3425\n")
 	if err := DelEnvFile(only, "GEMINI_API_KEY", "GOOGLE_GEMINI_BASE_URL"); err != nil {
 		t.Fatal(err)
 	}

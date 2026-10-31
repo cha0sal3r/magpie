@@ -16,7 +16,7 @@ import (
 	"sync"
 	"unicode/utf16"
 
-	"github.com/yetone/magpie/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
 )
 
 // DeepSeek Harness (dsh) keeps a session in a folder of its own, under
@@ -398,7 +398,7 @@ func dshNum(b []byte, key string) int64 {
 	return n
 }
 
-// dshConvs are the conversation ids magpie's gateway gives the requests a
+// dshConvs are the conversation ids magpie-friday's gateway gives the requests a
 // message starts (gateway's conversationID). dsh sends no session id on
 // its chat-completions and messages routes, so the gateway keys each such
 // request by the hash of its first user message as sent, and the Context
@@ -422,7 +422,7 @@ func dshConvs(content json.RawMessage) []string {
 		`{"role":"user","content":[{"type":"text","text":` + t + `,"cache_control":{"type":"ephemeral"}}]}`,
 	} {
 		sum := sha256.Sum256([]byte(m))
-		out = append(out, "magpie-"+hex.EncodeToString(sum[:12]))
+		out = append(out, "magpie-friday-"+hex.EncodeToString(sum[:12]))
 	}
 	return out
 }

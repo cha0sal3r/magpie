@@ -8,12 +8,12 @@ import (
 // A Mac restart by itself with no window up opens the app as a login launch
 // does, its menu bar icon only (#2096); one with the window opens it. Both
 // ask for a new instance (-n), so LaunchServices launches the bundle rather
-// than send a reopen to the magpie that has just exited (Linka's -600).
+// than send a reopen to the magpie-friday that has just exited (Linka's -600).
 func TestRelaunchOpen(t *testing.T) {
-	if got, want := relaunchOpen("/Applications/magpie.app", true), `open -n "/Applications/magpie.app"`; got != want {
+	if got, want := relaunchOpen("/Applications/magpie-friday.app", true), `open -n "/Applications/magpie-friday.app"`; got != want {
 		t.Errorf("window: %s, want %s", got, want)
 	}
-	if got, want := relaunchOpen("/Applications/magpie.app", false), `open -n "/Applications/magpie.app" --args tray`; got != want {
+	if got, want := relaunchOpen("/Applications/magpie-friday.app", false), `open -n "/Applications/magpie-friday.app" --args tray`; got != want {
 		t.Errorf("no window: %s, want %s", got, want)
 	}
 }
@@ -22,10 +22,10 @@ func TestRelaunchOpen(t *testing.T) {
 // one runs: a new instance (-n), which LaunchServices would otherwise send
 // to the one running.
 func TestOpenBeside(t *testing.T) {
-	if got, want := openBeside("/Applications/magpie.app", true), `open -n "/Applications/magpie.app"`; got != want {
+	if got, want := openBeside("/Applications/magpie-friday.app", true), `open -n "/Applications/magpie-friday.app"`; got != want {
 		t.Errorf("window: %s, want %s", got, want)
 	}
-	if got, want := openBeside("/Applications/magpie.app", false), `open -n "/Applications/magpie.app" --args tray`; got != want {
+	if got, want := openBeside("/Applications/magpie-friday.app", false), `open -n "/Applications/magpie-friday.app" --args tray`; got != want {
 		t.Errorf("no window: %s, want %s", got, want)
 	}
 }
@@ -40,7 +40,7 @@ func TestStartBesideWaitsForNothing(t *testing.T) {
 		gotArgs, gotEnv = args, env
 		return nil, nil, nil
 	})
-	if err := StartBeside("/opt/magpie", true, "routing"); err != nil {
+	if err := StartBeside("/opt/magpie-friday", true, "routing"); err != nil {
 		t.Fatal(err)
 	}
 	if strings.Join(gotArgs, " ") != "gui routing" {

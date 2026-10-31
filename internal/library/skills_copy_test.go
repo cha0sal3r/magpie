@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-// Where magpie can't link a skill into an agent (Windows without the right
+// Where magpie-friday can't link a skill into an agent (Windows without the right
 // to make links), it puts a copy there instead. A link shows the library's
 // skill as it is now; the copy has to be made again when the library's
 // changes, or the agent keeps the skill as it was when it was first given.
@@ -39,7 +39,7 @@ func TestSkillCopyFollowsTheLibrary(t *testing.T) {
 		t.Fatal("claude's pdf is still a link")
 	}
 	if !ours(p, "pdf") {
-		t.Fatal("the copy isn't magpie's")
+		t.Fatal("the copy isn't magpie-friday's")
 	}
 
 	version = "two"
@@ -51,7 +51,7 @@ func TestSkillCopyFollowsTheLibrary(t *testing.T) {
 		t.Fatalf("forms.md after the update: %q", s)
 	}
 	if !ours(p, "pdf") {
-		t.Fatal("the copy made again isn't magpie's")
+		t.Fatal("the copy made again isn't magpie-friday's")
 	}
 
 	// a skill changed in the library's folder by hand reaches it on a sync
@@ -71,7 +71,7 @@ func TestSkillCopyFollowsTheLibrary(t *testing.T) {
 
 // Remaking a copy must never strand it half-removed: when a file in the old
 // copy can't be removed (held open on Windows; a read-only folder here), the
-// agent still gets the whole new copy, magpie still knows it for its own, and
+// agent still gets the whole new copy, magpie-friday still knows it for its own, and
 // what's left of the old one is removed on a later sync.
 func TestSkillCopySwapSurvivesAnUndeletableFile(t *testing.T) {
 	if runtime.GOOS == "windows" {
@@ -98,7 +98,7 @@ func TestSkillCopySwapSurvivesAnUndeletableFile(t *testing.T) {
 		t.Fatal(err)
 	}
 	write(t, filepath.Join(skillDir("pdf"), "sub/forms.md"), "forms one")
-	// a copy, as where magpie can't link (#896: a copy left where links are
+	// a copy, as where magpie-friday can't link (#896: a copy left where links are
 	// given is made a link again)
 	ok(t)(SetSkillHow("", HowCopy))
 	if linked(p) {
@@ -120,7 +120,7 @@ func TestSkillCopySwapSurvivesAnUndeletableFile(t *testing.T) {
 	write(t, filepath.Join(skillDir("pdf"), "sub/forms.md"), "forms two")
 	ok(t)(Sync())
 	if !ours(p, "pdf") {
-		t.Fatal("the copy isn't magpie's after a swap with an undeletable file")
+		t.Fatal("the copy isn't magpie-friday's after a swap with an undeletable file")
 	}
 	if s := read(t, filepath.Join(p, "SKILL.md")); !strings.Contains(s, "PDFs two") {
 		t.Fatalf("claude's copy after the update:\n%s", s)
@@ -128,7 +128,7 @@ func TestSkillCopySwapSurvivesAnUndeletableFile(t *testing.T) {
 	if s := read(t, filepath.Join(p, "sub/forms.md")); s != "forms two" {
 		t.Fatalf("sub/forms.md after the update: %q", s)
 	}
-	leftover := filepath.Join(filepath.Dir(p), ".pdf.magpie-old")
+	leftover := filepath.Join(filepath.Dir(p), ".pdf.magpie-friday-old")
 	if _, err := os.Lstat(leftover); err != nil {
 		t.Fatalf("the old copy that couldn't be removed: %v", err)
 	}
@@ -137,7 +137,7 @@ func TestSkillCopySwapSurvivesAnUndeletableFile(t *testing.T) {
 	// a later sync still knows the copy and is not refused
 	ok(t)(Sync())
 	if !ours(p, "pdf") {
-		t.Fatal("the copy isn't magpie's on the next sync")
+		t.Fatal("the copy isn't magpie-friday's on the next sync")
 	}
 
 	// once the file can be removed, the next sync clears what was left
@@ -157,7 +157,7 @@ func TestSkillCopySwapSurvivesAnUndeletableFile(t *testing.T) {
 
 // An agent in WSL (a t.Copy target) gets its copy made again through the
 // same swap: with a file in its old copy that can't be removed, it still
-// gets the whole new copy, magpie still knows it for its own, and the
+// gets the whole new copy, magpie-friday still knows it for its own, and the
 // leftover is cleared by a later sync.
 func TestWSLSkillCopySwapSurvivesAnUndeletableFile(t *testing.T) {
 	if runtime.GOOS == "windows" {
@@ -173,13 +173,13 @@ func TestWSLSkillCopySwapSurvivesAnUndeletableFile(t *testing.T) {
 	ok(t)(InstallSkills(src, []string{"pdf"}, []string{wslCodex}))
 	p := filepath.Join(h, ".codex/skills/pdf")
 	if linked(p) || !ours(p, "pdf") || read(t, filepath.Join(p, "sub/forms.md")) != "forms one" {
-		t.Fatal("codex@wsl didn't get magpie's copy")
+		t.Fatal("codex@wsl didn't get magpie-friday's copy")
 	}
 	sub := filepath.Join(p, "sub")
 	if err := os.Chmod(sub, 0o555); err != nil {
 		t.Fatal(err)
 	}
-	leftover := filepath.Join(filepath.Dir(p), ".pdf.magpie-old")
+	leftover := filepath.Join(filepath.Dir(p), ".pdf.magpie-friday-old")
 	t.Cleanup(func() {
 		os.Chmod(sub, 0o755)
 		os.Chmod(filepath.Join(leftover, "sub"), 0o755)
@@ -192,7 +192,7 @@ func TestWSLSkillCopySwapSurvivesAnUndeletableFile(t *testing.T) {
 		t.Errorf("changed: %v", res.Changed)
 	}
 	if !ours(p, "pdf") {
-		t.Fatal("codex@wsl's copy isn't magpie's after a swap with an undeletable file")
+		t.Fatal("codex@wsl's copy isn't magpie-friday's after a swap with an undeletable file")
 	}
 	if !strings.Contains(read(t, filepath.Join(p, "SKILL.md")), "Changed") || read(t, filepath.Join(p, "sub/forms.md")) != "forms two" {
 		t.Fatal("codex@wsl's copy wasn't made again whole")

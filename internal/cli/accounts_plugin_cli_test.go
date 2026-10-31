@@ -8,12 +8,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
-// magpie accounts lists, switches and forgets a plugin's accounts by its
+// magpie-friday accounts lists, switches and forgets a plugin's accounts by its
 // provider's id, as a built-in subscription's.
 func TestAccountsOfAPlugin(t *testing.T) {
 	bun := testenv.Bun(t)
@@ -53,7 +53,7 @@ func TestAccountsOfAPlugin(t *testing.T) {
 	}
 	rows := list()
 	if len(rows) != 2 || !rows[0].Active || rows[1].Active || rows[0].User != "API key …1111" || rows[1].User != "API key …2222" {
-		t.Fatalf("magpie accounts fakeco = %+v", rows)
+		t.Fatalf("magpie-friday accounts fakeco = %+v", rows)
 	}
 	second := rows[1].User
 	if _, err := said(t, func() error { return accountsCmd([]string{"accounts", "switch", "fakeco", second}) }); err != nil {

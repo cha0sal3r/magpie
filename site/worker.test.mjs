@@ -19,6 +19,12 @@ globalThis.caches = {
     put: async (req, res) => void store.set(req.url, await res.text()),
   },
 };
+// The edge's HTMLRewriter, stood in for: the tests below check which page and
+// language a reader is sent to, not the rewriting itself, which is the edge's.
+globalThis.HTMLRewriter = globalThis.HTMLRewriter || class {
+  on() { return this; }
+  transform(res) { return res; }
+};
 // apiDown stands in for GitHub's API limiting the worker's shared IP (#661);
 // pagesDown for github.com itself failing too. seen keeps each API ask's
 // headers.
@@ -29,8 +35,8 @@ const FEED = `<?xml version="1.0" encoding="UTF-8"?>
   <entry>
     <id>tag:github.com,2008:Repository/1/v0.1.3</id>
     <updated>2026-10-03T08:54:51Z</updated>
-    <link rel="alternate" type="text/html" href="https://github.com/yetone/magpie-releases/releases/tag/v0.1.3"/>
-    <title>magpie v0.1.3</title>
+    <link rel="alternate" type="text/html" href="https://github.com/cha0sal3r/magpie-friday-releases/releases/tag/v0.1.3"/>
+    <title>magpie-friday v0.1.3</title>
     <content type="html">&lt;h3&gt;Features&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;One thing (#1)&lt;/li&gt;
@@ -45,7 +51,7 @@ const FEED = `<?xml version="1.0" encoding="UTF-8"?>
   <entry>
     <id>tag:github.com,2008:Repository/1/v0.1.2</id>
     <updated>2026-10-02T08:54:51Z</updated>
-    <link rel="alternate" type="text/html" href="https://github.com/yetone/magpie-releases/releases/tag/v0.1.2"/>
+    <link rel="alternate" type="text/html" href="https://github.com/cha0sal3r/magpie-friday-releases/releases/tag/v0.1.2"/>
     <content type="html">&lt;h3&gt;Fixes&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;Older, &lt;strong&gt;English&lt;/strong&gt; alone, &lt;code&gt;a &amp;amp;lt; b&lt;/code&gt; &lt;a href=&quot;https://x.dev/&quot;&gt;link&lt;/a&gt;&lt;/li&gt;
@@ -54,23 +60,53 @@ const FEED = `<?xml version="1.0" encoding="UTF-8"?>
 </feed>`;
 // what the worker sent PostHog
 const captured = [];
+// models.dev's catalog stands in for the prices page's: the five first-party
+// providers would be too much here, so three, a deprecated model, an image
+// one, a free one, and a reseller's price of the same model that must not
+// stand in for the vendor's.
+const CATALOG = {
+  openai: { id: "openai", name: "OpenAI", models: {
+    "gpt-6.1-sol": { id: "gpt-6.1-sol", name: "GPT-6.1 Sol", limit: { context: 1050000 }, modalities: { output: ["text"] }, cost: {
+      input: 2, output: 10, cache_read: 0.1, cache_write: 2.5,
+      tiers: [{ input: 4, output: 15, cache_read: 0.2, cache_write: 5, tier: { type: "context", size: 272000 } }] } },
+    "gpt-old": { id: "gpt-old", name: "GPT Old", status: "deprecated", modalities: { output: ["text"] }, cost: { input: 1, output: 2 } },
+    "gpt-image": { id: "gpt-image", name: "GPT Image", type: "image", cost: { input: 5, output: 30 } },
+    "gpt-free": { id: "gpt-free", name: "GPT Free", modalities: { output: ["text"] }, cost: { input: 0, output: 0 } },
+  } },
+  anthropic: { id: "anthropic", name: "Anthropic", models: {
+    "claude-haiku-5-5": { id: "claude-haiku-5-5", name: "Claude Haiku 5.5", modalities: { output: ["text"] }, cost: {
+      input: 0.1, output: 0.5, cache_read: 0.01, cache_write: 0.125,
+      tiers: [{ input: 0.5, output: 2.5, cache_read: 0.05, cache_write: 0.625, tier: { type: "context", size: 100000 } }] } },
+  } },
+  deepseek: { id: "deepseek", name: "DeepSeek", models: {
+    "deepseek-flash": { id: "deepseek-flash", name: "DeepSeek Flash", modalities: { output: ["text"] }, cost: { input: 0.15, output: 0.6, cache_read: 0.003 } },
+  } },
+  neon: { id: "neon", name: "Neon", models: {
+    "gpt-6.1-sol": { id: "gpt-6.1-sol", name: "GPT-6.1 Sol", cost: { input: 1, output: 5 } },
+  } },
+};
+let priceDown = false, priceFetches = 0;
 globalThis.fetch = async (u, init = {}) => {
   u = String(u);
   if (u === "https://us.i.posthog.com/i/v0/e/") {
     captured.push(JSON.parse(init.body));
     return new Response("{}");
   }
+  if (u === "https://models.dev/api.json") {
+    priceFetches++;
+    return priceDown ? new Response("{}", { status: 500 }) : Response.json(CATALOG);
+  }
   if (u.startsWith("https://api.github.com/")) {
     seen.push(new Headers(init.headers));
     if (apiDown) return new Response('{"message":"API rate limit exceeded"}', { status: 403 });
   } else if (pagesDown) return new Response("unicorn", { status: 503 });
-  if (u === "https://github.com/yetone/magpie-releases/releases/latest")
-    return new Response(null, { status: 302, headers: { Location: "https://github.com/yetone/magpie-releases/releases/tag/v0.1.3" } });
+  if (u === "https://github.com/cha0sal3r/magpie-friday-releases/releases/latest")
+    return new Response(null, { status: 302, headers: { Location: "https://github.com/cha0sal3r/magpie-friday-releases/releases/tag/v0.1.3" } });
   if (u.endsWith("/releases.atom")) return new Response(FEED);
-  const gh = (tag) => ({ tag_name: tag, body: BODIES[tag], html_url: "https://github.com/r/" + tag, published_at: "2026-10-01T00:00:00Z", draft: false, prerelease: false, assets: [{ name: "magpie-linux-amd64", size: 1, browser_download_url: "https://dl/x" }] });
+  const gh = (tag) => ({ tag_name: tag, body: BODIES[tag], html_url: "https://github.com/r/" + tag, published_at: "2026-10-01T00:00:00Z", draft: false, prerelease: false, assets: [{ name: "magpie-friday-linux-amd64", size: 1, browser_download_url: "https://dl/x" }] });
   if (u.endsWith("/releases/latest")) return Response.json(gh("v0.1.3"));
   if (u.includes("/releases?per_page=")) return Response.json(Object.keys(BODIES).map(gh));
-  if (u.endsWith("/SHA256SUMS")) return new Response("abc  magpie-linux-amd64\n");
+  if (u.endsWith("/SHA256SUMS")) return new Response("abc  magpie-friday-linux-amd64\n");
   return new Response("not found", { status: 404 });
 };
 
@@ -114,18 +150,77 @@ test("notes: limit keeps the newest that many up to upto", async () => {
   }
 });
 
-test("i18n: every string the home page marks has its Chinese, and no other", async () => {
+test("i18n: every string the pages mark has its Chinese, and no other", async () => {
   const { readFile } = await import("node:fs/promises");
   const { LANGS } = await import("./i18n.js");
-  const html = await readFile(new URL("./public/index.html", import.meta.url), "utf8");
   const keys = new Set();
-  for (const [, k] of html.matchAll(/data-i18n="([^"]+)"/g)) keys.add(k);
-  for (const [, pairs] of html.matchAll(/data-i18n-attr="([^"]+)"/g))
-    for (const p of pairs.split(",")) keys.add(p.split(":")[1]);
+  for (const file of ["./public/index.html", "./public/prices.html"]) {
+    const html = await readFile(new URL(file, import.meta.url), "utf8");
+    for (const [, k] of html.matchAll(/data-i18n="([^"]+)"/g)) keys.add(k);
+    for (const [, pairs] of html.matchAll(/data-i18n-attr="([^"]+)"/g))
+      for (const p of pairs.split(",")) keys.add(p.split(":")[1]);
+  }
   for (const [lang, { dict }] of Object.entries(LANGS)) {
     assert.deepEqual([...keys].filter((k) => !(k in dict)), [], `${lang} lacks`);
     assert.deepEqual(Object.keys(dict).filter((k) => !keys.has(k)), [], `${lang} has unused`);
   }
+});
+
+test("prices: the first-party list, reduced, and the edge's copy answers the next ask", async () => {
+  store.clear();
+  priceFetches = 0;
+  const { body, cc } = await get("/api/prices");
+  assert.equal(cc, "public, max-age=21600");
+  assert.match(body.asOf, /^\d{4}-\d{2}-\d{2}$/);
+  assert.deepEqual(body.vendors.map((v) => v.id), ["openai", "anthropic", "deepseek"]);
+  // deprecated, image and free models are left out, and a reseller's price of
+  // the same model is not the vendor's
+  assert.deepEqual(body.models.map((m) => m.id).sort(), ["claude-haiku-5-5", "deepseek-flash", "gpt-6.1-sol"]);
+  const sol = body.models.find((m) => m.id === "gpt-6.1-sol");
+  assert.equal(sol.v, "openai");
+  assert.equal(sol.context, 1050000);
+  // the batch API's half-price multiplier rides on each model, 0 where the
+  // vendor has none (DeepSeek's is off-peak hours)
+  assert.equal(sol.batch, 0.5);
+  assert.deepEqual(sol.tiers, [{ above: 272000, input: 4, output: 15, cacheRead: 0.2, cacheWrite: 5, cacheWrite1h: 0 }]);
+  // Anthropic's 1-hour write is twice the input price, as catalog.OneHourFor
+  // works it out in the app: the model's and each tier's
+  const haiku = body.models.find((m) => m.id === "claude-haiku-5-5");
+  assert.equal(haiku.batch, 0.5);
+  assert.equal(haiku.cacheWrite1h, 0.2);
+  assert.equal(haiku.tiers[0].cacheWrite1h, 1);
+  assert.equal(body.models.find((m) => m.id === "deepseek-flash").batch, 0);
+  await new Promise((r) => setTimeout(r, 0)); // the put is a waitUntil
+  await get("/api/prices");
+  assert.equal(priceFetches, 1);
+});
+
+test("prices: models.dev failing is an error never kept, then the list again", async () => {
+  store.clear();
+  priceDown = true;
+  try {
+    const res = await worker.fetch(new Request("https://usemagpie.ai/api/prices"), {}, ctx);
+    assert.equal(res.status, 503);
+    assert.equal(res.headers.get("Cache-Control"), "no-store");
+  } finally {
+    priceDown = false;
+  }
+  assert.equal((await get("/api/prices")).body.models.length, 3);
+});
+
+test("prices: /prices is English, a browser that prefers another language is sent to its own", async () => {
+  const assets = [];
+  const env = { ASSETS: { fetch: async (req) => { assets.push(new URL(req.url).pathname); return new Response("<html></html>", { headers: { "Content-Type": "text/plain" } }); } } };
+  const page = (path, headers) => worker.fetch(new Request("https://usemagpie.ai" + path, { headers }), env, ctx);
+  assert.equal((await page("/prices", { "Accept-Language": "zh-CN,zh;q=0.9" })).headers.get("Location"), "/zh/prices");
+  assert.equal((await page("/prices", { Cookie: "lang=ja" })).headers.get("Location"), "/ja/prices");
+  const en = await page("/prices", { Cookie: "lang=en" });
+  assert.equal(en.status, 200);
+  assert.deepEqual(assets, ["/prices.html"]);
+  assert.match(en.headers.get("Vary") || "", /Accept-Language/);
+  assert.equal((await page("/zh/prices")).status, 200);
+  assert.equal((await page("/de/prices")).status, 200);
+  assert.equal((await page("/xx/prices")).status, 404);
 });
 
 test("home: / sends a browser that prefers Chinese, Japanese or German to its page, until a language is picked", async () => {
@@ -180,7 +275,7 @@ test("latest: with the API limited, the notes come from the releases feed, kept 
     assert.equal(body.version, "0.1.3");
     assert.match(body.notes, /One thing \(#1\)/);
     assert.doesNotMatch(body.notes, /一件事/);
-    assert.equal(body.assets["magpie-linux-amd64"].sha256, "abc");
+    assert.equal(body.assets["magpie-friday-linux-amd64"].sha256, "abc");
     assert.equal(res.headers.get("Cache-Control"), "public, max-age=60");
     const zh = await (await ask("/api/latest?lang=zh")).json();
     assert.match(zh.notes, /^### 新功能\n\n- 一件事 \(#1\)$/);
@@ -200,7 +295,7 @@ test("notes: with the API limited, the releases feed's notes, in either language
     assert.deepEqual(list.map((r) => r.version), ["0.1.3", "0.1.2"]);
     assert.equal(list[0].notes, "### 新功能\n\n- 一件事 (#1)");
     assert.equal(list[1].notes, "### Fixes\n\n- Older, **English** alone, `a &lt; b` [link](https://x.dev/)");
-    assert.equal(list[0].url, "https://github.com/yetone/magpie-releases/releases/tag/v0.1.3");
+    assert.equal(list[0].url, "https://github.com/cha0sal3r/magpie-friday-releases/releases/tag/v0.1.3");
   } finally {
     apiDown = false;
   }
@@ -343,18 +438,18 @@ test("partners: links go through /go", () => {
   assert.equal(served([{ ...LIST[0], until: "2026-10-10T00:00:01Z" }], NOW).length, 1);
 });
 
-test("partners: /go sends the browser on, saying it came from magpie", () => {
-  assert.equal(goTarget(LIST, "acme", "keys"), "https://acme.example/keys?ref=magpie");
-  assert.equal(goTarget(LIST, "acme", "site"), "https://acme.example/?ref=magpie");
-  assert.equal(goTarget(LIST, "acme", "keys", "cn"), "https://cn.acme.example/keys?ref=magpie");
+test("partners: /go sends the browser on, saying it came from magpie-friday", () => {
+  assert.equal(goTarget(LIST, "acme", "keys"), "https://acme.example/keys?ref=magpie-friday");
+  assert.equal(goTarget(LIST, "acme", "site"), "https://acme.example/?ref=magpie-friday");
+  assert.equal(goTarget(LIST, "acme", "keys", "cn"), "https://cn.acme.example/keys?ref=magpie-friday");
   // a region without its own page has the partner's
-  assert.equal(goTarget(LIST, "acme", "keys", "us east"), "https://acme.example/keys?ref=magpie");
-  assert.equal(goTarget(LIST, "acme", "site", "cn"), "https://acme.example/?ref=magpie");
+  assert.equal(goTarget(LIST, "acme", "keys", "us east"), "https://acme.example/keys?ref=magpie-friday");
+  assert.equal(goTarget(LIST, "acme", "site", "cn"), "https://acme.example/?ref=magpie-friday");
   // ended, still goes
-  assert.equal(goTarget(LIST, "gone", "keys"), "https://gone.example/keys?ref=magpie");
+  assert.equal(goTarget(LIST, "gone", "keys"), "https://gone.example/keys?ref=magpie-friday");
   // the partner's own query and fragment stay; its own ref is its referral code and stays as it is
   const own = [{ id: "own", keysUrl: "https://own.example/keys?aff=7#signup", website: "https://own.example/?ref=abc" }];
-  assert.equal(goTarget(own, "own", "keys"), "https://own.example/keys?aff=7&ref=magpie#signup");
+  assert.equal(goTarget(own, "own", "keys"), "https://own.example/keys?aff=7&ref=magpie-friday#signup");
   assert.equal(goTarget(own, "own", "site"), "https://own.example/?ref=abc");
   for (const [id, what, region] of [["nobody", "keys"], ["acme", "chat"], ["acme", "keys", "mars"], ["plain", "keys"], ["acme", "constructor"]])
     assert.equal(goTarget(LIST, id, what, region), "", [id, what, region].join(" "));
@@ -378,7 +473,7 @@ test("partners: /go counts the click", async () => {
   assert.equal(new URL(res.headers.get("Location")).searchParams.has("ref"), true);
   await Promise.resolve();
   assert.equal(captured.length, 1);
-  assert.equal(captured[0].event, "magpie partner go");
+  assert.equal(captured[0].event, "magpie-friday partner go");
   assert.equal(captured[0].properties.id, p.id);
   assert.equal(captured[0].properties.what, what);
   assert.equal(captured[0].properties.$process_person_profile, false);
@@ -404,7 +499,7 @@ test("partners: the list's fetches are counted, one in ten", async () => {
       await new Promise((ok) => setTimeout(ok, 0));
       assert.equal(captured.length, sent ? 1 : 0, "random " + r);
       if (sent) {
-        assert.equal(captured[0].event, "magpie partners fetch");
+        assert.equal(captured[0].event, "magpie-friday partners fetch");
         assert.equal(captured[0].properties.weight, 10);
       }
     }
@@ -430,7 +525,7 @@ test("icon proxy passes on a picture and nothing of the asker", async () => {
   };
   try {
     const req = new Request("https://usemagpie.ai/api/icon?url=" + encodeURIComponent("https://author.example/logo.png"), {
-      headers: { Cookie: "lang=zh", "User-Agent": "magpie/0.1.1168", "X-Forwarded-For": "203.0.113.9", "CF-Connecting-IP": "203.0.113.9" },
+      headers: { Cookie: "lang=zh", "User-Agent": "magpie-friday/0.1.1168", "X-Forwarded-For": "203.0.113.9", "CF-Connecting-IP": "203.0.113.9" },
     });
     const res = await worker.fetch(req, {}, { waitUntil() {} });
     assert.equal(res.status, 200);
@@ -474,7 +569,7 @@ test("sponsors: /go/<id>/home and /readme send the browser to the sponsor's own 
       assert.equal(res.headers.get("Location"), s[where]);
       await Promise.resolve();
       assert.equal(captured.length, 1);
-      assert.equal(captured[0].event, "magpie sponsor go");
+      assert.equal(captured[0].event, "magpie-friday sponsor go");
       assert.equal(captured[0].properties.id, s.id);
       assert.equal(captured[0].properties.where, where);
       // a HEAD goes on but isn't counted

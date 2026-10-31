@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 const summaryCacheSessions = 1024
@@ -39,7 +39,7 @@ var summaries struct {
 func indexedSummary(p Period, now time.Time) Summary { return topSummary(p, now, -1) }
 
 // ReadAhead parses the log into its index and works out today's summary in
-// this computer's zone, for magpie to run as it starts: the first reader,
+// this computer's zone, for magpie-friday to run as it starts: the first reader,
 // the tray panel's line of today's calls, finds both done. Parsing the log
 // cold took 0.33 s at 2 MB and 0.77 s at 40 MB on one core, and the
 // panel's numbers waited for it on the first open after a start

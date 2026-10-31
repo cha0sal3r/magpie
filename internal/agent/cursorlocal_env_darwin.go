@@ -5,12 +5,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // setUserEnv sets the variables in launchd's user session, which apps
 // opened from the Dock or Finder from now on start with; nil unsets them.
-// launchd forgets them at a restart, when magpie sets them again.
+// launchd forgets them at a restart, when magpie-friday sets them again.
 func setUserEnv(env map[string]string) error {
 	if testing.Testing() {
 		return nil

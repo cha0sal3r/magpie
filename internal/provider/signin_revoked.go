@@ -3,7 +3,7 @@ package provider
 // A subscription account whose sign-in its vendor revoked. ChatGPT answers
 // a request on a revoked token 401 "token_revoked" (ysicing, #1793), and
 // waiting doesn't mend it: the account was signed out elsewhere, its
-// password changed, its session ended. magpie used to send every request
+// password changed, its session ended. magpie-friday used to send every request
 // to it all the same, each refused, the account never said to be signed
 // out. Now the account is marked lapsed, for the credential refused: the
 // gateway passes over it while it still has that credential, without
@@ -34,7 +34,7 @@ const revokedPrefix = "revoked:"
 // revokedWords: a 401 that says the sign-in itself is gone, not expired
 // for a refresh to mend (token_expired) nor the request's fault. ChatGPT's
 // token_revoked ("Encountered invalidated oauth token for user") and the
-// refresh codes OpenAI's auth answers a dead sign-in with; and magpie's own
+// refresh codes OpenAI's auth answers a dead sign-in with; and magpie-friday's own
 // words for one (revokedText), which the gateway may hold in place of the
 // reply's body.
 var revokedWords = regexp.MustCompile(`(?i)\btoken_revoked\b|\btoken_invalidated\b|\brefresh_token_(reused|invalidated|expired)\b|\binvalid_grant\b|invalidated oauth token|(token|sign-in) (has been|was) revoked`)

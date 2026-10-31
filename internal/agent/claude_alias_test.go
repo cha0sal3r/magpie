@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // TestClaudeAliasShown (StringKe on Discord): a settings.json saying
@@ -86,7 +86,7 @@ func TestClaudeAliasShown(t *testing.T) {
 	if opts[0].Direct != "relay.example.test" {
 		t.Fatalf("a relay's model said to go to %q", opts[0].Direct)
 	}
-	// picking one in magpie writes it as before
+	// picking one in magpie-friday writes it as before
 	if err := a.Field("model").Set("claude-sonnet-5-5"); err != nil {
 		t.Fatal(err)
 	}
@@ -98,7 +98,7 @@ func TestClaudeAliasShown(t *testing.T) {
 // TestClaudeDatedAlias (#496): models.dev lists an alias and its dated id
 // as two models (claude-opus-4-5, claude-opus-4-5-20251101), and the
 // picker showed both. The dated one now names its alias, for the picker to
-// show one row; through magpie too, the [1m] mark and all. Two dated ids
+// show one row; through magpie-friday too, the [1m] mark and all. Two dated ids
 // of one name, or a dated one with no alias beside it, are left alone.
 func TestClaudeDatedAlias(t *testing.T) {
 	opts := claudeDated([]Option{

@@ -12,11 +12,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 // fakeOlderGateway is the test binary run as another process holding the
-// gateway's port and answering as magpie 0.1.550 would, until it is ended.
+// gateway's port and answering as magpie-friday 0.1.550 would, until it is ended.
 func fakeOlderGateway(addr string) {
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
@@ -24,15 +24,15 @@ func fakeOlderGateway(addr string) {
 	}
 	http.Serve(ln, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		io.WriteString(w, `{"name":"magpie","version":"0.1.550","models":3}`)
+		io.WriteString(w, `{"name":"magpie-friday","version":"0.1.550","models":3}`)
 	}))
 }
 
 // The Gateway page's button (leslie_luo on Discord: the page said an older
-// magpie served the gateway, and there was no telling which one to quit).
+// magpie-friday served the gateway, and there was no telling which one to quit).
 // It quits the process on the gateway's port only when its program is a
-// magpie, by its pid and path, then serves the gateway here at once; a
-// program of another name answering as magpie is left running and named.
+// magpie-friday, by its pid and path, then serves the gateway here at once; a
+// program of another name answering as magpie-friday is left running and named.
 // Restart then serves it here again. Both run on a port of the test's own,
 // against copies of the test binary.
 func TestGatewayFixQuitsOnlyAMagpie(t *testing.T) {
@@ -71,7 +71,7 @@ func TestGatewayFixQuitsOnlyAMagpie(t *testing.T) {
 		t.Fatal(err)
 	}
 	dir := t.TempDir()
-	// start runs the test binary under name, as the older magpie holding
+	// start runs the test binary under name, as the older magpie-friday holding
 	// the port; ended is closed once it has ended
 	start := func(name string) (*exec.Cmd, chan struct{}) {
 		if runtime.GOOS == "windows" {
@@ -106,15 +106,15 @@ func TestGatewayFixQuitsOnlyAMagpie(t *testing.T) {
 		return cmd, ended
 	}
 
-	// a program that isn't magpie is never ended, however it answers
+	// a program that isn't magpie-friday is never ended, however it answers
 	other, otherEnded := start("other-server")
 	out := takeOverGateway()
-	if out.OK || out.Reason != "not-magpie" || out.PID != other.Process.Pid || filepath.Base(out.Path) != filepath.Base(other.Path) {
+	if out.OK || out.Reason != "not-magpie-friday" || out.PID != other.Process.Pid || filepath.Base(out.Path) != filepath.Base(other.Path) {
 		t.Fatalf("another program's port: %+v", out)
 	}
 	select {
 	case <-otherEnded:
-		t.Fatal("ended a program that isn't magpie")
+		t.Fatal("ended a program that isn't magpie-friday")
 	case <-time.After(300 * time.Millisecond):
 	}
 	if served.Load() != nil {
@@ -123,8 +123,8 @@ func TestGatewayFixQuitsOnlyAMagpie(t *testing.T) {
 	other.Process.Kill()
 	<-otherEnded
 
-	// an older magpie is quit, and this one serves at once
-	old, oldEnded := start("magpie")
+	// an older magpie-friday is quit, and this one serves at once
+	old, oldEnded := start("magpie-friday")
 	_ = old
 	if g := providersState().Gateway; !g.Older || g.Mine {
 		t.Fatalf("not seen as older: %+v", g)
@@ -136,7 +136,7 @@ func TestGatewayFixQuitsOnlyAMagpie(t *testing.T) {
 	select {
 	case <-oldEnded:
 	case <-time.After(5 * time.Second):
-		t.Fatal("the older magpie is still running")
+		t.Fatal("the older magpie-friday is still running")
 	}
 	gw := served.Load()
 	if g := providersState().Gateway; gw == nil || !g.Mine || !g.Running || g.Older {

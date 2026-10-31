@@ -5,7 +5,7 @@ package agent
 import (
 	"strings"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // listRunning lists the processes a pgrep -f pattern matches, with how

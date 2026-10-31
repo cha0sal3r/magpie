@@ -1,14 +1,14 @@
-// Package sqlitedb is the one way magpie reaches SQLite: a package that
+// Package sqlitedb is the one way magpie-friday reaches SQLite: a package that
 // opens a database imports it, blank, in place of modernc.org/sqlite.
 //
-//	import _ "github.com/yetone/magpie/internal/sqlitedb"
+//	import _ "github.com/cha0sal3r/magpie-friday/internal/sqlitedb"
 //
 // modernc's SQLite runs on modernc's libc, which keeps its own copy of the
 // environment, taken from os.Environ at the first getenv. On macOS,
 // Windows and the BSDs that libc's getenv ends the whole process when it
 // meets an entry with no "=" in it: it prints "libc.go:…:getenv:
 // TODOTODO …" and calls os.Exit(1), where every real libc skips the entry.
-// SQLite's first open reads SQLITE_TMPDIR, so a magpie started with such
+// SQLite's first open reads SQLITE_TMPDIR, so a magpie-friday started with such
 // an entry quit at its first session scan, about two seconds after launch,
 // with no crash report (#2327: a DLP tool's injected dylib left a fragment
 // of its own path in the environment of apps Alfred started). Before
@@ -24,7 +24,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// init runs before any of magpie's own code, and before any goroutine of
+// init runs before any of magpie-friday's own code, and before any goroutine of
 // it, so libc's copy is taken once, here: modernc's SetEnviron isn't safe
 // to race with a first getenv.
 func init() {

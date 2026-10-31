@@ -15,8 +15,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/backup"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/backup"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // apacheDAV answers as InfiniCLOUD's (TeraCloud's) WebDAV plausibly does
@@ -171,7 +171,7 @@ func TestSyncTeraCloudGzipETag(t *testing.T) {
 	if fake.refused != 0 || fake.gzipped != 0 {
 		t.Fatalf("%d writes refused, %d reads sent gzip", fake.refused, fake.gzipped)
 	}
-	remote, err := backup.Open(fake.files["/dav/magpie/magpie.magpie-backup"], "correct horse")
+	remote, err := backup.Open(fake.files["/dav/magpie-friday/magpie-friday.magpie-friday-backup"], "correct horse")
 	if err != nil || len(remote.Providers) != 4 {
 		t.Fatalf("on the server: %v %+v", err, remote.Providers)
 	}
@@ -200,7 +200,7 @@ func TestSyncTeraCloudGzipETag(t *testing.T) {
 // A server that sends the file gzip though it was asked for as it is: the
 // file is still read whole.
 func TestDAVGetGzipAnyway(t *testing.T) {
-	want := []byte(`{"app":"magpie"}`)
+	want := []byte(`{"app":"magpie-friday"}`)
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("ETag", `"1-gzip"`)
 		w.Header().Set("Content-Encoding", "gzip")
@@ -228,7 +228,7 @@ func TestSyncTeraCloudStillSeesOtherWrites(t *testing.T) {
 	srv := httptest.NewServer(fake)
 	defer srv.Close()
 	ctx := context.Background()
-	const name = "/dav/magpie/magpie.magpie-backup"
+	const name = "/dav/magpie-friday/magpie-friday.magpie-friday-backup"
 
 	// the remote alone: a write over a version another write replaced
 	d, err := newDAV(Config{URL: srv.URL + "/dav/", User: "me", Password: "pw"})

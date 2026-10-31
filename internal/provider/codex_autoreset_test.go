@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // Only the week's window being used up counts: the five hours pass on
@@ -150,7 +150,7 @@ func TestAutoResetKeptPastRestart(t *testing.T) {
 	a.load()
 	a.spent["me@example.com"] = autoResetSpent{Until: time.Now().Add(72 * time.Hour), At: time.Now().Add(-time.Hour), Out: ResetOutcome{Code: "reset", Windows: 2}}
 	a.save()
-	a.path = "" // as a new magpie would
+	a.path = "" // as a new magpie-friday would
 	a.Unlock()
 	fakeCodexResets(t, 1, nil) // would say the week is not used up, if asked
 	out, err := AutoUseCodexReset(t.Context(), "me@example.com")
@@ -183,7 +183,7 @@ func TestAutoResetUnreadableKeptAside(t *testing.T) {
 	}
 	a := &autoReset
 	a.Lock()
-	a.path = "" // read afresh, as a new magpie would
+	a.path = "" // read afresh, as a new magpie-friday would
 	a.Unlock()
 
 	consumed := fakeWeekUsedUp(t)
@@ -200,7 +200,7 @@ func TestAutoResetUnreadableKeptAside(t *testing.T) {
 	}
 	// and the use itself is kept: read afresh, no second one this week
 	a.Lock()
-	a.path = "" // as a new magpie would
+	a.path = "" // as a new magpie-friday would
 	a.load()
 	_, ok := a.spent["me@example.com"]
 	a.Unlock()
@@ -249,7 +249,7 @@ func fakeWeekUsedUp(t *testing.T) *atomic.Int32 {
 }
 
 // unreadableAutoReset leaves codex-autoreset.json as #1505's crash left
-// its files, zeroed at full length, for a new magpie to read.
+// its files, zeroed at full length, for a new magpie-friday to read.
 func unreadableAutoReset(t *testing.T) {
 	p := autoReset.where()
 	os.MkdirAll(filepath.Dir(p), 0o755)
@@ -315,7 +315,7 @@ func TestAutoResetNothingKnownSpendsNone(t *testing.T) {
 			t.Fatal(err)
 		}
 		autoReset.Lock()
-		autoReset.path = "" // as a new magpie would
+		autoReset.path = "" // as a new magpie-friday would
 		autoReset.Unlock()
 	}
 	if consumed.Load() != 0 {

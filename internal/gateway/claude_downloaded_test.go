@@ -8,14 +8,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/claudecode"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/claudecode"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // A machine with no Claude Code of its own (a server, a container) answers
-// a Claude subscription's request with the one `magpie claude-code install`
-// downloaded into magpie's cache (Jorben on Discord): before, the request
+// a Claude subscription's request with the one `magpie-friday claude-code install`
+// downloaded into magpie-friday's cache (Jorben on Discord): before, the request
 // failed "Claude Code is not installed" with that build right there.
 func TestClaudeSubscriptionRunsTheDownloadedClaudeCode(t *testing.T) {
 	if runtime.GOOS == "windows" {
@@ -47,7 +47,7 @@ echo '{"type":"stream_event","event":{"type":"message_stop"}}'
 	}
 }
 
-// With neither, the error says how to have magpie download it.
+// With neither, the error says how to have magpie-friday download it.
 func TestClaudeSubscriptionWithoutClaudeCodeSaysHowToGetIt(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("WSL may have one")
@@ -55,7 +55,7 @@ func TestClaudeSubscriptionWithoutClaudeCodeSaysHowToGetIt(t *testing.T) {
 	t.Setenv("PATH", t.TempDir())
 	_ = os.RemoveAll(claudecode.Root())
 	_, err := claudeBinary()
-	if err == nil || !strings.Contains(err.Error(), "magpie claude-code install") {
+	if err == nil || !strings.Contains(err.Error(), "magpie-friday claude-code install") {
 		t.Fatalf("claudeBinary() error = %v", err)
 	}
 }

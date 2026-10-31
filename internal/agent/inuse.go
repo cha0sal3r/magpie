@@ -5,10 +5,10 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// Models are magpie's models the agent is set to, as catalog ids
+// Models are magpie-friday's models the agent is set to, as catalog ids
 // (provider/model, group/<id>), each once: the agent's own models aside.
 // Usage stats count them (internal/stats).
 func (a *Agent) Models() []string {
@@ -49,8 +49,8 @@ func (a *Agent) Models() []string {
 	return out
 }
 
-// modelRef is v as a catalog id when it names one of magpie's models or
-// groups, as an agent spells it (magpie/…, Claude Code's [1m]); "" else.
+// modelRef is v as a catalog id when it names one of magpie-friday's models or
+// groups, as an agent spells it (magpie-friday/…, Claude Code's [1m]); "" else.
 func modelRef(v string) string {
 	v = strings.TrimSuffix(strings.TrimSpace(v), "[1m]")
 	v = strings.TrimPrefix(v, magpieID+"/")

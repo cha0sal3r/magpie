@@ -1,11 +1,11 @@
-// magpie — one place to pick every agent's model. The commands live in
+// magpie-friday — one place to pick every agent's model. The commands live in
 // internal/cli; this is only where the binary starts.
 package main
 
 import (
-	"github.com/yetone/magpie/internal/cli"
+	"github.com/cha0sal3r/magpie-friday/internal/cli"
 	// the built-in plugins, registered with the runtime (internal/pluginrt)
-	_ "github.com/yetone/magpie/plugins/all"
+	_ "github.com/cha0sal3r/magpie-friday/plugins/all"
 )
 
 // version is set at build time: -ldflags "-X main.version=…" (Makefile,

@@ -6,7 +6,7 @@
 // of it; the warm-ups' cards all show, Codex's and Claude Code's alike;
 // nothing found says so. Escape, or clearing the box, brings back the part
 // picked as it was. Nothing is posted and the page doesn't scroll. In the
-// smallest window (560 x 420) and magpie web on a phone (390 wide), nothing
+// smallest window (560 x 420) and magpie-friday web on a phone (390 wide), nothing
 // runs off to the side. Every language; no backend, the API is faked here.
 // ARTIFACT_DIR gets a screenshot of each.
 const assert = require("node:assert/strict");
@@ -24,7 +24,7 @@ function server(lang, posts, web) {
     dock: false, dockWindow: false, proxy: "", redact: false, redactPersonal: false, redactWords: [],
     codexWarmup: "", claudeWarmup: "", codexWarmAt: "", claudeWarmAt: "", workbuddyCheckin: false, noStats: false,
     trayUsage: "", trayUsageEvery: 3, vision: "", imageGen: "",
-    version: "0.1.400", dir: "~/.config/magpie", gateway: "http://127.0.0.1:3425",
+    version: "0.1.400", dir: "~/.config/magpie-friday", gateway: "http://127.0.0.1:3425",
     proxyNow: "none", proxySource: "none", login: false,
     visionModels: [], imageGenModels: [], workbuddyCheckins: [], lanURLs: [],
     fx: { rate: 7.2, at: new Date().toISOString(), stale: false },
@@ -168,7 +168,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       });
     }
 
-    await t.test("magpie web on a phone", async () => {
+    await t.test("magpie-friday web on a phone", async () => {
       const page = await open("zh", [], { width: 390, height: 760, web: true });
       assert.deepEqual(await overflow(page), []);
       await page.evaluate(() => { const q = document.querySelector("#setQ"); q.value = "github"; q.dispatchEvent(new Event("input")); });

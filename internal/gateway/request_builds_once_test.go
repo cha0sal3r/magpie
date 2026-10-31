@@ -4,13 +4,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A request builds the providers once, however many times it looks a
 // model up on its way: each build reads every agent's sign-in, every
-// plugin's and the settings, and three builds a request kept magpie at
+// plugin's and the settings, and three builds a request kept magpie-friday at
 // 100–350% CPU under seven agents at once (#2502). The next request,
 // within a second and nothing written, builds none: one request after
 // another built the providers again each time. After a write it builds

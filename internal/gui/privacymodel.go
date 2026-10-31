@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/yetone/magpie/internal/pii"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/pii"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // privacyModelJSON is Settings → Privacy's local masking model: whether it

@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // minuteVendor answers chat completions, Messages and count_tokens, noting
@@ -404,7 +404,7 @@ func TestMaxRPMAgentGoneWhileWaiting(t *testing.T) {
 	}
 }
 
-// What magpie sends on its own counts too: a retry after the vendor's 503
+// What magpie-friday sends on its own counts too: a retry after the vendor's 503
 // is a request of the minute, and so is a count_tokens that reaches the
 // vendor. With 3 a minute, one request tried twice and one count leave no
 // room, so the next chat waits for the minute.

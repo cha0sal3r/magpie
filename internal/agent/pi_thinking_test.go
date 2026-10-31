@@ -5,13 +5,13 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // Changing Pi's thinking level writes defaultThinkingLevel alone, and only
-// when it changed. It used to rebuild providers.magpie, so a contextWindow
+// when it changed. It used to rebuild providers.magpie-friday, so a contextWindow
 // edited by hand was replaced. Default clears the level and leaves the
-// model on magpie; picking the model is what removes the provider.
+// model on magpie-friday; picking the model is what removes the provider.
 func TestPiThinkingLeavesTheProvider(t *testing.T) {
 	home := syncHome(t)
 	dir := filepath.Join(home, ".pi", "agent")
@@ -19,7 +19,7 @@ func TestPiThinkingLeavesTheProvider(t *testing.T) {
 	models := filepath.Join(dir, "models.json")
 	settingsBody := `{
   "theme": "dark",
-  "defaultProvider": "magpie",
+  "defaultProvider": "magpie-friday",
   "defaultModel": "relay/glm-4.6",
   "defaultThinkingLevel": "low"
 }
@@ -58,7 +58,7 @@ func TestPiThinkingLeavesTheProvider(t *testing.T) {
 		t.Fatal(err)
 	}
 	for k, want := range map[string]string{
-		"theme": "dark", "defaultProvider": "magpie", "defaultModel": "relay/glm-4.6", "defaultThinkingLevel": "high",
+		"theme": "dark", "defaultProvider": "magpie-friday", "defaultModel": "relay/glm-4.6", "defaultThinkingLevel": "high",
 	} {
 		if v, _ := edit.GetJSON(settings, k); v != want {
 			t.Fatalf("%s = %q\n%s", k, v, readFile(settings))
@@ -74,7 +74,7 @@ func TestPiThinkingLeavesTheProvider(t *testing.T) {
 	if _, ok := edit.GetJSON(settings, "defaultThinkingLevel"); ok {
 		t.Fatalf("default left thinking:\n%s", readFile(settings))
 	}
-	for k, want := range map[string]string{"theme": "dark", "defaultProvider": "magpie", "defaultModel": "relay/glm-4.6"} {
+	for k, want := range map[string]string{"theme": "dark", "defaultProvider": "magpie-friday", "defaultModel": "relay/glm-4.6"} {
 		if v, _ := edit.GetJSON(settings, k); v != want {
 			t.Fatalf("default changed %s to %q\n%s", k, v, readFile(settings))
 		}

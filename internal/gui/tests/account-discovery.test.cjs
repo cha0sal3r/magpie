@@ -1,6 +1,6 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // Settings → Privacy → Subscription accounts (#1535, MaxHaiCom): whether
-// magpie reads the agents' own sign-ins (Claude Code's and Codex's files,
+// magpie-friday reads the agents' own sign-ins (Claude Code's and Codex's files,
 // the Keychain) at all. On by default; Off first asks, naming the
 // subscriptions it stops (#1761: a click that didn't mean it left a user with
 // none working), and Cancel leaves it on with nothing posted; taken, Off posts
@@ -24,7 +24,7 @@ function settingsPayload(over) {
     dock: false, dockWindow: false, proxy: "", redact: false, redactPersonal: false, redactWords: [],
     codexWarmup: "", claudeWarmup: "", codexWarmAt: "", claudeWarmAt: "", workbuddyCheckin: false, noStats: false,
     trayUsage: "", trayUsages: [], trayUsageEvery: 3, vision: "", imageGen: "",
-    version: "0.1.400", dir: "~/.config/magpie", gateway: "http://127.0.0.1:3425",
+    version: "0.1.400", dir: "~/.config/magpie-friday", gateway: "http://127.0.0.1:3425",
     proxyNow: "none", proxySource: "none", login: false,
     visionModels: [], imageGenModels: [], workbuddyCheckins: [], lanURLs: [],
     fx: { rate: 7.2, at: new Date().toISOString(), stale: false },

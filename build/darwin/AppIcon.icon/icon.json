@@ -7,8 +7,8 @@
     {
       "layers" : [
         {
-          "image-name" : "magpie.png",
-          "name" : "magpie",
+          "image-name" : "magpie-friday.png",
+          "name" : "magpie-friday",
           "fill-specializations" : [
             { "value" : { "solid" : "srgb:0.08627,0.08627,0.08627,1.00000" } },
             { "appearance" : "dark", "value" : { "solid" : "srgb:0.95686,0.95686,0.95686,1.00000" } }

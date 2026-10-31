@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// #1772: `magpie provider quota-rest <id> 7d` takes a rest as a person says
+// #1772: `magpie-friday provider quota-rest <id> 7d` takes a rest as a person says
 // it, and says it back the same way.
 func TestRestMinutes(t *testing.T) {
 	for in, want := range map[string]int{"default": 0, "off": 0, "0": 0, "90": 90, "30m": 30, "6h": 360, "7d": 7 * 24 * 60, "1h30m": 90} {

@@ -10,13 +10,13 @@ import (
 
 	"github.com/tidwall/jsonc"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // A server's tools can be turned off one by one (nf1qaz2w on Discord): the
 // library keeps the names turned off in the server's DisabledTools, and
 // writes them into each agent given the server in that agent's own way, for
-// the agents that have one. Each writes only what magpie adds, recorded in
+// the agents that have one. Each writes only what magpie-friday adds, recorded in
 // Applied, and takes back only that: a name the user turned off themselves
 // stays, and stays theirs.
 
@@ -89,7 +89,7 @@ func (f *mcpFile) toolsKey() []string {
 }
 
 // entryTools is the list under key in an entry, and whether it is one
-// magpie can read: a value that isn't a list of names is the user's to
+// magpie-friday can read: a value that isn't a list of names is the user's to
 // keep, never taken as none.
 func entryTools(old map[string]any, key []string) ([]string, bool) {
 	var v any = old
@@ -118,9 +118,9 @@ func entryTools(old map[string]any, key []string) ([]string, bool) {
 	return out, true
 }
 
-// offList is the list an agent is given: what it has, less what magpie
+// offList is the list an agent is given: what it has, less what magpie-friday
 // put there last that it no longer wants, then what it wants that isn't
-// there. mine are the names magpie added: one the user had put there
+// there. mine are the names magpie-friday added: one the user had put there
 // themselves stays theirs, so turning the tool on again leaves it.
 func offList(cur, prev, want []string) (list, mine []string) {
 	list = []string{}
@@ -143,7 +143,7 @@ func offList(cur, prev, want []string) (list, mine []string) {
 }
 
 // toolsEdit is the list of tools left out to write into an entry; an
-// empty one takes the key away (magpie's were the last in it).
+// empty one takes the key away (magpie-friday's were the last in it).
 type toolsEdit struct {
 	key  []string
 	list []string
@@ -196,7 +196,7 @@ func (e *toolsEdit) apply(o ordered) ordered {
 
 // entryToolsEdit is what to write into a server's entry for the tools
 // the agent leaves out (nil when the entry has them already), and the
-// names magpie's own in it then.
+// names magpie-friday's own in it then.
 func entryToolsEdit(f *mcpFile, old map[string]any, prev, want []string) (*toolsEdit, []string, error) {
 	key := f.toolsKey()
 	cur, ok := entryTools(old, key)
@@ -204,7 +204,7 @@ func entryToolsEdit(f *mcpFile, old map[string]any, prev, want []string) (*tools
 		if len(want) == 0 && len(prev) == 0 {
 			return nil, nil, nil
 		}
-		return nil, prev, fmt.Errorf("%s in its entry isn't a list of names, so magpie leaves it as it is", strings.Join(key, "."))
+		return nil, prev, fmt.Errorf("%s in its entry isn't a list of names, so magpie-friday leaves it as it is", strings.Join(key, "."))
 	}
 	list, mine := offList(cur, prev, want)
 	if slices.Equal(cur, list) {
@@ -284,7 +284,7 @@ func (l *Library) syncToolRules(t *Target, how toolsOffHow, given []string, b *b
 		perms, _ := doc["permissions"].(map[string]any)
 		cur, ok := entryTools(doc, []string{"permissions", "deny"})
 		if !ok {
-			fail(fmt.Errorf("%s: permissions.deny isn't a list of rules, so magpie leaves it as it is", path))
+			fail(fmt.Errorf("%s: permissions.deny isn't a list of rules, so magpie-friday leaves it as it is", path))
 			return
 		}
 		list, mine := offList(cur, a.ToolRules, want)
@@ -296,7 +296,7 @@ func (l *Library) syncToolRules(t *Target, how toolsOffHow, given []string, b *b
 			if len(list) > 0 {
 				return edit.SetJSON(path, edit.KV{Path: "permissions.deny", Value: list})
 			}
-			// magpie's were the last: the key goes, and permissions too
+			// magpie-friday's were the last: the key goes, and permissions too
 			// when nothing else is in it
 			keys := []string{"permissions.deny"}
 			if len(perms) == 1 {
@@ -309,11 +309,11 @@ func (l *Library) syncToolRules(t *Target, how toolsOffHow, given []string, b *b
 		}
 		return
 	}
-	// OpenCode: a key the user set, to anything, is theirs; magpie's are
+	// OpenCode: a key the user set, to anything, is theirs; magpie-friday's are
 	// those it set to false, taken away while they still say false
 	tools, isMap := doc["tools"].(map[string]any)
 	if doc["tools"] != nil && !isMap {
-		fail(fmt.Errorf("%s: tools isn't an object, so magpie leaves it as it is", path))
+		fail(fmt.Errorf("%s: tools isn't an object, so magpie-friday leaves it as it is", path))
 		return
 	}
 	var set []edit.KV

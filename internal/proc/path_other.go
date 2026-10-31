@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
 )
 
 // UserPath gives the desktop app the PATH a terminal of the user's has. One
@@ -27,14 +27,14 @@ import (
 //
 // The same call brings the agents' own variables (agentenv.Vars:
 // PI_CODING_AGENT_DIR, CODEX_HOME, CLAUDE_CONFIG_DIR, ...) the profile sets
-// and the app wasn't started with, so that magpie writes an agent's config
+// and the app wasn't started with, so that magpie-friday writes an agent's config
 // into the folder the agent reads, not its default one in the home (atie on
 // Discord: Pi's models.json went to ~/.pi/agent with PI_CODING_AGENT_DIR set
-// in the shell). One already in magpie's environment is kept. One holding a
-// relative path is lent to the programs magpie starts all the same, but
-// magpie itself reads them through appdir.LookupEnv, which passes such a
-// value over, as it does the ones magpie started with. Those are read
-// as magpie starts (the library is synced into the agents at once), so the
+// in the shell). One already in magpie-friday's environment is kept. One holding a
+// relative path is lent to the programs magpie-friday starts all the same, but
+// magpie-friday itself reads them through appdir.LookupEnv, which passes such a
+// value over, as it does the ones magpie-friday started with. Those are read
+// as magpie-friday starts (the library is synced into the agents at once), so the
 // answer is waited for, but no more than shellWait: a slow profile mustn't
 // hold the window up, and what it says later is still taken.
 func UserPath() {
@@ -65,7 +65,7 @@ func UserPath() {
 // without it.
 const shellWait = 2 * time.Second
 
-// setUnset sets each variable magpie's environment doesn't have, to a value
+// setUnset sets each variable magpie-friday's environment doesn't have, to a value
 // that isn't empty.
 func setUnset(vars map[string]string) {
 	for k, v := range vars {
@@ -103,11 +103,11 @@ func LoginPath() []string {
 // ProxyVars are the proxy variables the login shell is asked for beside
 // agentenv.Vars. An agent run in a terminal has the ones its profile sets,
 // and so does one the ChatGPT app starts (it takes the login shell's
-// environment as it opens), while magpie opened from the Dock doesn't: a
-// NO_PROXY=127.0.0.1 in .zshrc keeps Codex's requests for magpie off a
-// proxy that magpie, reading its own environment, thought they went
+// environment as it opens), while magpie-friday opened from the Dock doesn't: a
+// NO_PROXY=127.0.0.1 in .zshrc keeps Codex's requests for magpie-friday off a
+// proxy that magpie-friday, reading its own environment, thought they went
 // through (liu_dyj on X). They are only read (LoginEnv), never set in
-// magpie's environment: magpie's own requests take their proxy from
+// magpie-friday's environment: magpie-friday's own requests take their proxy from
 // netproxy.
 var ProxyVars = []string{"HTTP_PROXY", "http_proxy", "HTTPS_PROXY", "https_proxy", "ALL_PROXY", "all_proxy", "NO_PROXY", "no_proxy"}
 
@@ -330,13 +330,13 @@ func mergeShellEnv(paths []string, vars []map[string]string) (string, map[string
 // askShell runs sh as a terminal opens it and reads what shellEnv says.
 //
 // The shell is a probe (ProbeContext): it leads a session of its own, with
-// no controlling terminal. An interactive zsh in magpie's session took the
+// no controlling terminal. An interactive zsh in magpie-friday's session took the
 // terminal it was started from — it puts itself in the foreground, as a
-// shell does for its jobs — and while it ran, magpie's own process group
-// was in the background there: Ctrl-C no longer reached `magpie web`, and
+// shell does for its jobs — and while it ran, magpie-friday's own process group
+// was in the background there: Ctrl-C no longer reached `magpie-friday web`, and
 // anything in that group touching the terminal (the bash asked beside it,
-// whose profile runs in magpie's group, an agent's CLI) had the kernel stop
-// the whole group, magpie with it (DD on Discord: magpie web → zsh:
+// whose profile runs in magpie-friday's group, an agent's CLI) had the kernel stop
+// the whole group, magpie-friday with it (DD on Discord: magpie-friday web → zsh:
 // suspended (tty input)). A timeout also killed only the shell, leaving
 // what its profile started holding the terminal; a probe's whole group goes.
 //
@@ -344,12 +344,12 @@ func mergeShellEnv(paths []string, vars []map[string]string) (string, map[string
 // .zshrc/.bashrc or a config.fish block under `status is-interactive`. A
 // profile that hands an interactive shell over to something else — `exec
 // tmux` or zellij's auto-start, common in config.fish — or takes longer
-// than shellAsk to come up never runs the probe, and magpie got no PATH at
+// than shellAsk to come up never runs the probe, and magpie-friday got no PATH at
 // all (John on Discord, fish set with chsh: an agent fish's PATH has
 // wasn't found). Without an answer it is asked again as a login shell
 // only, which still reads config.fish, .zprofile and .bash_profile.
 // MAGPIE_SHELL_PROBE=1 is in its environment both times, for a profile to
-// tell magpie's question from a terminal.
+// tell magpie-friday's question from a terminal.
 func askShell(sh string) (string, map[string]string) {
 	for _, flags := range []string{"-ilc", "-lc"} {
 		if p, vars := askShellAs(sh, flags); p != "" || vars != nil {
@@ -395,11 +395,11 @@ const shellMark = "__magpie_path__"
 // references, so a value is what the shell exports: what an agent started
 // from it gets. A shell's own expansion saw unexported variables too: fish's
 // universal http_proxy, set with `set -U` and never exported, reached no
-// program, yet magpie took it for Codex's proxy and showed the "proxied"
+// program, yet magpie-friday took it for Codex's proxy and showed the "proxied"
 // drift (#2627); an unexported zsh or bash variable is the same.
 //
 // nushell needs it most: a double-quoted string is literal there, so it
-// printed "$PATH", "$CLAUDE_CONFIG_DIR", ... and magpie set each variable
+// printed "$PATH", "$CLAUDE_CONFIG_DIR", ... and magpie-friday set each variable
 // to its own name (#738: then Claude sign-in failed with "mkdir
 // $CLAUDE_CONFIG_DIR: read-only file system"). Its ^ runs /bin/sh as an
 // external command rather than a nushell one. nushell, as fish (PATH is a

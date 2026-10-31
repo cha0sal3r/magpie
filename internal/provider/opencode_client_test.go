@@ -25,7 +25,7 @@ func openCodeDecode(t *testing.T, id string, descending bool) (ms, counter uint6
 // OpenCode") to a session id OpenCode couldn't have made (c9cu on Discord:
 // muse-spark-1.3-contributor-free from Pi worked one day and not the
 // next). Checked against opencode.ai with the same request:
-// ses_e9283da055b15JwOAra76bwUx4, a sha256 cut to the shape that magpie
+// ses_e9283da055b15JwOAra76bwUx4, a sha256 cut to the shape that magpie-friday
 // sent, got 403; ses_ecc5d8f28ffe9Cy14V8Em7lI2u, from a real OpenCode
 // 1.19.0 run, got 200. The session made is OpenCode's: descending, the
 // time it was made, a small count.

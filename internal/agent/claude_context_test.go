@@ -4,14 +4,14 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // TestClaudeContextWindow: Claude Code takes a model it doesn't know for a
-// 200K one, so magpie tells it the window of the model it switches it to
+// 200K one, so magpie-friday tells it the window of the model it switches it to
 // (CLAUDE_CODE_MAX_CONTEXT_TOKENS), changes it with the model, takes it away
 // for a model it doesn't know the window of and for Claude's own, and never
 // touches a value the user set (#311).
@@ -95,18 +95,18 @@ func TestClaudeContextWindow(t *testing.T) {
 	// back to Claude's own model, and to Claude Code as installed
 	set("model", "claude-opus-4-8")
 	if window() != "" {
-		t.Fatalf("Claude's own model kept magpie's window: %q", window())
+		t.Fatalf("Claude's own model kept magpie-friday's window: %q", window())
 	}
 	set("model", "v/mid")
 	set("model", "")
 	if window() != "" {
-		t.Fatalf("reset kept magpie's window: %q", window())
+		t.Fatalf("reset kept magpie-friday's window: %q", window())
 	}
 	if v, _ := edit.GetJSON(path, "theme"); v != "dark" {
 		t.Fatal("theme lost")
 	}
 
-	// the user's own value is theirs, set before magpie or over magpie's
+	// the user's own value is theirs, set before magpie-friday or over magpie-friday's
 	if err := edit.SetJSON(path, edit.KV{Path: "env." + claudeContextEnv, Value: "64000"}); err != nil {
 		t.Fatal(err)
 	}
@@ -126,9 +126,9 @@ func TestClaudeContextWindow(t *testing.T) {
 	set("model", "v/mid")
 	set("model", "")
 	if window() != "100000" {
-		t.Fatalf("a value the user changed magpie's to: %q", window())
+		t.Fatalf("a value the user changed magpie-friday's to: %q", window())
 	}
-	// and one the same as magpie would write, but not written by it
+	// and one the same as magpie-friday would write, but not written by it
 	set("model", "v/small")
 	if window() != "100000" {
 		t.Fatalf("user value replaced: %q", window())
@@ -138,6 +138,6 @@ func TestClaudeContextWindow(t *testing.T) {
 	}
 	set("model", "")
 	if window() != "400000" {
-		t.Fatalf("the user's 400000 was taken for magpie's: %q", window())
+		t.Fatalf("the user's 400000 was taken for magpie-friday's: %q", window())
 	}
 }

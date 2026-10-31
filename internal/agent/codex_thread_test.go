@@ -7,14 +7,14 @@ import (
 	"testing"
 )
 
-// #259: magpie as Codex's provider, a thread started on Codex's built-in
+// #259: magpie-friday as Codex's provider, a thread started on Codex's built-in
 // provider is opened on it again (Codex keeps a thread's provider), and a
-// magpie model picked there went to the ChatGPT backend, which refused it
+// magpie-friday model picked there went to the ChatGPT backend, which refused it
 // ("… is not supported when using Codex with a ChatGPT account"). The base
-// URL is magpie's now in that state too, so the built-in provider's request
-// reaches magpie; back on Codex's own model, it goes — but on magpie API,
-// where Codex's own model goes through magpie on its ChatGPT account and
-// magpie stays wired (#701).
+// URL is magpie-friday's now in that state too, so the built-in provider's request
+// reaches magpie-friday; back on Codex's own model, it goes — but on magpie-friday API,
+// where Codex's own model goes through magpie-friday on its ChatGPT account and
+// magpie-friday stays wired (#701).
 func TestCodexProviderAlsoSetsBaseURL(t *testing.T) {
 	for _, tc := range []struct {
 		name, auth string
@@ -36,7 +36,7 @@ func TestCodexProviderAlsoSetsBaseURL(t *testing.T) {
 				t.Fatal(err)
 			}
 			cfg := read()
-			if !strings.Contains(cfg, `model_provider = "magpie"`) || !strings.Contains(cfg, "model_catalog_json") ||
+			if !strings.Contains(cfg, `model_provider = "magpie-friday"`) || !strings.Contains(cfg, "model_catalog_json") ||
 				!strings.Contains(cfg, `openai_base_url = "`+codexGatewayURL()+`"`) {
 				t.Fatalf("\n%s", cfg)
 			}
@@ -48,8 +48,8 @@ func TestCodexProviderAlsoSetsBaseURL(t *testing.T) {
 			}
 			if tc.api {
 				if cfg = read(); !strings.Contains(cfg, `openai_base_url = "`+codexGatewayURL()+`"`) ||
-					!strings.Contains(cfg, `model_provider = "magpie"`) || !strings.Contains(cfg, `model = "codex/gpt-5.4"`) {
-					t.Fatalf("own model on magpie API:\n%s", cfg)
+					!strings.Contains(cfg, `model_provider = "magpie-friday"`) || !strings.Contains(cfg, `model = "codex/gpt-5.4"`) {
+					t.Fatalf("own model on magpie-friday API:\n%s", cfg)
 				}
 				return
 			}
@@ -62,7 +62,7 @@ func TestCodexProviderAlsoSetsBaseURL(t *testing.T) {
 }
 
 // A base URL of the user's own — a proxy of theirs in front of OpenAI — is
-// left as it is when magpie becomes the provider, and after.
+// left as it is when magpie-friday becomes the provider, and after.
 func TestCodexProviderKeepsOwnBaseURL(t *testing.T) {
 	const own = `openai_base_url = "https://proxy.example/v1"`
 	home, read := codexHome(t, "", "model = \"gpt-5.5\"\n"+own+"\n")
@@ -71,7 +71,7 @@ func TestCodexProviderKeepsOwnBaseURL(t *testing.T) {
 		t.Fatal(err)
 	}
 	if cfg := read(); !strings.Contains(cfg, own) || strings.Count(cfg, "openai_base_url") != 1 ||
-		!strings.Contains(cfg, `model_provider = "magpie"`) {
+		!strings.Contains(cfg, `model_provider = "magpie-friday"`) {
 		t.Fatalf("\n%s", cfg)
 	}
 	if err := cx.Fields[0].Set(""); err != nil {
@@ -82,8 +82,8 @@ func TestCodexProviderKeepsOwnBaseURL(t *testing.T) {
 	}
 }
 
-// A Codex that an older magpie made its provider, with no base URL, gets
-// magpie's at the next sync; a provider set up by hand with a catalog of
+// A Codex that an older magpie-friday made its provider, with no base URL, gets
+// magpie-friday's at the next sync; a provider set up by hand with a catalog of
 // the user's own keeps its keys, and only the table it names comes back
 // (Codex loads no config while it is missing).
 func TestCodexSyncAddsBaseURLToProvider(t *testing.T) {
@@ -92,7 +92,7 @@ func TestCodexSyncAddsBaseURLToProvider(t *testing.T) {
 	if err := cx.Fields[0].Set("fake/m1"); err != nil {
 		t.Fatal(err)
 	}
-	// as an older magpie left it
+	// as an older magpie-friday left it
 	cfg := read()
 	i := strings.Index(cfg, "openai_base_url")
 	if i < 0 {
@@ -108,16 +108,16 @@ func TestCodexSyncAddsBaseURLToProvider(t *testing.T) {
 	if err := cx.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	if cfg = read(); !strings.Contains(cfg, `openai_base_url = "`+codexGatewayURL()+`"`) || !strings.Contains(cfg, `model_provider = "magpie"`) {
+	if cfg = read(); !strings.Contains(cfg, `openai_base_url = "`+codexGatewayURL()+`"`) || !strings.Contains(cfg, `model_provider = "magpie-friday"`) {
 		t.Fatalf("sync:\n%s", cfg)
 	}
 
-	const mine = "model = \"fake/m1\"\nmodel_provider = \"magpie\"\nmodel_catalog_json = \"/elsewhere/models.json\"\n"
+	const mine = "model = \"fake/m1\"\nmodel_provider = \"magpie-friday\"\nmodel_catalog_json = \"/elsewhere/models.json\"\n"
 	home, read = codexHome(t, "", mine)
 	if err := codex(home).Sync(); err != nil {
 		t.Fatal(err)
 	}
-	if cfg = read(); !strings.HasPrefix(cfg, mine) || strings.Contains(cfg, "openai_base_url") || !strings.Contains(cfg, "[model_providers.magpie]") {
+	if cfg = read(); !strings.HasPrefix(cfg, mine) || strings.Contains(cfg, "openai_base_url") || !strings.Contains(cfg, "[model_providers.magpie-friday]") {
 		t.Fatalf("hand-made provider changed:\n%s", cfg)
 	}
 }

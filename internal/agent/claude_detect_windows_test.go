@@ -5,13 +5,13 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // claudeBinHome is a Windows home with no Claude Code folder, no
-// CLAUDE_CONFIG_DIR and a PATH of magpie's own that has no claude on it:
-// a magpie started before Claude Code was installed, or restarted by a
+// CLAUDE_CONFIG_DIR and a PATH of magpie-friday's own that has no claude on it:
+// a magpie-friday started before Claude Code was installed, or restarted by a
 // self-update with the PATH it had then.
 func claudeBinHome(t *testing.T) string {
 	t.Helper()
@@ -28,11 +28,11 @@ func claudeBinHome(t *testing.T) string {
 	return home
 }
 
-// #1482 (edussss, Windows 11, magpie v0.1.1175): Claude Code wasn't listed
-// on the Agents page. Detected asked magpie's own PATH only, which on
-// Windows is the one magpie started with: Claude Code's installer (irm
+// #1482 (edussss, Windows 11, magpie-friday v0.1.1175): Claude Code wasn't listed
+// on the Agents page. Detected asked magpie-friday's own PATH only, which on
+// Windows is the one magpie-friday started with: Claude Code's installer (irm
 // https://claude.ai/install.ps1 | iex) puts claude.exe in ~\.local\bin and
-// adds that to the user's PATH in the registry, which a running magpie
+// adds that to the user's PATH in the registry, which a running magpie-friday
 // never sees, and npm's global folder is the same. The sign-in already
 // found it there through proc.FindTool (#839); now the Agents page does
 // too, with the CLI's path.
@@ -56,7 +56,7 @@ func TestClaudeFoundWhereWindowsInstallsPutIt(t *testing.T) {
 			}
 		})
 	}
-	// installed after magpie started, in a folder the registry's PATH has
+	// installed after magpie-friday started, in a folder the registry's PATH has
 	// now (winget's Links, scoop's shims, an nvm-windows Node): a test's
 	// registry folder lies under its sandbox (proc.SystemDirs)
 	t.Run("the registry's PATH now", func(t *testing.T) {

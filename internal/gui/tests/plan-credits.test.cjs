@@ -2,9 +2,9 @@
 // What WorkBuddy requests cost in the plan's credits (#2512, wwcraft_ on
 // Discord: the Usage page should say the credits spent by model, agent and
 // session). Each reply says it as usage.credit, the figure WorkBuddy's own
-// app shows on a reply as "Credits Consumed"; magpie keeps it on the row and
+// app shows on a reply as "Credits Consumed"; magpie-friday keeps it on the row and
 // the Usage page's ranking says the sum on its line of numbers, the
-// Sessions page on the line of where magpie routed the session. A group no
+// Sessions page on the line of where magpie-friday routed the session. A group no
 // reply said credits for says none, not 0. Every language, Chromium and
 // WebKit; no backend, the API is faked.
 const assert = require("node:assert/strict");
@@ -63,7 +63,7 @@ function server(lang) {
     if (url.pathname === "/api/sessions") return json({ sessions: [SESSION], terminal: true, dirs: ["~/.codex/sessions"] });
     if (url.pathname === "/api/sessions/stats") return json({ from: "", to: "", days: [], agents: {} });
     if (url.pathname === "/api/sessions/manage") {
-      return json({ agents: [{ agent: "codex", count: 1, deletable: true, name: "Codex", icon: "openai" }], agent: "codex", sessions: [{ ...SESSION, size: 4096, messages: 6, files: 1, deletable: true }], terminal: true, trash: [], trashDir: "~/magpie/trash/sessions" });
+      return json({ agents: [{ agent: "codex", count: 1, deletable: true, name: "Codex", icon: "openai" }], agent: "codex", sessions: [{ ...SESSION, size: 4096, messages: 6, files: 1, deletable: true }], terminal: true, trash: [], trashDir: "~/magpie-friday/trash/sessions" });
     }
     if (url.pathname === "/api/groups") return json({ groups: [], models: [] });
     if (url.pathname.startsWith("/api/")) return json({});

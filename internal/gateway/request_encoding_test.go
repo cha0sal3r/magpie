@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/budget"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/budget"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // postEncoded sends body to the running gateway at path with the given
@@ -142,7 +142,7 @@ func TestEncodedBodyInflatedPastLimit(t *testing.T) {
 	}
 }
 
-// A body in an encoding magpie can't read is refused 415, saying which,
+// A body in an encoding magpie-friday can't read is refused 415, saying which,
 // rather than read as broken JSON.
 func TestUnknownBodyEncodingRefused(t *testing.T) {
 	for _, path := range []string{"/v1/responses", "/v1/chat/completions", "/v1/messages", "/v1beta/models/fake/m1:generateContent", CodexPath + "/responses"} {

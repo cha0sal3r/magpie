@@ -49,7 +49,7 @@ const (
 type envSyntax struct{ headers, env refSyntax }
 
 // refsOf is how each agent reads a reference, as its own source or docs
-// say. A refNone is an agent magpie found no reference in, so a server
+// say. A refNone is an agent magpie-friday found no reference in, so a server
 // that has one is left out for it.
 func (f *mcpFile) refsOf() envSyntax {
 	if f.Literal {
@@ -303,7 +303,7 @@ func gooseKeys(headers, env map[string]string) []string {
 }
 
 // refKeys are the keys of an agent's entry that name the variables the
-// server references, magpie's to write only while it references one there.
+// server references, magpie-friday's to write only while it references one there.
 func (f *mcpFile) refKeys(s *Server) []string {
 	switch f.Format {
 	case fmtCodex:
@@ -561,7 +561,7 @@ func codexEnvVars(v any) []string {
 }
 
 // expandRef is a value with each reference replaced by the variable's value
-// in magpie's own environment, for magpie to reach the server itself; the
+// in magpie-friday's own environment, for magpie-friday to reach the server itself; the
 // names it found unset are given too.
 func expandRef(v string) (string, []string) {
 	var unset []string

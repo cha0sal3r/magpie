@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-// Niri is whether magpie runs under niri. As under Hyprland, a Wayland
+// Niri is whether magpie-friday runs under niri. As under Hyprland, a Wayland
 // window can't place itself, so the tray panel opened where niri floats a
 // new window: the middle of the screen (#1670).
 func Niri() bool {
@@ -29,7 +29,7 @@ func Niri() bool {
 type NiriPanel struct {
 	mu    sync.Mutex
 	iconX int  // where the icon was clicked across its bar
-	known bool // whether iconX is known: not when `magpie panel` opened it
+	known bool // whether iconX is known: not when `magpie-friday panel` opened it
 }
 
 // Opening says the panel is about to open, from a click at x across the
@@ -54,7 +54,7 @@ func (p *NiriPanel) take() (x int, known bool) {
 }
 
 // Watch places each window of this process titled title as it opens, for
-// as long as magpie runs, reconnecting when niri restarts.
+// as long as magpie-friday runs, reconnecting when niri restarts.
 func (p *NiriPanel) Watch(title string) {
 	for {
 		if c, err := niriDial(); err == nil {
@@ -65,7 +65,7 @@ func (p *NiriPanel) Watch(title string) {
 	}
 }
 
-// niriWindow is what magpie reads of niri-ipc's Window.
+// niriWindow is what magpie-friday reads of niri-ipc's Window.
 type niriWindow struct {
 	ID         uint64 `json:"id"`
 	Title      string `json:"title"`

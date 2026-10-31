@@ -7,12 +7,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// Codex's own models, routed through magpie, keep what Codex knows of them
-// — image input, context window, tools — under magpie's id; a third-party
+// Codex's own models, routed through magpie-friday, keep what Codex knows of them
+// — image input, context window, tools — under magpie-friday's id; a third-party
 // model gets the generic entry.
 func TestCodexCatalogKeepsOwnEntries(t *testing.T) {
 	home := t.TempDir()
@@ -69,7 +69,7 @@ func TestCodexCatalogImages(t *testing.T) {
 	}
 }
 
-// A model magpie describes has Codex search its MCP tools rather than send
+// A model magpie-friday describes has Codex search its MCP tools rather than send
 // every one in each request (#258), with its prompt, context window, and
 // neither code mode nor Responses Lite. A window above the working window
 // is told as that, the whole one as its max, unless settings.FullContext.
@@ -171,7 +171,7 @@ func TestCodexCatalogServiceTiers(t *testing.T) {
 
 // Codex turns a pasted image away for a model without "image" itself, so
 // /model says such a model is text-only and where that is changed, and the
-// entry still reads as magpie's (KimYx0207 on X).
+// entry still reads as magpie-friday's (KimYx0207 on X).
 func TestCodexCatalogSaysTextOnly(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
@@ -187,7 +187,7 @@ func TestCodexCatalogSaysTextOnly(t *testing.T) {
 		{ID: "probe/text", Name: "Text"},
 		{ID: "probe/sees", Name: "Sees", Images: true},
 		{ID: "group/words", Name: "Words"},
-		{ID: "auto/found", Name: "Found"}, // a group magpie found, as it is listed
+		{ID: "auto/found", Name: "Found"}, // a group magpie-friday found, as it is listed
 	}), &got)
 	if len(got.Models) != 4 {
 		t.Fatalf("%+v", got.Models)
@@ -196,7 +196,7 @@ func TestCodexCatalogSaysTextOnly(t *testing.T) {
 	if !strings.Contains(text.Description, "text only") || !strings.Contains(text.Description, "Names & levels") || !catalog.MagpieAdded("", text.Slug, text.Description) {
 		t.Errorf("text-only model: %q", text.Description)
 	}
-	if sees.Description != "Sees via magpie" || group.Description != "Words via magpie" || found.Description != "Found via magpie" {
+	if sees.Description != "Sees via magpie-friday" || group.Description != "Words via magpie-friday" || found.Description != "Found via magpie-friday" {
 		t.Errorf("a model that sees, a group and a found one: %q, %q, %q", sees.Description, group.Description, found.Description)
 	}
 }

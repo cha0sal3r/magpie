@@ -1,7 +1,7 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // Plugin updates: a plugin whose update waits for the reader (someone
 // else's, or one pinned) puts a dot on Plugins, which goes once it's
-// updated; a plugin magpie updated by itself says so on its row. The dot
+// updated; a plugin magpie-friday updated by itself says so on its row. The dot
 // says itself in the sidebar: under Plugins, Installed reads "1 update" in
 // its count's place while it waits, and Plugins opens on Installed, where
 // the plugins with an update are named above the list. Every language, wide and narrow; the

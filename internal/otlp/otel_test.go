@@ -15,8 +15,8 @@ import (
 	"testing/synctest"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 func otelConfig(t *testing.T, config settings.OTel) {
@@ -116,7 +116,7 @@ func TestOTelBatchWireAndPrivacy(t *testing.T) {
 	for _, a := range spans[0].Attributes {
 		values[a.Key] = a.Value["stringValue"] + a.Value["intValue"]
 	}
-	if values["gen_ai.usage.input_tokens"] != "15" || values["gen_ai.usage.output_tokens"] != "4" || values["magpie.route.id"] != "42" || values["magpie.ttft_ms"] != "200" {
+	if values["gen_ai.usage.input_tokens"] != "15" || values["gen_ai.usage.output_tokens"] != "4" || values["magpie-friday.route.id"] != "42" || values["magpie-friday.ttft_ms"] != "200" {
 		t.Fatalf("attributes: %v", values)
 	}
 	var metrics struct {

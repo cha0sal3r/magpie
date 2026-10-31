@@ -8,7 +8,7 @@ const { fixture } = require("./fixtures/caller-keys.cjs");
 
 // FourLeafTec on #1514: at home on Windows, but mostly running things on a
 // Linux server over ssh. Connect's Shell and curl snippets start as the
-// shell of the machine magpie runs on and can be switched to the other:
+// shell of the machine magpie-friday runs on and can be switched to the other:
 // PowerShell ($env:, curl.exe, the body in a here-string) or a POSIX shell
 // (export, curl, the body in '…'). The pick is kept, a click on it doesn't
 // move the page, and the POSIX snippets run in bash and zsh as written, with
@@ -125,7 +125,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         // this computer's key, with nothing to quote: one -H a line
         await os(mac.page, "Windows").click();
         await snipIs(mac.page, /^@'\n/);
-        assert.match(await snip(mac.page), /\n'@ \| curl\.exe http:\/\/127\.0\.0\.1:3999\/v1\/chat\/completions `\n {2}-H "Authorization: Bearer magpie" `\n {2}-H "Content-Type: application\/json" `\n {2}--data-binary "@-"$/);
+        assert.match(await snip(mac.page), /\n'@ \| curl\.exe http:\/\/127\.0\.0\.1:3999\/v1\/chat\/completions `\n {2}-H "Authorization: Bearer magpie-friday" `\n {2}-H "Content-Type: application\/json" `\n {2}--data-binary "@-"$/);
         assert.equal(await mac.page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
         assert.deepEqual(mac.errors, []);
       });

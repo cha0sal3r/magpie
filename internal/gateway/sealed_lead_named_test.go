@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // chatOnlyOn is a provider serving Chat Completions only, as the Qoder
@@ -31,7 +31,7 @@ func chatOnlyOn(t *testing.T, id string) *int {
 }
 
 // plugins#70 (yygutn): a Codex lead first on a Qoder model, then on one of
-// Codex's own (answered by the ChatGPT account, which magpie keeps no
+// Codex's own (answered by the ChatGPT account, which magpie-friday keeps no
 // record of), spawns a subagent set to the Qoder model. The task the
 // ChatGPT backend sealed is still turned away before Qoder is asked, but
 // the lead is not said to have been answered, and the task sealed, by

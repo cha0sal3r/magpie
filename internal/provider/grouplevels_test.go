@@ -9,7 +9,7 @@ import (
 // A group that names its reasoning levels (#295) offers those, whatever
 // its members have in common; one that doesn't offers what they share,
 // as before. A group in a group offers its own for its models. Only the
-// levels magpie knows are taken, kept lowest first.
+// levels magpie-friday knows are taken, kept lowest first.
 func TestGroupLevelsOverride(t *testing.T) {
 	effortHome(t)
 	if err := SetModelEfforts("a/m", []string{"low", "high", "max"}); err != nil { // deepseek-flash
@@ -53,7 +53,7 @@ func TestGroupLevelsOverride(t *testing.T) {
 	if e := entry("outer"); !slices.Equal(e.Efforts, all) {
 		t.Fatalf("outer: levels %v", e.Efforts)
 	}
-	// a level magpie doesn't know is refused, the group left as it was
+	// a level magpie-friday doesn't know is refused, the group left as it was
 	g.Levels = []string{"low", "turbo"}
 	if err := SaveGroup(g); err == nil || !strings.Contains(err.Error(), "turbo") {
 		t.Fatalf("turbo: %v", err)

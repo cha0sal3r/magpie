@@ -87,7 +87,7 @@ func TestModelKnownValueIsPersonal(t *testing.T) {
 
 // What the model often gets wrong is left alone: a vendor's or a tool's
 // id taken for a secret or an account, a secret shorter than a rule's, a
-// one-letter name, a label magpie doesn't mask (a date, a URL).
+// one-letter name, a label magpie-friday doesn't mask (a date, a URL).
 func TestModelSpansFiltered(t *testing.T) {
 	keep := map[string]string{
 		"req_011CSzQ8mXv3kBR2": "secret",

@@ -3,8 +3,8 @@ package agent
 import (
 	"strings"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 // keyAt is the key an agent that reaches the gateway at gw sends it. On
@@ -30,7 +30,7 @@ func keyAt(gw string) string {
 	return gateway.Token
 }
 
-// KeyAt is keyAt, for what else magpie gives an agent that reaches the
+// KeyAt is keyAt, for what else magpie-friday gives an agent that reaches the
 // gateway at gw (the library's MCP servers relayed through it).
 func KeyAt(gw string) string { return keyAt(gw) }
 
@@ -59,7 +59,7 @@ func hereKey() string { return keyAt(gateway.URL()) }
 // agentKey is agentKeyAt for the gateway's own address, as hereKey.
 func agentKey(agent string) string { return agentKeyAt(agent, gateway.URL()) }
 
-// ourKey says k is a key magpie gives an agent: gateway.Token, the LAN
+// ourKey says k is a key magpie-friday gives an agent: gateway.Token, the LAN
 // sharing key one that reaches the gateway from elsewhere is given, or the
 // WSL key one in a WSL distro under NAT is.
 func ourKey(k string) bool {
@@ -70,16 +70,16 @@ func ourKey(k string) bool {
 }
 
 // gatewayTakes says the gateway would authenticate a request carrying k: a
-// caller key of this magpie's own (one issued, or a value the user brought),
-// so an agent holding it in its store of its own still goes through magpie
-// (#1332). A key of another magpie's, which this gateway would refuse, is
+// caller key of this magpie-friday's own (one issued, or a value the user brought),
+// so an agent holding it in its store of its own still goes through magpie-friday
+// (#1332). A key of another magpie-friday's, which this gateway would refuse, is
 // not.
 func gatewayTakes(k string) bool {
 	_, ok := access.Authenticate(k)
 	return ok
 }
 
-// gatewayKey says want is a key magpie gives an agent for its gateway:
+// gatewayKey says want is a key magpie-friday gives an agent for its gateway:
 // gateway.Token, the LAN sharing key, or one naming the agent
 // (gateway.TokenFor).
 func gatewayKey(want string) bool {
@@ -90,11 +90,11 @@ func gatewayKey(want string) bool {
 	return wk != "" && strings.HasPrefix(want, wk+"-") && !strings.ContainsAny(want, "/:")
 }
 
-// keyHolds says the value v an agent's config has where magpie wrote want
-// still reaches magpie: want itself, or, where want is magpie's key for its
+// keyHolds says the value v an agent's config has where magpie-friday wrote want
+// still reaches magpie-friday: want itself, or, where want is magpie-friday's key for its
 // gateway, a key of the gateway's own the user put there instead (Gateway
 // keys), which the gateway takes just the same (PaulT on Discord: Hermes
-// with a key of his own was said not to go through magpie).
+// with a key of his own was said not to go through magpie-friday).
 func keyHolds(v, want string) bool {
 	return v == want || v != "" && gatewayKey(want) && gatewayTakes(v)
 }

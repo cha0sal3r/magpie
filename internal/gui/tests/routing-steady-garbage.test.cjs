@@ -2,7 +2,7 @@
 // Two things the Routing page did over and over while it sat in sight,
 // each making garbage WebKit let pile up (#1481):
 //
-// - the arc a flight takes through magpie (via's j) was laid again every
+// - the arc a flight takes through magpie-friday (via's j) was laid again every
 //   frame of the flight, a new path string and its control points sixty
 //   times a second, though its ends had not moved. It is laid again only
 //   when an end moves.
@@ -95,7 +95,7 @@ for (const engine of engines) for (const lang of ["en", "zh"]) {
     await page.locator(".rt-req").first().waitFor();
     await page.waitForTimeout(800);
 
-    // a request under way flies through magpie for as long as it is
+    // a request under way flies through magpie-friday for as long as it is
     // answered: its arc is drawn, and laid once while nothing moves
     next.push(live(2));
     await page.waitForFunction(() => [...document.querySelectorAll("path.via")].some((p) => p.getAttribute("d")));
@@ -106,7 +106,7 @@ for (const engine of engines) for (const lang of ["en", "zh"]) {
     assert(frames > 10, `the flight drew only ${frames} frames in 800ms: nothing to count arcs over`);
     // laid every frame, it is about as many as the frames; the stage still
     // settling (a column fitted, a row come in) lays it a few times
-    assert(arcs * 4 <= frames, `the arc through magpie was laid ${arcs} times over ${frames} frames, about once a frame`);
+    assert(arcs * 4 <= frames, `the arc through magpie-friday was laid ${arcs} times over ${frames} frames, about once a frame`);
 
     // the trace's answers: noteAccounts walks each without Object.entries
     const entries = await page.evaluate(async () => {

@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/yetone/magpie/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
 )
 
 // omp (oh-my-pi, a fork of Pi) keeps its sessions as Pi does, a file per
@@ -21,7 +21,7 @@ import (
 // id>.jsonl, theirs in turn one folder deeper), which count in the session
 // they ran in. `omp --resume <id>` picks one up again.
 
-// OmpDir is omp's agent folder, ~/.omp/agent, as magpie's omp agent has it.
+// OmpDir is omp's agent folder, ~/.omp/agent, as magpie-friday's omp agent has it.
 func OmpDir() string {
 	home, _ := os.UserHomeDir()
 	return filepath.Join(home, ".omp", "agent")

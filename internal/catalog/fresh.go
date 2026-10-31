@@ -11,7 +11,7 @@ import (
 // Keeping the catalog fresh. It is where a model's list price comes from,
 // so a model models.dev has just listed (gpt-6.1-sol, #224) has no cost
 // until the cache is fetched again: a day old at most, looked at every hour
-// by a magpie left running for days, and sooner when a call's model has no
+// by a magpie-friday left running for days, and sooner when a call's model has no
 // price, since models.dev may list it by now.
 
 // staleAfter is how old the cached catalog may be before it is fetched
@@ -32,7 +32,7 @@ var (
 )
 
 // KeepFresh fetches the catalog whenever it is stale, now and every hour
-// after, for as long as the process runs (the app's backend, `magpie
+// after, for as long as the process runs (the app's backend, `magpie-friday
 // serve`). It never returns.
 func KeepFresh() {
 	keeping.Store(true)

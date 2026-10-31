@@ -1,4 +1,4 @@
-// magpie — one state object per view, rendered into a list. No framework.
+// magpie-friday — one state object per view, rendered into a list. No framework.
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
 const params = new URLSearchParams(location.search);
@@ -8,11 +8,11 @@ const mode = params.get("mode") || "window";
 // can't be put by the icon, so KWin places it, and since it has no KWin
 // title bar (#1283) the header is the only handle it has (#1430).
 if (mode === "panel" && !document.body.classList.contains("linux")) $("header.top").style.setProperty("--wails-draggable", "no-drag");
-// `magpie web`: the page in a browser tab, with no window of the app's
+// `magpie-friday web`: the page in a browser tab, with no window of the app's
 // around it — it opens links itself, and what is the desktop's is left out
 const web = !!window.bootPrefs?.web;
 // layout.js applies the mode and platform before the header can paint.
-// Gateway mode (gatewaymode.go): magpie web on a server that is only the
+// Gateway mode (gatewaymode.go): magpie-friday web on a server that is only the
 // gateway for other computers' agents leaves out this computer's agents'
 // pages — Agents, Sessions, Library — and their settings; Settings ›
 // General turns it off, and they are back.
@@ -51,7 +51,7 @@ featureStyle();
 const providersPage = (v) => magpie.page(v)?.loads === "providers";
 // The window is dragged by its header, and only where the header says so
 // (--wails-draggable), so the tabs and buttons in it stay plain clicks.
-// Outside the app — a browser on the gateway's page, or on `magpie web` —
+// Outside the app — a browser on the gateway's page, or on `magpie-friday web` —
 // there is no runtime, and it isn't asked for (a 404 in the browser's
 // console, Jorben on Discord).
 // The panel also needs runtime readiness to drain Go's queued ExecJS calls.
@@ -78,7 +78,7 @@ let adding = false; // the preset sheet is open
 // the partners counted as shown since the sheet opened: once an opening,
 // however often it is drawn (countPartner)
 let partnersCounted = null;
-let importing = null; // a magpie://import link waiting for a yes: { provider, error, replaces }
+let importing = null; // a magpie-friday://import link waiting for a yes: { provider, error, replaces }
 let importingApps = null; // the Import from other apps dialog: { sources, picks }
 let providerDiscovery = []; // only opaque fingerprints and app names, never credentials
 let discoveryAt = 0, discoveryRun = 0, discoveryPending = false;
@@ -92,7 +92,7 @@ const sseShown = new Map(); // call id → how many events are drawn
 let savedModelFavorites = [];
 try { savedModelFavorites = JSON.parse(localStorage.getItem("magpie.modelFavorites") || "[]"); } catch {}
 const modelFavorites = new Set(Array.isArray(savedModelFavorites) ? savedModelFavorites : []);
-// A model through magpie is starred as its catalog id, which is the same in
+// A model through magpie-friday is starred as its catalog id, which is the same in
 // every agent; the agent's own models by their value. Stars kept by value
 // before still count.
 const favoriteKey = (o) => o.ref || o.value;
@@ -128,13 +128,13 @@ async function api(path, body, heads, signal) {
       err.code = data.code;
       if (data.offline === "stage" || data.offline === "disconnect") err.offline = data.offline;
     }
-    // magpie has no models to connect an agent to yet: said in the
+    // magpie-friday has no models to connect an agent to yet: said in the
     // reader's language
-    if (data?.code === "no_models") err.message = t("Add a provider or subscription in magpie first, then connect {agent}", { agent: data.agent });
-    // magpie has models, and none is left in the agent's model list (#1989)
+    if (data?.code === "no_models") err.message = t("Add a provider or subscription in magpie-friday first, then connect {agent}", { agent: data.agent });
+    // magpie-friday has models, and none is left in the agent's model list (#1989)
     if (data?.code === "all_hidden") {
       err.code = data.code;
-      err.message = t("None of magpie's models is left in {agent}'s model list: pick one under Model list → Pick, then connect {agent}", { agent: data.agent });
+      err.message = t("None of magpie-friday's models is left in {agent}'s model list: pick one under Model list → Pick, then connect {agent}", { agent: data.agent });
     }
     if (data?.why) err.why = data.why; // a failed move's reason, said in the reader's language
     if (data?.code === "bun_unstartable") err.message = t(data.said); // bunSaid in api.go: an i18n.js key
@@ -148,11 +148,11 @@ async function api(path, body, heads, signal) {
     if (data?.code === "share") {
       err.code = data.code;
       err.message = {
-        newer: t("This group was shared from a newer magpie (format {n}): update magpie to import it", { n: data.format }),
+        newer: t("This group was shared from a newer magpie-friday (format {n}): update magpie-friday to import it", { n: data.format }),
         no_format: t("This shared group says no format it is in: copy it again with Copy to share"),
         unreadable: t("This shared group can't be read: copy it again with Copy to share"),
-        none_here: t("None of the group's models is in your magpie: {models}", { models: data.models }),
-      }[data.share] || t("This is not a routing group shared from magpie: copy one with Copy to share in a group's menu");
+        none_here: t("None of the group's models is in your magpie-friday: {models}", { models: data.models }),
+      }[data.share] || t("This is not a routing group shared from magpie-friday: copy one with Copy to share in a group's menu");
     }
     // an agent's npm update whose global folder (Program Files) needs an
     // administrator, or RTK's winget for every user, the prompt declined or
@@ -163,10 +163,10 @@ async function api(path, body, heads, signal) {
       const where = data.prefix
         ? (data.canceled
           ? t("{agent} is installed in {prefix}, which only an administrator can change, and the administrator prompt was declined.", v)
-          : t("{agent} is installed in {prefix}, which only an administrator can change, and magpie couldn't ask Windows for one ({why}).", v))
+          : t("{agent} is installed in {prefix}, which only an administrator can change, and magpie-friday couldn't ask Windows for one ({why}).", v))
         : (data.canceled
           ? t("{agent} needs an administrator here, and the administrator prompt was declined.", v)
-          : t("{agent} needs an administrator here, and magpie couldn't ask Windows for one ({why}).", v));
+          : t("{agent} needs an administrator here, and magpie-friday couldn't ask Windows for one ({why}).", v));
       err.message = where + " " + (data.via === "winget"
         ? t("Try again and allow it, or run {cmd} in a terminal opened as administrator.", v)
         : t("Update again and allow it, run {cmd} in a terminal opened as administrator, or move npm's global folder to one of your own (npm config set prefix \"%APPDATA%\\npm\") and install {agent} again.", v));
@@ -179,11 +179,11 @@ async function api(path, body, heads, signal) {
   return data;
 }
 
-// notJSON is what an answer that isn't magpie's JSON says. A web page is
-// a proxy's or a tunnel's own, not magpie's: magpie web behind Cloudflare
+// notJSON is what an answer that isn't magpie-friday's JSON says. A web page is
+// a proxy's or a tunnel's own, not magpie-friday's: magpie-friday web behind Cloudflare
 // got its 524 page when an install outlasted Cloudflare's 100 seconds,
 // shown as "<!DOCTYPE html> <!--[if lt IE 7]>…" (precisionz, #2032). It is
-// said by its title, and a timeout says magpie may still be finishing.
+// said by its title, and a timeout says magpie-friday may still be finishing.
 function notJSON(res, text) {
   const body = text.trim();
   const html = /text\/html/i.test(res.headers.get("content-type") || "") || /^<(!doctype|html|head|body)\b/i.test(body);
@@ -191,9 +191,9 @@ function notJSON(res, text) {
   let title = "";
   try { title = new DOMParser().parseFromString(body, "text/html").title.replace(/\s+/g, " ").trim(); } catch {}
   const what = title || `${res.status} ${res.statusText}`.trim();
-  // 504 and Cloudflare's 524: it stopped waiting, magpie didn't stop
-  if (res.status === 504 || res.status === 524) return t("A proxy in front of magpie stopped waiting; magpie may still be finishing, check again in a minute ({what})", { what });
-  return t("A proxy in front of magpie answered, not magpie ({what})", { what });
+  // 504 and Cloudflare's 524: it stopped waiting, magpie-friday didn't stop
+  if (res.status === 504 || res.status === 524) return t("A proxy in front of magpie-friday stopped waiting; magpie-friday may still be finishing, check again in a minute ({what})", { what });
+  return t("A proxy in front of magpie-friday answered, not magpie-friday ({what})", { what });
 }
 
 // el makes a tag with a class and its content: text, or a node put inside
@@ -354,15 +354,15 @@ function optionFor(field, value) {
   return field.options.find((o) => o.value === value);
 }
 
-// directSaid: a model the agent asks its own vendor for itself, magpie not
-// in the way (Claude Code on its own sign-in), so its config names no magpie
-// endpoint — which read as magpie having failed to set it up
+// directSaid: a model the agent asks its own vendor for itself, magpie-friday not
+// in the way (Claude Code on its own sign-in), so its config names no magpie-friday
+// endpoint — which read as magpie-friday having failed to set it up
 function directSaid(a, opt) {
   if (!opt?.direct) return "";
-  return t("Not through magpie: {agent} asks {vendor} for it directly, with its own sign-in or key, so {path} has no magpie endpoint — that is expected.", { agent: a.name, vendor: opt.direct, path: a.path });
+  return t("Not through magpie-friday: {agent} asks {vendor} for it directly, with its own sign-in or key, so {path} has no magpie-friday endpoint — that is expected.", { agent: a.name, vendor: opt.direct, path: a.path });
 }
 
-// Rows in the shape of the list while magpie first reads the agents; a
+// Rows in the shape of the list while magpie-friday first reads the agents; a
 // reload keeps the rows it has until the new ones are in.
 function renderAgentsLoading() {
   const page = $("#view-agents");
@@ -399,7 +399,7 @@ function renderAgents() {
   agentsLead(list);
   if (!state.agents.length) {
     const e = el("div", "empty-state");
-    e.append(el("b", "", t("No agents found")), el("span", "", t("Install Claude Code, Codex, Gemini CLI, OpenCode… and magpie will list them here.")));
+    e.append(el("b", "", t("No agents found")), el("span", "", t("Install Claude Code, Codex, Gemini CLI, OpenCode… and magpie-friday will list them here.")));
     list.append(e);
   }
   const { shown: used, folded } = arrangeAgents();
@@ -418,7 +418,7 @@ function renderAgents() {
     // an effort or ultracode the model has none of (Claude Code on Haiku
     // 4.5, ultracode short of xhigh) isn't drawn at all, nor are subagents
     // with no model to go on, or a sign-in with no other to take (Claude
-    // Code's, until it runs through magpie where magpie takes any key), or
+    // Code's, until it runs through magpie-friday where magpie-friday takes any key), or
     // a small model with none to pick (Snow CLI's, on a profile of the
     // user's own)
     // nor Aside's account with one account only (#1499)
@@ -464,7 +464,7 @@ function renderAgents() {
       fields.append(fieldBtn(f, plain === 1 ? "solo" : wide(f) ? "main" : "side"));
     }
     // an agent that takes the gateway only from its environment (agy): a
-    // square that copies the command starting it on magpie
+    // square that copies the command starting it on magpie-friday
     // one with nothing else to set (Cursor Private Inference) has the
     // command as its one control, in words
     const launchOnly = !!a.launch && !a.fields.length && !a.import;
@@ -474,8 +474,8 @@ function renderAgents() {
     // (connectPanel)
     if (mode === "panel" && agentPrefsOf(a)) fields.append(agentPrefsButton(a));
     if (extras.childNodes.length) fields.append(extras);
-    // an app that takes magpie by a link of its own (Cindy) has nothing to
-    // pick: its row opens the link, and the app asks to add magpie
+    // an app that takes magpie-friday by a link of its own (Cindy) has nothing to
+    // pick: its row opens the link, and the app asks to add magpie-friday
     if (a.import && mode !== "panel") fields.append(importButton(a));
     if (launchOnly && mode !== "panel") fields.append(launchSolo(a));
     // the panel shows what's set as words, and a row's controls only
@@ -486,7 +486,7 @@ function renderAgents() {
       // in words like the rest, the row itself the link (or the command)
       const act = a.import ? importButton(a) : launchSolo(a);
       sum = el("span", "ag-sum");
-      sum.append(a.import ? el("span", "v" + (a.added ? "" : " empty"), a.added ? "magpie" : t("Add magpie")) : el("span", "v empty", t("Copy launch command")), el("span"));
+      sum.append(a.import ? el("span", "v" + (a.added ? "" : " empty"), a.added ? "magpie-friday" : t("Add magpie-friday")) : el("span", "v empty", t("Copy launch command")), el("span"));
       const c = el("span", "chev");
       c.append(a.import ? svg(OUT, 10, 1.6) : svg(LAUNCH_GLYPH, 10, 1.5));
       sum.append(c);
@@ -584,7 +584,7 @@ function renderAgents() {
     // its CLI uninstalled, its folder left behind (#2177, #2173): none of
     // its settings is offered, as nothing would read them, only that it is
     // gone; one still connected keeps its switch, which puts back what it
-    // had before magpie (its menu's Disconnect too)
+    // had before magpie-friday (its menu's Disconnect too)
     if (a.cliMissing) {
       row.classList.add("gone");
       row.classList.remove("open");
@@ -610,20 +610,20 @@ function renderAgents() {
       row.classList.add("drifted");
       if (!kind) who.append(driftFix(a));
     }
-    // an app started before magpie's last change (the panel's row)
+    // an app started before magpie-friday's last change (the panel's row)
     else if (!kind && a.appRestart) who.append(appRestart(a));
     // the CLI's version, and an update when one is out (#202); the panel's
     // name column has no room for it
     if (mode !== "panel") who.append(cliTag(a));
-    // which of magpie's models its lists show, on a line under the name
+    // which of magpie-friday's models its lists show, on a line under the name
     if (mode !== "panel" && a.models && !kind) {
       const line = el("div", "ag-models-line");
       line.append(modelsEntry(a));
       who.append(line);
       who.classList.add("with-models");
     }
-    // connected to magpie or not, said under the name, with where the agent
-    // picks among magpie's models itself
+    // connected to magpie-friday or not, said under the name, with where the agent
+    // picks among magpie-friday's models itself
     const sw = connectable(a) ? connectSwitch(a) : null;
     if (kind) {
       // Claude Code's tiers, subagents and auto mode have rows of their own
@@ -638,7 +638,7 @@ function renderAgents() {
     }
     if (sw && openBox) {
       const line = el("div", "ag-conn-row");
-      line.append(el("span", "k", t("magpie")), el("span", "ag-conn-said", connectSaid(a)), sw);
+      line.append(el("span", "k", t("magpie-friday")), el("span", "ag-conn-said", connectSaid(a)), sw);
       openBox.querySelector(".ag-body").prepend(line);
     }
     row.append(agentHandle(a, row, inFold), who);
@@ -991,16 +991,16 @@ function profileDetail(p, footed) {
 }
 
 // driftNote: under the name of an agent whose config something else
-// rewrote since magpie set it — the row still shows a magpie model while the
-// agent no longer reaches magpie, or it was put back on a model of its own —
+// rewrote since magpie-friday set it — the row still shows a magpie-friday model while the
+// agent no longer reaches magpie-friday, or it was put back on a model of its own —
 // what happened, and the one click that sets it again.
 // driftFix is the one thing a drifted agent shows: an amber pill after its
-// name that sets magpie's settings again. What is off is its tooltip; taking
+// name that sets magpie-friday's settings again. What is off is its tooltip; taking
 // the config as it is now is in the row's menu.
 // An agent whose config is right but whose address doesn't answer (#1013)
 // has nothing to set again: its pill says what has to listen there, unless
 // WSL now reaches Windows at another address, which it moves the config to.
-// Likewise one whose requests for magpie go through a proxy that doesn't
+// Likewise one whose requests for magpie-friday go through a proxy that doesn't
 // pass them on (proxied: Codex, Muma102kMichael on X).
 function driftFix(a, label = "Apply again") {
   const d = a.drift, f = a.fields.find((x) => x.key === d.field);
@@ -1022,7 +1022,7 @@ function driftFix(a, label = "Apply again") {
 }
 
 // explainDrift: what has to listen at an address an agent can't reach
-// magpie by, or let it through a proxy — too long for the status line, so a
+// magpie-friday by, or let it through a proxy — too long for the status line, so a
 // dialog of its own. Until it is fixed, Disconnect puts the agent's config
 // back as it was, one click away.
 function explainDrift(a) {
@@ -1036,7 +1036,7 @@ function explainDrift(a) {
   ok.onclick = (e) => { e.stopPropagation(); closeConfirmAsk(); };
   bar.append(el("span", "grow"));
   if (a.wired) {
-    const off = el("button", "text drift-off", t("Disconnect from magpie"));
+    const off = el("button", "text drift-off", t("Disconnect from magpie-friday"));
     off.title = t(DISCONNECT_TIP, { agent: a.name });
     off.onclick = (e) => { e.stopPropagation(); closeConfirmAsk(); askDisconnect(a); };
     bar.append(off);
@@ -1050,11 +1050,11 @@ function explainDrift(a) {
 }
 
 const DRIFT_WHY = {
-  unwired: "{agent} no longer goes through magpie — its config was changed",
-  replaced: "{agent} was switched off {model} outside magpie",
-  bypassed: "{agent} was used without going through magpie — restart it after applying",
-  unreachable: "{agent} is set up, but nothing answers at the address it reaches magpie by",
-  proxied: "{agent} reaches magpie through a proxy that doesn't pass its requests on",
+  unwired: "{agent} no longer goes through magpie-friday — its config was changed",
+  replaced: "{agent} was switched off {model} outside magpie-friday",
+  bypassed: "{agent} was used without going through magpie-friday — restart it after applying",
+  unreachable: "{agent} is set up, but nothing answers at the address it reaches magpie-friday by",
+  proxied: "{agent} reaches magpie-friday through a proxy that doesn't pass its requests on",
 };
 
 // an i in a circle: the pill that explains rather than acts
@@ -1062,19 +1062,19 @@ const INFO_I = "M8 14.5a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13zM8 7.25V11M8 5v.01
 
 const REAPPLY = "M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5v3.25h-3.25";
 
-// An unplugged plug: the agent taken off magpie.
+// An unplugged plug: the agent taken off magpie-friday.
 const UNPLUG = "M6 2v3M10 2v3M4.5 5h7v2.5a3.5 3.5 0 0 1-7 0zM8 11v3M2 2l12 12";
-const DISCONNECT_TIP = "Take out everything magpie wrote into {agent}'s config and put back what it had before";
+const DISCONNECT_TIP = "Take out everything magpie-friday wrote into {agent}'s config and put back what it had before";
 
-// An agent is connected to magpie with a switch (the owner: the Agents page
-// connects an agent, and its models are picked in the agent): on, magpie is
-// its provider and its own model list has magpie's models (agent.Connect);
-// off, magpie takes out what it wrote (askDisconnect). An agent with none of
-// magpie's models to offer (Cursor, Copilot) has no switch.
-// the field magpie is picked in: the first, or Gemini CLI's model, its
+// An agent is connected to magpie-friday with a switch (the owner: the Agents page
+// connects an agent, and its models are picked in the agent): on, magpie-friday is
+// its provider and its own model list has magpie-friday's models (agent.Connect);
+// off, magpie-friday takes out what it wrote (askDisconnect). An agent with none of
+// magpie-friday's models to offer (Cursor, Copilot) has no switch.
+// the field magpie-friday is picked in: the first, or Gemini CLI's model, its
 // first being how it signs in
-const connectField = (a) => a.fields.find((f) => f.options.some((o) => o.ref)) || a.fields.find((f) => f.options.some((o) => o.value === "magpie"));
-// connectable: magpie has models for it — in its pickers, or every one
+const connectField = (a) => a.fields.find((f) => f.options.some((o) => o.ref)) || a.fields.find((f) => f.options.some((o) => o.value === "magpie-friday"));
+// connectable: magpie-friday has models for it — in its pickers, or every one
 // hidden from its lists, which leave its pickers but not the way back (#356)
 function connectable(a) {
   return !a.import && (!!connectField(a) || !!a.models?.listed);
@@ -1087,24 +1087,24 @@ function connectSaid(a) {
   if (!a.wired) return t("Not connected · {agent} uses its own settings", { agent: a.name });
   if (menuFromList(a)) return t("Connected · {n} models in {agent}'s model menu", { n: a.models.shown, agent: a.name });
   const at = PICKS_IN[a.id];
-  return at ? t("Connected · pick magpie's models with {cmd} in {agent}", { cmd: at, agent: a.name }) : t("Connected · magpie's models are in {agent}'s model list", { agent: a.name });
+  return at ? t("Connected · pick magpie-friday's models with {cmd} in {agent}", { cmd: at, agent: a.name }) : t("Connected · magpie-friday's models are in {agent}'s model list", { agent: a.name });
 }
 
 // connectedSaid: what the switch connected an agent on, and why (#726:
 // switched on, Codex kept its last pick, Claude Code started on a Sonnet
-// through magpie and Antigravity on some model, with nothing to say why).
+// through magpie-friday and Antigravity on some model, with nothing to say why).
 // c is agent.Connection: how the model was chosen.
 const CONNECTED_HOW = {
-  again: "{agent} is connected to magpie · back on {model}, what it was on when it was switched off",
-  same: "{agent} is connected to magpie · on {model} through magpie, the model it was on",
-  alike: "{agent} is connected to magpie · on {model} through magpie, the model it was on",
-  default: "{agent} is connected to magpie · on {model} through magpie: it had no model set, so the first of its own",
-  first: "{agent} is connected to magpie · on {model} through magpie: magpie doesn't serve the model it was on",
+  again: "{agent} is connected to magpie-friday · back on {model}, what it was on when it was switched off",
+  same: "{agent} is connected to magpie-friday · on {model} through magpie-friday, the model it was on",
+  alike: "{agent} is connected to magpie-friday · on {model} through magpie-friday, the model it was on",
+  default: "{agent} is connected to magpie-friday · on {model} through magpie-friday: it had no model set, so the first of its own",
+  first: "{agent} is connected to magpie-friday · on {model} through magpie-friday: magpie-friday doesn't serve the model it was on",
 };
 function connectedSaid(a, c) {
-  const plain = t("{agent} is connected to magpie", { agent: a.name });
-  if (a.native && c?.how === "joined") return t("{agent} is connected to magpie", { agent: a.name });
-  if (c?.how === "joined") return t("{agent} is connected to magpie · it stays on its own last pick; magpie's models join its {cmd}", { agent: a.name, cmd: PICKS_IN[a.id] || "/model" });
+  const plain = t("{agent} is connected to magpie-friday", { agent: a.name });
+  if (a.native && c?.how === "joined") return t("{agent} is connected to magpie-friday", { agent: a.name });
+  if (c?.how === "joined") return t("{agent} is connected to magpie-friday · it stays on its own last pick; magpie-friday's models join its {cmd}", { agent: a.name, cmd: PICKS_IN[a.id] || "/model" });
   const now = state.agents.find((x) => x.id === a.id);
   const f = now && startField(now);
   const model = f?.value ? optionFor(f, f.value)?.label || f.value : "";
@@ -1116,8 +1116,8 @@ function connectSwitch(a) {
   s.type = "button";
   s.setAttribute("role", "switch");
   s.setAttribute("aria-checked", a.wired ? "true" : "false");
-  s.setAttribute("aria-label", t("Connect {agent} to magpie", { agent: a.name }));
-  s.title = a.wired ? t("Connected · switch off to put back what {agent} had before magpie", { agent: a.name }) : t("Switch on and {agent}'s model list gets magpie's models", { agent: a.name });
+  s.setAttribute("aria-label", t("Connect {agent} to magpie-friday", { agent: a.name }));
+  s.title = a.wired ? t("Connected · switch off to put back what {agent} had before magpie-friday", { agent: a.name }) : t("Switch on and {agent}'s model list gets magpie-friday's models", { agent: a.name });
   s.append(el("i"));
   // the list opened from a failed connect, drawn again while it is open
   if (!a.wired) holdAgentModels(a, s);
@@ -1132,7 +1132,7 @@ function connectSwitch(a) {
       renderAgents();
       const msg = connectedSaid(a, state.connected);
       if (state.notice) status(withNotice(msg, state.notice), "warn", 9000);
-      else if (msg !== t("{agent} is connected to magpie", { agent: a.name })) status(msg, "ok", 7000);
+      else if (msg !== t("{agent} is connected to magpie-friday", { agent: a.name })) status(msg, "ok", 7000);
       else status(msg, "ok");
     } catch (err) {
       s.disabled = false;
@@ -1142,7 +1142,7 @@ function connectSwitch(a) {
       // Discord: Grok Build, all hidden, then switched off, couldn't be
       // connected again)
       if (err.code === "all_hidden") {
-        status(t("None of magpie's models is left in {agent}'s model list: pick one, then connect {agent}", { agent: a.name }), "err");
+        status(t("None of magpie-friday's models is left in {agent}'s model list: pick one, then connect {agent}", { agent: a.name }), "err");
         openAgentModels(a, s, e);
         return;
       }
@@ -1153,31 +1153,31 @@ function connectSwitch(a) {
 }
 
 // ---------- 「接入」 in the window (the owner's design boards) ----------
-// A row there answers one thing: does the agent go through magpie. Its
+// A row there answers one thing: does the agent go through magpie-friday. Its
 // switch stands where the model and effort pickers stood, a line under the
 // name says what it runs on and where it picks a model, and a connected
 // one opens to what else there is: when it takes effect, which models it
-// lists, what a new session starts on, the files magpie changed, and the
+// lists, what a new session starts on, the files magpie-friday changed, and the
 // way back.
 
-// agents with no way onto magpie: no switch, the reason instead, and that
+// agents with no way onto magpie-friday: no switch, the reason instead, and that
 // it is why (@G_Z_Y on X read "Only Cursor's own models" beside "Can't
 // connect" as two things, and looked for Cursor CLI elsewhere)
 const NATIVE_ONLY = {
-  cursor: "Uses only Cursor's own models, so magpie can't connect it",
-  copilot: "Uses only GitHub Copilot's own models, so magpie can't connect it",
-  goose: "Uses only Goose's own providers, so magpie can't connect it",
-  devin: "Uses only Devin's own models, so magpie can't connect it",
+  cursor: "Uses only Cursor's own models, so magpie-friday can't connect it",
+  copilot: "Uses only GitHub Copilot's own models, so magpie-friday can't connect it",
+  goose: "Uses only Goose's own providers, so magpie-friday can't connect it",
+  devin: "Uses only Devin's own models, so magpie-friday can't connect it",
 };
 // agents that pick no model once started: the one they start on stays in
 // the row
 const NO_PICKER = new Set(["gemini", "hermes", "morph", "agy", "muse"]);
 // agents whose own model menu is the list picked here: no one model to
-// start on, but which of magpie's it offers (Claude Desktop and Cursor
+// start on, but which of magpie-friday's it offers (Claude Desktop and Cursor
 // Private Inference read /v1/models, and the user switches among them in it)
 const MENU_FROM_LIST = new Set(["claude-desktop", "cursor-local"]);
 // or the server says so (agent.ListsModels): ZCode, Pencil, T3 Code,
-// WorkBuddy's and Copilot in JetBrains put magpie's models in their own
+// WorkBuddy's and Copilot in JetBrains put magpie-friday's models in their own
 // picker (#1508)
 const listsMenu = (a) => MENU_FROM_LIST.has(a.id) || !!a.menu;
 const menuFromList = (a) => listsMenu(a) && a.wired && !!a.models;
@@ -1205,7 +1205,7 @@ function fillMenuButton(b, a) {
   const c = a.models;
   const k = b.querySelector(":scope > .k");
   b.replaceChildren(...(k ? [k] : []));
-  b.append(icon("magpie"));
+  b.append(icon("magpie-friday"));
   b.append(el("span", "v" + (c.shown ? "" : " empty"), menuSaid(c)));
   b.append(el("span", "chev", svg(CHEV, 11, 1.7)));
   const pick = t("Pick which models {agent} lists", { agent: a.name });
@@ -1215,9 +1215,9 @@ function fillMenuButton(b, a) {
 
 // what turning one on costs, said in its opened row
 const CONNECT_COST = {
-  gemini: "Gemini CLI's requests all go through magpie; its Google sign-in is turned off first and comes back when you disconnect",
+  gemini: "Gemini CLI's requests all go through magpie-friday; its Google sign-in is turned off first and comes back when you disconnect",
 };
-// agents that read magpie's list only as they start: copies already
+// agents that read magpie-friday's list only as they start: copies already
 // running keep the list they started with (agent.Stale)
 const STARTS_WITH = new Set(["codex", "claude"]);
 
@@ -1227,8 +1227,8 @@ const previews = {}; // agent id → its disconnect preview, as last read
 
 const anyMagpieModels = () => state.agents.some((a) => connectField(a)?.options.some((o) => o.ref));
 
-// connectKind: "ok" (a switch), "empty" (a switch for when magpie has
-// models), "no" (never), "link" (an app magpie is added to by a link of its
+// connectKind: "ok" (a switch), "empty" (a switch for when magpie-friday has
+// models), "no" (never), "link" (an app magpie-friday is added to by a link of its
 // own: Cindy), "" (the row as it was); an agent whose CLI is gone is
 // offered to no one: only its own row keeps the switch while it is wired
 function connectKind(a) {
@@ -1300,9 +1300,9 @@ function connectLine(a, kind) {
   // the reason wraps, never cut short: it is the row's only words
   if (kind === "no") { say(t(NATIVE_ONLY[a.id]), NATIVE_ONLY[a.id] ? "why" : ""); return line; }
   if (kind === "link") {
-    if (a.added == null) say(t("Opens {name} to add magpie as a provider — confirm it there", { name: a.name }));
-    else if (a.added) say(t("Added · magpie is a provider in {agent}", { agent: a.name }), "on");
-    else say(t("Not added · {agent} asks to add magpie when its link opens", { agent: a.name }));
+    if (a.added == null) say(t("Opens {name} to add magpie-friday as a provider — confirm it there", { name: a.name }));
+    else if (a.added) say(t("Added · magpie-friday is a provider in {agent}", { agent: a.name }), "on");
+    else say(t("Not added · {agent} asks to add magpie-friday when its link opens", { agent: a.name }));
     return line;
   }
   if (kind === "empty") { say(t("Add a key or a subscription first; then there are models to connect")); return line; }
@@ -1313,13 +1313,13 @@ function connectLine(a, kind) {
   }
   if (!a.wired) {
     const src = a.source || "";
-    if (a.id === "agy") say(t("Not connected · once connected, start it with magpie's command"));
-    // not connected, yet through magpie for account failover (#1385): it
-    // read as Codex on its own while magpie served every request, so the
+    if (a.id === "agy") say(t("Not connected · once connected, start it with magpie-friday's command"));
+    // not connected, yet through magpie-friday for account failover (#1385): it
+    // read as Codex on its own while magpie-friday served every request, so the
     // line says why, and the accounts that turn it off are a click away
     else if (a.failover) {
-      say(t("Not connected · goes through magpie only to fail over to your other ChatGPT accounts"));
-      words.title = t("magpie set openai_base_url in {agent}'s config.toml, so a request the ChatGPT account {agent} is signed in to has no allowance for goes on to your other ChatGPT accounts on in magpie. {agent} keeps to its own models. To stop it, tick Only switch {agent}'s sign-in under Providers › Codex, or switch those accounts off; connecting {agent} adds magpie's models.", { agent: a.name });
+      say(t("Not connected · goes through magpie-friday only to fail over to your other ChatGPT accounts"));
+      words.title = t("magpie-friday set openai_base_url in {agent}'s config.toml, so a request the ChatGPT account {agent} is signed in to has no allowance for goes on to your other ChatGPT accounts on in magpie-friday. {agent} keeps to its own models. To stop it, tick Only switch {agent}'s sign-in under Providers › Codex, or switch those accounts off; connecting {agent} adds magpie-friday's models.", { agent: a.name });
       const go = el("button", "ag-acc", t("ChatGPT accounts"));
       go.type = "button";
       go.title = words.title;
@@ -1416,30 +1416,30 @@ function sheet(box, open, done) {
 // startField: the field an agent's model is picked in (Gemini CLI's model,
 // not how it signs in). Its model is that field whatever the providers
 // on: one switched off changes only what it lists, so Codex's model with
-// none of magpie's left isn't traded for its subagent model, which still
+// none of magpie-friday's left isn't traded for its subagent model, which still
 // has a ChatGPT account's (#1582). A model with nothing to list (Ante's,
-// magpie's only) leaves the field it connects through.
+// magpie-friday's only) leaves the field it connects through.
 function startField(a) {
   return a.fields.find((f) => f.key === "model" && f.options.length) || connectField(a);
 }
 
 // startButton picks the model an agent starts on, from the row. It says
 // what the agent is on, connected or not, its Default or a model, and
-// lists every choice: the agent's own models with magpie's. A magpie model
+// lists every choice: the agent's own models with magpie-friday's. A magpie-friday model
 // picked while it isn't connected connects it and starts it on it. Not
 // connected, only Claude Code said its model, the others Pick a model
 // beside it (EZN7L2C3, #834: 这里似乎需要统一); and Claude Code's list had
 // lost the one picked. A field that isn't a model (a provider) still
-// offers magpie's models alone.
+// offers magpie-friday's models alone.
 function startButton(a, f, fieldBtn) {
   const b = fieldBtn(f, "ag-start");
   if (!a.wired && !a.native && f.key !== "model" && !f.options.some((o) => o.direct)) {
     b.replaceChildren(el("span", "v empty", t("Pick a model")));
     b.append(el("span", "chev", svg(CHEV, 11, 1.7)));
-    b.title = t("Pick one of magpie's models: {agent} is connected and starts on it", { agent: a.name });
+    b.title = t("Pick one of magpie-friday's models: {agent} is connected and starts on it", { agent: a.name });
     b.onclick = (ev) => openPicker(a, f, b, ev, (o) => !!o.ref);
   } else if (!a.wired) {
-    b.title += "\n" + t("Pick one of magpie's models: {agent} is connected and starts on it", { agent: a.name });
+    b.title += "\n" + t("Pick one of magpie-friday's models: {agent} is connected and starts on it", { agent: a.name });
   } else if (!f.value && a.id !== "claude") {
     b.querySelector(".v").textContent = t("Its last pick");
     b.title = t("Unset, {agent} starts on its own last pick", { agent: a.name });
@@ -1468,8 +1468,8 @@ function connectRow(a, row, who, { fields, extras, fieldBtn, sw, kind }) {
   if (start) fields.querySelector(`:scope > [data-key="${CSS.escape(start.key)}"]`)?.remove();
   if (kind === "ok") {
     if (a.wired) row.append(expandLink(a));
-    // the square copying the command that starts it on magpie (agy), the
-    // only way it takes magpie: on the row, before the model
+    // the square copying the command that starts it on magpie-friday (agy), the
+    // only way it takes magpie-friday: on the row, before the model
     const launch = a.wired && fields.querySelector(".field.launch");
     if (launch) row.append(launch);
     if (start) row.append(startButton(a, start, fieldBtn));
@@ -1485,7 +1485,7 @@ function connectRow(a, row, who, { fields, extras, fieldBtn, sw, kind }) {
     off.disabled = true;
     off.setAttribute("role", "switch");
     off.setAttribute("aria-checked", "false");
-    off.setAttribute("aria-label", t("Connect {agent} to magpie", { agent: a.name }));
+    off.setAttribute("aria-label", t("Connect {agent} to magpie-friday", { agent: a.name }));
     off.title = t("Add a key or a subscription first; then there are models to connect");
     off.append(el("i"));
     row.append(add, off);
@@ -1505,7 +1505,7 @@ function connectRow(a, row, who, { fields, extras, fieldBtn, sw, kind }) {
 
 // agentsLead: above the window's list, what 「接入」 does, said once in a
 // line; while no agent is connected, as a welcome, with a way to add a
-// provider when magpie has no models to give
+// provider when magpie-friday has no models to give
 function agentsLead(list) {
   let lead = $("#agentsLead");
   if (!lead) {
@@ -1530,12 +1530,12 @@ function agentsLead(list) {
   const first = !state.agents.some((a) => a.wired);
   lead.classList.toggle("welcome", first);
   if (!first) {
-    const [pre, post] = t("Switch an agent on and the models you set up in magpie show up as the {magpie} provider in its own model list; or pick its model right here.").split("{magpie}");
-    lead.append(pre, el("b", "", "magpie"), post || "");
+    const [pre, post] = t("Switch an agent on and the models you set up in magpie-friday show up as the {magpie-friday} provider in its own model list; or pick its model right here.").split("{magpie-friday}");
+    lead.append(pre, el("b", "", "magpie-friday"), post || "");
     return;
   }
-  lead.append(el("b", "ag-lead-h", t("Let your agents use the models you set up in magpie")));
-  lead.append(el("p", "", t("Switch an agent on and your models show up as the magpie provider in its own model list, to change in the agent. Or pick a model right here: the agent is connected and starts on it. Switch it off and it goes back to how it was.")));
+  lead.append(el("b", "ag-lead-h", t("Let your agents use the models you set up in magpie-friday")));
+  lead.append(el("p", "", t("Switch an agent on and your models show up as the magpie-friday provider in its own model list, to change in the agent. Or pick a model right here: the agent is connected and starts on it. Switch it off and it goes back to how it was.")));
   if (!anyMagpieModels()) {
     const add = el("button", "text primary", t("Add a provider"));
     add.type = "button";
@@ -1546,10 +1546,10 @@ function agentsLead(list) {
 
 // ---------- Get started (wangye1644294 on X) ----------
 // A new user is shown three steps above the agents: add a model source,
-// connect an agent (those magpie found here listed, each connected in a
+// connect an agent (those magpie-friday found here listed, each connected in a
 // click), and, optionally, a routing group made of their own models in a
 // click (provider.Templates). Each step is ticked from what is so — the
-// models magpie serves (state.served), an agent wired, a group of the
+// models magpie-friday serves (state.served), an agent wired, a group of the
 // user's own — never from having been seen. The card goes once the first
 // two are done, or when put away (settings.GuideHidden, saved on the
 // server so the panel and the window agree).
@@ -1631,7 +1631,7 @@ function guideCard(g) {
   // 2: an agent, those found here named, each connected in a click
   const found = state.agents.filter((a) => connectKind(a) === "ok" || connectKind(a) === "empty");
   const two = guideStep(2, g.agent, t("Connect an agent"),
-    g.agent ? "" : found.length ? t("magpie found these on this computer. Click one to connect it:") : t("Install Claude Code, Codex, Gemini CLI, OpenCode… and magpie will list them here."));
+    g.agent ? "" : found.length ? t("magpie-friday found these on this computer. Click one to connect it:") : t("Install Claude Code, Codex, Gemini CLI, OpenCode… and magpie-friday will list them here."));
   two.li.dataset.step = "agent";
   if (!g.agent && found.length) {
     const chips = el("div", "guide-agents");
@@ -1643,7 +1643,7 @@ function guideCard(g) {
       const ready = connectKind(a) === "ok";
       b.disabled = !ready || !!guideBusy;
       b.classList.toggle("busy", guideBusy === a.id);
-      b.title = ready ? t("Switch on and {agent}'s model list gets magpie's models", { agent: a.name }) : t("Add a key or a subscription first; then there are models to connect");
+      b.title = ready ? t("Switch on and {agent}'s model list gets magpie-friday's models", { agent: a.name }) : t("Add a key or a subscription first; then there are models to connect");
       b.onclick = (e) => { e.stopPropagation(); guideConnect(a, e); };
       chips.append(b);
     }
@@ -1726,7 +1726,7 @@ async function guideConnect(a, ev) {
     // at the row's switch (connectSwitch)
     const chip = err.code === "all_hidden" && document.querySelector(`.guide-agent[data-id="${CSS.escape(a.id)}"]`);
     if (chip) {
-      status(t("None of magpie's models is left in {agent}'s model list: pick one, then connect {agent}", { agent: a.name }), "err");
+      status(t("None of magpie-friday's models is left in {agent}'s model list: pick one, then connect {agent}", { agent: a.name }), "err");
       openAgentModels(a, chip, ev);
       return;
     }
@@ -1778,7 +1778,7 @@ async function addProviderFromAgents() {
 }
 
 // desktopLongestLine: Claude Desktop lists a model of 1M or more twice, the
-// plain one and a "1M context window" one of its own; switched on, magpie
+// plain one and a "1M context window" one of its own; switched on, magpie-friday
 // lists it by its 1M id alone, one entry each (#1272). Desktop reads the
 // list as it starts.
 function desktopLongestLine() {
@@ -1835,9 +1835,9 @@ function daemonRestart() {
 }
 
 // asked first: what runs in the app stops
-const confirmRestart = (name) => confirmAction(t("Restart {agent}?", { agent: name }), t("magpie quits {agent} and opens it again, so it reads the new settings. Anything running in it stops.", { agent: name }), t("Restart"));
+const confirmRestart = (name) => confirmAction(t("Restart {agent}?", { agent: name }), t("magpie-friday quits {agent} and opens it again, so it reads the new settings. Anything running in it stops.", { agent: name }), t("Restart"));
 
-// appReopen is the Restart beside the Codex app left on the old list: magpie
+// appReopen is the Restart beside the Codex app left on the old list: magpie-friday
 // asks, then quits it, as ⌘Q does, and opens it again
 function appReopen(bundle) {
   const go = el("button", "ag-quiet accent", t("Restart"));
@@ -1861,12 +1861,12 @@ function appReopen(bundle) {
   return go;
 }
 
-// appRestart: a desktop app running on what it read before magpie's last
+// appRestart: a desktop app running on what it read before magpie-friday's last
 // change (agent.AppBehind) is quit and opened again
 function appRestart(a) {
   const go = el("button", "ag-fix ag-restart");
   go.type = "button";
-  go.title = t("{agent} started {when}, before magpie's last change, and reads it only as it starts", { agent: a.name, when: ago(a.appRestart.since) });
+  go.title = t("{agent} started {when}, before magpie-friday's last change, and reads it only as it starts", { agent: a.name, when: ago(a.appRestart.since) });
   go.setAttribute("aria-label", t("Restart {agent}", { agent: a.name }));
   go.append(svg(REAPPLY, 11, 1.8), el("span", "", t("Restart")));
   go.onclick = async (e) => {
@@ -1913,8 +1913,8 @@ function connectPanel(a, { fields, fieldBtn }) {
     // the command in the words as code, wherever the language puts it
     const said = (s, cmd) => { const [pre, post] = t(s, { agent: a.name }).split("{cmd}"); return line(pre, code(cmd), post || ""); };
     if (a.id === "claude") parts.push(said("New sessions take it; switch the tiers in {cmd}.", "/model"));
-    // its own models still there beside magpie's (Codex on ChatGPT)
-    else if (a.joined) parts.push(said("Reopen {agent}: its own models stay in {cmd}, and magpie's join them.", at));
+    // its own models still there beside magpie-friday's (Codex on ChatGPT)
+    else if (a.joined) parts.push(said("Reopen {agent}: its own models stay in {cmd}, and magpie-friday's join them.", at));
     else if (STARTS_WITH.has(a.id)) parts.push(said("Reopen {agent}, then pick any model in {cmd}.", at));
     else parts.push(said("Pick any model in {agent}'s {cmd}.", at));
     if (staleNow(a)) {
@@ -1935,7 +1935,7 @@ function connectPanel(a, { fields, fieldBtn }) {
         const [pre, post] = t(how[0], { agent: a.name, when: ago(c.since), app: c.app || "" }).split("{cmd}");
         const l = line(pre, ...(how[1] ? [code(how[1]), post || ""] : []));
         l.classList.add("ag-stale-copy");
-        // Codex's daemon, which magpie restarts itself while no codex
+        // Codex's daemon, which magpie-friday restarts itself while no codex
         // session is on it: with one on, here, when the user says (open
         // sessions of Codex 0.162 reconnect to the new one)
         if (c.kind === "daemon" && a.id === "codex") l.append(daemonRestart());
@@ -1981,15 +1981,15 @@ function connectPanel(a, { fields, fieldBtn }) {
     if (rows.length) kv(t("Tiers"), ...rows);
     const main = a.fields.find((f) => f.key === "model");
     const hasSub = main?.options.some((o) => (o.ref || "").startsWith("claude/"));
-    if (hasSub) kv(t("Claude models"), line(t("Your Claude subscription is in magpie; picking a claude-* model goes through it as before")));
+    if (hasSub) kv(t("Claude models"), line(t("Your Claude subscription is in magpie-friday; picking a claude-* model goes through it as before")));
     else {
       const add = el("button", "ag-quiet accent", t("Add a Claude subscription"));
       add.type = "button";
       add.onclick = () => addProviderFromAgents();
-      kv(t("Claude models"), line(t("claude-* models need a Claude subscription in magpie"), add));
+      kv(t("Claude models"), line(t("claude-* models need a Claude subscription in magpie-friday"), add));
     }
   }
-  // which of magpie's models it lists, by whose they are
+  // which of magpie-friday's models it lists, by whose they are
   if (a.models) {
     const chips = line();
     chips.classList.add("ag-chips");
@@ -2031,7 +2031,7 @@ function connectPanel(a, { fields, fieldBtn }) {
       const f = a.fields.find((x) => x.key === b.dataset.key);
       if (f && !b.querySelector(":scope > .k")) b.prepend(el("span", "k", t(f.label)));
     }
-    // Cursor Private Inference's are magpie's own, its effort asked on
+    // Cursor Private Inference's are magpie-friday's own, its effort asked on
     // every request it sends from then on, not what a new session starts
     // with (#1003)
     kv(t(a.id === "cursor-local" ? "Settings" : "New sessions"), line(fields));
@@ -2056,10 +2056,10 @@ function connectPanel(a, { fields, fieldBtn }) {
   if (a.launch) {
     const cp = el("button", "ag-quiet", t("Copy"));
     cp.type = "button";
-    cp.onclick = () => copy(a.launch, t("Launch command"), null, t("Copied — run it to start {name} on magpie", { name: a.name }));
+    cp.onclick = () => copy(a.launch, t("Launch command"), null, t("Copied — run it to start {name} on magpie-friday", { name: a.name }));
     kv(t("Start it with"), line(code(a.launch), cp));
   }
-  // the files magpie changed, and the way back
+  // the files magpie-friday changed, and the way back
   const foot = el("div", "ag-foot");
   const files = el("span", "ag-files");
   const view = el("button", "ag-quiet");
@@ -2121,7 +2121,7 @@ function changesList(changes, back) {
       if (back && l.was) r.title = t("Now: {line}", { line: l.was });
       return r;
     };
-    // a list magpie wrote whole (Claude Code's modelPicker, Codex's
+    // a list magpie-friday wrote whole (Claude Code's modelPicker, Codex's
     // catalog) is a few lines and the rest on asking
     const lines = (c.lines || []).flatMap((l) => back ? l : l.op == "~" ? [{ text: l.text }, { op: "+", text: l.was }] : { op: l.op == "-" ? "+" : "", text: l.text }), FEW = 8;
     f.append(...lines.slice(0, FEW).map(line));
@@ -2136,19 +2136,19 @@ function changesList(changes, back) {
   return box;
 }
 
-// askDisconnect takes magpie out of an agent's config once asked: every
-// field magpie set, and its endpoint and key, give way to what the agent
-// had before magpie (agent.Disconnect). Picking Default isn't that: it is
+// askDisconnect takes magpie-friday out of an agent's config once asked: every
+// field magpie-friday set, and its endpoint and key, give way to what the agent
+// had before magpie-friday (agent.Disconnect). Picking Default isn't that: it is
 // the agent as installed.
 function askDisconnect(a) {
   const ed = el("div", "editor disconnect-ask");
   const head = el("div", "ehead");
-  head.append(icon(a.icon), el("b", "", t("Disconnect {agent} from magpie?", { agent: a.name })));
+  head.append(icon(a.icon), el("b", "", t("Disconnect {agent} from magpie-friday?", { agent: a.name })));
   ed.append(head);
   ed.append(el("p", "lib-confirm", t("{agent} goes back to how it was before it was connected; these are the places put back.", { agent: a.name })));
   // what changes, line by line, read from a dry run on a copy (preview.go);
   // where none can be had, the old words
-  const said = el("p", "lib-confirm", t("magpie takes out everything it wrote into {agent}'s config — its endpoint, key, models and effort — and puts back the settings {agent} had before. magpie's providers and accounts stay as they are.", { agent: a.name }));
+  const said = el("p", "lib-confirm", t("magpie-friday takes out everything it wrote into {agent}'s config — its endpoint, key, models and effort — and puts back the settings {agent} had before. magpie-friday's providers and accounts stay as they are.", { agent: a.name }));
   const body = el("div", "ag-diff-wrap");
   const show = (changes) => {
     if (changes?.length) body.replaceChildren(changesList(changes, 1));
@@ -2164,7 +2164,7 @@ function askDisconnect(a) {
     go.disabled = previewBlocked;
   }, (err) => { if (!a.native) { show(null); return; } previewBlocked = true; go.disabled = true; body.replaceChildren(el("p", "lib-confirm", t(err.message))); });
   ed.append(body);
-  if (a.id === "codex") ed.append(el("p", "ag-note", t("magpie's provider table stays, so sessions opened on magpie's models still open")));
+  if (a.id === "codex") ed.append(el("p", "ag-note", t("magpie-friday's provider table stays, so sessions opened on magpie-friday's models still open")));
   const bar = el("div", "bar");
   const go = el("button", "text primary danger-fill", t("Disconnect and restore"));
   go.disabled = previewBlocked;
@@ -2179,7 +2179,7 @@ function askDisconnect(a) {
       delete previews[a.id];
       if (agentExpanded === a.id) agentExpanded = null;
       renderAgents();
-      const msg = t(offline ? "Saved settings restored; magpie was removed from {agent}" : "{agent} no longer goes through magpie; its own settings are back", { agent: a.name });
+      const msg = t(offline ? "Saved settings restored; magpie-friday was removed from {agent}" : "{agent} no longer goes through magpie-friday; its own settings are back", { agent: a.name });
       if (state.notice) status(withNotice(msg, state.notice), "warn", 9000);
       else status(msg, "ok");
     } catch (err) {
@@ -2187,9 +2187,9 @@ function askDisconnect(a) {
       go.classList.remove("busy");
       if (!offline && err.code === "runtime_unavailable" && err.offline === "disconnect" && revision) {
         offline = true;
-        head.querySelector("b").textContent = t("Restore saved settings and remove magpie?");
-        ed.querySelector(".lib-confirm").textContent = t("Restore saved settings and remove magpie without contacting Aside? Close Aside first if it is running.");
-        go.textContent = t("Restore saved settings and remove magpie");
+        head.querySelector("b").textContent = t("Restore saved settings and remove magpie-friday?");
+        ed.querySelector(".lib-confirm").textContent = t("Restore saved settings and remove magpie-friday without contacting Aside? Close Aside first if it is running.");
+        go.textContent = t("Restore saved settings and remove magpie-friday");
         cancel.focus({ preventScroll: true });
         return;
       }
@@ -2210,14 +2210,14 @@ async function keepAgent(a) {
   try { state = await api("agents/keep/" + a.id, {}); renderAgents(); } catch (e) { status(e.message, "err"); }
 }
 
-// reapplyAgent writes what magpie set on the agent into its config again.
+// reapplyAgent writes what magpie-friday set on the agent into its config again.
 async function reapplyAgent(a, btn) {
   btn?.classList.add("busy");
   try {
     state = await api("agents/reapply/" + a.id, {});
     renderAgents();
     document.querySelector(`.agent[data-id="${CSS.escape(a.id)}"] .field`)?.classList.add("flash");
-    const msg = t("{agent} goes through magpie again", { agent: a.name });
+    const msg = t("{agent} goes through magpie-friday again", { agent: a.name });
     if (state.notice) status(withNotice(msg, state.notice), "warn", 9000);
     else status(msg, "ok");
   } catch (e) {
@@ -2228,9 +2228,9 @@ async function reapplyAgent(a, btn) {
 
 // ---------- the agents' CLIs (#202) ----------
 // Each agent's CLI shows its version after its name, faint; when a newer one
-// is out and magpie knows how the CLI was installed (its own updater, npm,
+// is out and magpie-friday knows how the CLI was installed (its own updater, npm,
 // bun, pnpm, Homebrew), a pill beside it updates it. The versions come after
-// the rows are drawn, never holding them up; one magpie can't tell how it
+// the rows are drawn, never holding them up; one magpie-friday can't tell how it
 // was installed shows its version alone.
 
 let cliInfo = {}; // agent id → { version, latest, via, command, update }
@@ -2256,18 +2256,18 @@ function cliTag(a) {
   if (c.version) {
     // beside its desktop app's version, the CLI's says it is the CLI's
     const v = el("span", "ag-ver", c.app ? t("CLI {v}", { v: c.version }) : c.version);
-    v.title = !c.via ? t("{agent} {v} · magpie can't tell how it was installed — update it the way you installed it", { agent: a.name, v: c.version })
+    v.title = !c.via ? t("{agent} {v} · magpie-friday can't tell how it was installed — update it the way you installed it", { agent: a.name, v: c.version })
       : c.update ? t("{agent} {v} is installed · {latest} is out", { agent: a.name, v: c.version, latest: c.latest })
       : t("{agent} {v} · up to date", { agent: a.name, v: c.version });
     box.append(v);
-    // found in a folder magpie adds to its own PATH that a terminal's
+    // found in a folder magpie-friday adds to its own PATH that a terminal's
     // doesn't have (an npm install under a Node nvm no longer uses):
     // listed though `which` finds nothing, so it says where it is
     // (悠悠哥 on Discord: Codex 0.162.1 with no codex on PATH); where the
     // row is too tight for the note, the version's tip says it
     if (c.offPath && c.path) {
       const o = el("span", "ag-missing ag-offpath", t("Not on your terminal's PATH"));
-      o.title = v.title = t("magpie found {agent} {v} at {path}. That folder is one magpie looks in, but your terminal's PATH doesn't have it, so a terminal won't find {agent} there. If it was left behind by an uninstall, delete it.", { agent: a.name, v: c.version, path: c.path });
+      o.title = v.title = t("magpie-friday found {agent} {v} at {path}. That folder is one magpie-friday looks in, but your terminal's PATH doesn't have it, so a terminal won't find {agent} there. If it was left behind by an uninstall, delete it.", { agent: a.name, v: c.version, path: c.path });
       box.append(o);
     }
   }
@@ -2443,9 +2443,9 @@ function updatedSay() {
 }
 
 // ---------- installing the agents not here (#727) ----------
-// Under the list, the agents magpie knows that aren't on this machine, each
+// Under the list, the agents magpie-friday knows that aren't on this machine, each
 // with its vendor's install commands to copy into a terminal: the vendor's
-// installer first, then Homebrew's or npm's. magpie doesn't run them — a
+// installer first, then Homebrew's or npm's. magpie-friday doesn't run them — a
 // new computer may have no Node.js for npm yet, and an installer may ask
 // for things in the terminal. Folded unless no agent is here at all.
 
@@ -2483,13 +2483,13 @@ function installNote(items) {
 
 function installNoteFor(items) {
   const node = items.flatMap((x) => x.commands).find((c) => c.node)?.node;
-  const after = t("Run a command in a terminal, then come back: magpie lists the agent here once it is installed.");
+  const after = t("Run a command in a terminal, then come back: magpie-friday lists the agent here once it is installed.");
   if (node === "winget") return t("No Node.js was found here, so the npm commands install it with winget first; run them in PowerShell. If npm isn't found after Node.js is installed, open a new terminal and run the npm install again.") + " " + after;
   if (node) {
     const s = t("No Node.js was found here, so the npm commands install it with nvm first.") + " " + after;
     return node === "nvm-mac" ? s + " " + t("On a Mac, nvm needs Xcode's Command Line Tools: if it asks for them, run xcode-select --install, then the command again.") : s;
   }
-  return t("Run a command in a terminal, then come back: magpie lists the agent here once it is installed. The npm commands need Node.js (nodejs.org).");
+  return t("Run a command in a terminal, then come back: magpie-friday lists the agent here once it is installed. The npm commands need Node.js (nodejs.org).");
 }
 
 function paintInstalls() {
@@ -2548,26 +2548,26 @@ function paintInstalls() {
 }
 
 // ---------- the agents' order, and the ones put away ----------
-// Kept in magpie's own settings (agentOrder, agentsHidden, agentsShown),
+// Kept in magpie-friday's own settings (agentOrder, agentsHidden, agentsShown),
 // never in an agent's files. An agent the order doesn't name — one
-// installed since — follows the ordered ones, in magpie's own order.
+// installed since — follows the ordered ones, in magpie-friday's own order.
 
 let agentsGlide = null; // how the panel's edge moves after the next render
 let panelOpenAgent = null; // the one agent row the panel has opened
 
-// set up: a model, a provider, a role given one — what magpie is there for.
+// set up: a model, a provider, a role given one — what magpie-friday is there for.
 // How the agent's own model is run (ultracode, an effort) is not: turning
 // Claude Code's ultracode on folded every other agent away under Show more.
 // One with 「接入」's switch is set up when it is connected, and only then
 // (#726): its fields are read from its own files, so one not connected kept
 // its row up for a model of its own (Antigravity, DeepSeek Harness), and a
 // connected Codex starting on its last choice, no model set, went under
-// Not set up. One magpie connected that has come apart (drift) stays up
+// Not set up. One magpie-friday connected that has come apart (drift) stays up
 // too, to be put right. One with no switch (Cursor, an app's own models)
 // goes by what is set on it, as before, though while an agent can be
 // connected it doesn't start the folding (arrangeAgents): its values are
 // its own files' too, and a Cursor on auto would fold every agent not
-// connected yet away on a fresh magpie.
+// connected yet away on a fresh magpie-friday.
 const tweak = (f) => f.key === "ultracode" || f.key === "effort" || f.key.endsWith("_effort");
 const onMagpie = (a) => !!(a.added || a.wired || a.drift);
 // one whose only control is its launch command (Cursor Private Inference)
@@ -2576,15 +2576,15 @@ const onMagpie = (a) => !!(a.added || a.wired || a.drift);
 // it is connected, to be disconnected
 const agentUsed = (a) => a.cliMissing ? onMagpie(a) : onMagpie(a) || (!connectable(a) && a.fields.some((f) => f.value && !tweak(f))) || (!!a.launch && !a.fields.length && !a.import);
 
-// importButton: the one control of an app magpie is added to by its import
-// link: magpie, once the app has it, or an offer to add it
+// importButton: the one control of an app magpie-friday is added to by its import
+// link: magpie-friday, once the app has it, or an offer to add it
 function importButton(a) {
   const b = el("button", "field solo import");
   b.type = "button";
   b.title = a.added
-    ? t("{name} has magpie as a provider · click to add it again", { name: a.name })
-    : t("Opens {name} to add magpie as a provider — confirm it there", { name: a.name });
-  b.append(icon("magpie"), el("span", "v" + (a.added ? "" : " empty"), a.added ? "magpie" : t("Add magpie")));
+    ? t("{name} has magpie-friday as a provider · click to add it again", { name: a.name })
+    : t("Opens {name} to add magpie-friday as a provider — confirm it there", { name: a.name });
+  b.append(icon("magpie-friday"), el("span", "v" + (a.added ? "" : " empty"), a.added ? "magpie-friday" : t("Add magpie-friday")));
   b.append(el("span", "chev", svg(OUT, 11, 1.6)));
   b.onclick = (ev) => {
     ev.stopPropagation();
@@ -2626,15 +2626,15 @@ function unhideCleared() {
 
 // arrangeAgents: the rows in view, in order, and the folded rest. Folded is
 // what was hidden by hand, and what nothing is set on — noise in a picker —
-// unless none is set up yet (a fresh magpie has nothing to show
+// unless none is set up yet (a fresh magpie-friday has nothing to show
 // otherwise).
 function arrangeAgents() {
   const s = state.settings || {};
   const order = s.agentOrder || [], hidden = new Set(hiddenIds());
   const rank = (a) => { const i = order.indexOf(a.id); return i < 0 ? order.length : i; };
   const all = state.agents.map((a, i) => [a, i]).sort(([x, i], [y, j]) => rank(x) - rank(y) || i - j).map(([a]) => a);
-  // with 「接入」 there to use, folding starts once one is on magpie, not for a
-  // model an agent not connected has in its own files (#726); with magpie
+  // with 「接入」 there to use, folding starts once one is on magpie-friday, not for a
+  // model an agent not connected has in its own files (#726); with magpie-friday
   // having nothing to connect, once any is set
   const counts = all.some(connectable) ? onMagpie : agentUsed;
   const anyUsed = all.some((a) => !hidden.has(a.id) && counts(a));
@@ -2658,7 +2658,7 @@ async function saveArrangement(order, hidden, shown) {
   }
 }
 
-// Bulk visibility changes only magpie's arrangement, never agent configs.
+// Bulk visibility changes only magpie-friday's arrangement, never agent configs.
 let agentsVisibilitySaving = false;
 // Ignore state reads begun before a completed visibility write. A fresh read
 // still owns the truth, including changes made by the tray or another window.
@@ -2840,7 +2840,7 @@ function agentHandle(a, row, inFold) {
   b.type = "button";
   b.setAttribute("aria-label", t("Arrange {agent}", { agent: a.name }));
   b.setAttribute("aria-haspopup", "menu");
-  b.title = inFold ? t(isHidden(a) ? "Show {agent}" : "Hide {agent}", { agent: a.name }) : t(a.wired ? "Drag to reorder · click to move, hide or disconnect from magpie" : "Drag to reorder · click to move or hide");
+  b.title = inFold ? t(isHidden(a) ? "Show {agent}" : "Hide {agent}", { agent: a.name }) : t(a.wired ? "Drag to reorder · click to move, hide or disconnect from magpie-friday" : "Drag to reorder · click to move or hide");
   b.append(icon(a.icon));
   b.onkeydown = (e) => {
     if (inFold || !e.altKey || (e.key !== "ArrowUp" && e.key !== "ArrowDown")) return;
@@ -3125,7 +3125,7 @@ function closeAgentModels() {
   // was put back comes with the state
   if (m.hidden) for (const f of m.a.fields || []) f.options = f.options.filter((o) => !o.ref || !m.hidden.has(o.ref) || o.value === f.value);
   // the agent's own, left out, go as the server leaves them out
-  // (agent.Picks): from a picker of magpie's models, but its default and
+  // (agent.Picks): from a picker of magpie-friday's models, but its default and
   // the one it is set to
   if (m.ownHidden) {
     for (const f of m.a.fields || []) {
@@ -3171,7 +3171,7 @@ async function openAgentModels(a, anchor, ev) {
   // only: the agent is shown only the models ticked for it, a new one off
   // until it is ticked (#1337), not every one not taken out
   // own: its pickers offer models the agent reaches on its own beside
-  // magpie's (DeepSeek Harness's), which ownHidden leaves out (#1642)
+  // magpie-friday's (DeepSeek Harness's), which ownHidden leaves out (#1642)
   let models, ordered = false, only = false, own = false, ownHidden = false;
   try { ({ models, ordered, only = false, own = false, ownHidden = false } = await api("agent-models/" + encodeURIComponent(a.id))); }
   catch (e) {
@@ -3189,9 +3189,9 @@ async function openAgentModels(a, anchor, ev) {
   const head = el("div", "am-head");
   head.append(el("div", "am-t", t("{agent}'s model list", { agent: a.name })),
     el("div", "am-d", t("Models turned off don't show in {agent}'s model picker; other agents can still use them.", { agent: a.name })));
-  // the models the agent reaches itself, not through magpie, shown in its
-  // picker beside magpie's or left out (MizuIro-H, #1642): not in the list
-  // below, which is magpie's catalog, so a switch of their own
+  // the models the agent reaches itself, not through magpie-friday, shown in its
+  // picker beside magpie-friday's or left out (MizuIro-H, #1642): not in the list
+  // below, which is magpie-friday's catalog, so a switch of their own
   const ownBox = el("label", "am-own");
   const ownSw = el("button", "lib-switch use-credits" + (ownHidden ? "" : " on"));
   ownSw.type = "button";
@@ -3200,7 +3200,7 @@ async function openAgentModels(a, anchor, ev) {
   ownSw.append(el("i"));
   const ownSay = el("span", "", t("Show {agent}'s own models", { agent: a.name }));
   ownSw.setAttribute("aria-label", ownSay.textContent);
-  ownBox.title = t("The models {agent} reaches itself, not through magpie. Off: its model picker offers magpie's alone; the one it is set to stays", { agent: a.name });
+  ownBox.title = t("The models {agent} reaches itself, not through magpie-friday. Off: its model picker offers magpie-friday's alone; the one it is set to stays", { agent: a.name });
   ownBox.append(ownSw, ownSay);
   if (own) head.append(ownBox);
   const tools = el("div", "am-tools");
@@ -3364,7 +3364,7 @@ async function openAgentModels(a, anchor, ev) {
       });
   };
   // the shown models as the agent lists them: as dragged, or, before any
-  // drag, Codex's own (a ChatGPT account's) ahead of magpie's, as its
+  // drag, Codex's own (a ChatGPT account's) ahead of magpie-friday's, as its
   // /model has them
   const inOrder = () => {
     const shown = models.filter((m) => !m.hidden);
@@ -3511,14 +3511,14 @@ async function openAgentModels(a, anchor, ev) {
     segOn.classList.toggle("on", shown && !order);
     segOrder.classList.toggle("on", order);
     // ordering is of the whole list: no search, no provider picked, and the
-    // foot puts magpie's own order back rather than showing or hiding
+    // foot puts magpie-friday's own order back rather than showing or hiding
     box.classList.toggle("ordering", order);
     // Codex's /model, in WSL too, lists them as handed (#855); another
     // agent is handed them in it, and one that sorts its own menu may sort
     // them again
     footNote.textContent = !order ? ""
       : a.id.split("@wsl:")[0] === "codex" ? t("Drag to put them in the order {agent} lists them; new models go last", { agent: a.name })
-      : t("Drag to put them in the order magpie hands them to {agent}; new models go last", { agent: a.name });
+      : t("Drag to put them in the order magpie-friday hands them to {agent}; new models go last", { agent: a.name });
     if (order) foot.replaceChildren(footNote, el("span", "sp"), unorder);
     else foot.replaceChildren(onlyBox, el("span", "sp"), hideAll, el("span", "am-dot", "·"), reset);
     list.scrollTop = 0;
@@ -3531,7 +3531,7 @@ async function openAgentModels(a, anchor, ev) {
     unorder.disabled = true;
     const r = await saveOrder([]);
     ordered = false;
-    // magpie's own order, as the list comes back
+    // magpie-friday's own order, as the list comes back
     if (r?.models) {
       const was = new Map(models.map((m) => [m.id, m]));
       models.splice(0, models.length, ...r.models.map((m) => was.get(m.id) || m));
@@ -3638,11 +3638,11 @@ function openAgentMenu(anchor, a, inFold) {
         { name: "Move down", icon: MOVE_DOWN, key: ALT + "↓", off: i < 0 || i >= shown.length - 1, run: () => moveAgent(a.id, i + 1) },
         // its own settings, as the square on its row opens them
         ...(agentPrefsOf(a) ? [{ name: t("{agent} settings", { agent: a.name }), literal: true, icon: PREFS_GLYPH, sep: true, run: () => openAgentPrefs(a) }] : []),
-        // for a config rewritten in a way magpie can't see: set it again anyway
+        // for a config rewritten in a way magpie-friday can't see: set it again anyway
         ...(reapply ? [{ name: "Apply again", icon: REAPPLY, sep: true, run: () => reapplyAgent(a) }] : []),
         ...(a.drift?.kind === "replaced" ? [{ name: "Keep current settings", icon: CHECK, run: () => keepAgent(a) }] : []),
-        // everything magpie wrote comes out, what the user had goes back (Fate on Discord)
-        ...(a.wired ? [{ name: "Disconnect from magpie", icon: UNPLUG, sep: !reapply, tip: t(DISCONNECT_TIP, { agent: a.name }), run: () => askDisconnect(a) }] : []),
+        // everything magpie-friday wrote comes out, what the user had goes back (Fate on Discord)
+        ...(a.wired ? [{ name: "Disconnect from magpie-friday", icon: UNPLUG, sep: !reapply, tip: t(DISCONNECT_TIP, { agent: a.name }), run: () => askDisconnect(a) }] : []),
         { name: "Hide", icon: EYE_OFF, sep: true, run: () => setAgentHidden(a, true) },
         ...magpie.actions?.("agent", { agent: { id: a.id, name: a.name } }) || [],
       ];
@@ -3698,7 +3698,7 @@ function openRowMenu(anchor, acts) {
 }
 
 // Claude Code's opus/sonnet/haiku/fable can each have a model of their own
-// once it runs through magpie. They share one button, which lists the four;
+// once it runs through magpie-friday. They share one button, which lists the four;
 // picking one opens the model picker for it.
 const TIERS = ["opus", "sonnet", "haiku", "fable"];
 // and each an effort of its own (#536), in the same menu, under its model
@@ -3735,13 +3735,13 @@ const PICKS_ITSELF = ["pi", "omo", "prime-agent"];
 // A field that follows the model unless set — Codex's subagents, Claude
 // Code's tiers, omp's roles — is a small square after the pickers rather
 // than a third picker, which a row has no room for: it wrapped onto a line
-// of its own. So is Codex's sign-in, ChatGPT or magpie as its provider,
+// of its own. So is Codex's sign-in, ChatGPT or magpie-friday as its provider,
 // and the effort its subagents start at (#469), and the model Codex writes
 // its memories with (Yc on Discord).
 const SUB_EFFORT = "subagent effort";
 const MEMORIES = "memories";
-// the model magpie puts every Codex subagent on, whatever its lead asked
-// for (willz on Discord): any model magpie serves (#1633); a subagent
+// the model magpie-friday puts every Codex subagent on, whatever its lead asked
+// for (willz on Discord): any model magpie-friday serves (#1633); a subagent
 // whose task a ChatGPT-backed lead sealed stays on its own unless the one
 // set is a ChatGPT account's, the Routing page saying why. Claude
 // Desktop's subagent model is the same square: the gateway puts each of
@@ -3760,7 +3760,7 @@ const AUTO_MODE = "auto mode";
 const AUTO_MODE_UNSET = "Claude Code's own pick";
 const leadPicks = (a, f) => f.label === "subagents" && ["codex", "claude"].includes(a.id.split("@wsl:")[0]);
 const LEAD_PICKS = "Codex's lead may name another model for a subagent; set the subagent model to hold every subagent to one";
-// Claude Code's subagents unset: magpie writes no CLAUDE_CODE_SUBAGENT_MODEL
+// Claude Code's subagents unset: magpie-friday writes no CLAUDE_CODE_SUBAGENT_MODEL
 // and Claude Code picks, taking the Agent call's model, then the subagent's
 // own model:, then that variable, then the session's (2.1.306), so it is
 // its pick, not "same as model" (KorenKrita on Discord)
@@ -3771,7 +3771,7 @@ const claudePicks = (a, f) => leadPicks(a, f) && a.id === "claude";
 // card shows the subagent model alone, saying plainly what each choice
 // does. A pick there takes away [agents] default_subagent_model too (the
 // backend), and one left in the config is said on it until then. With no
-// model of magpie's to pick there, Codex's own square stays.
+// model of magpie-friday's to pick there, Codex's own square stays.
 const codexSub = (a) => a.id.split("@wsl:")[0] === "codex" && a.fields.some((f) => f.label === SUB_MODEL && (f.options.length || f.value));
 const codexOwnSub = (a, f) => f.label === "subagents" && codexSub(a);
 // named rows in Codex's settings: no square too (the owner, 10-25)
@@ -3803,7 +3803,7 @@ const EXTRA_GLYPH = {
   ultracode: "M3 4.25h4M3 8h2.5M3 11.75h4M9.5 4.25l3.5 3.75-3.5 3.75",
   // the subagents' branch, with effort's rising bars after it
   [SUB_EFFORT]: "M3.25 2.75v10.5M3.25 9.25c0-2.2 1.6-3.75 3.9-3.75h.6M9.25 13.25v-2M11.5 13.25v-4M13.75 13.25v-6",
-  // the subagents' branch, ending on a pin: their model, set by magpie
+  // the subagents' branch, ending on a pin: their model, set by magpie-friday
   [SUB_MODEL]: "M4 2.75v10.5M4 9.25c0-2.2 1.6-3.75 3.9-3.75h1.1M11.75 3.25a2.25 2.25 0 1 1 0 4.5 2.25 2.25 0 0 1 0-4.5zM11.75 7.75v4",
   // a shield with a tick: the auto mode classifier, which lets an action through
   [AUTO_MODE]: "M8 2.25 3.25 4v3.75c0 2.9 2 5 4.75 6 2.75-1 4.75-3.1 4.75-6V4zM5.75 8l1.6 1.6 2.9-3",
@@ -3812,8 +3812,8 @@ const EXTRA_GLYPH = {
 };
 // what Codex writes its memories with when none is set (codex-rs
 // model-provider: memory_consolidation_preferred_model, _extraction_), or
-// the session's when it is on magpie's (gateway codexFollowTo)
-const MEMORIES_DEFAULT = "Codex's own: gpt-5.6-terra/luna, or the session's magpie model";
+// the session's when it is on magpie-friday's (gateway codexFollowTo)
+const MEMORIES_DEFAULT = "Codex's own: gpt-5.6-terra/luna, or the session's magpie-friday model";
 const SAME_SESSION = "Same as the session";
 function extraField(a, f) {
   if (f.key === "ultracode") return ultracodeToggle(a, f);
@@ -3863,33 +3863,33 @@ function agentPrefsButton(a) {
   return b;
 }
 
-// launchButton copies the command that starts an agent on magpie, for one
+// launchButton copies the command that starts an agent on magpie-friday, for one
 // that takes the gateway only from its environment (agy)
 function launchButton(a) {
   const b = el("button", "field extra launch");
   b.type = "button";
   b.append(svg(LAUNCH_GLYPH, 13, 1.5));
-  b.title = t("{name} takes magpie only from its environment · click to copy the command that starts it:", { name: a.name }) + "\n" + a.launch;
+  b.title = t("{name} takes magpie-friday only from its environment · click to copy the command that starts it:", { name: a.name }) + "\n" + a.launch;
   b.setAttribute("aria-label", b.title);
   b.onclick = (ev) => {
     ev.stopPropagation();
-    copy(a.launch, t("Launch command"), null, t("Copied — run it to start {name} on magpie", { name: a.name }));
+    copy(a.launch, t("Launch command"), null, t("Copied — run it to start {name} on magpie-friday", { name: a.name }));
   };
   return b;
 }
-// launchSolo is the one control of an agent that takes magpie only from
+// launchSolo is the one control of an agent that takes magpie-friday only from
 // how it is started and has nothing else to set: the command, in words
 function launchSolo(a) {
   const b = el("button", "field solo import launch-solo");
   b.type = "button";
-  b.title = t("{name} takes magpie only from its environment · click to copy the command that starts it:", { name: a.name }) + "\n" + a.launch;
-  b.append(icon("magpie"), el("span", "v empty", t("Copy launch command")));
+  b.title = t("{name} takes magpie-friday only from its environment · click to copy the command that starts it:", { name: a.name }) + "\n" + a.launch;
+  b.append(icon("magpie-friday"), el("span", "v empty", t("Copy launch command")));
   const c = el("span", "chev");
   c.append(svg(LAUNCH_GLYPH, 11, 1.5));
   b.append(c);
   b.onclick = (ev) => {
     ev.stopPropagation();
-    copy(a.launch, t("Launch command"), null, t("Copied — run it to start {name} on magpie", { name: a.name }));
+    copy(a.launch, t("Launch command"), null, t("Copied — run it to start {name} on magpie-friday", { name: a.name }));
   };
   return b;
 }
@@ -3900,13 +3900,13 @@ function tierMenu(a) {
   const tiers = a.fields.filter((f) => menuRoles(a).includes(f.label));
   if (!tiers.length || !tiers.some((f) => f.options.length)) return null;
   // Claude Desktop has no model of its own here: a tier unset runs on a
-  // Claude model of that tier magpie serves, else on the chat's model
+  // Claude model of that tier magpie-friday serves, else on the chat's model
   const main = a.fields.find((f) => f.key === "model");
   const mainName = main && (optionFor(main, main.value)?.label || main.value);
   const unset = (f) => omp && OMP_OWN_PICK.includes(f.label) ? t(OMP_UNSET[f.label])
     : main ? t("same as model ({model})", { model: mainName }) : t("a Claude model of the tier, else the chat's model");
   // a tier's effort, offered while there are levels to pick (Claude Code
-  // through magpie); unset, the tier runs at the effort Claude Code asks.
+  // through magpie-friday); unset, the tier runs at the effort Claude Code asks.
   // An omp role's thinking level, while the role is on one model; unset,
   // it runs at the session's level
   const effortOf = (f) => a.fields.find((e) => (e.label === f.label + " effort" || e.label === f.label + " thinking") && (e.options.length || e.value));
@@ -4048,7 +4048,7 @@ async function load(again) {
     // the panel's allowances asked beside the state, not after it (#3134)
     const early = mode === "panel" && !load.done;
     if (early) panelQuotasNow(again);
-    // the first load draws the state magpie kept from its last read while
+    // the first load draws the state magpie-friday kept from its last read while
     // the fresh one is read (#1519, fatkun): reading every agent's config,
     // and a WSL distro's through \\wsl.localhost, took seconds after a
     // start or after light mode let the window go. The fresh state
@@ -4121,7 +4121,7 @@ async function load(again) {
   recoveredOnce();
 }
 
-// recoveredOnce tells, once each, of a file of magpie's own a crash left
+// recoveredOnce tells, once each, of a file of magpie-friday's own a crash left
 // unreadable (all zero, #1505) that was read back from its last good copy:
 // the accounts in it are as they were then, a later change may be missing.
 const recoveredShown = new Set();
@@ -4132,8 +4132,8 @@ function recoveredOnce() {
   const files = fresh.map((n) => n.file).join(", ");
   const bak = fresh.length === 1 && fresh[0].bak && !fresh[0].bak.startsWith("0001-") ? new Date(fresh[0].bak) : null;
   status(bak
-    ? t("{file} was damaged (the computer likely stopped mid-write), so magpie restored it from its backup of {time}. A change made after that may be missing; the damaged file is kept beside it.", { file: files, time: bak.toLocaleString(intlLang()) })
-    : t("{file} was damaged (the computer likely stopped mid-write), so magpie restored it from its backup. A change made after that may be missing; the damaged file is kept beside it.", { file: files }), "warn", 20000);
+    ? t("{file} was damaged (the computer likely stopped mid-write), so magpie-friday restored it from its backup of {time}. A change made after that may be missing; the damaged file is kept beside it.", { file: files, time: bak.toLocaleString(intlLang()) })
+    : t("{file} was damaged (the computer likely stopped mid-write), so magpie-friday restored it from its backup. A change made after that may be missing; the damaged file is kept beside it.", { file: files }), "warn", 20000);
 }
 
 // installFrom is what a restart to update tells the app: the window's tab,
@@ -4159,11 +4159,11 @@ function updatePath(p) {
   return p + (p.includes("?") ? "&" : "?") + "lang=" + encodeURIComponent(locale);
 }
 
-// renderUpdateBadge shows the header's Update pill once a newer magpie is
-// downloaded (a click restarts into it) or, where magpie can't replace
+// renderUpdateBadge shows the header's Update pill once a newer magpie-friday is
+// downloaded (a click restarts into it) or, where magpie-friday can't replace
 // itself, out (a click opens the release page). The user may keep it away:
 // for good (Settings), or for this version (its ×, or a right-click), until
-// a newer one is out. magpie still downloads it and puts it in on quitting.
+// a newer one is out. magpie-friday still downloads it and puts it in on quitting.
 async function renderUpdateBadge() {
   const b = $("#update"), label = b.querySelector("span");
   const u = await api(updatePath("update")).catch(() => null);
@@ -4213,7 +4213,7 @@ async function renderUpdateBadge() {
   if (u.state === "ready" && u.waiting) {
     label.textContent = t("Waiting to update");
     const a = { v: u.latest, busy: updateBusyText(u.busy) || "…" };
-    b.title = u.handover ? t("magpie restarts to update to {v} once the replies through a Claude subscription have finished: {busy}. Other requests carry on across the restart. Click to restart now.", a) : t("magpie restarts to update to {v} once the agents' requests through the gateway have finished: {busy}. Click to restart now.", a);
+    b.title = u.handover ? t("magpie-friday restarts to update to {v} once the replies through a Claude subscription have finished: {busy}. Other requests carry on across the restart. Click to restart now.", a) : t("magpie-friday restarts to update to {v} once the agents' requests through the gateway have finished: {busy}. Click to restart now.", a);
     b.onclick = () => {
       if (Date.now() - (+b.dataset.armed || 0) < 1500) return;
       b.classList.add("busy");
@@ -4285,7 +4285,7 @@ async function skipUpdate(v) {
   if (view === "settings" && prefs) renderSettings();
 }
 
-// backAsNew waits, in magpie web, for the version the page restarted into
+// backAsNew waits, in magpie-friday web, for the version the page restarted into
 // to answer in its place, and reloads the page from it (#111).
 async function backAsNew(was) {
   if (!web) return;
@@ -4296,26 +4296,26 @@ async function backAsNew(was) {
   }
 }
 
-// updateStuck says why this magpie can't replace itself where it is: off
+// updateStuck says why this magpie-friday can't replace itself where it is: off
 // the Mac, a folder it may not write to, such as C:\ (#1277), or a
 // container, whose image is what gets updated.
 function updateStuck(u) {
-  if (u.stuck === "container") return t("magpie runs in a container, so it can't update itself; pull the new image (docker pull ghcr.io/yetone/magpie:latest) and recreate the container.");
-  if (u.stuck === "not-writable") return t("magpie can't write to the folder it runs from ({dir}), so it can't update itself; move it to a folder you can write to and open it from there.", { dir: u.stuckDir || "" });
+  if (u.stuck === "container") return t("magpie-friday runs in a container, so it can't update itself; pull the new image (docker pull ghcr.io/cha0sal3r/magpie-friday:latest) and recreate the container.");
+  if (u.stuck === "not-writable") return t("magpie-friday can't write to the folder it runs from ({dir}), so it can't update itself; move it to a folder you can write to and open it from there.", { dir: u.stuckDir || "" });
   return u.stuck === "translocated"
-    ? t("macOS is running magpie from a temporary copy, so it can't update itself; move magpie to Applications and open it from there.")
-    : t("magpie is running from its disk image, so it can't update itself; drag it to Applications and open it from there.");
+    ? t("macOS is running magpie-friday from a temporary copy, so it can't update itself; move magpie-friday to Applications and open it from there.")
+    : t("magpie-friday is running from its disk image, so it can't update itself; drag it to Applications and open it from there.");
 }
 
 // ---------- what's new ----------
-// After an update the window (or magpie web's page) shows what changed in
+// After an update the window (or magpie-friday web's page) shows what changed in
 // every release since the one last run, once (a Discord user: to see if
 // their issue was fixed). Not in the tray's panel, where a dialog has no
 // room; Settings' version row opens it again, and with an update waiting,
 // that one's notes first.
-const ISSUES = "https://github.com/yetone/magpie/issues/";
+const ISSUES = "https://github.com/cha0sal3r/magpie-friday/issues/";
 let whatsNewAsked = false;
-// cliBehindOnce: the terminal's magpie is a copied file rather than the
+// cliBehindOnce: the terminal's magpie-friday is a copied file rather than the
 // installer's link, so it can't follow the app's updates (#531's lesson: a
 // stale command wedged the WebDAV sync). The window can't tell a stale copy
 // from a current one — that would mean running the old binary, whose
@@ -4329,9 +4329,9 @@ function cliBehindOnce() {
   if (!state?.cliBehind) return;
   const ed = el("div", "editor");
   const head = el("div", "ehead");
-  head.append(el("b", "", t("The `magpie` command is a copy")));
+  head.append(el("b", "", t("The `magpie-friday` command is a copy")));
   ed.append(head);
-  ed.append(el("p", "lib-confirm", t("The `magpie` command at {path} is a copied file, not the installer's link to the app: it won't follow the app's updates, and an old copy can break what a new one fixed. Re-run the installer, or link it by hand.", { path: state.cliBehind })));
+  ed.append(el("p", "lib-confirm", t("The `magpie-friday` command at {path} is a copied file, not the installer's link to the app: it won't follow the app's updates, and an old copy can break what a new one fixed. Re-run the installer, or link it by hand.", { path: state.cliBehind })));
   const bar = el("div", "bar");
   const quiet = el("button", "text", t("Hide until the next version"));
   quiet.onclick = async (e) => {
@@ -4725,11 +4725,11 @@ function oneRowPerModel(options, cur) {
   return options.filter((o) => !gone.has(o));
 }
 
-// foldSame: magpie's rows for the very account the agent is signed in to
-// itself (Claude Code's Claude subscription, added in magpie too) are the
+// foldSame: magpie-friday's rows for the very account the agent is signed in to
+// itself (Claude Code's Claude subscription, added in magpie-friday too) are the
 // agent's own models a second time; they fold into one row that a click
 // opens, for the few who want them (failover to more accounts, a fix that
-// only magpie's way has). The value set stays a row of its own (#496). The
+// only magpie-friday's way has). The value set stays a row of its own (#496). The
 // row comes after the agent's own rows of its group: the account is listed
 // after the providers the user added, and in its place the group was
 // headed twice. A query shows every row it finds, for Enter to pick.
@@ -4739,7 +4739,7 @@ function foldSame(items) {
   if (!same.length) return items;
   const first = same[0];
   const row = { fold: true, open: !!pick.unfold, n: same.length, group: first.group, icon: first.icon,
-    account: (first.note || "").replace(/ · via magpie$/, "") };
+    account: (first.note || "").replace(/ · via magpie-friday$/, "") };
   const out = items.filter((o) => !same.includes(o));
   const own = out.findLastIndex((o) => o.group === first.group);
   out.splice(own >= 0 ? own + 1 : items.indexOf(first), 0, row, ...(pick.unfold ? same : []));
@@ -4763,9 +4763,9 @@ function openPicker(agent, field, anchor, ev, only) {
   const cur = field.value;
   let options = field.options.filter((o) => !only || only(o));
   // routing groups come first, then each provider's, then the models the
-  // agent asks for itself, not through magpie: Claude Code's own list of
-  // Claude models above them hid every magpie model below the fold (abledo
-  // on Discord: "claudecode的magpie模型选不了"). Only the picker's own
+  // agent asks for itself, not through magpie-friday: Claude Code's own list of
+  // Claude models above them hid every magpie-friday model below the fold (abledo
+  // on Discord: "claudecode的magpie-friday模型选不了"). Only the picker's own
   // choices (Automatic, Off) above them all
   const rest = options.filter((o) => !o.reset && o.group !== ROUTING_GROUPS);
   options = [...options.filter((o) => o.reset), ...options.filter((o) => !o.reset && o.group === ROUTING_GROUPS), ...rest.filter((o) => !o.direct), ...rest.filter((o) => o.direct)];
@@ -4786,7 +4786,7 @@ function openPicker(agent, field, anchor, ev, only) {
   const i = options.findIndex((o) => o.value === cur);
   if (!effortPicker && !field.menu && i > 0) { const [c] = options.splice(i, 1); options.unshift({ ...c, group: "", home: c.group }); }
   else if (i < 0 && cur && !only) options.unshift({ value: cur, note: t("current value") });
-  // the agent's own default: magpie's wiring comes out and the key is removed
+  // the agent's own default: magpie-friday's wiring comes out and the key is removed
   if (FOLLOWS_MODEL.includes(field.label)) {
     const main = agent.fields.find((f) => f.key === "model");
     const mainName = main && (optionFor(main, main.value)?.label || main.value);
@@ -4814,10 +4814,10 @@ function openPicker(agent, field, anchor, ev, only) {
     options.unshift({ value: "", label: t("Default"), note: t(note, { agent: agent.name, field: t(field.label) }), icon: agent.icon, reset: true });
   }
   // Default is the agent as installed; this is the agent as it was before
-  // magpie, beside it so the two aren't taken for each other
+  // magpie-friday, beside it so the two aren't taken for each other
   if (agent.wired && field.key === "model" && !only && !field.menu && !field.onPick) {
     const at = options.findIndex((o) => !o.reset);
-    options.splice(at < 0 ? options.length : at, 0, { value: "\0disconnect", label: t("Disconnect from magpie"), note: t("put back what {agent} had before magpie", { agent: agent.name }), svg: UNPLUG, reset: true, run: () => askDisconnect(agent) });
+    options.splice(at < 0 ? options.length : at, 0, { value: "\0disconnect", label: t("Disconnect from magpie-friday"), note: t("put back what {agent} had before magpie-friday", { agent: agent.name }), svg: UNPLUG, reset: true, run: () => askDisconnect(agent) });
   }
   const modelPicker = ["model", "small", "large", MEMORIES, SUB_MODEL, AUTO_MODE, "executor", "planner", ...ROLE_MODELS].includes(field.label) && !only;
   pick = { agent, field, options, groups, anchor, cursor: 0, free: !only && !field.menu, modelPicker, effortPicker, groupFilter: "all" };
@@ -4860,7 +4860,7 @@ const EFFORT_ORDER = ["off", "none", "minimal", "low", "medium", "high", "xhigh"
 
 // effortStops are an effort field's options with its value among them when
 // it isn't one, as the panel's slider has its stops: a level in its place
-// (max above high), anything else — unset, auto, one magpie doesn't know —
+// (max above high), anything else — unset, auto, one magpie-friday doesn't know —
 // first.
 function effortStops(f) {
   const options = f?.options || [];
@@ -5289,25 +5289,25 @@ function contextTag(n, name) {
 }
 
 // pathTag: an agent's model picker says by each model whether the agent
-// asks it through magpie or of its own vendor directly (Claude Code on its
+// asks it through magpie-friday or of its own vendor directly (Claude Code on its
 // own sign-in), and its Default, while it is connected, that it takes the
-// agent off magpie. Every agent's picker says it so, in one tag the note's
-// ellipsis can't cut off: the others' "· via magpie" ended their notes,
+// agent off magpie-friday. Every agent's picker says it so, in one tag the note's
+// ellipsis can't cut off: the others' "· via magpie-friday" ended their notes,
 // where Claude Code's was a tag (EZN7L2C3, #834). Codex's own models,
-// through magpie while it is routed, say so too (via); Codex's, Grok
+// through magpie-friday while it is routed, say so too (via); Codex's, Grok
 // Build's and Antigravity CLI's own said nothing at all
 function pathTag(o) {
   if (!pick?.agent || o.custom || o.run) return null;
   let tag = null;
   if (o.ref || o.via) {
-    tag = el("span", "badge path via", t("via magpie"));
-    tag.title = t("{agent} asks magpie for it", { agent: pick.agent.name });
+    tag = el("span", "badge path via", t("via magpie-friday"));
+    tag.title = t("{agent} asks magpie-friday for it", { agent: pick.agent.name });
   } else if (o.direct) {
-    tag = el("span", "badge path direct", t("direct, not via magpie"));
-    tag.title = t("straight to {vendor}, not through magpie", { vendor: o.direct });
+    tag = el("span", "badge path direct", t("direct, not via magpie-friday"));
+    tag.title = t("straight to {vendor}, not through magpie-friday", { vendor: o.direct });
   } else if (o.reset && o.value === "" && leavesMagpie(pick.agent, pick.field, "", o)) {
-    tag = el("span", "badge path direct", t("off magpie"));
-    tag.title = t("{agent} as installed: magpie's endpoint and models come out", { agent: pick.agent.name });
+    tag = el("span", "badge path direct", t("off magpie-friday"));
+    tag.title = t("{agent} as installed: magpie-friday's endpoint and models come out", { agent: pick.agent.name });
   }
   return tag;
 }
@@ -5327,7 +5327,7 @@ function renderList() {
     li.dataset.i = idx;
     if (hasIcons) li.append(optionIcon(o));
     const words = el("span", "option-words");
-    // a choice of magpie's own (Codex's sign-in) reads in the page's language
+    // a choice of magpie-friday's own (Codex's sign-in) reads in the page's language
     const own = pick.field.label === "sign-in";
     words.append(el("span", "v", own ? t(o.label || o.value) : o.label || o.value));
     const tell = tellTag(o.tell);
@@ -5338,14 +5338,14 @@ function renderList() {
     const ctx = contextTag(o.context, o.label);
     if (ctx) words.append(ctx);
     // an Aside account's note is its e-mail, or Aside's "Local Account",
-    // then whether Aside has it active: the words are magpie's, the e-mail not
+    // then whether Aside has it active: the words are magpie-friday's, the e-mail not
     let note = o.note && o.note !== (o.label || o.value) ? (own ? t(o.note) : asideAccount(pick.agent, pick.field) ? o.note.split(" · ").map((w) => t(w)).join(" · ") : o.note) : "";
     // which way the model goes, as a tag the note's ellipsis can't cut
-    // off: "· via magpie" ended a long note (an account's e-mail), and
+    // off: "· via magpie-friday" ended a long note (an account's e-mail), and
     // Claude Code's own models said nothing, so an Opus asked of Anthropic
-    // directly and a Sonnet through magpie looked alike (#726)
+    // directly and a Sonnet through magpie-friday looked alike (#726)
     const path = pathTag(o);
-    if (path) { words.append(path); note = note.replace(/(^| · )via magpie$/, ""); }
+    if (path) { words.append(path); note = note.replace(/(^| · )via magpie-friday$/, ""); }
     if (q && o.group && !note) note = o.group;
     // a note cut off by its ellipsis (the other groups a model is in,
     // #907) reads whole on hover
@@ -5390,7 +5390,7 @@ function fastToggle(o) {
   const name = o.label || o.value;
   const agent = pick.agent.name || o.fastFor;
   // on a provider the user added (ownFast, #1615) fast is only asked for:
-  // magpie can't know the provider serves it
+  // magpie-friday can't know the provider serves it
   b.title = o.ownFast
     ? (o.fast ? t("{model} is asked for OpenAI's fast mode for {agent}, where your provider serves it. Click to send it as {agent} asks", { model: name, agent })
       : t("Ask your provider for OpenAI's fast mode (service_tier \"priority\") on {model} for {agent}: quicker, at a higher price, where it serves it", { model: name, agent }))
@@ -5449,7 +5449,7 @@ function fastTag(ultra) {
 }
 
 // foldRow: the one row the models on the agent's own account through
-// magpie fold into (foldSame), opened or closed at a click
+// magpie-friday fold into (foldSame), opened or closed at a click
 function foldRow(o, idx, hasIcons) {
   const li = el("li", "fold" + (o.open ? " open" : "") + (idx === pick.cursor ? " sel" : ""));
   li.dataset.i = idx;
@@ -5457,13 +5457,13 @@ function foldRow(o, idx, hasIcons) {
   li.setAttribute("aria-expanded", String(o.open));
   if (hasIcons) li.append(optionIcon(o));
   const words = el("span", "option-words");
-  words.append(el("span", "v", t(o.n === 1 ? "{n} model via magpie" : "{n} models via magpie", { n: o.n })));
+  words.append(el("span", "v", t(o.n === 1 ? "{n} model via magpie-friday" : "{n} models via magpie-friday", { n: o.n })));
   words.append(el("span", "n", o.account ? t("{account} · the account {agent} is signed in to", { account: o.account, agent: pick.agent.name }) : t("the account {agent} is signed in to", { agent: pick.agent.name })));
   li.append(words);
   const chev = el("span", "chev");
   chev.append(svg("m6 4 4 4-4 4", 12, 1.6));
   li.append(chev);
-  li.title = t(o.open ? "Fold them away again" : "The same models as {agent}'s own, through magpie: click to show them", { agent: pick.agent.name });
+  li.title = t(o.open ? "Fold them away again" : "The same models as {agent}'s own, through magpie-friday: click to show them", { agent: pick.agent.name });
   li.onmousemove = () => { if (pick.cursor !== idx) { pick.cursor = idx; renderList(); } };
   // the filter keeps the keys: the picker stays open, and the arrows,
   // Enter and Esc go on working
@@ -5524,7 +5524,7 @@ async function commit(value) {
     return;
   }
   closePicker();
-  if (opt?.run) return opt.run(); // an act rather than a value (Disconnect from magpie)
+  if (opt?.run) return opt.run(); // an act rather than a value (Disconnect from magpie-friday)
   if (field.onPick) return field.onPick(value, opt); // a picker opened for something other than an agent's setting
   if (field.menu) {
     // a tier chosen from the tiers menu: now its model
@@ -5534,7 +5534,7 @@ async function commit(value) {
   }
   if (value === field.value) return;
   if (agent.native) return setPick(agent, field, value, opt);
-  // a pick that takes a connected agent off magpie (its Default, or a
+  // a pick that takes a connected agent off magpie-friday (its Default, or a
   // model of its own asked of its vendor directly) is asked first, as the
   // switch's off is: it moved Claude Code under Not set up at a click
   // (#726)
@@ -5543,16 +5543,16 @@ async function commit(value) {
 }
 
 // asideAccount: Aside's account field, which of its accounts (~/.aside/u/N)
-// magpie configures; empty follows the one Aside has active (#1499)
+// magpie-friday configures; empty follows the one Aside has active (#1499)
 function asideAccount(a, f) {
   return a?.id === "aside" && f?.key === "account";
 }
 
 // leavesMagpie: picking value in field takes the connected agent off
-// magpie: its Default in the field it is connected through (Set("") takes
-// out what magpie wired in), or a model of its own it asks its vendor for
+// magpie-friday: its Default in the field it is connected through (Set("") takes
+// out what magpie-friday wired in), or a model of its own it asks its vendor for
 // directly (Claude Code's own, which unroutes it). From one of its own
-// models already, the pick doesn't move it off magpie.
+// models already, the pick doesn't move it off magpie-friday.
 function leavesMagpie(a, field, value, opt) {
   if (a?.native || !a?.wired || !connectable(a)) return false;
   // Reasonix restores each role separately; either role can keep its provider.
@@ -5566,22 +5566,22 @@ function leavesMagpie(a, field, value, opt) {
 
 // askLeave: what such a pick does, and the way back, before it is made.
 // Default isn't Disconnect: it leaves the agent as installed, where
-// Disconnect puts back what it had before magpie, so both are offered.
+// Disconnect puts back what it had before magpie-friday, so both are offered.
 function askLeave(a, field, value, opt) {
   const model = opt?.label || value;
   const ed = el("div", "editor disconnect-ask leave-ask");
   const head = el("div", "ehead");
-  head.append(icon(a.icon), el("b", "", t("Take {agent} off magpie?", { agent: a.name })));
+  head.append(icon(a.icon), el("b", "", t("Take {agent} off magpie-friday?", { agent: a.name })));
   ed.append(head);
   ed.append(el("p", "lib-confirm", value === "" && a.id === "reasonix"
     ? t("Restores {agent}'s previous {field} selection. Magpie's provider and private credential are removed when neither executor nor planner uses them.", { agent: a.name, field: t(field.label) })
     : value === ""
-    ? t("Default is {agent} as installed: magpie's endpoint and models come out, and {agent} starts on its own default model. What it had before magpie isn't put back; Disconnect and restore does that.", { agent: a.name })
-    : t("{model} is {agent}'s own model: {agent} asks {vendor} for it itself, with its own sign-in, not through magpie. Picking it takes {agent} off magpie, and it starts on {model}.", { agent: a.name, model, vendor: opt.direct })));
+    ? t("Default is {agent} as installed: magpie-friday's endpoint and models come out, and {agent} starts on its own default model. What it had before magpie-friday isn't put back; Disconnect and restore does that.", { agent: a.name })
+    : t("{model} is {agent}'s own model: {agent} asks {vendor} for it itself, with its own sign-in, not through magpie-friday. Picking it takes {agent} off magpie-friday, and it starts on {model}.", { agent: a.name, model, vendor: opt.direct })));
   const others = state.agents.some((x) => x.id !== a.id && onMagpie(x) && !isHidden(x));
   ed.append(el("p", "lib-confirm", others
-    ? t("「接入」 goes off, and {agent} is listed under Not set up with the agents not connected. Switch it on again to go back through magpie.", { agent: a.name })
-    : t("「接入」 goes off. Switch it on again to go back through magpie.")));
+    ? t("「接入」 goes off, and {agent} is listed under Not set up with the agents not connected. Switch it on again to go back through magpie-friday.", { agent: a.name })
+    : t("「接入」 goes off. Switch it on again to go back through magpie-friday.")));
   const bar = el("div", "bar");
   const go = el("button", "text primary", value === "" ? t("Use default") : t("Use {model}", { model }));
   go.onclick = (e) => { e.stopPropagation(); closeConfirmAsk(); setPick(a, field, value, opt); };
@@ -5603,7 +5603,7 @@ function askLeave(a, field, value, opt) {
 
 // setPick writes a value picked for an agent's field
 async function setPick(agent, field, value, opt) {
-  // The pick shows at once: the row is drawn with it before magpie has
+  // The pick shows at once: the row is drawn with it before magpie-friday has
   // written the config and answered with the whole state, which can take
   // seconds (every agent's lists are read again for it). The answer then
   // draws what the config really says; a refused pick puts the old one back.
@@ -5650,8 +5650,8 @@ async function setPick(agent, field, value, opt) {
     flash();
     const shown = opt?.label || value;
     if (state.notice) status(withNotice(`${agent.name} → ${shown}`, state.notice), "warn", 9000);
-    else if (leaving && value === "") status(t(agent.id === "reasonix" ? "{agent} no longer goes through magpie; its own settings are back" : "{agent} no longer goes through magpie · on its own default", { agent: agent.name }), "ok", 6000);
-    else if (opt?.direct) status(`${agent.name} ${t(field.label)} → ${shown} · ${t("straight to {vendor}, not through magpie", { vendor: opt.direct })}`, "ok", 6000);
+    else if (leaving && value === "") status(t(agent.id === "reasonix" ? "{agent} no longer goes through magpie-friday; its own settings are back" : "{agent} no longer goes through magpie-friday · on its own default", { agent: agent.name }), "ok", 6000);
+    else if (opt?.direct) status(`${agent.name} ${t(field.label)} → ${shown} · ${t("straight to {vendor}, not through magpie-friday", { vendor: opt.direct })}`, "ok", 6000);
     else status(`${agent.name} ${t(field.label)} → ${shown}`, "ok");
     if (providers) loadProviders();
   } catch (e) {
@@ -5732,7 +5732,7 @@ function profileLibrary(l) {
 
 // profilePending are the profiles a save, update, delete or use is on its
 // way for. What the click does shows at once — the chip saved is there, the
-// one deleted gone, the name field closed — rather than when magpie has read
+// one deleted gone, the name field closed — rather than when magpie-friday has read
 // every agent again for the answer: that took seconds, and a Save or × that
 // changed nothing for that long looked broken. An error puts the list back.
 const profilePending = new Set();
@@ -5741,7 +5741,7 @@ async function profileAction(action, name, update) {
   const before = state.profiles;
   if (action === "delete") state.profiles = before.filter((p) => p.name !== name);
   else if (action === "save" && !before.some((p) => p.name === name)) {
-    // where magpie will list it: by name, as Go's sort.Strings has them
+    // where magpie-friday will list it: by name, as Go's sort.Strings has them
     state.profiles = [...before, { name, summary: "" }].sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
   }
   if (action !== "delete") profilePending.add(name);
@@ -6338,7 +6338,7 @@ async function switchProvider(p, on, s) {
 }
 
 // renderFileError: over the list, that providers.json is there but can't
-// be read, so the list is the signed-in accounts alone: magpie left the
+// be read, so the list is the signed-in accounts alone: magpie-friday left the
 // file as it is, and nothing is saved over it until it is fixed or moved.
 function renderFileError() {
   const box = $("#fileError");
@@ -6351,7 +6351,7 @@ function renderFileError() {
   r.append(el("span", "mark", "!"));
   const tt = el("span", "tt");
   tt.append(el("span", "n", t("Your providers file can't be read")),
-    el("span", "s", t("magpie left it unchanged and lists no providers from it. Fix the file or move it aside, then reopen this page; until then, changes to providers are refused.")),
+    el("span", "s", t("magpie-friday left it unchanged and lists no providers from it. Fix the file or move it aside, then reopen this page; until then, changes to providers are refused.")),
     el("span", "s", providers.fileError));
   r.append(tt);
   box.append(r);
@@ -6359,10 +6359,10 @@ function renderFileError() {
 
 // DEPRECATED_WHY: why a built-in subscription a community plugin can run
 // is deprecated, said wherever it is marked so.
-const DEPRECATED_WHY = "Some subscriptions are reached in ways their vendors' terms may not allow. So that magpie itself isn't banned over them, subscription providers are being decoupled from magpie and run by community plugins instead.";
+const DEPRECATED_WHY = "Some subscriptions are reached in ways their vendors' terms may not allow. So that magpie-friday itself isn't banned over them, subscription providers are being decoupled from magpie-friday and run by community plugins instead.";
 // deprecatedSub: a built-in subscription with a plugin, not moved onto it
 const deprecatedSub = (agent) => (providers?.movable || []).includes(agent) && !movedSub(agent);
-// unusedSub: a deprecated built-in with no account in magpie, which the
+// unusedSub: a deprecated built-in with no account in magpie-friday, which the
 // add sheet leaves to the Plugins page
 const unusedSub = (agent) => deprecatedSub(agent) && !(providers?.providers || []).some((p) => p.account?.agent === agent);
 // replacedSub: a deprecated built-in whose plugin is installed and serves
@@ -6459,7 +6459,7 @@ function unmovedLine(p) {
   return card;
 }
 
-// Sign-ins magpie found but leaves alone, so nobody wonders why an agent that
+// Sign-ins magpie-friday found but leaves alone, so nobody wonders why an agent that
 // is clearly logged in is not in the list: the ones the user removed.
 function renderExcluded() {
   const box = $("#excluded");
@@ -6476,14 +6476,14 @@ function renderExcluded() {
       quiet.title = t("Hide this line; Add a provider still offers it back");
       quiet.onclick = () => providerAction("quiet", { id: x.provider });
       const out = el("button", "link", t("Sign out"));
-      out.title = t("magpie signs out the accounts it keeps for {name}; adding it again signs in afresh", { name: x.agentName });
+      out.title = t("magpie-friday signs out the accounts it keeps for {name}; adding it again signs in afresh", { name: x.agentName });
       out.onclick = () => askForgetAccount(x);
       r.lastChild.append(" ", back, " · ", quiet, " · ", out);
     }
     // an agent signed out here (a banned account logged out, say) lists
     // its saved accounts nowhere else, so this is where they are removed
     // the keychain didn't give Codex's sign-in (#2367): read it once more,
-    // the refusal magpie kept dropped, rather than wait it out or restart
+    // the refusal magpie-friday kept dropped, rather than wait it out or restart
     if (x.retry) {
       const again = el("button", "link", t("Try again"));
       again.title = t("Ask the macOS keychain for {agent}'s sign-in again", { agent: x.agentName });
@@ -6492,7 +6492,7 @@ function renderExcluded() {
     }
     if (x.signedOut && x.users?.length) {
       const rm = el("button", "link", t("Remove"));
-      rm.title = t("magpie forgets the accounts it saved; {agent}'s own files are left as they are", { agent: x.agentName });
+      rm.title = t("magpie-friday forgets the accounts it saved; {agent}'s own files are left as they are", { agent: x.agentName });
       rm.onclick = () => askForgetSaved(x);
       r.lastChild.append(x.retry ? " · " : " ", rm);
     }
@@ -6500,8 +6500,8 @@ function renderExcluded() {
   }
 }
 
-// askForgetSaved asks before magpie drops the accounts it saved of an agent
-// signed out here, as a reset asks; it forgets only magpie's copies, never
+// askForgetSaved asks before magpie-friday drops the accounts it saved of an agent
+// signed out here, as a reset asks; it forgets only magpie-friday's copies, never
 // the agent's own files or keychain. It is the reset's dialog, so the
 // backdrop and Escape close it the same way.
 function askForgetSaved(x) {
@@ -6509,7 +6509,7 @@ function askForgetSaved(x) {
   const head = el("div", "ehead");
   head.append(icon(x.agentIcon), el("b", "", t(x.users.length === 1 ? "Remove {agent}'s saved account?" : "Remove {agent}'s {n} saved accounts?", { agent: x.agentName, n: x.users.length })));
   ed.append(head);
-  ed.append(el("p", "lib-confirm", t("magpie forgets its copy of {users}. {agent}'s own files and sign-in, and the account itself, are left as they are.", { users: x.users.join(", "), agent: x.agentName })));
+  ed.append(el("p", "lib-confirm", t("magpie-friday forgets its copy of {users}. {agent}'s own files and sign-in, and the account itself, are left as they are.", { users: x.users.join(", "), agent: x.agentName })));
   const bar = el("div", "bar");
   const go = el("button", "text primary danger-fill", t("Remove"));
   go.onclick = async (e) => {
@@ -6536,16 +6536,16 @@ function askForgetSaved(x) {
   cancel.focus();
 }
 
-// askForgetAccount asks before magpie signs a removed account out for
-// good: what magpie keeps of its sign-ins goes, so adding it again signs in
+// askForgetAccount asks before magpie-friday signs a removed account out for
+// good: what magpie-friday keeps of its sign-ins goes, so adding it again signs in
 // afresh rather than bringing the old account back (#694). The vendor's
 // account itself is left as it is.
 function askForgetAccount(x) {
   const ed = el("div", "editor forget-ask");
   const head = el("div", "ehead");
-  head.append(icon(x.agentIcon), el("b", "", t("Sign {name} out of magpie?", { name: x.agentName })));
+  head.append(icon(x.agentIcon), el("b", "", t("Sign {name} out of magpie-friday?", { name: x.agentName })));
   ed.append(head);
-  ed.append(el("p", "lib-confirm", t("magpie signs out the accounts it keeps for {name} and forgets them; adding {name} again signs in afresh. The account itself is left as it is.", { name: x.agentName })));
+  ed.append(el("p", "lib-confirm", t("magpie-friday signs out the accounts it keeps for {name} and forgets them; adding {name} again signs in afresh. The account itself is left as it is.", { name: x.agentName })));
   // the one Codex is signed in to goes last, and Codex with it (ForgetLogin)
   if (x.agent === "codex") ed.append(el("p", "lib-confirm", t("Codex itself is signed out too, as codex logout does.")));
   const bar = el("div", "bar");
@@ -6570,7 +6570,7 @@ function askForgetAccount(x) {
 }
 
 // askSignOutLogin asks before Codex is signed out of its only account, as
-// codex logout does: its sign-in file goes and magpie forgets the account.
+// codex logout does: its sign-in file goes and magpie-friday forgets the account.
 // It is the reset's dialog, so the backdrop and Escape close it the same way,
 // back to the provider's editor it was asked from.
 function askSignOutLogin(a, l) {
@@ -6578,7 +6578,7 @@ function askSignOutLogin(a, l) {
   const head = el("div", "ehead");
   head.append(icon(a.agentIcon), el("b", "", t("Sign {agent} out of {user}?", { agent: a.agentName, user: l.user })));
   ed.append(head);
-  ed.append(el("p", "lib-confirm", t("{agent} is signed out, as codex logout does, and magpie forgets the account. Sign in again to use it; an open {agent} may need quitting and opening again. The account itself is left as it is.", { agent: a.agentName })));
+  ed.append(el("p", "lib-confirm", t("{agent} is signed out, as codex logout does, and magpie-friday forgets the account. Sign in again to use it; an open {agent} may need quitting and opening again. The account itself is left as it is.", { agent: a.agentName })));
   const bar = el("div", "bar");
   const go = el("button", "text primary danger-fill", t("Sign out"));
   go.onclick = async (e) => {
@@ -6637,11 +6637,11 @@ function accountPlan(a) {
 // page that gets anything else connected to it: base URL, key, model ids,
 // and a snippet in whichever language the reader is holding.
 
-// copy asks magpie to put text on the clipboard, as the page's own
+// copy asks magpie-friday to put text on the clipboard, as the page's own
 // clipboard API is refused inside the app's window; a browser tab on the
-// dev UI falls back to it. A tab on `magpie web` reached over plain http
+// dev UI falls back to it. A tab on `magpie-friday web` reached over plain http
 // from another computer (a NAS's) has no clipboard API at all, so the
-// older copy command is the last try there. magpie refuses a copy it
+// older copy command is the last try there. magpie-friday refuses a copy it
 // couldn't read back (#1881: GTK 3 on KDE Plasma without middle-click
 // paste served it empty), and the page's ways are tried then too. When
 // none copies, the page says so and shows the text to copy by hand.
@@ -6875,10 +6875,10 @@ function modelInfo(m) {
       ? t("Reasoning: {levels} (the levels every model in it has)", { levels: levels.map((l) => t(l)).join(", ") })
       : t("Reasoning: {levels}", { levels: levels.map((l) => t(l)).join(", ") }));
   } else lines.push(t("Reasoning levels: none known"));
-  // nothing read of its images either way: magpie counts it text-only for a
+  // nothing read of its images either way: magpie-friday counts it text-only for a
   // describer (gateway.blindTo), which is not the same as its list saying so,
   // so it is not called text-only here either. Only a model that carries the
-  // flag is unknown; one magpie has an answer for carries no such key at all.
+  // flag is unknown; one magpie-friday has an answer for carries no such key at all.
   const imgUnknown = m.imagesUnknown === true;
   if (m.images) {
     const c = el("span", "badge mi-img");
@@ -7277,7 +7277,7 @@ function modelField(a) {
   const agent = state.agents.find((x) => x.id === a.id);
   return agent?.fields.find((f) => f.key === "model") || null;
 }
-function ofProvider(p) { return new RegExp(`^(magpie/)?${p.id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/`); }
+function ofProvider(p) { return new RegExp(`^(magpie-friday/)?${p.id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/`); }
 
 // Pick one of this provider's models for an agent, straight from the row.
 function pickForAgent(a, p, btn, ev) {
@@ -7348,7 +7348,7 @@ function renderAdd() {
   const drawTiles = () => {
     tiles.replaceChildren();
     const f = presetQuery.trim().toLowerCase();
-    // the note is found in the words it is shown in, too (远程 for Remote magpie)
+    // the note is found in the words it is shown in, too (远程 for Remote magpie-friday)
     const hit = (pr) => !f || pr.name.toLowerCase().includes(f) || pr.id.includes(f) || hostOf(pr.chat || pr.responses || pr.anthropic).includes(f) || (pr.note || "").toLowerCase().includes(f) || (pr.note ? t(pr.note).toLowerCase().includes(f) : false);
     // a section: its name, what it is in a word, and its rows, three to a line
     const section = (title, hint) => {
@@ -7375,7 +7375,7 @@ function renderAdd() {
     const partners = providers.presets.filter((p) => p.kind === "partner" && partnerShown(p) && (hit(p) || partnerNote(p).toLowerCase().includes(f)));
     if (partners.length) {
       any = true;
-      const grid = section("Partners", "magpie's sponsors");
+      const grid = section("Partners", "magpie-friday's sponsors");
       // a new one's tile keeps a dot until opened (partnerTile)
       newPartnerTiles ??= new Set();
       for (const p of partners) if (p.new && !p.added) newPartnerTiles.add(p.id);
@@ -7412,7 +7412,7 @@ function renderAdd() {
     const gone = (providers.excluded || []).filter((x) => x.quiet && x.provider && (!f || x.agentName.toLowerCase().includes(f) || x.agent.includes(f)));
     if (gone.length) {
       any = true;
-      const grid = section("Removed from magpie", "still signed in");
+      const grid = section("Removed from magpie-friday", "still signed in");
       for (const x of gone) {
         const r = el("div", "tile removed");
         r.dataset.pick = "removed:" + x.provider; // not the subscription's own row, named alike
@@ -7422,7 +7422,7 @@ function renderAdd() {
         back.title = t("its accounts and model picks as they were");
         back.onclick = (e) => { e.stopPropagation(); providerAction("show", { id: x.provider }, t("{name} added back", { name: x.agentName })); };
         const out = el("button", "text action danger", t("Sign out…"));
-        out.title = t("magpie forgets its accounts; adding it again signs in afresh");
+        out.title = t("magpie-friday forgets its accounts; adding it again signs in afresh");
         out.onclick = (e) => { e.stopPropagation(); askForgetAccount(x); };
         const acts = el("span", "acts");
         acts.append(back, out);
@@ -7430,9 +7430,9 @@ function renderAdd() {
         grid.append(r);
       }
     }
-    // another computer's magpie is no relay: a heading of its own, after
+    // another computer's magpie-friday is no relay: a heading of its own, after
     // this machine's (Avalon on Discord didn't find it among the relays)
-    for (const [kind, title, hint] of [["vendor", "Vendors", "the makers' own APIs"], ["relay", "Relays", "one key, many vendors"], ["local", "On this machine", ""], ["remote", "Another computer's magpie", "shared on its network"]]) {
+    for (const [kind, title, hint] of [["vendor", "Vendors", "the makers' own APIs"], ["relay", "Relays", "one key, many vendors"], ["local", "On this machine", ""], ["remote", "Another computer's magpie-friday", "shared on its network"]]) {
       // a vendor's China endpoint is a preset of its own: one row with the global one
       const rows = providers.presets.filter((p) => p.kind === kind && !globalOf(p))
         .map((p) => [p, chinaOf(p)]).filter(([p, cn]) => hit(p) || (cn && hit(cn)));
@@ -7490,7 +7490,7 @@ function morePluginsTile(q) {
   const ic = el("span", "puzzle");
   ic.append(svg(PUZZLE, 15, 1.4));
   b.append(ic, nm, svg(CHEV_R, 11, 1.6));
-  b.title = t("Subscriptions magpie doesn't sign in to itself: install a plugin for one in the Plugins tab");
+  b.title = t("Subscriptions magpie-friday doesn't sign in to itself: install a plugin for one in the Plugins tab");
   b.onclick = () => openPlugins(q);
   return b;
 }
@@ -7626,7 +7626,7 @@ function partnerNote(pr) {
   return n.en || "";
 }
 
-// countPartner counts what for partners (provider.CountPartner): magpie
+// countPartner counts what for partners (provider.CountPartner): magpie-friday
 // counts them only when the stats are on, and nothing waits on it
 function countPartner(what, ids) {
   if (ids.length) api("partner", { what, ids }).catch(() => {});
@@ -8137,7 +8137,7 @@ function asTyped() {
   if (xb.value) body.extraBody = xb.value;
   const proxy = draft.proxyMode === undefined ? null : proxyOfDraft();
   if (proxy !== null) body.proxy = proxy;
-  // asked unchecked as it would be saved; magpie takes it only for a
+  // asked unchecked as it would be saved; magpie-friday takes it only for a
   // provider of the user's own
   body.insecureTLS = !!draft.insecureTLS;
   return body;
@@ -8371,7 +8371,7 @@ function parses(s) { try { JSON.parse(s); return true; } catch { return false; }
 // A provider's extra body fields (#1604): a JSON object the gateway merges
 // into the top of every request's body to the vendor, filling in what the
 // body lacks, or replacing it for a name written "!name"; ${sessionId} is
-// the conversation's id. The fields magpie sets itself — the model, stream,
+// the conversation's id. The fields magpie-friday sets itself — the model, stream,
 // the conversation — are refused, as provider.ExtraBodyReserved refuses
 // them on a save. The draft keeps the text as typed; extraBodyOf reads it.
 const EXTRA_BODY_RESERVED = ["model", "stream", "messages", "input", "contents", "system", "systemInstruction", "system_instruction", "instructions", "tools"];
@@ -8389,7 +8389,7 @@ function extraBodyOf(text) {
   for (const k of Object.keys(v)) {
     const name = k.trim().replace(/^!/, "").trim();
     if (!name) return { error: t("a field needs a name") };
-    if (EXTRA_BODY_RESERVED.includes(name)) return { error: t("magpie sets {k} itself, so it can't be added", { k: name }) };
+    if (EXTRA_BODY_RESERVED.includes(name)) return { error: t("magpie-friday sets {k} itself, so it can't be added", { k: name }) };
     if (seen.has(name)) return { error: t("{k} is named twice", { k: name }) };
     seen.add(name);
   }
@@ -8419,7 +8419,7 @@ function extraBodyEditor() {
 }
 
 // iconPicker: a custom provider's icon — one of the built-in ones, or a
-// picture of the user's own, which magpie keeps in ~/.config/magpie/icons.
+// picture of the user's own, which magpie-friday keeps in ~/.config/magpie-friday/icons.
 // A routing group's icon: its providers' icons stacked, the first on top,
 // so which providers a group routes over shows at a glance.
 function stackIcon(icons) {
@@ -9138,7 +9138,7 @@ function drawEditor(p, presetID) {
   // more provider of it, under a name and id of its own
   const another = isNew && !!pr?.added;
   // an editor opened afresh has Names & levels folded: it stayed open in
-  // every editor after, until magpie was restarted (Hu9956, #868)
+  // every editor after, until magpie-friday was restarted (Hu9956, #868)
   if (!draft) naming = null;
   draft = draft || (p
     ? draftOf(p)
@@ -9377,7 +9377,7 @@ function drawEditor(p, presetID) {
   adv.append(advIn);
 
   if (p?.account) {
-    // the sign-in belongs to the agent; magpie only borrows it
+    // the sign-in belongs to the agent; magpie-friday only borrows it
     const a = p.account;
     if (subOf(a.agent)) {
       // no Claude Code on Windows: the gateway runs the one in WSL
@@ -9410,15 +9410,15 @@ function drawEditor(p, presetID) {
     advIn.append(...priceRateField());
     if (p.cline) advIn.append(...upstreamField());
     ed.append(...pluginOptionsField(subOf(a.agent)));
-    // a plugin's provider is reached inside magpie: its plugin:// URLs go
+    // a plugin's provider is reached inside magpie-friday: its plugin:// URLs go
     // nowhere to show or test
     const urls = [p.chat, p.responses, p.anthropic].filter(Boolean);
     if (urls.length && !urls.some((u) => u.startsWith("plugin://"))) ed.append(...field(t("Endpoints"), renderEndpoints(p, p)));
     ed.append(adv);
     const bar = el("div", "bar");
-    // removing only hides it from magpie; the agent stays signed in
+    // removing only hides it from magpie-friday; the agent stays signed in
     const del = el("button", "text danger", t("Remove"));
-    del.title = t("{agent} stays signed in; magpie just stops offering it", { agent: a.agentName });
+    del.title = t("{agent} stays signed in; magpie-friday just stops offering it", { agent: a.agentName });
     del.onclick = () => providerAction("delete", { id: p.id }, t("{name} removed", { name: p.name }));
     bar.append(del, el("span", "grow"));
     const cancel = el("button", "text", t("Cancel"));
@@ -9458,7 +9458,7 @@ function drawEditor(p, presetID) {
 
   // a vendor reached at the user's own resource (Azure OpenAI): no URL of
   // the preset's, the one the resource is at is typed or pasted here, and
-  // magpie puts it on the API the preset speaks when it is saved
+  // magpie-friday puts it on the API the preset speaks when it is saved
   let endpoint = null;
   if (pr?.endpoint) {
     if (draft.chat === undefined) { draft.chat = p?.chat || ""; draft.responses = p?.responses || ""; }
@@ -9602,7 +9602,7 @@ function drawEditor(p, presetID) {
   if (p?.keyList?.length) ed.append(...field(t("Accounts"), renderKeyAccounts(p), p.routing ? t("Tick every key to use; Routing says how requests spread over them.") : t("Tick every key to use. Requests go to the first; when it runs out of quota or hits a rate limit, the next ticked key takes over.")));
   if (p?.keyList?.filter((k) => k.on).length > 1) ed.append(...renderRouting(p));
   else if (vertex) ed.append(...vertexFields());
-  else ed.append(...field(t("API key"), keyWrap, isNew ? t("Kept in ~/.config/magpie/providers.json, readable by you alone. Nothing is read from your shell.") : ""));
+  else ed.append(...field(t("API key"), keyWrap, isNew ? t("Kept in ~/.config/magpie-friday/providers.json, readable by you alone. Nothing is read from your shell.") : ""));
 
   // A user-defined provider can have its own picture; presets keep theirs.
   if (custom) ed.append(...field(t("Icon"), iconPicker(ed), ""));
@@ -9629,13 +9629,13 @@ function drawEditor(p, presetID) {
   if (p?.cline || (isNew && pr?.id === "clinepass")) advIn.append(...upstreamField());
 
   // a relay in front of Anthropic's or OpenAI's API searches the web as
-  // they do, which magpie can't tell from its host (#359): a client's web
-  // search goes to it as sent, rather than through magpie's own. Only its
+  // they do, which magpie-friday can't tell from its host (#359): a client's web
+  // search goes to it as sent, rather than through magpie-friday's own. Only its
   // Anthropic or Responses API can be asked to: a Chat one has no such tool
   if (custom) {
     const [stk, scb] = tick(t("Searches the web by itself"), !!draft.searches);
     scb.onchange = () => { draft.searches = scb.checked; };
-    const row = field(t("Web search"), stk, t("For a relay in front of Anthropic's or OpenAI's own API: Claude Code's WebSearch and Codex's web_search go to it as they were sent, not through magpie's search. magpie doesn't automatically search with it for other models, but you can name it as the searcher."));
+    const row = field(t("Web search"), stk, t("For a relay in front of Anthropic's or OpenAI's own API: Claude Code's WebSearch and Codex's web_search go to it as they were sent, not through magpie-friday's search. magpie-friday doesn't automatically search with it for other models, but you can name it as the searcher."));
     showSearch = () => { for (const e of row) e.style.display = searchable() ? "" : "none"; };
     showSearch();
     advIn.append(...row);
@@ -9643,7 +9643,7 @@ function drawEditor(p, presetID) {
 
   // which header the key goes in on a third-party Anthropic API: both by
   // default, one alone for a service that refuses the two together (Aloha
-  // on Discord: "x-api-key 和 Authorization 不可以同时存在"), which magpie
+  // on Discord: "x-api-key 和 Authorization 不可以同时存在"), which magpie-friday
   // also learns from that refusal. Anthropic's, Bedrock's (its runtime and
   // its Mantle endpoint) and Azure's own APIs take x-api-key alone already
   const twoKeyHeaders = () => {
@@ -9658,7 +9658,7 @@ function drawEditor(p, presetID) {
   if (!p?.account && !vertex) {
     const seg = segs([["", t("Both")], ["x-api-key", "x-api-key"], ["bearer", "Authorization: Bearer"]], draft.authHeader || "", (v) => { draft.authHeader = v; });
     seg.classList.add("auth-header");
-    const row = field(t("Key header"), seg, t("Which header the API key goes in on the Anthropic API. Most services take both; pick one for a service that refuses the two together. magpie also switches to one by itself when a service says so."));
+    const row = field(t("Key header"), seg, t("Which header the API key goes in on the Anthropic API. Most services take both; pick one for a service that refuses the two together. magpie-friday also switches to one by itself when a service says so."));
     showAuth = () => { for (const e of row) e.style.display = twoKeyHeaders() ? "" : "none"; };
     showAuth();
     advIn.append(...row);
@@ -9666,14 +9666,14 @@ function drawEditor(p, presetID) {
 
   // a coding plan that serves only agents it names knows them by their
   // User-Agent (#1851): a provider with a key may be sent the one the agent
-  // gave in place of magpie's. A signed-in account, and a vendor whose own
-  // client magpie goes as (OpenCode, Cline, Kilo, another magpie), keep
+  // gave in place of magpie-friday's. A signed-in account, and a vendor whose own
+  // client magpie-friday goes as (OpenCode, Cline, Kilo, another magpie-friday), keep
   // the identity they sign with
   const uaPassable = () => !p?.account && !(p ? p.ownClient : pr?.ownClient);
   if (uaPassable()) {
     const [utk, ucb] = tick(t("Send the agent's own User-Agent"), !!draft.passUserAgent);
     ucb.onchange = () => { draft.passUserAgent = ucb.checked; };
-    advIn.append(...field(t("User-Agent"), utk, t("For a plan that serves only the coding agents it names: each request goes with the User-Agent the agent sent (pi, OpenCode, Claude Code…), not magpie's. Requests magpie makes itself, and ones the agent sent without one, still go as magpie. A User-Agent set in Headers above always wins.")));
+    advIn.append(...field(t("User-Agent"), utk, t("For a plan that serves only the coding agents it names: each request goes with the User-Agent the agent sent (pi, OpenCode, Claude Code…), not magpie-friday's. Requests magpie-friday makes itself, and ones the agent sent without one, still go as magpie-friday. A User-Agent set in Headers above always wins.")));
   }
 
   // a model on this computer or the local network (Ollama, LM Studio, a
@@ -9681,7 +9681,7 @@ function drawEditor(p, presetID) {
   // Discord). Only the user can say it is local all the way: a relay run
   // locally, or Ollama's cloud models, pass a request on to a vendor
   const addressOf = (k) => (draft[k] ?? (isNew && pr ? pr[k] : "")) || "";
-  const onLAN = () => !p?.account && (p?.preset || pr?.id) !== "remote-magpie" && localAddresses(["chat", "responses", "anthropic", "gemini", "decide"].map(addressOf));
+  const onLAN = () => !p?.account && (p?.preset || pr?.id) !== "remote-magpie-friday" && localAddresses(["chat", "responses", "anthropic", "gemini", "decide"].map(addressOf));
   if (!p?.account) {
     const [ltk, lcb] = tick(t("Send requests unmasked"), !!draft.unredacted);
     lcb.onchange = () => { draft.unredacted = lcb.checked; };
@@ -9701,7 +9701,7 @@ function drawEditor(p, presetID) {
     const [ctk, ccb] = tick(t("Don't check its certificate"), !!draft.insecureTLS);
     ctk.classList.add("insecure-tls");
     ccb.onchange = () => { draft.insecureTLS = ccb.checked; };
-    const row = field(t("Certificate"), ctk, t("For your own server with a self-signed certificate or one from your company's CA. magpie then can't tell it from another machine answering at its address: turn it on only on a network you trust."));
+    const row = field(t("Certificate"), ctk, t("For your own server with a self-signed certificate or one from your company's CA. magpie-friday then can't tell it from another machine answering at its address: turn it on only on a network you trust."));
     showTLS = () => { for (const e of row) e.style.display = onHTTPS() ? "" : "none"; };
     showTLS();
     ed.append(...row);
@@ -9748,8 +9748,8 @@ function drawEditor(p, presetID) {
 
   // StepFun tells a Step Plan's 5-hour, weekly and credit windows only to
   // its platform's sign-in, never to a key: signed in once in a window of
-  // magpie's, the Usage page shows them
-  if (p?.stepPlan) ed.append(...field(t("Step Plan allowances"), renderStepPlan(p.stepPlan, p.id), t("A key tells only the balance. The Step Plan's 5-hour, weekly and credit windows are told only to a StepFun sign-in: bring yours here once and magpie keeps it (for 30 days), used for nothing else.")));
+  // magpie-friday's, the Usage page shows them
+  if (p?.stepPlan) ed.append(...field(t("Step Plan allowances"), renderStepPlan(p.stepPlan, p.id), t("A key tells only the balance. The Step Plan's 5-hour, weekly and credit windows are told only to a StepFun sign-in: bring yours here once and magpie-friday keeps it (for 30 days), used for nothing else.")));
 
   // a key on a team's GLM Coding Plan is told the team's windows only with
   // the team's organization and project, which the console shows (#236)
@@ -9851,10 +9851,10 @@ function drawEditor(p, presetID) {
   }
 
   if (p) ed.append(...field(t("Models"), renderModels(p), ""));
-  // Azure OpenAI's models are its deployments, which magpie lists with the
+  // Azure OpenAI's models are its deployments, which magpie-friday lists with the
   // key once the resource is added (#1995): said here, so no one takes the
   // add page for one where they must type them
-  else if (pr?.id === "azure") ed.append(...field(t("Models"), el("div", "hint azure-models", t("No need to type them: once added, magpie lists the deployments this key can call. Type a deployment's name as a model id only if that list can't be fetched.")), ""));
+  else if (pr?.id === "azure") ed.append(...field(t("Models"), el("div", "hint azure-models", t("No need to type them: once added, magpie-friday lists the deployments this key can call. Type a deployment's name as a model id only if that list can't be fetched.")), ""));
   if (p?.drawIds?.length) ed.append(...renderDrawers(p));
   {
     // the window agents are told a model has, over what the vendor or
@@ -9882,12 +9882,12 @@ function drawEditor(p, presetID) {
       ex.value = draft.extra.join(", ");
       pick.draw();
     };
-    ed.append(...field(t("Models"), pick.box, t("Optional: Fetch models to pick from the vendor's list, or type ids; none picked, magpie asks for the list after saving.")));
+    ed.append(...field(t("Models"), pick.box, t("Optional: Fetch models to pick from the vendor's list, or type ids; none picked, magpie-friday asks for the list after saving.")));
   }
 
   // Jev's endpoint can be the one its gateway's docs give — Cloudflare's
   // names the account, …/accounts/<id>/ai/run — in place of the preset's
-  if (decides && !custom && (p?.preset || pr?.id) !== "remote-magpie") {
+  if (decides && !custom && (p?.preset || pr?.id) !== "remote-magpie-friday") {
     if (draft.decide === undefined) draft.decide = p?.decide || pr?.decide || "";
     const du = input((address && movedURLs(draft)?.decide) || draft.decide, pr?.decide || "https://…", "url");
     du.classList.add("decide-url");
@@ -10225,14 +10225,14 @@ function outputField() {
 
 // nativeCompactionField is the editor's Compaction (#1099): Codex's own
 // compaction asked of the provider as Codex sent it, its sealed item given
-// back as it came, in place of the summary magpie writes. Offered only
+// back as it came, in place of the summary magpie-friday writes. Offered only
 // where the wire carries it (a Responses API, a ChatGPT account, GitHub
 // Copilot); show says when, for a custom provider whose URLs are typed.
 function nativeCompactionField(show) {
   const [ntk, ncb] = tick(t("Codex compacts on this provider"), !!draft.nativeCompaction);
   ntk.classList.add("native-compaction");
   ncb.onchange = () => { draft.nativeCompaction = ncb.checked; };
-  const row = field(t("Compaction"), ntk, t("Codex's compaction is asked of this provider as Codex sent it, and the summary it seals goes back to Codex unchanged. Off, magpie writes the summary. A conversation compacted this way continues only on this provider and account: another is refused with an error, never sent without the context."));
+  const row = field(t("Compaction"), ntk, t("Codex's compaction is asked of this provider as Codex sent it, and the summary it seals goes back to Codex unchanged. Off, magpie-friday writes the summary. A conversation compacted this way continues only on this provider and account: another is refused with an error, never sent without the context."));
   const refresh = () => { for (const e of row) e.style.display = show() ? "" : "none"; };
   refresh();
   return [row, refresh];
@@ -10362,7 +10362,7 @@ window.addEventListener("storage", (e) => {
   renderProviderDiscovery();
 });
 
-// Providers other apps have set up, for the user to pick from. magpie only
+// Providers other apps have set up, for the user to pick from. magpie-friday only
 // reads those apps; the keys stay on the server side and the dialog sees them masked.
 async function openImportApps(discovered) {
   importingApps = { loading: true, sources: [], picks: {} };
@@ -10418,8 +10418,8 @@ function renderImportApps(ia) {
     go.disabled = true;
     return ed;
   }
-  ed.append(el("div", "appnote", t("magpie reads these apps' settings and changes nothing in them. Pick the providers to bring over.")));
-  // one tab per app magpie can import from, so which ones it can is plain
+  ed.append(el("div", "appnote", t("magpie-friday reads these apps' settings and changes nothing in them. Pick the providers to bring over.")));
+  // one tab per app magpie-friday can import from, so which ones it can is plain
   // at a glance; each shows how many providers it has to bring over
   const tabs = el("div", "apptabs");
   tabs.setAttribute("role", "tablist");
@@ -10563,7 +10563,7 @@ function importAppRow(ia, s, it, recount, boxes) {
       sg.onclick = (e) => e.preventDefault(); // a click on a choice is not a click on the checkbox
       return sg;
     };
-    who.append(el("div", "sub", t(it.reserved ? "{name} is a subscription in magpie; this one comes in beside it as a provider of its own" : "magpie has {name} already", { name: it.existing })));
+    who.append(el("div", "sub", t(it.reserved ? "{name} is a subscription in magpie-friday; this one comes in beside it as a provider of its own" : "magpie-friday has {name} already", { name: it.existing })));
     let sg = choices();
     if (it.status === "taken") {
       // a name that collides can be changed right here (#1487)
@@ -10585,7 +10585,7 @@ function importAppRow(ia, s, it, recount, boxes) {
   }
   let tag = null;
   // which provider holds it, so the user can find it (#1486)
-  if (it.status === "same" && it.existing) who.append(el("div", "sub", t("magpie has {name} already", { name: it.existing })));
+  if (it.status === "same" && it.existing) who.append(el("div", "sub", t("magpie-friday has {name} already", { name: it.existing })));
   if (it.status === "same") tag = el("span", "apptag", t("Already added"));
   else if (it.skip) tag = el("span", "apptag", t("Can't import"));
   else if (it.status === "taken") tag = el("span", "apptag", t("Name in use"));
@@ -10595,7 +10595,7 @@ function importAppRow(ia, s, it, recount, boxes) {
   return row;
 }
 
-// renderImport: what a magpie://import link would add, for the user to
+// renderImport: what a magpie-friday://import link would add, for the user to
 // check. Nothing is saved until they press Add; the key stays hidden unless
 // they ask to see it.
 function renderImport(im) {
@@ -10633,7 +10633,7 @@ function renderImport(im) {
   if (p.keysUrl && !p.key) { const b = el("button", "link", t("Get a key ↗")); b.onclick = () => api("open", { url: p.keysUrl }); side.append(b); }
   const keyWrap = el("div", "pair");
   keyWrap.append(key, side);
-  ed.append(...field(t("API key"), keyWrap, p.key ? t("From the link. Kept in ~/.config/magpie/providers.json, readable by you alone.") : ""));
+  ed.append(...field(t("API key"), keyWrap, p.key ? t("From the link. Kept in ~/.config/magpie-friday/providers.json, readable by you alone.") : ""));
 
   ed.append(...field(t("Endpoints"), renderEndpoints(null, p), ""));
   if (p.models?.length) {
@@ -10648,7 +10648,7 @@ function renderImport(im) {
   if (im.replaces) ed.append(el("div", "warnbox soft", t("Replaces your {name}, key and all.", { name: im.replaces })));
 
   // The link may name the vendor's own logo — an explicit icon= wins over
-  // whatever the catalog or preset gave. magpie fetches it here (the dialog
+  // whatever the catalog or preset gave. magpie-friday fetches it here (the dialog
   // being open is the confirmation), once, quietly, and only ever into its
   // icons folder; the fallback mark stays when it fails.
   if (p.iconUrl) fetchImportIcon(p, h, ed);
@@ -10718,7 +10718,7 @@ function showRest(n, open) {
   return b;
 }
 
-// detectAPIs: which of the APIs magpie speaks to a vendor answer at the base
+// detectAPIs: which of the APIs magpie-friday speaks to a vendor answer at the base
 // URL typed (01huadalang on Discord: 一键检测支持什么协议) — Detect sends
 // each the smallest request there, with the key typed (or the saved one)
 // and a model typed or picked from the vendor's list, and shows what each
@@ -10983,7 +10983,7 @@ function detectAPIs(p, base, use) {
 // (the server's providerJSON.modelTest), in words, or "" when they can
 function modelTestWhy(p) {
   if (p.modelTest === "decide") return t("A classifier's models aren't sent test requests: Test under Endpoints asks Jev's endpoint for them.");
-  if (p.modelTest === "own-api") return t("{name} is reached through its own API, which magpie translates each agent request for, so a test request can't be sent to it on its own. Ask the model from an agent to try it.", { name: p.name });
+  if (p.modelTest === "own-api") return t("{name} is reached through its own API, which magpie-friday translates each agent request for, so a test request can't be sent to it on its own. Ask the model from an agent to try it.", { name: p.name });
   return "";
 }
 
@@ -11110,7 +11110,7 @@ function renderModels(p) {
         : { name: "Test this model", icon: "M5.5 3.75v8.5L12.25 8z", run: () => testOne(id) }];
       // asked as Codex or Claude Code asks, for a relay that serves only
       // them (耍赖天都爱 on Discord); Claude Code's once it has come
-      // through magpie, its headers being the ones it came with
+      // through magpie-friday, its headers being the ones it came with
       if (!noTest && !decidesModel(p, id)) {
         for (const [as, agent, name] of [["codex", "Codex", "Test as Codex"], ["claude-code", "Claude Code", "Test as Claude Code"]]) {
           if (!(as in (p.testsAs || {}))) continue;
@@ -11327,7 +11327,7 @@ function renderModels(p) {
       const name = prefs[first.id]?.name ?? (first.default ? first.name : "");
       const base = name || first.default || first.name || first.id;
       let label = suffixed(base, p.name || p.id, !!name, mode);
-      // a remote magpie's model, named there with its provider after it,
+      // a remote magpie-friday's model, named there with its provider after it,
       // is that name alone when none is put after it here (ARNO on Discord)
       if (!name && first.plain && label === base) label = first.plain;
       sfxSaid.textContent = t("Agents’ lists show “{label}”", { label });
@@ -11363,7 +11363,7 @@ function renderModels(p) {
       const imagesNow = () => prefs[id]?.ownImages ? !!m.ownImages : prefs[id]?.images ?? !!m.images;
       const row = el("div", "mname");
       const name = input(nameNow(), own);
-      name.title = t("The name agents and magpie show for {id}; empty for its own", { id: m.id });
+      name.title = t("The name agents and magpie-friday show for {id}; empty for its own", { id: m.id });
       name.onchange = () => {
         const v = name.value.trim();
         if (v === savedName) delete pref().name; else pref().name = v;
@@ -11373,7 +11373,7 @@ function renderModels(p) {
       const who = el("div", "mwho");
       who.append(name, el("code", "", m.id));
       row.append(who);
-      // the model of other providers' it is, for the routing groups magpie
+      // the model of other providers' it is, for the routing groups magpie-friday
       // finds, when its id is one no rule matches up with theirs
       // (Volcengine's deepseek-v4-1-flash-260910 and others'
       // deepseek-v4.1-flash, #583); empty merges it by its own id, which
@@ -11381,7 +11381,7 @@ function renderModels(p) {
       const sameNow = () => prefs[id]?.same ?? m.same ?? "";
       const sameBox = el("label", "msame");
       const same = input(sameNow(), m.merge || m.id);
-      same.title = t("The model other providers serve that {id} is the same as: the routing groups magpie finds put them together, and when no list prices {id}, its calls are costed at that model's list price. Empty: by its own id", { id: m.id });
+      same.title = t("The model other providers serve that {id} is the same as: the routing groups magpie-friday finds put them together, and when no list prices {id}, its calls are costed at that model's list price. Empty: by its own id", { id: m.id });
       same.spellcheck = false;
       same.onchange = () => {
         const v = same.value.trim();
@@ -11392,7 +11392,7 @@ function renderModels(p) {
       sameBox.append(el("span", "", t("Same as")), same);
       row.append(sameBox);
       // what it costs the user, in dollars per million tokens, as the
-      // Usage page counts it (#819: only `magpie model price` set it):
+      // Usage page counts it (#819: only `magpie-friday model price` set it):
       // each box shows its list price until a price is given, a part left
       // empty is the list's, and every part empty is its list price again
       // the 1-hour cache write, empty, is 2× input as Anthropic bills it,
@@ -11406,9 +11406,9 @@ function renderModels(p) {
       const shown = (n) => String(Math.round(n * 1e6) / 1e6);
       const listTier = m.list?.tiers?.[0];
       const priceBox = el("div", "mprice");
-      // a Remote magpie's model is listed at what that magpie counts it at
+      // a Remote magpie-friday's model is listed at what that magpie-friday counts it at
       priceBox.title = m.remoteList
-        ? t("What {id} costs, in US dollars per million tokens, as the Usage page counts it; empty: what the other magpie counts it at, shown greyed. A price set here isn't multiplied by the provider's price rate", { id: m.id })
+        ? t("What {id} costs, in US dollars per million tokens, as the Usage page counts it; empty: what the other magpie-friday counts it at, shown greyed. A price set here isn't multiplied by the provider's price rate", { id: m.id })
         : t("What {id} costs, in US dollars per million tokens, as the Usage page counts it; empty: its list price, shown greyed. A price set here isn't multiplied by the provider's price rate", { id: m.id });
       priceBox.append(el("span", "", t("Price, $ / 1M tokens")));
       const typed = draft.priceTyped?.[id];
@@ -11557,7 +11557,7 @@ function renderModels(p) {
       // sent no reasoning field, in a routing group too
       const boxes = [];
       const noneSaid = el("span", "hint mnone", t("No reasoning field sent"));
-      noneSaid.title = t("None ticked: magpie sends {id} no reasoning field, whatever effort the agent asks, as for a model that doesn't reason", { id: m.id });
+      noneSaid.title = t("None ticked: magpie-friday sends {id} no reasoning field, whatever effort the agent asks, as for a model that doesn't reason", { id: m.id });
       const drawNone = () => { noneSaid.hidden = !noneNow(); };
       if (levels.length > 1 || levels.length && !m.given) {
         const lv = el("div", "mlevels");
@@ -11807,8 +11807,8 @@ function renderModels(p) {
   foot.append(rename);
   // a plugin's list that failed is its defaults, not the vendor's
   if (p.fetched && !p.listError) foot.append(el("span", "hint", t("vendor list · {when}", { when: ago(p.fetched) })));
-  // a signed-in account's list, until the vendor gives one, is magpie's own
-  else if (p.models.length) foot.append(el("span", "hint", t(p.account ? "magpie's list · Fetch models asks the vendor" : decideOnly(p) ? "Jev's names · Fetch models asks the vendor" : "from models.dev · Fetch models asks the vendor")));
+  // a signed-in account's list, until the vendor gives one, is magpie-friday's own
+  else if (p.models.length) foot.append(el("span", "hint", t(p.account ? "magpie-friday's list · Fetch models asks the vendor" : decideOnly(p) ? "Jev's names · Fetch models asks the vendor" : "from models.dev · Fetch models asks the vendor")));
   if (p.fetched && !p.account) {
     // the fetched list stands in for the picks when none are made
     const forget = el("button", "text action", t("Forget"));
@@ -11902,7 +11902,7 @@ const STAYS = [
 // (routing/client.js SINK_OPTS)
 const SINKS = [
   [false, "Keeps its place", "One rate limited while it still has quota rests as long as the vendor asks, then takes its place in the order again."],
-  [true, "Goes to the back", "One rate limited (429) while it still has quota goes to the back of the order, behind every one not rate limited since, and comes round again once those ahead of it are rate limited in turn — so the load goes round rather than back to the first each time. Out of quota, it rests as usual. Kept until magpie restarts."],
+  [true, "Goes to the back", "One rate limited (429) while it still has quota goes to the back of the order, behind every one not rate limited since, and comes round again once those ahead of it are rate limited in turn — so the load goes round rather than back to the first each time. Out of quota, it rests as usual. Kept until magpie-friday restarts."],
 ];
 // routingOfDraft: what the editor's Save sends of them — only what was
 // picked and differs from what is saved
@@ -11917,20 +11917,20 @@ function renderRouting(p) {
   const routingNow = () => draft.routing ?? (p.routing || "");
   const affinityNow = () => draft.affinity ?? (p.affinity || "");
   const sinkNow = () => draft.sink ?? !!p.sink;
-  // what Codex or Claude Code sends past magpie goes to the account it is
-  // signed in to, which magpie moves on once Smart would count it spent
+  // what Codex or Claude Code sends past magpie-friday goes to the account it is
+  // signed in to, which magpie-friday moves on once Smart would count it spent
   // and back once the first has room (provider.KeepOnAnAccountWithRoom,
   // #209, #408)
   const a = p.account;
   // — at 98%, In order once used up (#530), never when kept on the first (#524)
   const own = (routing) => !a || (a.agent !== "codex" && a.agent !== "claude") ? ""
     : " " + (keptLogin(p)
-      ? t("Routing picks the account for each request through magpie, in the accounts' order; {agent} on its own stays signed in to {user}, whatever it has left.", { agent: a.agentName, user: keptLogin(p) })
+      ? t("Routing picks the account for each request through magpie-friday, in the accounts' order; {agent} on its own stays signed in to {user}, whatever it has left.", { agent: a.agentName, user: keptLogin(p) })
       : p.keepLogin
-      ? t("Routing picks the account for each request through magpie; {agent} on its own stays signed in to the first account, whatever it has left.", { agent: a.agentName })
+      ? t("Routing picks the account for each request through magpie-friday; {agent} on its own stays signed in to the first account, whatever it has left.", { agent: a.agentName })
       : routing === "order"
-        ? t("Routing picks the account for each request through magpie; {agent} on its own uses the one it is signed in to, which magpie moves to the next ticked account with room once it is used up, and back to the first once that has room again.", { agent: a.agentName })
-        : t("Routing picks the account for each request through magpie; {agent} on its own uses the one it is signed in to, which magpie moves to the next ticked account with room once it is 98% used, and back to the first once that has room again.", { agent: a.agentName }));
+        ? t("Routing picks the account for each request through magpie-friday; {agent} on its own uses the one it is signed in to, which magpie-friday moves to the next ticked account with room once it is used up, and back to the first once that has room again.", { agent: a.agentName })
+        : t("Routing picks the account for each request through magpie-friday; {agent} on its own uses the one it is signed in to, which magpie-friday moves to the next ticked account with room once it is 98% used, and back to the first once that has room again.", { agent: a.agentName }));
   // what the Save will make of it differs from what it is: said beside it
   const unsaved = () => {
     const u = el("span", "hint munsaved", t("unsaved"));
@@ -12200,7 +12200,7 @@ function saveRoute(id) {
 
 // ---------- subscriptions ----------
 //
-// A Claude or ChatGPT subscription is added here, not in a terminal: magpie
+// A Claude or ChatGPT subscription is added here, not in a terminal: magpie-friday
 // opens the vendor's own sign-in in the browser, takes the account when it
 // comes back, and lists it with the others — any of them one click from
 // being the one in use.
@@ -12215,7 +12215,7 @@ const SUBS = [
   // both can also come from CLIProxyAPI's auth files or the agent's own (importing below)
   // Anthropic has banned accounts it saw used from other tools: said before one is added
   { agent: "claude", name: "Claude", icon: "claude-color", plans: "Pro · Max · Team", importable: true, risk: true,
-    riskNote: "Anthropic may suspend or ban a Claude account it sees used outside its own apps. magpie sends requests through Claude Code, but Anthropic may still act on them; you use it at your own risk. Use an account you can afford to lose." },
+    riskNote: "Anthropic may suspend or ban a Claude account it sees used outside its own apps. magpie-friday sends requests through Claude Code, but Anthropic may still act on them; you use it at your own risk. Use an account you can afford to lose." },
   { agent: "codex", name: "ChatGPT", icon: "openai", plans: "Plus · Pro · Business", importable: true },
   // OpenAI's Sign in with ChatGPT: the plan asked on api.openai.com, with the agent's own instructions (#933)
   { agent: "chatgpt-api", name: "ChatGPT API", icon: "openai", plans: "Plus · Pro · Business", own: true,
@@ -12245,22 +12245,22 @@ const SUBS = [
   // hint says which accounts each is for
   { agent: "qoder", get name() { return t("Qoder (international)"); }, icon: "qoder", plans: "Pro", own: true, risk: true,
     hint: "For accounts on qoder.com, the international site.",
-    riskNote: "Qoder has no public API for this; magpie signs requests as its desktop client would, which Qoder may treat as third-party use and act on. Use an account you can afford to lose." },
+    riskNote: "Qoder has no public API for this; magpie-friday signs requests as its desktop client would, which Qoder may treat as third-party use and act on. Use an account you can afford to lose." },
   { agent: "qoder-cn", name: "Qoder CN", icon: "qoder", plans: "Pro", own: true, risk: true,
     hint: "For accounts on qoder.cn: signed in with an Alibaba Cloud account or a phone number.",
-    riskNote: "Qoder has no public API for this; magpie signs requests as its desktop client would, which Qoder may treat as third-party use and act on. Use an account you can afford to lose." },
-  // the devin CLI's own account is read; more are signed in beside it, each in a data folder of magpie's
+    riskNote: "Qoder has no public API for this; magpie-friday signs requests as its desktop client would, which Qoder may treat as third-party use and act on. Use an account you can afford to lose." },
+  // the devin CLI's own account is read; more are signed in beside it, each in a data folder of magpie-friday's
   { agent: "devin", name: "Devin", icon: "devin", plans: "Pro · Enterprise", own: true },
   // Zed's hosted models (Zed Pro, its trial), signed in at zed.dev as the editor is
   { agent: "zed", name: "Zed", icon: "zed", plans: "Pro · Student · Business", own: true, risk: true,
-    riskNote: "Zed serves these models to its own editor; magpie signs requests as the editor would, which Zed may treat as third-party use and act on. Use an account you can afford to lose." },
+    riskNote: "Zed serves these models to its own editor; magpie-friday signs requests as the editor would, which Zed may treat as third-party use and act on. Use an account you can afford to lose." },
   // Factory's plans (Droid's account), signed in with WorkOS's device code as droid does; droid's own login stays its own
   // or added by an API key (fk-…), as droid takes FACTORY_API_KEY (the import box)
   { agent: "factory", name: "Factory", icon: "factory", plans: "Pro · Plus · Max", own: true, risk: true, importable: true,
-    riskNote: "Factory serves these models to its own Droid CLI; magpie signs requests as Droid would, which Factory may treat as third-party use and act on. Use an account you can afford to lose." },
+    riskNote: "Factory serves these models to its own Droid CLI; magpie-friday signs requests as Droid would, which Factory may treat as third-party use and act on. Use an account you can afford to lose." },
   // Xiaomi MiMo's models (its free offer, MiMo plans), signed in at account.xiaomi.com as MiMo's app is
   { agent: "mimo-app", name: "Xiaomi MiMo", icon: "mimocode", plans: "Free · Starter · Plus · Pro · Ultra", own: true, risk: true,
-    riskNote: "Xiaomi serves these models to its own MiMo app; magpie signs requests as the app would, which Xiaomi may treat as third-party use and act on. Use an account you can afford to lose." },
+    riskNote: "Xiaomi serves these models to its own MiMo app; magpie-friday signs requests as the app would, which Xiaomi may treat as third-party use and act on. Use an account you can afford to lose." },
   // Kiro's own sign-in page (Google, GitHub, Builder ID, Identity Center); kiro-cli's or the IDE's is read too
   { agent: "kiro", name: "Kiro", icon: "kiro-color", plans: "Free · Pro · Pro+ · Power", own: true },
   // Google's sign-ins; Gemini CLI's own account is read too
@@ -12301,7 +12301,7 @@ function pluginMethod(sub, site) {
 
 // pluginSubs: the providers OpenCode plugins sign in to (Settings →
 // Plugins), as subscriptions like the built-in ones. The plugin, not
-// magpie, signs in and carries the requests.
+// magpie-friday, signs in and carries the requests.
 function pluginSubs() {
   return (providers.plugins || []).map((x) => ({
     agent: x.id, pid: x.pid, name: x.name, icon: x.icon, plugin: x, own: true, single: !!x.single,
@@ -12445,7 +12445,7 @@ async function signedIn(st) {
   renderProviders();
   const who = st.user || subOf(st.agent)?.name || st.agent;
   // signed in but listed nowhere (#155): say so rather than "added"
-  if (!p) status(t("{user} signed in, but magpie can't list it — please report this", { user: who }), "err");
+  if (!p) status(t("{user} signed in, but magpie-friday can't list it — please report this", { user: who }), "err");
   // an account listed already is said to be, not added (#413)
   else if (st.again) status(t("{user} is already listed — its sign-in was renewed", { user: who }), "ok");
   else status(st.using ? t("Signed in as {user}", { user: who }) : t("{user} added — switch to it any time", { user: who }), "ok");
@@ -12541,7 +12541,7 @@ function renderPluginAsk(sub) {
   close.onclick = cancelSignIn;
   if (signing.state === "method") {
     tt.append(el("span", "n", t("How do you sign in to {name}?", { name: sub.name })),
-      el("span", "s", t("The plugin {spec} signs in and sends {name}'s requests; magpie only passes them on.", { spec: sub.plugin.spec, name: sub.name })));
+      el("span", "s", t("The plugin {spec} signs in and sends {name}'s requests; magpie-friday only passes them on.", { spec: sub.plugin.spec, name: sub.name })));
     const ch = el("div", "choices");
     box.append(close, ch);
     sub.plugin.methods.forEach((m, i) => {
@@ -12601,7 +12601,7 @@ function renderPluginAsk(sub) {
 }
 
 // renderStepPlan: a StepFun provider's platform sign-in, which the user
-// makes in their own browser and brings here with magpie's bookmarklet,
+// makes in their own browser and brings here with magpie-friday's bookmarklet,
 // kept for the provider id alone: two on one site can be two accounts
 function renderStepPlan(sp, id) {
   const box = el("div", "stepplan");
@@ -12624,7 +12624,7 @@ function renderStepPlan(sp, id) {
   s1.append(open);
   const s2 = el("li");
   // dragged to the bookmarks bar it is a bookmark; a click here does nothing
-  const bm = el("a", "bookmarklet", "magpie · StepFun");
+  const bm = el("a", "bookmarklet", "magpie-friday · StepFun");
   bm.href = sp.bookmarklet;
   bm.onclick = (e) => e.preventDefault();
   const cp = el("button", "link", t("copy it"));
@@ -12915,7 +12915,7 @@ function renderSigning(sub) {
   box.append(el("span", "spinner"));
   if (signing.state === "installing") {
     tt.append(el("span", "n", t("Installing {cli}…", { cli: signing.installing })),
-      el("span", "s", t("{name} is used through its own CLI, which isn't on this computer yet. magpie is installing it with the official installer; the sign-in page opens as soon as it's done.", { name: sub.name })));
+      el("span", "s", t("{name} is used through its own CLI, which isn't on this computer yet. magpie-friday is installing it with the official installer; the sign-in page opens as soon as it's done.", { name: sub.name })));
     box.append(tt);
     const x = el("button", "text", t("Cancel"));
     x.onclick = cancelSignIn;
@@ -12924,11 +12924,11 @@ function renderSigning(sub) {
   }
   tt.append(el("span", "n", t("Finish signing in to {name} in your browser", { name: sub.name })),
     el("span", "s", signing.state === "starting" ? t("Starting the sign-in…")
-      : signing.openError ? t("magpie couldn't open your browser: {error}. Open the sign-in link below in a browser yourself.", { error: signing.openError })
-      : sub.plugin ? (signing.instructions || (signing.pasteCode ? t("magpie opened the sign-in page. Paste the code it shows below.") : t("magpie opened the sign-in page. The account shows up here as soon as you're done.")))
-      : signing.pasteCode ? t("magpie opened the sign-in page. Paste the code it shows below.")
-      : signing.code && sub.agent === "factory" ? t("magpie opened Factory's sign-in page. Check it shows this code and confirm it; the account shows up here as soon as you're done.")
-      : signing.code ? t("magpie opened GitHub's device page. Enter this code there; the account shows up here as soon as you're done.") : t("magpie opened the sign-in page. The account shows up here as soon as you're done.")));
+      : signing.openError ? t("magpie-friday couldn't open your browser: {error}. Open the sign-in link below in a browser yourself.", { error: signing.openError })
+      : sub.plugin ? (signing.instructions || (signing.pasteCode ? t("magpie-friday opened the sign-in page. Paste the code it shows below.") : t("magpie-friday opened the sign-in page. The account shows up here as soon as you're done.")))
+      : signing.pasteCode ? t("magpie-friday opened the sign-in page. Paste the code it shows below.")
+      : signing.code && sub.agent === "factory" ? t("magpie-friday opened Factory's sign-in page. Check it shows this code and confirm it; the account shows up here as soon as you're done.")
+      : signing.code ? t("magpie-friday opened GitHub's device page. Enter this code there; the account shows up here as soon as you're done.") : t("magpie-friday opened the sign-in page. The account shows up here as soon as you're done.")));
   if (signing.code) {
     const code = el("span", "devcode");
     code.append(el("code", "", signing.code), copyBtn(signing.code, t("Code")));
@@ -12937,7 +12937,7 @@ function renderSigning(sub) {
   box.append(tt);
   if (signing.url) {
     // the link itself, to select or copy into another browser or profile
-    // than the one magpie opened it in
+    // than the one magpie-friday opened it in
     const link = el("span", "signlink");
     const u = el("code", "", signing.url);
     u.title = t("Open it in another browser or profile: copy it there");
@@ -12947,7 +12947,7 @@ function renderSigning(sub) {
     tt.append(link);
     const acts = el("span", "acts");
     const open = el("button", "link", t("Open again"));
-    // one that fails says why, where "magpie opened the sign-in page" was (#2043)
+    // one that fails says why, where "magpie-friday opened the sign-in page" was (#2043)
     // a poll may have put a fresh copy of the same sign-in in its place
     const flow = signing;
     const same = () => signing && signing.id === flow.id && signing.agent === flow.agent;
@@ -12963,7 +12963,7 @@ function renderSigning(sub) {
     tt.append(acts);
     if (signing.askProxy) tt.append(signInProxyForm(sub));
   } else if (signing.state === "waiting") {
-    // a sign-in run by the vendor's CLI, no page of magpie's to show
+    // a sign-in run by the vendor's CLI, no page of magpie-friday's to show
     tt.append(el("span", "acts", signInProxyLink(sub)));
     if (signing.askProxy) tt.append(signInProxyForm(sub));
   }
@@ -12971,10 +12971,10 @@ function renderSigning(sub) {
     const flow = signing;
     const what = flow.pasteCode ? t("Code") : flow.pasteKey ? t("API key") : t("Callback URL");
     if (flow.pasteKey) {
-      // Command Code's page posts its key to magpie unseen: a browser that
-      // can't reach magpie (Docker) has no address to paste, so a key made
+      // Command Code's page posts its key to magpie-friday unseen: a browser that
+      // can't reach magpie-friday (Docker) has no address to paste, so a key made
       // on the keys page finishes it, as Command Code's CLI takes one
-      const s = el("span", "s", t("If the page can't reach magpie (it runs on a server or in Docker), make an API key on {name}'s keys page and paste it here.", { name: sub.name }) + " ");
+      const s = el("span", "s", t("If the page can't reach magpie-friday (it runs on a server or in Docker), make an API key on {name}'s keys page and paste it here.", { name: sub.name }) + " ");
       if (flow.keysURL) {
         const keys = el("button", "link", t("Open the keys page"));
         keys.onclick = () => api("open", { url: flow.keysURL }).catch(() => {});
@@ -12987,7 +12987,7 @@ function renderSigning(sub) {
       tt.append(el("span", "s port-blocked", flow.callbackBlocked === "reserved"
         ? t("Windows keeps port {port}, where the sign-in comes back, for Hyper-V, WSL or Docker, so the page the browser ends on won't load. Copy its whole address and paste it here.", { port: flow.callbackPort })
         : t("Another program has port {port}, where the sign-in comes back, so the page the browser ends on won't finish the sign-in. Copy its whole address and paste it here.", { port: flow.callbackPort })));
-    } else if (!flow.pasteCode) tt.append(el("span", "s", t("If the page the browser ends on won't load (magpie runs on a server or in Docker), copy its whole address and paste it here.")));
+    } else if (!flow.pasteCode) tt.append(el("span", "s", t("If the page the browser ends on won't load (magpie-friday runs on a server or in Docker), copy its whole address and paste it here.")));
     const form = el("form", "callback-form");
     const url = input(flow.callbackURL || "", what, flow.pasteKey ? "password" : "text");
     url.setAttribute("aria-label", what);
@@ -13023,7 +13023,7 @@ function renderSigning(sub) {
     form.append(url, submit);
     tt.append(form, why);
   }
-  // a plugin's browser sign-in whose page can't reach magpie (Docker: the
+  // a plugin's browser sign-in whose page can't reach magpie-friday (Docker: the
   // Command Code plugin's Studio posts its key to 127.0.0.1) can be left
   // for the plugin's own API key way, without starting over; one that
   // takes a pasted key in place already (#2468) needs no second way, and
@@ -13034,7 +13034,7 @@ function renderSigning(sub) {
   if (keyWay >= 0 && keyWay !== signing.method && !(sub.moved && sub.importable)) {
     const acts = tt.querySelector(".acts") || tt.appendChild(el("span", "acts"));
     const k = el("button", "link", t("Use an API key instead"));
-    k.title = t("If the page can't reach magpie (it runs on a server or in Docker)");
+    k.title = t("If the page can't reach magpie-friday (it runs on a server or in Docker)");
     k.onclick = () => {
       if (signing?.id) api("signin/" + signing.id + "/cancel", {}).catch(() => {});
       startPluginSignIn(sub, keyWay);
@@ -13145,15 +13145,15 @@ function arrangeAccountRows(list, p) {
   }
 }
 
-// renderAccounts: every account of an agent magpie has, the one the agent
+// renderAccounts: every account of an agent magpie-friday has, the one the agent
 // is signed in to first, and a way to add another. Like keys, any number
 // can be ticked: the gateway moves to the next ticked account when the
 // first is out of quota. Each shows how much of its allowance is used, so
 // which one to go to next is plain to see.
-// forgetOwnTitle: what Remove does to the agent's own sign-in, which magpie
+// forgetOwnTitle: what Remove does to the agent's own sign-in, which magpie-friday
 // only reads — it is hidden, and shows again when the agent signs in anew.
 function forgetOwnTitle(a) {
-  return t("magpie stops showing and using {agent}'s own sign-in; its files are left as they are, and it shows again when {agent} signs in anew", { agent: a.agentName });
+  return t("magpie-friday stops showing and using {agent}'s own sign-in; its files are left as they are, and it shows again when {agent} signs in anew", { agent: a.agentName });
 }
 
 // keptLogin: the account Codex or Claude Code is kept signed in to in
@@ -13189,7 +13189,7 @@ function renderAccounts(a, p) {
   // else it is (in use, the agent's own), it keeps a way to sign in again
   // and its Remove, and the reason never stands in their place.
   // A built-in Copilot account whose GitHub token GitHub refused (echo_ts
-  // on Discord: a revoked token) is the same, marked lapsed by magpie, and
+  // on Discord: a revoked token) is the same, marked lapsed by magpie-friday, and
   // signed in again in place. So is any other built-in account whose
   // sign-in its vendor revoked (#1793: ChatGPT's 401 token_revoked) or
   // refused to refresh: the gateway passes over it till then.
@@ -13213,7 +13213,7 @@ function renderAccounts(a, p) {
   // to it (#263)
   const pausable = (a.agent === "claude" || a.agent === "codex") && ls.some((l) => !unusable(l) && !l.active && l.on);
   const quota = loginUsageOf(a.agent);
-  // the first, which magpie signed the agent out of while it was spent:
+  // the first, which magpie-friday signed the agent out of while it was spent:
   // it is signed back in once it has room (#408)
   const back = ls.find((l) => l.returns && !l.active);
   for (const l of ls) {
@@ -13242,8 +13242,8 @@ function renderAccounts(a, p) {
     // its usage cap: the share of each window it is used to at most
     const cap = accountCapOf(p, l.user);
     // Claude Code or Codex signed in to it asks its vendor itself, not
-    // through magpie: with no other account to sign it in to, the cap
-    // holds back only what goes through magpie (𝕏 on Discord: a 90% cap
+    // through magpie-friday: with no other account to sign it in to, the cap
+    // holds back only what goes through magpie-friday (𝕏 on Discord: a 90% cap
     // and the five hours run to 100%)
     const direct = l.active && !several && (a.agent === "claude" || a.agent === "codex") ? a.agentName : "";
     if (p) row.append(accountCapPill(p, l.user, cap, direct));
@@ -13272,18 +13272,18 @@ function renderAccounts(a, p) {
       const again = el("button", "text", t("Sign in again"));
       again.onclick = () => startSignIn(a.agent, false, againSite(l), { user: l.user });
       const forget = el("button", "text quiet", t("Remove"));
-      forget.title = l.own ? forgetOwnTitle(a) : t("magpie forgets this account's sign-in; the account itself is untouched");
+      forget.title = l.own ? forgetOwnTitle(a) : t("magpie-friday forgets this account's sign-in; the account itself is untouched");
       forget.onclick = () => accountAction("login/forget", { agent: a.agent, user: l.user }, t("{user} removed", { user: l.user }));
       row.append(again, forget);
     } else if (l.active && kept && l.user !== firstUser) {
       // signed in to, kept so, and tried at its place in the order
       const signed = el("span", "using", l.paused ? t("Paused") : t("Signed in"));
-      signed.title = t("{agent} is kept signed in to this account; requests through magpie go to the accounts in their order", { agent: a.agentName });
+      signed.title = t("{agent} is kept signed in to this account; requests through magpie-friday go to the accounts in their order", { agent: a.agentName });
       row.append(signed);
       if (on) row.append(makeFirst(l));
     } else if (l.active) {
       const using = el("span", "using", l.paused ? t("Paused") : back ? t("First for now") : several ? t("First") : t("In use"));
-      if (back && !l.paused) using.title = t("{user} was nearly used up, so magpie signed {agent} in to this one; it goes back to {user} once that has room again", { user: back.user, agent: a.agentName });
+      if (back && !l.paused) using.title = t("{user} was nearly used up, so magpie-friday signed {agent} in to this one; it goes back to {user} once that has room again", { user: back.user, agent: a.agentName });
       row.append(using);
       if (a.agent === "qoder" || a.agent === "qoder-cn" || l.own) {
         const forget = el("button", "text quiet", t("Remove"));
@@ -13301,17 +13301,17 @@ function renderAccounts(a, p) {
         // Codex is signed in to another of its accounts first, then this
         // one goes (ForgetLogin), rather than Codex signed out
         const forget = el("button", "text quiet", t("Remove"));
-        forget.title = t("Codex is signed in to another of its accounts, and magpie forgets this one; the account itself is untouched");
+        forget.title = t("Codex is signed in to another of its accounts, and magpie-friday forgets this one; the account itself is untouched");
         forget.onclick = () => accountAction("login/forget", { agent: a.agent, user: l.user }, t("{user} removed", { user: l.user }));
         row.append(forget);
       }
     } else {
       const forget = el("button", "text quiet", t("Remove"));
-      forget.title = l.own ? forgetOwnTitle(a) : t("magpie forgets this account's sign-in; the account itself is untouched");
+      forget.title = l.own ? forgetOwnTitle(a) : t("magpie-friday forgets this account's sign-in; the account itself is untouched");
       forget.onclick = () => accountAction("login/forget", { agent: a.agent, user: l.user }, t("{user} removed", { user: l.user }));
       if (l === back) {
         const again = el("span", "using", t("First again once it has room"));
-        again.title = t("magpie signs {agent} back in to this account once it has room again", { agent: a.agentName });
+        again.title = t("magpie-friday signs {agent} back in to this account once it has room again", { agent: a.agentName });
         row.append(again);
       }
       if (kept) {
@@ -13332,14 +13332,14 @@ function renderAccounts(a, p) {
     if (amBox) row.append(amBox);
     list.append(row);
   }
-  // magpie signs Codex or Claude Code in to the next account when the
+  // magpie-friday signs Codex or Claude Code in to the next account when the
   // first runs low (#209, #408); this keeps it on the first instead, or on
   // an account of the user's choosing, the gateway still spreading requests
   // over the ticked ones in their order (#524)
   if ((a.agent === "codex" || a.agent === "claude") && several && p) {
     const box = el("div", "keep-login");
     const [keep, cb] = tick(t("Keep {agent} signed in to", { agent: a.agentName }), !!p.keepLogin);
-    keep.title = t("magpie won't sign {agent} in to another account when the first runs low; requests through magpie still go to the other ticked accounts as Routing says", { agent: a.agentName });
+    keep.title = t("magpie-friday won't sign {agent} in to another account when the first runs low; requests through magpie-friday still go to the other ticked accounts as Routing says", { agent: a.agentName });
     // the app's own menu, as every other pick in it, not a native select
     let keepAs = kept;
     const opts = [{ v: "", name: t("the first account"), note: "", literalName: true }];
@@ -13354,7 +13354,7 @@ function renderAccounts(a, p) {
     const post = (keepLogin) => {
       const body = { id: p.id, keepLogin };
       if (keepLogin && keepAs) body.keepLoginAs = keepAs;
-      accountAction("provider/keeplogin", body, !keepLogin ? t("magpie moves {agent} to an account with room again", { agent: a.agentName })
+      accountAction("provider/keeplogin", body, !keepLogin ? t("magpie-friday moves {agent} to an account with room again", { agent: a.agentName })
         : keepAs ? t("{agent} stays signed in to {user}", { agent: a.agentName, user: keepAs }) : t("{agent} stays signed in to the first account", { agent: a.agentName }));
     };
     cb.onchange = () => post(cb.checked);
@@ -13375,17 +13375,17 @@ function renderAccounts(a, p) {
     box.append(keep, as);
     list.append(box);
   }
-  // with more of its accounts on, magpie sends Codex's own requests through
+  // with more of its accounts on, magpie-friday sends Codex's own requests through
   // the gateway to fail over between them (#1385); this has it only switch
   // Codex's own sign-in instead, its requests going straight to OpenAI
   // (#1907: Codex Desktop and the CLI on their own subscription alone)
   if (a.agent === "codex" && several && p) {
     const box = el("div", "switch-only");
     const [only, cb] = tick(t("Only switch {agent}'s sign-in", { agent: a.agentName }), !!p.switchOnly);
-    only.title = t("magpie signs {agent} in to the next account with room when the one it is on is used up, and back once that has room again, by writing {agent}'s own sign-in; {agent}'s requests go straight to OpenAI, never through magpie. A {agent} app or session already open stays on its account until it is opened again. Connected to magpie, {agent}'s requests go through it as before.", { agent: a.agentName });
+    only.title = t("magpie-friday signs {agent} in to the next account with room when the one it is on is used up, and back once that has room again, by writing {agent}'s own sign-in; {agent}'s requests go straight to OpenAI, never through magpie-friday. A {agent} app or session already open stays on its account until it is opened again. Connected to magpie-friday, {agent}'s requests go through it as before.", { agent: a.agentName });
     cb.onchange = () => accountAction("provider/switchonly", { id: p.id, switchOnly: cb.checked }, cb.checked
-      ? t("magpie only switches {agent}'s sign-in; its requests go straight to OpenAI", { agent: a.agentName })
-      : t("{agent}'s requests go through magpie to fail over to your other accounts again", { agent: a.agentName }));
+      ? t("magpie-friday only switches {agent}'s sign-in; its requests go straight to OpenAI", { agent: a.agentName })
+      : t("{agent}'s requests go through magpie-friday to fail over to your other accounts again", { agent: a.agentName }));
     box.append(only);
     list.append(box);
   }
@@ -13417,7 +13417,7 @@ function renderAccounts(a, p) {
 
 // renderCodexDaemon: Codex's background app-server read the sign-in when it
 // started, so after a switch the Codex sessions that attach to it are still
-// on the account before (user) until it restarts. magpie doesn't restart it
+// on the account before (user) until it restarts. magpie-friday doesn't restart it
 // unasked: that ends the Codex sessions running on it.
 function renderCodexDaemon(user) {
   const box = codexNote("", t("Codex's background service is still signed in as {user}", { user }),
@@ -13434,7 +13434,7 @@ function renderCodexDaemon(user) {
 // renderCodexApp: the Codex desktop app reads the sign-in only when it
 // opens, so after a switch it stays on the account before (user): it shows
 // that account's limits and, once they are spent, sends in no thread. Only
-// quitting and opening it again moves it; magpie doesn't quit it unasked.
+// quitting and opening it again moves it; magpie-friday doesn't quit it unasked.
 function renderCodexApp(user) {
   const box = codexNote("", t("The Codex app is still signed in as {user}", { user }),
     t("It shows that account's usage limits until it is quit and opened again. Quit it and open it again to use the new account."));
@@ -13453,16 +13453,16 @@ function codexNote(cls, n, s) {
 }
 
 // renderCodexAppOut: the account the Codex app is on ran out, which greys
-// its Send for magpie's models too till it reopens: magpie reopens it on
+// its Send for magpie-friday's models too till it reopens: magpie-friday reopens it on
 // macOS once idle (reopening), else the user does.
 function renderCodexAppOut(out) {
   return codexNote(" app-out", t("The Codex app can't send on {user}'s used-up account", { user: out.user }), out.reopening
-  ? t("magpie serves its turns now, but the app reads that only as it opens. magpie quits it and opens it again once no turn is running.")
-  : t("magpie serves its turns now, but the app reads that only as it opens. Quit it and open it again to send."));
+  ? t("magpie-friday serves its turns now, but the app reads that only as it opens. magpie-friday quits it and opens it again once no turn is running.")
+  : t("magpie-friday serves its turns now, but the app reads that only as it opens. Quit it and open it again to send."));
 }
 
 // Accounts brought in from another tool's export instead of signing in
-// again: the files' text (or what is pasted) goes to magpie, which checks
+// again: the files' text (or what is pasted) goes to magpie-friday, which checks
 // each account with the vendor before keeping it, and says what became of
 // each. What is read stays here only until it is sent; the box masks it.
 function startImport(agent) {
@@ -13505,7 +13505,7 @@ async function runImport(agent) {
   }
 }
 
-const importStatus = { added: "Added", updated: "Updated with this sign-in", exists: "Already in magpie", failed: "Not added" };
+const importStatus = { added: "Added", updated: "Updated with this sign-in", exists: "Already in magpie-friday", failed: "Not added" };
 
 function renderLoginImport(sub) {
   const box = el("div", "signing import");
@@ -13617,7 +13617,7 @@ function quotaError(err, q) {
   // an account whose sign-in its vendor revoked (signin_revoked.go, #1793)
   if (/'s sign-in was revoked; sign in again$/.test(err)) return t("The vendor revoked this sign-in; sign in again");
   if (/no longer supported for Gemini Code Assist for individuals/.test(err)) return t("Google no longer serves personal accounts to Gemini CLI — hover for more");
-  if (/magpie accounts project/.test(err)) return t("Needs a Google Cloud project — hover for how");
+  if (/magpie-friday accounts project/.test(err)) return t("Needs a Google Cloud project — hover for how");
   if (/^Antigravity (hasn't set|won't serve)/.test(err)) return t("Antigravity hasn't set this account up — hover for why");
   if (/violation of Terms of Service/i.test(err)) return t("Google has suspended this account — hover for details");
   if (/access token is invalid or expired|didn't take the access token/.test(err)) return t("AiHubMix didn't take the access token — paste a new one in the provider's settings");
@@ -13648,26 +13648,26 @@ function quotaError(err, q) {
   // is what to change, not a reading that failed (@xanahopper on X)
   const glm = /^(Zhipu|Z\.ai) didn't take this key/.exec(err);
   if (glm) return t("{vendor} didn't take this key — it expired, was deleted or is mistyped; paste a current one in the provider's settings", { vendor: glm[1] });
-  if (/^OpenCode Go's reply has no rolling/.test(err)) return t("OpenCode Go answered in a form magpie doesn't read — hover for what it sent");
-  // a remote magpie's card (remote_quotas.go)
-  if (/^nothing read on that magpie yet/.test(err)) return t("Nothing read on that computer yet — refresh this card to have it read");
-  if (/^remote magpie doesn't share its quotas/.test(err)) return t("That computer's magpie doesn't share its quotas yet — update magpie there");
-  if (/^remote magpie isn't shared/.test(err)) return t("That computer's magpie isn't shared — turn on Settings → Network and sharing → Share on local network there");
-  if (/^remote magpie didn't take this key/.test(err)) return t("That computer's magpie didn't take this key — use one of its gateway keys in this provider");
-  if (/^couldn't reach the remote magpie/.test(err)) return t("Couldn't reach that computer's magpie — check that it is running and its address");
-  // a remote magpie's gateway key card (#1547, remote_key_limits.go)
-  if (/^remote magpie is too old to tell this key's limit/.test(err)) return t("That computer's magpie is too old to tell this key's limit — update magpie there");
-  if (/answered its key's limit in a form magpie doesn't read$/.test(err)) return t("That computer answered this key's limit in a form magpie doesn't read — hover for more");
+  if (/^OpenCode Go's reply has no rolling/.test(err)) return t("OpenCode Go answered in a form magpie-friday doesn't read — hover for what it sent");
+  // a remote magpie-friday's card (remote_quotas.go)
+  if (/^nothing read on that magpie-friday yet/.test(err)) return t("Nothing read on that computer yet — refresh this card to have it read");
+  if (/^remote magpie-friday doesn't share its quotas/.test(err)) return t("That computer's magpie-friday doesn't share its quotas yet — update magpie-friday there");
+  if (/^remote magpie-friday isn't shared/.test(err)) return t("That computer's magpie-friday isn't shared — turn on Settings → Network and sharing → Share on local network there");
+  if (/^remote magpie-friday didn't take this key/.test(err)) return t("That computer's magpie-friday didn't take this key — use one of its gateway keys in this provider");
+  if (/^couldn't reach the remote magpie-friday/.test(err)) return t("Couldn't reach that computer's magpie-friday — check that it is running and its address");
+  // a remote magpie-friday's gateway key card (#1547, remote_key_limits.go)
+  if (/^remote magpie-friday is too old to tell this key's limit/.test(err)) return t("That computer's magpie-friday is too old to tell this key's limit — update magpie-friday there");
+  if (/answered its key's limit in a form magpie-friday doesn't read$/.test(err)) return t("That computer answered this key's limit in a form magpie-friday doesn't read — hover for more");
   // a ClinePass card with its balance but not its limits (#79): the
   // built-in key card (clineLimitsUnread, cline_usage.go) and the Cline
   // plugin both begin their error with these words
   if (/^ClinePass limits couldn't be read/.test(err)) return t("ClinePass limits couldn't be read — hover for why");
   const bal = balanceError(err);
   if (bal) return bal;
-  // a plugin's own usage read failed (pluginError, plugin_usage.go): magpie
+  // a plugin's own usage read failed (pluginError, plugin_usage.go): magpie-friday
   // has no better words for it than the plugin's, and hiding them in a
   // tooltip left the card saying only that nothing could be read
-  // (aqiu817/magpie-sensenova#1), so its first line is said on the card
+  // (aqiu817/magpie-friday-sensenova#1), so its first line is said on the card
   if (q?.pluginError) {
     const why = String(err).split("\n")[0].trim();
     if (why) return t("Allowance unavailable: {why}", { why: why.length > 160 ? why.slice(0, 159) + "…" : why });
@@ -13675,7 +13675,7 @@ function quotaError(err, q) {
   return t("Allowance unavailable");
 }
 
-// the Balance field magpie reads, left empty, from a query whose reply it
+// the Balance field magpie-friday reads, left empty, from a query whose reply it
 // knows (balancePathOf in balance.go), shown as the field's placeholder
 function balanceFieldOf(raw) {
   let path = "";
@@ -13688,7 +13688,7 @@ function balanceFieldOf(raw) {
   return "data.balance";
 }
 
-// balanceError: a balance that couldn't be read, said plainly where magpie
+// balanceError: a balance that couldn't be read, said plainly where magpie-friday
 // knows the fix (see balance.go); "" for any other.
 function balanceError(err) {
   if (/takes the API key, not the access token/.test(err)) return t("The Balance URL …/api/usage/token takes the API key, not the access token — set it to …/api/user/self in the provider's settings");
@@ -13861,7 +13861,7 @@ function poolLine(line, ws, q, capFor = () => 0, settable = null) {
 // counts shows where it is, and a note says when it holds the account.
 const CAP_SHARES = [50, 60, 70, 80, 90];
 // An account's name of the user's own (#1515): a team's GLM seats under
-// masked emails told apart. Kept by magpie (provider.AccountNames), never
+// masked emails told apart. Kept by magpie-friday (provider.AccountNames), never
 // in the vendor's or plugin's sign-in. accountSeatOf is the key plan the
 // account was found to stand in for, the name it goes by till it has one.
 function accountNameOf(p, user) { return p?.accountNames?.[String(user).toLowerCase()] || ""; }
@@ -13950,14 +13950,14 @@ function capHeldOf(q, capFor) {
 // directNote: why the cap can't stop agent, signed in to the account and
 // asking its vendor itself, with no other account on to move it to
 function directNote(agent) {
-  return t("{agent} is signed in to this account and asks its vendor itself, not through magpie, so with no other account on to move it to, {agent} goes on using it past the cap. Add another account, or pick {agent}'s models via magpie, for the cap to hold it", { agent });
+  return t("{agent} is signed in to this account and asks its vendor itself, not through magpie-friday, so with no other account on to move it to, {agent} goes on using it past the cap. Add another account, or pick {agent}'s models via magpie-friday, for the cap to hold it", { agent });
 }
 function capHeldNote(held, cap, several, direct) {
   if (direct) {
-    // the account is held for what goes through magpie, but the agent
+    // the account is held for what goes through magpie-friday, but the agent
     // signed in to it isn't: the note doesn't say it is safe at its cap
     const n = el("span", "using acap-held acap-direct", t("At its cap · {agent} still uses it", { agent: direct }));
-    n.title = t("A usage window is at {n}%, past this account's {cap}% cap: requests through magpie are refused with a usage-cap error until it renews", { n: Math.round(held.used), cap })
+    n.title = t("A usage window is at {n}%, past this account's {cap}% cap: requests through magpie-friday are refused with a usage-cap error until it renews", { n: Math.round(held.used), cap })
       + (held.back ? " · " + resetText(new Date(held.back), new Date(held.back).toLocaleString(intlLang())) : "")
       + "\n" + directNote(direct);
     return n;
@@ -13965,13 +13965,13 @@ function capHeldNote(held, cap, several, direct) {
   if (!held.all) {
     const names = held.some.join(", ");
     const n = el("span", "using acap-held", held.back ? t("{names} at its cap · back {in}", { names, in: untilText(held.back) }) : t("{names} at its cap", { names }));
-    n.title = t("{names} is at {n}%, past this account's {cap}% cap, so magpie sends the requests it counts to the other accounts until it renews; other models still use this account", { names, n: Math.round(held.used), cap })
+    n.title = t("{names} is at {n}%, past this account's {cap}% cap, so magpie-friday sends the requests it counts to the other accounts until it renews; other models still use this account", { names, n: Math.round(held.used), cap })
       + (held.back ? " · " + resetText(new Date(held.back), new Date(held.back).toLocaleString(intlLang())) : "")
       + (several ? "" : "\n" + t("With no other account on, those requests are refused with a usage-cap error until then"));
     return n;
   }
   const n = el("span", "using acap-held", held.back ? t("At its cap · back {in}", { in: untilText(held.back) }) : t("At its cap"));
-  n.title = t("A usage window is at {n}%, past this account's {cap}% cap, so magpie counts it as used up and sends requests to the other accounts until that window renews", { n: Math.round(held.used), cap })
+  n.title = t("A usage window is at {n}%, past this account's {cap}% cap, so magpie-friday counts it as used up and sends requests to the other accounts until that window renews", { n: Math.round(held.used), cap })
     + (held.back ? " · " + resetText(new Date(held.back), new Date(held.back).toLocaleString(intlLang())) : "")
     + (several ? "" : "\n" + t("With no other account on, requests are refused with a usage-cap error until then"));
   return n;
@@ -14004,7 +14004,7 @@ function windowCapMeter(m, p, user, w) {
   if (own) b.append(el("span", "aq-own", own >= 100 ? t("No cap") : t("Cap {n}%", { n: own })));
   const reset = m.title || (w.resetsAt ? resetText(new Date(w.resetsAt), new Date(w.resetsAt).toLocaleString(intlLang())) : "");
   b.title = [reset, own >= 100 ? t("No cap on {window}: it is used to 100%, whatever this account's cap. Click to change", { window: name })
-    : own ? t("{window} has a cap of its own: magpie counts this account as used up once {window} is at {n}%, until it renews. Click to change", { window: name, n: own })
+    : own ? t("{window} has a cap of its own: magpie-friday counts this account as used up once {window} is at {n}%, until it renews. Click to change", { window: name, n: own })
     : t("Click to give {window} a cap of its own, apart from this account's", { window: name })].filter(Boolean).join("\n");
   b.setAttribute("aria-haspopup", "menu");
   b.setAttribute("aria-expanded", "false");
@@ -14054,8 +14054,8 @@ function accountCapPill(p, user, cap, direct) {
   const byWindow = !cap && windowCapsOf(p, user) > 0;
   const pill = el("button", "acap" + (cap || byWindow ? " set" : ""), cap ? t("Cap {n}%", { n: cap }) : byWindow ? t("Caps by window") : t("No cap"));
   pill.type = "button";
-  pill.title = (cap ? t("Stops at {n}% of each usage window: once magpie reads a window at {n}% or past it, it counts this account as used up and sends it nothing more until the window renews. A turn already under way can still take it past {n}%, so the cap doesn't promise the rest is left. Click to change", { n: cap })
-    : t("Used to 100% of its usage windows. Click to cap it at a share of each, so magpie goes on to the other accounts past it"))
+  pill.title = (cap ? t("Stops at {n}% of each usage window: once magpie-friday reads a window at {n}% or past it, it counts this account as used up and sends it nothing more until the window renews. A turn already under way can still take it past {n}%, so the cap doesn't promise the rest is left. Click to change", { n: cap })
+    : t("Used to 100% of its usage windows. Click to cap it at a share of each, so magpie-friday goes on to the other accounts past it"))
     + "\n" + t("A window can have a cap of its own: click its meter below")
     + (direct ? "\n\n" + directNote(direct) : "");
   pill.setAttribute("aria-haspopup", "menu");
@@ -14956,7 +14956,7 @@ function closeProtoMenu() {
 // the menu's anchor where it was, so the menu stays beside it. So is the
 // guard's own scroll that brings the clicked anchor back into sight before
 // the menu opens (guardUntil). At phone width a menu low on a page opened
-// shut again at once: the Gateway page's Connect address in magpie web,
+// shut again at once: the Gateway page's Connect address in magpie-friday web,
 // whose header takes two rows.
 function scrollCloses(box, e) {
   if (box.contains(e.target)) return false;
@@ -15219,7 +15219,7 @@ function curlOf(text) {
 function moveWhy(m, p) {
   const a = m.why?.args || {};
   switch (m.why?.code) {
-    case "offline": return t("magpie couldn't reach npm to install the plugin. Check the network or proxy, then try again.");
+    case "offline": return t("magpie-friday couldn't reach npm to install the plugin. Check the network or proxy, then try again.");
     case "install": return t("npm couldn't install the plugin: {line}", { line: a.line });
     case "lapsed": return t("every {name} account needs signing in again. Sign one in above, then move.", { name: p.name });
     case "unserved": return a.user
@@ -15230,7 +15230,7 @@ function moveWhy(m, p) {
   return m.error || "";
 }
 
-// renderMove: which runs the subscription, magpie's built-in or its
+// renderMove: which runs the subscription, magpie-friday's built-in or its
 // community plugin, and the move onto the plugin; the built-ins are
 // retired, so a moved one has no way back. The editor stays open
 // through it: the button says what it is doing, a failure is said under
@@ -15245,7 +15245,7 @@ function renderMove(p) {
   const onPlugin = m.state === "plugin";
   const said = el("div", "", onPlugin
     ? t("The community {name} plugin, with the accounts you had here.", { name: p.name })
-    : t("magpie's built-in · or the community {name} plugin, with the same accounts", { name: p.name }));
+    : t("magpie-friday's built-in · or the community {name} plugin, with the same accounts", { name: p.name }));
   said.title = m.package; // the npm package: for the curious, not the sentence
   const why = el("div", "move-why");
   why.setAttribute("role", "alert");
@@ -15300,7 +15300,7 @@ function renderMove(p) {
     box.append(note);
   }
   if (!onPlugin) box.append(b, why);
-  return field(t("Runs on"), box, onPlugin ? t("magpie's built-in is retired, so this subscription stays on its plugin.") : t("If an account doesn't work through the plugin, nothing changes."));
+  return field(t("Runs on"), box, onPlugin ? t("magpie-friday's built-in is retired, so this subscription stays on its plugin.") : t("If an account doesn't work through the plugin, nothing changes."));
 }
 
 async function providerAction(action, body, okMsg, base = "provider/") {
@@ -15360,12 +15360,12 @@ function doneSaving(b) {
 // took away (a provider switched off or removed, the last account signed
 // out: #200), each to the same model elsewhere or back to its default.
 function saidMoved(okMsg, list = providers?.moved) {
-  // one magpie couldn't move (its file unwritable) is still on the model
+  // one magpie-friday couldn't move (its file unwritable) is still on the model
   // gone, and the change made all the same
   let stuck = false;
   const moved = (list || []).map((m) => {
     const who = m.field === "model" ? m.agent : m.agent + " " + m.field;
-    if (m.error) { stuck = true; return t("{agent} is still on {model}, which magpie no longer serves: {error}", { agent: who, model: m.from, error: m.error }); }
+    if (m.error) { stuck = true; return t("{agent} is still on {model}, which magpie-friday no longer serves: {error}", { agent: who, model: m.from, error: m.error }); }
     return m.to ? t("{agent} moved to {model}", { agent: who, model: m.to })
       : t("{agent} is back on its default", { agent: who });
   });
@@ -15647,7 +15647,7 @@ function loadQuotas(asked, again) {
     .then(() => {
       began = quotaRefreshVersion;
       // the curves come on their own: the allowances now never wait for
-      // them (a remote magpie's history can take seconds; #3192)
+      // them (a remote magpie-friday's history can take seconds; #3192)
       loadQuotaHist();
       return api("usage/quotas" + (asked ? "?asked=1" : ""), undefined, (h) => { reading = h.get("X-Magpie-Reading") === "1"; });
     })
@@ -15730,7 +15730,7 @@ function fmtN(n) {
   return String(n);
 }
 // currency is Settings' choice of what a cost shows as: usd (its own price)
-// or cny, converted with fx (the rate this session last got from magpie,
+// or cny, converted with fx (the rate this session last got from magpie-friday,
 // with when that was and whether it's stale — kept only for the tooltip;
 // see applyPrefs, which fills both from what /api/settings answers).
 let currency = "usd";
@@ -15746,21 +15746,21 @@ function fmtCost(t) {
 }
 const tokensOf = (t) => t.input + t.output;
 
-// magpie's own requests (#1839): the ones it made by itself, not an agent —
+// magpie-friday's own requests (#1839): the ones it made by itself, not an agent —
 // a routing group's classifier, a web search, an image description — which
 // go to the same keys and accounts as the agents' and count against them,
-// told apart wherever usage is shown: a mark on magpie's rows, and how many
+// told apart wherever usage is shown: a mark on magpie-friday's rows, and how many
 // of a model's, a key's or an account's calls were its own
 function ownWhy() {
-  return t("Requests magpie made by itself, not an agent: a routing group's classifier, a web search or an image description. They count against the key or account like any other request.");
+  return t("Requests magpie-friday made by itself, not an agent: a routing group's classifier, a web search or an image description. They count against the key or account like any other request.");
 }
 function ownBadge() {
-  const b = el("span", "own-badge", t("magpie's own"));
+  const b = el("span", "own-badge", t("magpie-friday's own"));
   b.title = ownWhy();
   return b;
 }
 // ownLine is an account card's line saying how many of the period's
-// requests to it magpie made by itself, from the Overview's summary: the
+// requests to it magpie-friday made by itself, from the Overview's summary: the
 // account's own, or for a card of no account the provider's
 function ownLine(sub) {
   const user = (sub.user || "").toLowerCase();
@@ -15770,7 +15770,7 @@ function ownLine(sub) {
   }
   if (!n) return null;
   const line = el("div", "quota-own");
-  line.append(ownBadge(), el("span", "", t(n === 1 ? "{n} request in this period was magpie's own" : "{n} requests in this period were magpie's own", { n: fmtN(n) })));
+  line.append(ownBadge(), el("span", "", t(n === 1 ? "{n} request in this period was magpie-friday's own" : "{n} requests in this period were magpie-friday's own", { n: fmtN(n) })));
   line.title = ownWhy();
   return line;
 }
@@ -15878,10 +15878,10 @@ function renderQuotas(lazy) {
       // its tooltip; the curve and the rest only in full
       if (brief) meters.classList.add("brief");
       card.append(meters);
-      // a remote magpie's gateway key: what its windows don't say (#1547)
+      // a remote magpie-friday's gateway key: what its windows don't say (#1547)
       const keyLine = !brief && !history && keyLimitLine(sub);
       if (keyLine) card.append(keyLine);
-      // how many of the period's requests to it magpie made itself (#1839)
+      // how many of the period's requests to it magpie-friday made itself (#1839)
       const own = !brief && !history && ownLine(sub);
       if (own) card.append(own);
       // WorkBuddy's, Trae CN's or MiniMax Code's daily check-in, how this account's went,
@@ -15891,7 +15891,7 @@ function renderQuotas(lazy) {
       // what was left over time, against an even burn (#651)
       const curve = !brief && !sub.error && quotaCurve(sub);
       if (curve) card.append(curve);
-      // WorkBuddy's credits, day by day, as magpie counted them (#568)
+      // WorkBuddy's credits, day by day, as magpie-friday counted them (#568)
       if (!brief && !history && sub.daily && !sub.error) card.append(creditDays(sub));
       // what is left besides the windows, under them
       if (!history && sub.balance && sub.windows?.length && !sub.error) card.append(balanceRow(sub, "What is left on the account besides its windows", false));
@@ -15941,13 +15941,13 @@ function renderQuotas(lazy) {
 // the one that answered last, else the first — and the others in brief,
 // their bars alone, a click opening one (whqtian on Discord: 只显示一个账号
 // 即可，其他的可以点击展开; ARNO, 17 subscriptions and 29 accounts: 以前每个
-// 账号所占的空间很小，基本能一页看到所有账号… 关了magpie后又得一个个展开).
+// 账号所占的空间很小，基本能一页看到所有账号… 关了magpie-friday后又得一个个展开).
 // The tray panel, with less room, leaves the ones in brief out. Each
 // account's full or brief is remembered by provider and account
-// (magpie.usageAccounts), for the window and the panel alike; a provider
-// opened before that (magpie.usageOpen) starts with every account in full.
+// (magpie-friday.usageAccounts), for the window and the panel alike; a provider
+// opened before that (magpie-friday.usageOpen) starts with every account in full.
 // The accounts the card's button opened are remembered too
-// (magpie.usageAcctsOpened), so that its fold puts those back in brief,
+// (magpie-friday.usageAcctsOpened), so that its fold puts those back in brief,
 // and only those (WuSix on Discord: with both accounts in brief, 展开 opened
 // both and 收起其余账号 folded only the second).
 let usageOpen = new Set(), usageAccts = {}, usageByMore = new Set();
@@ -15987,7 +15987,7 @@ function setUsageAccts(list, open, byMore = false) {
 }
 // A card of a provider's keys shows the first three, and any in full,
 // the rest behind "Show N more keys" at its foot, which opens them in
-// place; remembered by provider (magpie.usageKeysAll). One more alone
+// place; remembered by provider (magpie-friday.usageKeysAll). One more alone
 // isn't folded: the button would take the room the key does.
 const KEYS_SHOWN = 3;
 let usageKeysAll = new Set();
@@ -16014,7 +16014,7 @@ function keysMore(provider, n) {
 // A card of more than ACCTS_FOLD accounts shows the first ACCTS_SHOWN, any
 // in full and the one carrying a check-in switch, the rest behind "Show N
 // more accounts" at its foot, as a card of keys does; remembered by
-// provider (magpie.usageAcctsAll). The tray panel leaves the ones in brief
+// provider (magpie-friday.usageAcctsAll). The tray panel leaves the ones in brief
 // out already.
 const ACCTS_FOLD = 8, ACCTS_SHOWN = 5;
 let usageAcctsAll = new Set();
@@ -16098,7 +16098,7 @@ function usageAcctFold(q, open) {
 
 // The Usage page's cards in the order they were dragged to (settings
 // usageOrder, by provider id), as the Agents page's rows are; one it doesn't
-// name keeps the order magpie sends them in after them, the Providers
+// name keeps the order magpie-friday sends them in after them, the Providers
 // page's (provider.InProviderOrder). The tray panel's Usage tab follows it
 // too.
 function byUsageOrder(list) {
@@ -16290,9 +16290,9 @@ async function moveUsage(key, to) {
 }
 
 // creditDays: the credits an account used each day of the period, as
-// magpie counted them from its readings of the vendor's meter, which tells
+// magpie-friday counted them from its readings of the vendor's meter, which tells
 // only what the cycle has used so far — a bar a day, and the period's sum;
-// a day before magpie first read it is not known rather than nothing.
+// a day before magpie-friday first read it is not known rather than nothing.
 function creditDays(sub) {
   const box = el("div", "credit-days");
   const { since, days } = sub.daily;
@@ -16318,7 +16318,7 @@ function creditDays(sub) {
   const sum = list.reduce((a, d) => a + d.used, 0);
   const head = el("div", "cd-head");
   const name = el("span", "", t("Credits used per day"));
-  name.title = t("Counted from magpie's readings of the vendor's meter, since {date}: what is used while magpie isn't reading it is counted on the day it next does", { date: dayName(new Date(since + "T12:00:00")) });
+  name.title = t("Counted from magpie-friday's readings of the vendor's meter, since {date}: what is used while magpie-friday isn't reading it is counted on the day it next does", { date: dayName(new Date(since + "T12:00:00")) });
   head.append(name, el("b", "", n > 1 ? t("{n} in {days} days", { n: num(sum), days: n }) : range && range.to !== key(today) ? t("{n} on {date}", { n: num(sum), date: dayName(last) }) : t("{n} today", { n: num(sum) })));
   box.append(head);
   if (n > 1) {
@@ -16329,7 +16329,7 @@ function creditDays(sub) {
       const fill = el("i");
       fill.style.height = d.known && peak ? Math.max(d.used ? 6 : 0, 100 * d.used / peak).toFixed(1) + "%" : "0%";
       b.append(fill);
-      b.title = d.known ? t("{date}: {n} credits", { date: dayName(d.date), n: num(d.used) }) : t("{date}: not counted — magpie began counting on {since}", { date: dayName(d.date), since: dayName(new Date(since + "T12:00:00")) });
+      b.title = d.known ? t("{date}: {n} credits", { date: dayName(d.date), n: num(d.used) }) : t("{date}: not counted — magpie-friday began counting on {since}", { date: dayName(d.date), since: dayName(new Date(since + "T12:00:00")) });
       bars.append(b);
     }
     box.append(bars);
@@ -16338,7 +16338,7 @@ function creditDays(sub) {
   return box;
 }
 
-// What was left of an account's windows over time (#651), from magpie's
+// What was left of an account's windows over time (#651), from magpie-friday's
 // readings of them (and those of the computers sharing usage with it): a
 // line a window, the percent left, broken where the window started again;
 // a dashed line from the window's start to its reset is an even burn, and
@@ -16397,7 +16397,7 @@ function quotaLines(sub) {
   return out;
 }
 // quotaCycleBreak: whether b, read after a, is of its window started again,
-// as magpie's own record of them says (quota_history.go's newCycle)
+// as magpie-friday's own record of them says (quota_history.go's newCycle)
 function quotaCycleBreak(a, b) {
   if (a.reset == null && b.reset == null) return b.left > a.left + 5;
   if (a.reset == null || b.reset == null) return true;
@@ -16732,7 +16732,7 @@ function balanceAmount(sub, v) {
   const m = (sub.balance || "").match(/^(.*?)-?\d[\d,]*(?:\.\d+)?(.*)$/);
   return m ? m[1] + n + m[2] : n;
 }
-// balanceCurve: a key's balance over time, as magpie read it, under its
+// balanceCurve: a key's balance over time, as magpie-friday read it, under its
 // figure on the Usage page (TJHHHH on Discord): the line, the least-squares
 // line through it since the last top-up dashed on to where it meets zero
 // when that is near, and when it runs out at that pace in the head. The
@@ -16748,7 +16748,7 @@ function balanceCurve(sub) {
   const out = tr.runsOut ? Date.parse(tr.runsOut) : null;
   const pace = el("span", "qc-range");
   head.append(el("span", "", t("Balance over time")), pace);
-  box.title = t("Solid: the balance as magpie read it. Dashed: a straight line fitted through it since the last top-up, carried on to where it runs out. Click to enlarge.");
+  box.title = t("Solid: the balance as magpie-friday read it. Dashed: a straight line fitted through it since the last top-up, carried on to where it runs out. Click to enlarge.");
   const W = 300, H = 60;
   const g = sv("svg", { viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: "none", class: "qc-plot", role: "img" });
   curveZoom(box, g);
@@ -17199,7 +17199,7 @@ function renderPanelUse() {
     out.push(el("span", "skeleton pu-sk"), el("span", "skeleton pu-sk"));
   } else if (!l.total && !l.day) {
     const none = el("div", "pu-none");
-    none.append(el("b", "", t(panelUseProvider || panelUsePeriod !== "today" ? "No requests here" : "No requests today")), t("Every request an agent sends to magpie, and every call the agents' own session files record, is counted here."));
+    none.append(el("b", "", t(panelUseProvider || panelUsePeriod !== "today" ? "No requests here" : "No requests today")), t("Every request an agent sends to magpie-friday, and every call the agents' own session files record, is counted here."));
     out.push(none);
   } else {
     const hitRate = cacheHitOf(l);
@@ -17785,11 +17785,11 @@ function autoResetRow(q, cls) {
   return row;
 }
 
-// resetsUsedLine: the last of the account's resets magpie used, when and
+// resetsUsedLine: the last of the account's resets magpie-friday used, when and
 // why, on a line of its own under the say; every one kept in its title.
-// A reset gone from the card otherwise read the same whether magpie used
+// A reset gone from the card otherwise read the same whether magpie-friday used
 // it, the user did, or it ran out (foobra12 on Discord: 我发现刚才好像不小心
-// 自动给我使用了一张). Nothing when magpie used none.
+// 自动给我使用了一张). Nothing when magpie-friday used none.
 function resetsUsedLine(q) {
   const used = q.resetsUsed || [];
   if (!used.length) return null;
@@ -17889,7 +17889,7 @@ function creditsRow(q, cls) {
 }
 function creditsTitle(on) {
   return t(on ? "On: once one of this account's windows is used up, ChatGPT answers on the account's credits, if it holds any, so a task goes on. Click to turn it off."
-    : "Off: once one of this account's windows is used up, by magpie's latest reading (refreshed about every minute), magpie holds it till the window renews, and requests go to your other accounts, groups and fallbacks rather than spending its credits. With none of them left, a request is refused with why, unless Auto-use resets is on and its week is used up: then a reset is used first.");
+    : "Off: once one of this account's windows is used up, by magpie-friday's latest reading (refreshed about every minute), magpie-friday holds it till the window renews, and requests go to your other accounts, groups and fallbacks rather than spending its credits. With none of them left, a request is refused with why, unless Auto-use resets is on and its week is used up: then a reset is used first.");
 }
 
 // creditsButton turns that on or off: a switch, its words beside it.
@@ -17930,25 +17930,25 @@ const CHECKINS = {
   "": {
     pref: "workbuddyCheckin", api: "workbuddy-checkin",
     say: "WorkBuddy's daily check-in, as pressing 签到 in WorkBuddy does",
-    on: "On: magpie checks each WorkBuddy (China) account in once a day, as Settings' Daily check-in does. Click to turn it off.",
+    on: "On: magpie-friday checks each WorkBuddy (China) account in once a day, as Settings' Daily check-in does. Click to turn it off.",
     off: "Check each WorkBuddy (China) account in once a day, as Settings' Daily check-in does",
   },
   trae: {
     pref: "traeCheckin", api: "trae-checkin",
     say: "Trae CN's daily check-in, as pressing 签到 in Trae does",
-    on: "On: magpie checks each Trae CN account in once a day, as Settings' Daily check-in does. Click to turn it off.",
+    on: "On: magpie-friday checks each Trae CN account in once a day, as Settings' Daily check-in does. Click to turn it off.",
     off: "Check each Trae CN account in once a day, as Settings' Daily check-in does",
   },
   minimax: {
     pref: "minimaxCheckin", api: "minimax-checkin",
     say: "MiniMax Code's daily check-in, as pressing 签到 in MiniMax Code does",
-    on: "On: magpie checks each MiniMax Code account in once a day, as Settings' Daily check-in does. Click to turn it off.",
+    on: "On: magpie-friday checks each MiniMax Code account in once a day, as Settings' Daily check-in does. Click to turn it off.",
     off: "Check each MiniMax Code account in once a day, as Settings' Daily check-in does",
   },
   qoder: {
     pref: "qoderCheckin", api: "qoder-checkin",
     say: "Qoder's daily credits, as claiming them in Qoder does",
-    on: "On: magpie claims each Qoder account's daily credits once a day, as Settings' Daily check-in does. Click to turn it off.",
+    on: "On: magpie-friday claims each Qoder account's daily credits once a day, as Settings' Daily check-in does. Click to turn it off.",
     off: "Claim each Qoder account's daily credits once a day, as Settings' Daily check-in does",
   },
 };
@@ -17958,7 +17958,7 @@ function pluginCheckin(id, name) {
   return {
     plugin: id, api: "plugin-checkin",
     say: t("{name}'s daily check-in, pressed by its plugin", { name }),
-    on: t("On: magpie has the {name} plugin check each account in once a day, as Settings' Daily check-in does. Click to turn it off.", { name }),
+    on: t("On: magpie-friday has the {name} plugin check each account in once a day, as Settings' Daily check-in does. Click to turn it off.", { name }),
     off: t("Have the {name} plugin check each account in once a day, as Settings' Daily check-in does", { name }),
   };
 }
@@ -17994,10 +17994,10 @@ function checkinRow(q, first, subs) {
       case "claimed":
       case "done":
         if (r.again) {
-          // "already in" before noon with no claim magpie saw: maybe the
+          // "already in" before noon with no claim magpie-friday saw: maybe the
           // vendor's day before, so not shown as today's (#3326)
           kind = "wait";
-          text = t("{name} says already checked in; its day may not have turned yet, so magpie asks again later", { name: checkinVendorName(r, q.name) });
+          text = t("{name} says already checked in; its day may not have turned yet, so magpie-friday asks again later", { name: checkinVendorName(r, q.name) });
           break;
         }
         kind = "ok";
@@ -18005,11 +18005,11 @@ function checkinRow(q, first, subs) {
         break;
       case "ineligible":
       case "inactive":
-        text = t(r.outcome === "inactive" ? "No check-in event now" : "Not eligible for the daily check-in") + (r.msg ? " · " + r.msg : "") + (r.again ? " · " + t("magpie asks again later") : "");
+        text = t(r.outcome === "inactive" ? "No check-in event now" : "Not eligible for the daily check-in") + (r.msg ? " · " + r.msg : "") + (r.again ? " · " + t("magpie-friday asks again later") : "");
         if (r.msg) row.dataset.why = "";
         break;
       case "captcha":
-        // the vendor wants a captcha, which magpie never solves
+        // the vendor wants a captcha, which magpie-friday never solves
         text = t("Asks for a captcha; check in in its own app") + (r.msg ? " · " + r.msg : "");
         break;
       case "own-app":
@@ -18023,7 +18023,7 @@ function checkinRow(q, first, subs) {
       default:
         kind = "bad";
         // why, in the row: a reason only in the tooltip read as no reason (#808)
-        text = t(on ? "Check-in failed; magpie tries again later" : "Check-in failed") + (r.msg ? " · " + r.msg : "");
+        text = t(on ? "Check-in failed; magpie-friday tries again later" : "Check-in failed") + (r.msg ? " · " + r.msg : "");
     }
   } else if (q.checkinOff) {
     // left out on its own in Settings (#1902)
@@ -18049,7 +18049,7 @@ function checkinRow(q, first, subs) {
     try {
       prefs = await writingPrefs(api("settings/" + vendor.api, vendor.plugin ? { provider: vendor.plugin, on: !on } : { on: !on }));
       state.settings = prefs;
-      status(t(on ? "Daily check-in turned off" : "Daily check-in turned on; magpie checks in within a few minutes"), "ok");
+      status(t(on ? "Daily check-in turned off" : "Daily check-in turned on; magpie-friday checks in within a few minutes"), "ok");
       renderQuotas();
     } catch (err) {
       auto.disabled = false;
@@ -18059,7 +18059,7 @@ function checkinRow(q, first, subs) {
   row.append(auto);
   // pressed now: shown while an account isn't in today and could be; a
   // Qoder campaign can open later in the day, so its inactive too (#2696),
-  // and an answer magpie asks again, which may be the vendor's day before
+  // and an answer magpie-friday asks again, which may be the vendor's day before
   // (#3326)
   const later = /^(plugin:)?qoder(-cn)?$/.test(by);
   const due = subs.filter((x) => x.checkins && !x.checkinOff && (x.checkinBy || "") === by && !(x.checkin?.day === today && x.checkin.outcome !== "failed" && !x.checkin.again && !(later && x.checkin.outcome === "inactive")));
@@ -18426,7 +18426,7 @@ function familyQuota(sub) {
   return [box, b];
 }
 
-// holdsLine: a window's whole, reckoned from the calls magpie routed
+// holdsLine: a window's whole, reckoned from the calls magpie-friday routed
 // through the account since it began over the share used (WindowHolds),
 // and in its tooltip how, and why it reads low if the account is used
 // elsewhere too.
@@ -18439,8 +18439,8 @@ function holdsLine(h) {
   line.title = [
     h.priced ? t("The whole window ≈ {tokens} tokens of input and output, ≈ {cost} at API list prices", { tokens: fmtN(h.tokens), cost: cost(h.cost) })
       : t("The whole window ≈ {tokens} tokens of input and output; some of its models have no API price", { tokens: fmtN(h.tokens) }),
-    t("Reckoned from what magpie routed through this account in this window: {tokens} tokens in {calls} calls, {cache} cache reads, over the {used} the vendor says is used", { tokens: fmtN(r.tokens || 0), calls: r.calls || 0, cache: fmtN(r.cacheRead || 0), used: Math.round(h.used) + "%" }),
-    t("Only magpie's calls are counted: if this account is also used elsewhere, this reads low"),
+    t("Reckoned from what magpie-friday routed through this account in this window: {tokens} tokens in {calls} calls, {cache} cache reads, over the {used} the vendor says is used", { tokens: fmtN(r.tokens || 0), calls: r.calls || 0, cache: fmtN(r.cacheRead || 0), used: Math.round(h.used) + "%" }),
+    t("Only magpie-friday's calls are counted: if this account is also used elsewhere, this reads low"),
     t("A heavier model fills a window sooner: this holds for the models used so far"),
   ].join("\n");
   return line;
@@ -18451,8 +18451,8 @@ function holdsLine(h) {
 const holdsWhy = {
   low: () => t("Under {n}% of it is used: a rounded share that small is too coarse to scale up", { n: 5 }),
   clock: () => t("Its reset time isn't known, so neither is when it began"),
-  log: () => t("It began before magpie's request log, so some of its calls weren't seen"),
-  none: () => t("magpie hasn't routed a call through this account in it yet"),
+  log: () => t("It began before magpie-friday's request log, so some of its calls weren't seen"),
+  none: () => t("magpie-friday hasn't routed a call through this account in it yet"),
   credits: () => t("A call in it may have been paid from credits or extra usage, not from the window"),
 };
 // holdsUnknownLine: a window whose whole the server couldn't reckon
@@ -18460,11 +18460,11 @@ const holdsWhy = {
 // nothing before and a reader couldn't tell a gap from a fault.
 function holdsUnknownLine(why) {
   const line = el("span", "quota-holds-why", t("Whole: not enough data"));
-  line.title = t("The whole window can't be estimated from magpie's calls yet") + "\n" + holdsWhy[why]();
+  line.title = t("The whole window can't be estimated from magpie-friday's calls yet") + "\n" + holdsWhy[why]();
   return line;
 }
 
-// isKeyCard: the card of a remote magpie's gateway keys (#1547,
+// isKeyCard: the card of a remote magpie-friday's gateway keys (#1547,
 // remote_key_limits.go), "<remote>/~keys", one account per key; quotaName
 // says so by its name, which is the remote's.
 const isKeyCard = (q) => /\/~keys$/.test(q.provider || "");
@@ -18562,7 +18562,7 @@ function quotaWindows(sub) {
       r.append(el("span", "", out + " ·"), " ", el("span", "", untilText(new Date(w.runsOutAt))));
       quota.title = tipLines(quota.title, runsOutText(w, (at) => at.toLocaleString(intlLang())));
     }
-    // what the whole window holds, by what magpie routed in it (Chiao), on
+    // what the whole window holds, by what magpie-friday routed in it (Chiao), on
     // the reset's line, so the window keeps its three rows
     if (w.holds) {
       if (!r) quota.append(r = el("div", "quota-reset"));
@@ -18933,8 +18933,8 @@ function drawLedRank(box, l, split, metric, picked, choose, compact) {
     const l2 = el("div", "rk-b");
     more.forEach((m, i) => l2.append(...(i ? [" · ", m] : [m])));
     if (x.errors) l2.append(" · ", Object.assign(el("span", "rk-bad"), { textContent: t("{n} failed", { n: x.errors }) }));
-    // of those, the replies magpie ended stuck in a loop (#1858)
-    if (x.loops) l2.append(" · ", Object.assign(el("span", "rk-bad rk-loop"), { textContent: t("{n} looped", { n: ledNum(x.loops) }), title: t("Replies magpie ended because the model kept repeating itself") }));
+    // of those, the replies magpie-friday ended stuck in a loop (#1858)
+    if (x.loops) l2.append(" · ", Object.assign(el("span", "rk-bad rk-loop"), { textContent: t("{n} looped", { n: ledNum(x.loops) }), title: t("Replies magpie-friday ended because the model kept repeating itself") }));
     b.append(l1, bar, l2);
     if (!plain) b.onclick = () => choose(x);
     b.onpointerenter = () => box.chart?.emphasize?.(x.id);
@@ -19097,7 +19097,7 @@ const TRAYS = [["panel", "Open the quick panel"], ["window", "Open the main wind
 const CURRENCIES = [["usd", "$ USD"], ["cny", "¥ CNY"]];
 // The text size is the windows' own zoom, as a browser's Ctrl/Cmd +: the
 // page is laid out again in larger CSS pixels, so everything it measures is
-// as at 100%, and magpie sizes the windows around it (textsize.go). None is
+// as at 100%, and magpie-friday sizes the windows around it (textsize.go). None is
 // under 100%: WebView2 and WebKitGTK zoom no smaller through Wails.
 const TEXT_SIZES = [100, 110, 125, 150];
 const textSizeKeys = () => /^Mac/.test(navigator.platform) ? "⌘+ ⌘− ⌘0" : "Ctrl+ Ctrl− Ctrl+0";
@@ -19315,7 +19315,7 @@ function applyPrefs(s, rate) {
   return was !== locale;
 }
 
-// Omarchy's bar: magpie's icon there as a widget of its own (Settings → Bar
+// Omarchy's bar: magpie-friday's icon there as a widget of its own (Settings → Bar
 // icon), offered only in the app on Omarchy
 let barIcon = null;
 function renderBarIcon() {
@@ -19349,7 +19349,7 @@ function renderLoginAllow(s) {
   open.className = "login-allow-open";
   open.textContent = t("Open Login Items");
   open.onclick = () => api("open", { url: loginItemsURL }).catch((e) => status(t(e.message), "err"));
-  sub.replaceChildren(t("Switched off in System Settings’ Login Items, so magpie won’t open at login"), " ", open);
+  sub.replaceChildren(t("Switched off in System Settings’ Login Items, so magpie-friday won’t open at login"), " ", open);
 }
 
 async function loadSettings() {
@@ -19361,7 +19361,7 @@ async function loadSettings() {
   // the state's copy too, which the other pages draw from (#1433)
   prefs = state.settings = s;
   applyFeatures(s.builtins);
-  // the WebDAV setup can have been changed from outside the window (magpie
+  // the WebDAV setup can have been changed from outside the window (magpie-friday
   // webdav at the terminal): the page's copy of it is dropped, so the page
   // is drawn from a fresh read. Coming back to the window is safe with a
   // form open: load() keeps off this path while one is, so it is never
@@ -19588,7 +19588,7 @@ function searchSettings(q) {
   }).observe($("#view-settings"), { childList: true, subtree: true });
 }
 
-// Settings' Command line (PAMI on Discord): whether `magpie` in a terminal
+// Settings' Command line (PAMI on Discord): whether `magpie-friday` in a terminal
 // opened now runs this app, in each shell, and a button that puts it there
 // — a link in a folder already on PATH, on Windows the app's folder first
 // in the user's PATH. A shell's profile is written only from that shell's
@@ -19611,22 +19611,22 @@ function renderCLI(r) {
       cliView = await api("cli", body);
       cliAt = Date.now();
       paint(cliView);
-      status(cliView.windows && cliView.shim ? t("Added: magpie.cmd beside {name} runs it as magpie; open a new PowerShell or Command Prompt window to run magpie", { name: exeName(cliView.exe) })
-        : cliView.windows ? t("Added: open a new PowerShell or Command Prompt window to run magpie") : t("Added: open a new terminal window to run magpie"), "ok");
+      status(cliView.windows && cliView.shim ? t("Added: magpie-friday.cmd beside {name} runs it as magpie-friday; open a new PowerShell or Command Prompt window to run magpie-friday", { name: exeName(cliView.exe) })
+        : cliView.windows ? t("Added: open a new PowerShell or Command Prompt window to run magpie-friday") : t("Added: open a new terminal window to run magpie-friday"), "ok");
     } catch (e) { status(t(e.message), "err"); } finally { btn.disabled = false; }
   };
   const paint = (v) => {
-    sub.textContent = v.stuck === "translocated" ? t("macOS runs magpie from a temporary copy until it is moved to Applications: move it there first")
-      : v.stuck === "read-only" ? t("magpie runs from its disk image: copy it to Applications first")
-      : v.ours ? t("In a new terminal, magpie runs this app: {path}", { path: v.command }) + (v.shim && v.command === v.shim ? " (" + t("which runs {name}", { name: exeName(v.exe) }) + ")" : "")
-      : v.command ? t("In a new terminal, magpie runs another copy: {path}", { path: v.command }) + (v.version ? " (" + v.version + ")" : "")
-      : t("A new terminal can't find the magpie command");
+    sub.textContent = v.stuck === "translocated" ? t("macOS runs magpie-friday from a temporary copy until it is moved to Applications: move it there first")
+      : v.stuck === "read-only" ? t("magpie-friday runs from its disk image: copy it to Applications first")
+      : v.ours ? t("In a new terminal, magpie-friday runs this app: {path}", { path: v.command }) + (v.shim && v.command === v.shim ? " (" + t("which runs {name}", { name: exeName(v.exe) }) + ")" : "")
+      : v.command ? t("In a new terminal, magpie-friday runs another copy: {path}", { path: v.command }) + (v.version ? " (" + v.version + ")" : "")
+      : t("A new terminal can't find the magpie-friday command");
     add.hidden = v.ours || !v.dir || !!v.stuck;
     add.textContent = v.command ? t("Use this app") : t("Add to PATH");
-    // an app not named magpie.exe (the site's magpie-windows-amd64.exe,
-    // #942) is given a magpie.cmd beside it that runs it
-    add.title = v.windows && v.shim ? t("Puts {dir} first in your user PATH and writes magpie.cmd there, which runs {name}", { dir: v.dir || "", name: exeName(v.exe) })
-      : v.windows ? t("Puts {dir} first in your user PATH", { dir: v.dir || "" }) : t("Links magpie in {dir}", { dir: v.dir || "" });
+    // an app not named magpie-friday.exe (the site's magpie-friday-windows-amd64.exe,
+    // #942) is given a magpie-friday.cmd beside it that runs it
+    add.title = v.windows && v.shim ? t("Puts {dir} first in your user PATH and writes magpie-friday.cmd there, which runs {name}", { dir: v.dir || "", name: exeName(v.exe) })
+      : v.windows ? t("Puts {dir} first in your user PATH", { dir: v.dir || "" }) : t("Links magpie-friday in {dir}", { dir: v.dir || "" });
     shells.replaceChildren(...(v.shells || []).map((s) => {
       const line = el("div", "cli-shell" + (s.ours ? " on" : ""));
       line.dataset.shell = s.name;
@@ -19637,7 +19637,7 @@ function renderCLI(r) {
       // hasn't gets its own profile's button
       if (!s.ours && s.profile && !v.stuck && !(s.hasDir && !add.hidden)) {
         const b = el("button", "text", t("Add to {file}", { file: s.profile }));
-        b.title = t("Adds ~/.local/bin to {file}'s PATH and links magpie there", { file: s.profile });
+        b.title = t("Adds ~/.local/bin to {file}'s PATH and links magpie-friday there", { file: s.profile });
         b.onclick = () => go({ shell: s.name }, b);
         line.append(b);
       }
@@ -19656,7 +19656,7 @@ function renderCLI(r) {
 
 // Settings' Download source (#893): where an update's file is downloaded
 // from — GitHub, or a GitHub download mirror put before its URL, the same
-// setting `magpie update mirror` writes. magpie names no mirror of its
+// setting `magpie-friday update mirror` writes. magpie-friday names no mirror of its
 // own; the feed and each file's SHA-256 still come from usemagpie.ai, and a
 // file that doesn't match is never installed. A draft and its error are
 // kept across the page being drawn again.
@@ -19718,10 +19718,10 @@ function renderSettings() {
   $("#colorblindSegs").replaceChildren(segs([["off", t("Off")], ["on", t("On")]], s.colorblind ? "on" : "off", (v) => savePrefs({ ...keep, colorblind: v === "on" })));
   renderLangPick(s, keep);
   renderGatewayMode(s);
-  // a browser tab has its own zoom, and magpie leaves it to it
+  // a browser tab has its own zoom, and magpie-friday leaves it to it
   $("#textSizeRow").hidden = web;
   // the keys that do it too, kept in the choices' tooltip, the row saying no more than its name
-  $("#textSizeSegs").title = t("Everything in magpie's windows, larger; {keys} too", { keys: textSizeKeys() });
+  $("#textSizeSegs").title = t("Everything in magpie-friday's windows, larger; {keys} too", { keys: textSizeKeys() });
   $("#textSizeSegs").replaceChildren(segs(TEXT_SIZES.map((n) => [n, n + "%"]), s.textSize || 100, (n) => setTextSize(n)));
   $("#traySegs").replaceChildren(segs(TRAYS.map(([id, name]) => [id, t(name)]), s.tray || "panel", (tray) => savePrefs({ ...keep, tray })));
   // the Dock is the Mac's; the tray and the login item the app's
@@ -19740,8 +19740,8 @@ function renderSettings() {
   // its line says what the choice does; data-en keeps a language change on it
   const awakeSub = $("#keepAwakeRow .sub");
   awakeSub.dataset.en = s.keepAwake && s.keepAwakeDisplay
-    ? "Keeps this computer and its screen awake while magpie runs tasks"
-    : "Keeps this computer awake while magpie runs tasks";
+    ? "Keeps this computer and its screen awake while magpie-friday runs tasks"
+    : "Keeps this computer awake while magpie-friday runs tasks";
   awakeSub.textContent = t(awakeSub.dataset.en);
   // WSL's distros, looked in on Windows unless turned off (#1264)
   $("#wslAgentsRow").hidden = !s.wsl;
@@ -19868,7 +19868,7 @@ function renderSettings() {
   }
   // the header's Update pill, kept away for good or for one version; the
   // version row above still says what is out and offers it
-  const pill = row(t("Update button"), t("Shows in the header when a newer magpie is out"),
+  const pill = row(t("Update button"), t("Shows in the header when a newer magpie-friday is out"),
     "", segs([["off", t("Off")], ["on", t("On")]], s.noUpdatePill ? "off" : "on", (v) => savePrefs({ ...keep, noUpdatePill: v === "off" }).then(renderUpdateBadge)));
   pill.classList.add("update-pill-row");
   if (s.updateSkip && !s.noUpdatePill) {
@@ -19880,14 +19880,14 @@ function renderSettings() {
       pill.querySelector(".val").prepend(back);
     }, () => {});
   }
-  // whether magpie asks for a newer version (and downloads it) by itself,
+  // whether magpie-friday asks for a newer version (and downloads it) by itself,
   // and how often; off, only the version row's Check asks (#472)
-  row(t("Automatic updates"), t("Checks for a newer magpie and downloads it"),
+  row(t("Automatic updates"), t("Checks for a newer magpie-friday and downloads it"),
     "", segs([["off", t("Off")], ["on", t("On")]], s.noAutoUpdate ? "off" : "on", (v) => savePrefs({ ...keep, noAutoUpdate: v === "off" }))).classList.add("update-auto-row");
   // kept in place while off, dimmed, its height the same (a row or a line
   // taken away would shorten the page under the click), for when they are
   // turned on again
-  row(t("Check every"), s.noAutoUpdate ? t("While automatic updates are on") : t("How often magpie looks for a newer version"), "",
+  row(t("Check every"), s.noAutoUpdate ? t("While automatic updates are on") : t("How often magpie-friday looks for a newer version"), "",
     segs(UPDATE_EVERY.map((m) => [m, m < 60 ? t("{n} min", { n: m }) : t("{n} h", { n: m / 60 })]), s.updateEvery || 360,
       (updateEvery) => savePrefs({ ...keep, updateEvery }))).classList.add("update-every-row", ...(s.noAutoUpdate ? ["off"] : []));
   // whether a newer version found is downloaded at once, or only said to
@@ -19902,8 +19902,8 @@ function renderSettings() {
   renderUpdateMirror(row(t("Download source"), "", ""), s);
   const open = el("button", "text", t("Open"));
   open.onclick = () => api("settings/reveal", {}).catch((e) => status(e.message, "err"));
-  // portable (a data folder beside magpie, #508): everything is in there
-  row(t("Config folder"), s.portable ? t("Portable: everything magpie keeps, in the data folder beside it") : t("providers, profiles and these settings"), s.dir, copyBtn(s.dir, t("Path")), open);
+  // portable (a data folder beside magpie-friday, #508): everything is in there
+  row(t("Config folder"), s.portable ? t("Portable: everything magpie-friday keeps, in the data folder beside it") : t("providers, profiles and these settings"), s.dir, copyBtn(s.dir, t("Path")), open);
   renderCLI(row(t("Command line"), t("Checking your shells…"), ""));
   row(t("Gateway URL"), t("the address every agent is pointed at"), s.gateway, copyBtn(s.gateway, t("Gateway URL")));
   // MAGPIE_PUBLIC_URL, where other machines reach it (#1551)
@@ -19917,8 +19917,8 @@ function renderSettings() {
   const repo = el("button", "github");
   repo.innerHTML = GITHUB_SVG;
   repo.append(el("span", "", "GitHub"));
-  repo.title = "github.com/yetone/magpie";
-  repo.onclick = () => api("open", { url: "https://github.com/yetone/magpie" }).catch(() => {});
+  repo.title = "github.com/cha0sal3r/magpie-friday";
+  repo.onclick = () => api("open", { url: "https://github.com/cha0sal3r/magpie-friday" }).catch(() => {});
   row(t("Community"), t("questions, ideas and feedback, on Discord or GitHub"), "", join, repo);
   // gateway mode leaves out what is written into this computer's agents'
   // files, and the alerts its desktop would show
@@ -19927,7 +19927,7 @@ function renderSettings() {
   setSetTab(setTab);
 }
 
-// Gateway mode's switch, in magpie web alone (gatewaymode.go): Automatic
+// Gateway mode's switch, in magpie-friday web alone (gatewaymode.go): Automatic
 // (on with --gateway or no agents here), On or Off. Turned, the tabs follow
 // at once.
 function renderGatewayMode(s) {
@@ -19940,7 +19940,7 @@ function renderGatewayMode(s) {
       renderSettings();
     }).catch((e) => { status(t(e.message), "err"); renderSettings(); })));
   const now = s.gatewayMode ? "" : {
-    flag: t("Now on: magpie web was started with --gateway"),
+    flag: t("Now on: magpie-friday web was started with --gateway"),
     "no-agents": t("Now on: no agents on this computer"),
   }[s.gatewayWhy] || t("Now off: agents found on this computer");
   $("#gatewayModeSub").textContent = [t("Only what a gateway for other computers needs: no Agents or Library, nor this computer's agents' settings"), now].filter(Boolean).join(" · ");
@@ -20104,7 +20104,7 @@ async function renderSync(v) {
     // how often it syncs by itself, or never: a free 坚果云 account is
     // allowed only so many requests (#847)
     const every = v.auto ?? 3;
-    row(t("Sync by itself"), every ? t("Every {n} minutes while magpie runs", { n: every }) : t("Off: only Sync now syncs"),
+    row(t("Sync by itself"), every ? t("Every {n} minutes while magpie-friday runs", { n: every }) : t("Off: only Sync now syncs"),
       segs([[0, t("Off")], [3, t("3 min")], [15, t("15 min")], [30, t("30 min")], [60, t("1 hour")]], every, async (m) => {
         renderSync(await api("davsync/auto", { minutes: m || -1 }).catch((x) => ({ ...v, error: x.message })));
       }));
@@ -20115,7 +20115,7 @@ async function renderSync(v) {
   // export and import
   row(t("Export"), t("Everything above in one file, sealed with a passphrase, to carry to another computer"), btn(t(syncOpen === "export" ? "Close" : "Export…"), toggle("export")));
   if (syncOpen === "export") box.append(exportForm());
-  row(t("Import"), t("Bring in a file exported from magpie"), btn(t(syncOpen === "import" ? "Close" : "Import…"), toggle("import")));
+  row(t("Import"), t("Bring in a file exported from magpie-friday"), btn(t(syncOpen === "import" ? "Close" : "Import…"), toggle("import")));
   if (syncOpen === "import") box.append(importForm());
 }
 
@@ -20168,17 +20168,17 @@ function serverFileSaid(f) {
   const size = fmtBytes(f.size || 0);
   switch (f.what) {
     case "empty": return t("the file on the server is empty (0 bytes)");
-    case "cut": return t("the file on the server is a magpie backup cut short ({size}): a write to it was interrupted", { size });
+    case "cut": return t("the file on the server is a magpie-friday backup cut short ({size}): a write to it was interrupted", { size });
     case "page": {
       let s = f.title ? t("the server answered with a web page (“{title}”) instead of the file", { title: f.title }) : t("the server answered with a web page instead of the file");
       if (f.moved) s += t(", after a redirect to {where}", { where: f.moved });
       return s + t(": check the address is the server's WebDAV address, not its website");
     }
     case "xml": return t("the server answered with an XML document instead of the file: check the address is the server's WebDAV address");
-    case "format": return t("the file on the server is another app's (“{format}”), not a magpie backup", { format: f.format });
-    case "json": return t("the file on the server is a JSON file that isn't a magpie backup ({size})", { size });
+    case "format": return t("the file on the server is another app's (“{format}”), not a magpie-friday backup", { format: f.format });
+    case "json": return t("the file on the server is a JSON file that isn't a magpie-friday backup ({size})", { size });
   }
-  return t("the file on the server isn't a magpie backup: it is {type} ({size})", { type: f.type || "?", size });
+  return t("the file on the server isn't a magpie-friday backup: it is {type} ({size})", { type: f.type || "?", size });
 }
 
 // askUpload asks before this computer's setup replaces a server file that
@@ -20304,19 +20304,19 @@ function davForm(v) {
   const [useL, use] = tick(t("Usage: this computer's calls, for the Usage page on the others"), !!v.usage);
   const what = el("div", "stack");
   what.append(keysL, agentsL, libL, useL);
-  const davFields = [...field(t("Address"), url, t("A folder named magpie is made in it.")),
+  const davFields = [...field(t("Address"), url, t("A folder named magpie-friday is made in it.")),
     ...field(t("User"), user),
     ...field(t("Password"), pass)];
   const s3Fields = [...field(t("Endpoint"), endpoint, t("Empty for AWS S3; for R2, B2, MinIO and the like, their S3 API address.")),
     ...field(t("Bucket"), bucket),
-    ...field(t("Prefix"), prefix, t("The backup goes in a folder named magpie under it.")),
+    ...field(t("Prefix"), prefix, t("The backup goes in a folder named magpie-friday under it.")),
     ...field(t("Region"), region),
     ...field(t("Access key"), keyID),
     ...field(t("Secret"), secret),
     ...field("", pathL, t("MinIO and most NAS servers need it."))];
   const ghFields = [...field(t("Repository"), repo, t("An existing private GitHub repository, in owner/repo form.")),
     ...field(t("Branch"), branch, t("Empty uses the repository's default branch. Empty repositories are initialized by the first sync; other branches must already exist.")),
-    ...field(t("Folder"), ghPrefix, t("The encrypted backup goes in <folder>/magpie/magpie.magpie-backup. Each update creates a commit.")),
+    ...field(t("Folder"), ghPrefix, t("The encrypted backup goes in <folder>/magpie-friday/magpie-friday.magpie-friday-backup. Each update creates a commit.")),
     ...field(t("GitHub token"), token, t("A fine-grained token for this repository with Contents: read and write. Kept on this computer, separately from the library's GitHub token."))];
   // which one is synced to, and that the other's settings stay
   const to = field(t("Sync to"), segs(Object.entries(syncNames).map(([id, n]) => [id, id === active ? t("{kind} · on", { kind: n }) : n]), kind, (k) => { kind = k; show(); }), " ");
@@ -20405,7 +20405,7 @@ function importForm() {
   let data = "";
   const file = el("input");
   file.type = "file";
-  file.accept = ".magpie-backup";
+  file.accept = ".magpie-friday-backup";
   file.hidden = true;
   const name = el("span", "fname", t("No file chosen"));
   const pick = el("button", "text", t("Choose…"));
@@ -20490,12 +20490,12 @@ function suffixSegs(drawn) {
   return seg;
 }
 // noNamesSaid: what Provider in model names can't change, said under it:
-// the connected agents whose own lists don't name magpie's models as it
+// the connected agents whose own lists don't name magpie-friday's models as it
 // says (agent.NoNames: handed ids alone, or the gateway's names alone).
 // love1sbug on X found the setting seemed to do nothing; "" when none is.
 function noNamesSaid() {
   const names = (state.agents || []).filter((a) => a.wired && a.noNames).map((a) => a.name);
-  return names.length ? t("Changes nothing in {agents}: magpie’s names don’t reach their model lists", { agents: names.join(", ") }) : "";
+  return names.length ? t("Changes nothing in {agents}: magpie-friday’s names don’t reach their model lists", { agents: names.join(", ") }) : "";
 }
 // noNamesLine is that line, hidden while it says nothing: a page drawn
 // before the agents are read (Routing, a provider's editor) is said again
@@ -20553,7 +20553,7 @@ let trayUsageLoading = null;
 function renderTrayUsage(s, keep) {
   $("#quotaLeftSegs").replaceChildren(segs([[false, t("Used")], [true, t("Left")]], !!s.quotaLeft,
     (on) => { if (on !== quotaLeft) setQuotaLeft(on); }));
-  // allowances read by magpie itself, or only when the user asks: at login
+  // allowances read by magpie-friday itself, or only when the user asks: at login
   // before a proxy app, a read by itself goes out direct (#1518)
   $("#quotaReadsSegs").replaceChildren(segs([["", t("Automatic")], ["asked", t("When I ask")]], s.quotaReads || "", (v) =>
     writingPrefs(api("settings/quota-reads", { reads: v })).then((ns) => { prefs = state.settings = ns; renderSettings(); })
@@ -20575,8 +20575,8 @@ function renderTrayUsage(s, keep) {
   $("#trayUsageRow").hidden = web;
   if (web) return;
   const mac = document.body.classList.contains("mac");
-  $("#trayUsageSub").textContent = mac ? t("Show your subscriptions' allowances, or the tokens and cost of today or the last 7 days, beside magpie's icon in the menu bar, side by side, refreshed every few minutes")
-    : t("Show your subscriptions' allowances, or the tokens and cost of today or the last 7 days, when pointing at magpie's tray icon, refreshed every few minutes");
+  $("#trayUsageSub").textContent = mac ? t("Show your subscriptions' allowances, or the tokens and cost of today or the last 7 days, beside magpie-friday's icon in the menu bar, side by side, refreshed every few minutes")
+    : t("Show your subscriptions' allowances, or the tokens and cost of today or the last 7 days, when pointing at magpie-friday's tray icon, refreshed every few minutes");
   const ids = s.trayUsages || (s.trayUsage ? [s.trayUsage] : []);
   const pill = el("button", "proto pick" + (ids.length ? " set" : ""));
   pill.type = "button";
@@ -20608,7 +20608,7 @@ function renderTrayUsage(s, keep) {
         opts.push({ v: q.provider + IN_USE, name: q.name, note: "Account in use" });
       opts.push({ v: trayCardID(q), name: q.name, note: [q.plan, q.alias, q.user].filter(Boolean).join(" · ") });
     }
-    // magpie's own count of every agent's requests, as the Usage page's
+    // magpie-friday's own count of every agent's requests, as the Usage page's
     // Overview has it: tokens over cost (#1984)
     for (const [v, name] of TRAY_TOTALS) opts.push({ v, name, note: "Every agent's, as the Usage page counts them" });
     // one ticked that isn't there now (signed out, or not answering) stays
@@ -20639,7 +20639,7 @@ function renderTrayUsage(s, keep) {
   $("#trayLogosRow").hidden = !ids.length || !mac;
   $("#trayLogosSegs").replaceChildren(segs([["off", t("Off")], ["on", t("On")]], s.trayNoLogos ? "off" : "on",
     (v) => savePrefs({ ...keep, trayNoLogos: v === "off" })));
-  // and beside magpie's icon or alone
+  // and beside magpie-friday's icon or alone
   $("#trayBirdRow").hidden = !ids.length || !mac;
   $("#trayBirdSegs").replaceChildren(segs([["off", t("Off")], ["on", t("On")]], s.trayNoBird ? "off" : "on",
     (v) => savePrefs({ ...keep, trayNoBird: v === "off" })));
@@ -20648,7 +20648,7 @@ function renderTrayUsage(s, keep) {
   $("#trayPaceRow").hidden = !ids.length || document.documentElement.classList.contains("win");
   $("#trayPaceSegs").replaceChildren(segs([["off", t("Off")], ["on", t("On")]], s.trayPace ? "on" : "off",
     (v) => savePrefs({ ...keep, trayPace: v === "on" })));
-  // and the cost beside magpie's own totals, in their cards and the
+  // and the cost beside magpie-friday's own totals, in their cards and the
   // tooltip, which every OS shows with or without cards (BussanQ)
   $("#trayCostSegs").replaceChildren(segs([["off", t("Off")], ["on", t("On")]], s.trayNoCost ? "off" : "on",
     (v) => savePrefs({ ...keep, trayNoCost: v === "off" })));
@@ -20656,10 +20656,10 @@ function renderTrayUsage(s, keep) {
 const TRAY_EVERY = [1, 3, 5, 10, 30];
 // the totals the menu bar can show beside the allowances (gui.trayTotal)
 const TRAY_TOTALS = [["usage:today", "Tokens and cost today"], ["usage:7d", "Tokens and cost, last 7 days"]];
-// how often magpie checks for updates by itself, in minutes (settings.UpdateEveries)
+// how often magpie-friday checks for updates by itself, in minutes (settings.UpdateEveries)
 const UPDATE_EVERY = [30, 60, 360, 1440];
 
-// renderProxy: magpie's own requests to vendors, and its update checks, follow the system proxy on
+// renderProxy: magpie-friday's own requests to vendors, and its update checks, follow the system proxy on
 // their own; this row says which one, and lets it be turned off or set. A provider, account or key
 // that names a proxy of its own (or Direct) keeps it whatever this says (netproxy.With), so the
 // line says it holds for those without one (#1832).
@@ -20771,7 +20771,7 @@ function renderProxy(s, keep) {
 }
 
 // renderProxyCheck: Test (#2076, c4ex), whether the proxy in force is the
-// way magpie's requests leave. POST /api/proxy/check asks Cloudflare's
+// way magpie-friday's requests leave. POST /api/proxy/check asks Cloudflare's
 // trace page through it, as a vendor request goes, and direct; the line
 // under the row's text says the address each left from. The same address
 // both ways is a failure only when the request through the proxy didn't
@@ -20876,7 +20876,7 @@ function renderGitHubToken(s) {
   i.oninput = () => { githubTokenDraft = i.value; };
   i.onkeydown = (e) => { e.stopPropagation(); if (e.key === "Enter") save.onclick(); };
   const get = el("button", "link", t("Create one ↗"));
-  get.onclick = () => api("open", { url: "https://github.com/settings/tokens/new?description=magpie" }).catch(() => {});
+  get.onclick = () => api("open", { url: "https://github.com/settings/tokens/new?description=magpie-friday" }).catch(() => {});
   val.append(i, get, save);
 }
 
@@ -21054,7 +21054,7 @@ function renderWarmAtOwn(s) {
 // that routing counts reaches the share set, or a balance falls to the
 // amount set, each once; Off, or the number in a field beside On.
 function renderAlerts(s, keep) {
-  const problem = s.notifyProblem === "denied" ? t("Notifications are turned off for magpie in the system's settings")
+  const problem = s.notifyProblem === "denied" ? t("Notifications are turned off for magpie-friday in the system's settings")
     : s.notifyProblem === "unavailable" ? t("Notifications can't be shown on this system") : "";
   const sub = (id, what) => {
     const box = $(id);
@@ -21098,7 +21098,7 @@ function renderAlerts(s, keep) {
   if (r && !hours.includes(r)) opts.push([String(r), t("{n} h before", { n: r })]);
   $("#resetReminderSegs").replaceChildren(segs(opts, String(r), (v) => savePrefs({ ...keep, resetReminder: Number(v) })));
   // a long task done (itieniu on X): Off, or how long a turn ran, in seconds
-  sub("#turnDoneSub", t("A notification when Claude Code, Codex, OpenCode or another agent going through magpie finishes a task that ran at least this long"));
+  sub("#turnDoneSub", t("A notification when Claude Code, Codex, OpenCode or another agent going through magpie-friday finishes a task that ran at least this long"));
   const mins = [1, 3, 10];
   const d = s.turnDoneAlert || 0;
   const turnOpts = [["0", t("Off")], ...mins.map((m) => [String(m * 60), t("{n} min", { n: m })])];
@@ -21162,9 +21162,9 @@ function renderAgentPrefs() {
   if (!s) return;
   homeAgentPrefRows();
   // Codex's own models in multi-agent V1 (their subagents' tasks go as text),
-  // so a GPT lead can run a subagent on magpie's other models (#141). Where
-  // Codex's own multi_agent_v2 is on in the config magpie routes it wins, and
-  // magpie writes nothing: the row says so and the user turns it off.
+  // so a GPT lead can run a subagent on magpie-friday's other models (#141). Where
+  // Codex's own multi_agent_v2 is on in the config magpie-friday routes it wins, and
+  // magpie-friday writes nothing: the row says so and the user turns it off.
   const v1Warn = $("#codexAgentsV1Warn");
   v1Warn.hidden = !s.notice;
   v1Warn.textContent = s.notice ? tNotice(s.notice) : "";
@@ -21192,7 +21192,7 @@ function renderAgentPrefs() {
   compactRow.append(compactSegs, compactNum);
   $("#fullContextSegs").replaceChildren(compactRow);
   // Codex's background compaction (#2490): [features.async_compaction] and
-  // its threshold, written where magpie routes Codex (codex_async.go)
+  // its threshold, written where magpie-friday routes Codex (codex_async.go)
   const setAsync = (body) => writingPrefs(api("settings/codex-async-compact", body)).then((ns) => { prefs = ns; renderSettings(); }).catch((e) => { status(t(e.message), "err"); renderSettings(); });
   const asyncSegs = segs([["off", t("Off")], ["on", t("On")]], s.codexAsyncCompact ? "on" : "off", (v) => setAsync({ on: v === "on" }));
   const asyncNum = input(s.codexAsyncCompactPercent ? s.codexAsyncCompactPercent + "%" : "", "65%");
@@ -21211,7 +21211,7 @@ function renderAgentPrefs() {
   // a Codex here before 0.163, or of no known version (codexAsyncHeld)
   const held = s.codexAsyncCompact && s.codexAsyncHeld || [], box = el("div");
   box.append(asyncRow);
-  if (held.length) box.append(el("div", "hint codex-async-held", t("{who}: the share needs Codex 0.163 or later; until it's updated magpie writes only async_compaction = true, at 65%", { who: held.map((r) => t({ app: "Codex app", ide: "Codex editor extension", wsl: "Codex in WSL" }[r.kind] || "Codex CLI") + (r.version ? " " + r.version : "")).join(", ") })));
+  if (held.length) box.append(el("div", "hint codex-async-held", t("{who}: the share needs Codex 0.163 or later; until it's updated magpie-friday writes only async_compaction = true, at 65%", { who: held.map((r) => t({ app: "Codex app", ide: "Codex editor extension", wsl: "Codex in WSL" }[r.kind] || "Codex CLI") + (r.version ? " " + r.version : "")).join(", ") })));
   $("#codexAsyncSegs").replaceChildren(box);
   renderCodexTitles(s);
   renderCodexDescriptions(s);
@@ -21230,7 +21230,7 @@ function renderAgentPrefLinks() {
   homeAgentPrefRows();
   // Long conversations sets the windows the gateway serves, which an agent
   // on another computer reads too: with no Codex or Claude Code here to
-  // hold it (a gateway, magpie in Docker) it stays in Settings (Linka)
+  // hold it (a gateway, magpie-friday in Docker) it stays in Settings (Linka)
   const loose = $("#fullContextRow");
   if (!state.agents.some((a) => agentPrefsOf(a)?.includes(loose.id))) box.before(loose);
   else if (loose.parentElement === box.parentElement) $("#agentPrefRows").append(loose);
@@ -21292,7 +21292,7 @@ function renderCodexDescriptions(s) {
 
 // renderCodexPredictions: where the Codex app's guess at the user's next
 // message goes (#1970) — as Codex sends it, on the thread's own model; off,
-// answered by magpie with no prediction; or to a model of magpie's.
+// answered by magpie-friday with no prediction; or to a model of magpie-friday's.
 function renderCodexPredictions(s) {
   const models = s.titleModels || [];
   const named = (id) => {
@@ -21319,7 +21319,7 @@ function renderCodexPredictions(s) {
 
 // renderCodexTitles: where Codex's requests for a thread's title go (#705)
 // — as Codex sends them, to its own model through its ChatGPT sign-in; off,
-// answered by magpie with no title; or to a model of magpie's — set on its
+// answered by magpie-friday with no title; or to a model of magpie-friday's — set on its
 // own, as Codex's subagents are.
 function renderCodexTitles(s) {
   const models = s.titleModels || [];
@@ -21348,8 +21348,8 @@ function renderCodexTitles(s) {
 // renderCodexAutoReview: the model Codex's auto-review — the reviewer that
 // decides an approval in the user's place — runs on (#938): Codex's own pick
 // (its codex-auto-review, else the conversation's model), or a model of
-// magpie's named in every entry of the list magpie hands Codex, or the
-// session's own ("session": each of magpie's entries names itself).
+// magpie-friday's named in every entry of the list magpie-friday hands Codex, or the
+// session's own ("session": each of magpie-friday's entries names itself).
 function renderCodexAutoReview(s) {
   const models = s.titleModels || [];
   const v = s.codexAutoReview || "";
@@ -21421,7 +21421,7 @@ function renderCodexSubagentModel() {
 }
 
 // renderImages: the model that describes images to a model that can't see
-// them — the one magpie picks, one named, or none, and then such an image
+// them — the one magpie-friday picks, one named, or none, and then such an image
 // is turned away.
 function renderImages(s, keep) {
   const box = $("#imagesList");
@@ -21439,7 +21439,7 @@ function renderImages(s, keep) {
     : t("When the model in use can't see images, this one describes them to it, once for each image")));
   const b = el("button", "rt-cond on");
   const icOf = (id) => models.find((x) => x.id === id)?.icon;
-  // the model picked here that magpie can't find any more is said, with
+  // the model picked here that magpie-friday can't find any more is said, with
   // what describes in its place, not shown as if it were in use
   const gone = v && v === s.visionMissing;
   if (v === "off") b.append(el("span", "", t("Off")));
@@ -21478,12 +21478,12 @@ function renderImages(s, keep) {
     r.id = id;
     box.append(r);
   };
-  mcpRow("visionMcpRow", "/mcp/magpie/vision", t("Image recognition MCP server"), t("Agents can add image recognition as an MCP server (Streamable HTTP) with one analyze_image tool, which reads an image with the Image recognition model from a file path, a URL or a data URL. From another computer, send a gateway key as Authorization: Bearer <key> and the image as a URL or data URL."));
-  mcpRow("imageMcpRow", "/mcp/magpie/image", t("Image generation MCP server"), t("Agents can add image generation as an MCP server (Streamable HTTP) with generate_image, generate_video and generation_result tools, which draw with the Image generation model. An image comes back in the answer and at a URL kept for an hour, a video at a URL; nothing is saved in the agent's project. From another computer, send a gateway key as Authorization: Bearer <key>."));
+  mcpRow("visionMcpRow", "/mcp/magpie-friday/vision", t("Image recognition MCP server"), t("Agents can add image recognition as an MCP server (Streamable HTTP) with one analyze_image tool, which reads an image with the Image recognition model from a file path, a URL or a data URL. From another computer, send a gateway key as Authorization: Bearer <key> and the image as a URL or data URL."));
+  mcpRow("imageMcpRow", "/mcp/magpie-friday/image", t("Image generation MCP server"), t("Agents can add image generation as an MCP server (Streamable HTTP) with generate_image, generate_video and generation_result tools, which draw with the Image generation model. An image comes back in the answer and at a URL kept for an hour, a video at a URL; nothing is saved in the agent's project. From another computer, send a gateway key as Authorization: Bearer <key>."));
 }
 
-// renderImageGen: the model magpie's generate_image tool draws with — the
-// one magpie picks, one named, or none — and where agents are given the tool.
+// renderImageGen: the model magpie-friday's generate_image tool draws with — the
+// one magpie-friday picks, one named, or none — and where agents are given the tool.
 function renderImageGen(s, keep, box) {
   const models = s.imageGenModels || [];
   const named = (id) => {
@@ -21496,7 +21496,7 @@ function renderImageGen(s, keep, box) {
   // until another is picked: a ChatGPT account's gpt-image-2.5 is its one
   // GPT Image, as the backend draws the same for any name (#1865)
   const shown = s.imageGenShown || v;
-  // a picked model magpie can't find any more is said, as Image recognition's
+  // a picked model magpie-friday can't find any more is said, as Image recognition's
   const gone = v && v === s.imageGenMissing;
   const r = el("div", "row pref");
   r.id = "imageGenRow";
@@ -21517,7 +21517,7 @@ function renderImageGen(s, keep, box) {
     go.type = "button";
     go.onclick = async () => {
       if (!libOff) {
-        if (await show("library") !== false) magpie.call("library", "server", "magpie-image");
+        if (await show("library") !== false) magpie.call("library", "server", "magpie-friday-image");
         return;
       }
       go.disabled = true;
@@ -21581,7 +21581,7 @@ function waitRow(id, name, sub, ns, cur, unit, pick) {
 }
 
 // mcpAddress: where one of the gateway's own MCP servers is, at path. A
-// page other machines open (magpie web) shows MAGPIE_PUBLIC_URL's (#1551).
+// page other machines open (magpie-friday web) shows MAGPIE_PUBLIC_URL's (#1551).
 function mcpAddress(s, path) {
   return ((web && s.publicURL) || s.gateway || providers?.gateway?.url || `http://127.0.0.1:${s.port || 3425}`).replace(/\/+$/, "") + path;
 }
@@ -21589,7 +21589,7 @@ function mcpAddress(s, path) {
 // renderSearch: the web search APIs a model's search goes to when no
 // provider can search (#419) — one row each, in the order they are tried,
 // and a row to add one: which API, its key, and the address of one the user
-// runs (SearXNG). They are set on their own; one magpie refuses is said in
+// runs (SearXNG). They are set on their own; one magpie-friday refuses is said in
 // the row, what was typed kept.
 let searchDraft = { vendor: "tavily", key: "", url: "", err: "" };
 function renderSearch(s, keep) {
@@ -21673,7 +21673,7 @@ function renderSearch(s, keep) {
     : !s.searchProvider ? t("No provider can search, so these are asked")
     : apiFirst ? t("Asked before {who}, which searches when these fail", { who: s.searchProvider })
     : t("Now done by {who}; these come after it", { who: s.searchProvider });
-  const head = row(t("Search APIs"), d.err || t("When a model can't search the web, magpie searches for it with these, in this order, and gives it what they found") + " · " + by,
+  const head = row(t("Search APIs"), d.err || t("When a model can't search the web, magpie-friday searches for it with these, in this order, and gives it what they found") + " · " + by,
     pick, key, get, add, url);
   head.classList.add("rule-row", "search-add");
   head.querySelector(".val").classList.add("rule-add");
@@ -21742,7 +21742,7 @@ function renderSearch(s, keep) {
   }
   // the same search as an MCP server of the gateway's (Kayphoon on
   // Discord), for an agent to mount as its web_search and web_fetch tools
-  const mcpURL = mcpAddress(s, "/mcp/magpie/web-search");
+  const mcpURL = mcpAddress(s, "/mcp/magpie-friday/web-search");
   const mcp = row(t("MCP server"), t("Cursor, Claude Desktop and other agents can add this search as an MCP server (Streamable HTTP), with a web_search tool and a web_fetch tool that reads a page by its URL. From another computer, send a gateway key as Authorization: Bearer <key>."),
     el("code", "", mcpURL), copyBtn(mcpURL, t("Address")));
   mcp.id = "searchMcpRow";
@@ -21804,7 +21804,7 @@ function searchArrange(box, units, set) {
 }
 
 // searchKeysRow: under a search API with several keys, or one whose keys
-// quota magpie can read (Tavily's), a row of its keys (SlouchyQuill on
+// quota magpie-friday can read (Tavily's), a row of its keys (SlouchyQuill on
 // Discord): how a search picks among them, in turn (the default) or in
 // order, and what each has used of its limit, read once as the page is
 // drawn and again on Check again. A read that fails says unknown and why,
@@ -21868,9 +21868,9 @@ function searchKeysRow(s, a, row, set) {
 }
 
 // renderSearcher: the provider that searches the web for a model that
-// can't — the one magpie picks, or one named, by itself (its small model)
+// can't — the one magpie-friday picks, or one named, by itself (its small model)
 // or with a model of it. One named that is gone, off or can't search gives
-// way to magpie's pick, which the row says. Relays said to search can be
+// way to magpie-friday's pick, which the row says. Relays said to search can be
 // named, but are never picked automatically (#359), and the row says so.
 function renderSearcher(s, keep, box) {
   const choices = s.searchChoices || [];
@@ -21888,10 +21888,10 @@ function renderSearcher(s, keep, box) {
   const icOf = (id) => choices.find((x) => x.id === id.split("/")[0])?.icon;
   const r = el("div", "row pref searcher-row");
   const who = el("div", "who");
-  const sub = el("div", "sub", off ? t("When provider search is off, only configured Search APIs are used. Without a Search API, magpie does not add a search tool. Providers' native web search is unchanged.") : t("When a model can't search the web directly, the selected provider searches for it and returns the results. Searches may use the service's quota or incur charges; if the provider magpie picks fails, it tries other available sources, but a provider you select here is never replaced by another provider, only by your Search APIs."));
+  const sub = el("div", "sub", off ? t("When provider search is off, only configured Search APIs are used. Without a Search API, magpie-friday does not add a search tool. Providers' native web search is unchanged.") : t("When a model can't search the web directly, the selected provider searches for it and returns the results. Searches may use the service's quota or incur charges; if the provider magpie-friday picks fails, it tries other available sources, but a provider you select here is never replaced by another provider, only by your Search APIs."));
   if (!off && v && s.searchUnused) {
-    const why = { gone: t("it is no longer in magpie"), off: t("it is turned off"), cant: t("it can't search the web by itself"), nomodel: t("it lists no model") }[s.searchUnused] || s.searchUnused;
-    sub.append(" · ", el("span", "warn searcher-unused", t("{who} isn't used: {why}, so magpie picks one", { who: named(v), why })));
+    const why = { gone: t("it is no longer in magpie-friday"), off: t("it is turned off"), cant: t("it can't search the web by itself"), nomodel: t("it lists no model") }[s.searchUnused] || s.searchUnused;
+    sub.append(" · ", el("span", "warn searcher-unused", t("{who} isn't used: {why}, so magpie-friday picks one", { who: named(v), why })));
   }
   // the one named didn't search last time, and no other provider searched
   // in its place (Gearclickist on Discord: Grok picked answered without
@@ -21934,8 +21934,8 @@ function renderSearcher(s, keep, box) {
     }
     // its small model is offered once (Player on Discord): the model of the
     // same name below it searched just the same, "<provider>/<small>" being
-    // that model named rather than magpie's pick, so a pick saved so is
-    // ticked here. No "via magpie": no agent asks for these
+    // that model named rather than magpie-friday's pick, so a pick saved so is
+    // ticked here. No "via magpie-friday": no agent asks for these
     const small = c.small ? `${c.id}/${c.small}` : "";
     options.push({ value: v === small ? small : c.id, label: t("{model}, its small model", { model: c.smallName || c.small }), note: c.name, icon: c.icon, group: c.name });
     for (const m of c.models) if (m.id !== small) options.push({ value: m.id, label: m.name || m.id, note: c.name, icon: c.icon, group: c.name });
@@ -21950,10 +21950,10 @@ function renderSearcher(s, keep, box) {
   box.append(r);
 }
 
-// sideEffortChip: beside a model magpie asks on its own (Image
+// sideEffortChip: beside a model magpie-friday asks on its own (Image
 // recognition's, the searcher's), how hard it thinks (MOMO on Discord,
 // "外置模型能不能提供思考深度选项"): only the levels that model has, and
-// Default, which leaves it as magpie asks it (dflt says how). Nothing is
+// Default, which leaves it as magpie-friday asks it (dflt says how). Nothing is
 // shown for a model whose levels aren't known.
 function sideEffortChip(val, levels, saved, now, cls, dflt, save) {
   if (!levels?.length) return;
@@ -21975,7 +21975,7 @@ function sideEffortChip(val, levels, saved, now, cls, dflt, save) {
   val.append(b);
 }
 
-// renderReplies: whether a reply's model names the member of magpie's
+// renderReplies: whether a reply's model names the member of magpie-friday's
 // that answered it (#822), for agents that count usage by it.
 function renderReplies(s, keep) {
   const box = $("#replyList");
@@ -21984,7 +21984,7 @@ function renderReplies(s, keep) {
   r.id = "memberModelRow";
   const who = el("div", "who");
   who.append(el("div", "name", t("Name the member in replies")),
-    el("div", "sub", t("A reply's model says magpie's provider/model that answered (workbuddy/glm-5.3-flash), not the vendor's own name, for agents that count usage by it. Claude Code, Claude Desktop and Codex keep the vendor's; the X-Magpie-Model header says it to every agent")));
+    el("div", "sub", t("A reply's model says magpie-friday's provider/model that answered (workbuddy/glm-5.3-flash), not the vendor's own name, for agents that count usage by it. Claude Code, Claude Desktop and Codex keep the vendor's; the X-Magpie-Model header says it to every agent")));
   const val = el("div", "val");
   val.append(segs([["off", t("Off")], ["on", t("On")]], s.memberModel ? "on" : "off",
     (v) => savePrefs({ ...keep, memberModel: v === "on" })));
@@ -22033,10 +22033,10 @@ function renderReplies(s, keep) {
 }
 
 // renderDisabledModels: the models the user turned off for every request
-// through magpie (#1867). Each pattern is a row with what it matches now and
+// through magpie-friday (#1867). Each pattern is a row with what it matches now and
 // Enable; Disable a model picks one from the list, or takes what is typed
-// (a glob such as *fable*). A disabled model is left out of magpie's lists
-// and refused by the gateway, so nothing reaches it through magpie; an agent
+// (a glob such as *fable*). A disabled model is left out of magpie-friday's lists
+// and refused by the gateway, so nothing reaches it through magpie-friday; an agent
 // signed in to the vendor itself isn't covered, which the row says.
 function renderDisabledModels(s) {
   const box = $("#disabledModelsList");
@@ -22049,7 +22049,7 @@ function renderDisabledModels(s) {
   add.id = "disabledAddRow";
   const who = el("div", "who");
   who.append(el("div", "name", t("Disable a model")),
-    el("div", "sub wraps", t("A disabled model is refused on every route through magpie (a request, a session, a routing group, a fallback, a sub-agent, a decision model) and left out of magpie's lists and agents' pickers. Only requests through magpie are covered. Type a pattern such as *fable* to disable every model it matches")));
+    el("div", "sub wraps", t("A disabled model is refused on every route through magpie-friday (a request, a session, a routing group, a fallback, a sub-agent, a decision model) and left out of magpie-friday's lists and agents' pickers. Only requests through magpie-friday are covered. Type a pattern such as *fable* to disable every model it matches")));
   const val = el("div", "val");
   const b = el("button", "text action", t("Disable…"));
   b.type = "button";
@@ -22102,10 +22102,10 @@ const REDACT_KINDS = [
   ["bucket", "Cloud storage buckets", "The bucket in s3://, gs://, oss://, cos:// and storage URLs; the path in it stays", false],
 ];
 
-// renderDiscovery: whether magpie reads the agents' own sign-ins —
+// renderDiscovery: whether magpie-friday reads the agents' own sign-ins —
 // Claude Code's and Codex's files, the Keychain, Copilot's, Cursor's and
 // the rest — and serves them as subscriptions (#1535). Set on its own:
-// saved, magpie forgets the accounts it read, and API-key providers go on.
+// saved, magpie-friday forgets the accounts it read, and API-key providers go on.
 // MAGPIE_NO_ACCOUNTS keeps it off for that run whatever is saved.
 function renderDiscovery(s) {
   const box = $("#discoveryList");
@@ -22114,12 +22114,12 @@ function renderDiscovery(s) {
   who.append(el("div", "name", t("Subscription accounts")),
     el("div", "sub", s.noAccountsEnv
       ? t("Off for this run: MAGPIE_NO_ACCOUNTS is set")
-      : t("Read the accounts your agents are signed in to (Claude Code, Codex, Copilot, Cursor and others: their files and the Keychain) and serve them. Off, magpie reads none of them; API-key providers work as before")));
+      : t("Read the accounts your agents are signed in to (Claude Code, Codex, Copilot, Cursor and others: their files and the Keychain) and serve them. Off, magpie-friday reads none of them; API-key providers work as before")));
   const val = el("div", "val");
   const on = !s.noAccountDiscovery && !s.noAccountsEnv;
   val.append(segs([["off", t("Off")], ["on", t("On")]], on ? "on" : "off", async (v) => {
     if ((v === "on") === on) return;
-    // Off takes every subscription out of magpie at once, and a click that
+    // Off takes every subscription out of magpie-friday at once, and a click that
     // didn't mean that left a user with none working and no word why
     // (#1761): it asks first, naming the subscriptions that stop
     if (v === "off" && !(await confirmAction(t("Turn off subscription accounts?"), await discoveryOffWarning(), t("Turn them off")))) {
@@ -22139,8 +22139,8 @@ async function discoveryOffWarning() {
   const list = providers || await api("providers").catch(() => null);
   const subs = (list?.providers || []).filter((p) => p.account && !p.off).map((p) => p.name);
   return subs.length
-    ? t("{names} stop working in magpie until this is on again: magpie reads none of the sign-ins they come from. API-key providers work as before.", { names: subs.join(", ") })
-    : t("Every subscription stops working in magpie until this is on again: magpie reads none of the sign-ins they come from. API-key providers work as before.");
+    ? t("{names} stop working in magpie-friday until this is on again: magpie-friday reads none of the sign-ins they come from. API-key providers work as before.", { names: subs.join(", ") })
+    : t("Every subscription stops working in magpie-friday until this is on again: magpie-friday reads none of the sign-ins they come from. API-key providers work as before.");
 }
 
 // renderRedact: what the gateway masks before a request goes to a vendor —
@@ -22215,10 +22215,10 @@ function renderRedact(s, keep) {
   // Routing's and Usage's Hide accounts, here too, where privacy is looked for
   if (window.hideAccounts) rowIn(share, t("Hide accounts"), t("Email addresses and account names on Usage and Routing are blurred, for a screenshot to share"),
     onOff(window.hideAccounts.on(), (on) => { window.hideAccounts.set(on); renderSettings(); }));
-  rowIn(share, t("Count me as a user"), t("Once a day, a random id for this computer with magpie's version and system"),
+  rowIn(share, t("Count me as a user"), t("Once a day, a random id for this computer with magpie-friday's version and system"),
     onOff(!s.noStats, (on) => savePrefs({ ...keep, noStats: !on })));
   // rides on that event: nothing goes without it
-  if (!s.noStats) rowIn(share, t("Share the agents, providers and models I use"), t("Sent with that event, by magpie's own ids, with how many of each, and how often each partner was shown, opened and added; a provider you added yourself is only “custom”. No names, addresses, accounts, keys or usage"),
+  if (!s.noStats) rowIn(share, t("Share the agents, providers and models I use"), t("Sent with that event, by magpie-friday's own ids, with how many of each, and how often each partner was shown, opened and added; a provider you added yourself is only “custom”. No names, addresses, accounts, keys or usage"),
     onOff(!s.noUsageStats, (on) => savePrefs({ ...keep, noUsageStats: !on })));
   // what masking did is a page of its own, Insights › Masking
   if (!featureHides($('#nav button[data-view="masking"]'))) {
@@ -22298,7 +22298,7 @@ function pmSub(m) {
 // which kinds, found how, from which agents to which providers, over 7 or
 // 30 days (/api/masking/summary), and each request's record under it
 // (/api/masking/records). What a placeholder stood for is asked only while
-// the reader points at it (/api/masking/value): it is in this magpie's
+// the reader points at it (/api/masking/value): it is in this magpie-friday's
 // memory alone, never on disk, so after a restart it is gone.
 const MASK_KINDS = {
   API_KEY: "API keys", PRIVATE_KEY: "Private keys", TOKEN: "Tokens", PASSWORD: "Passwords", SECRET: "Secrets",
@@ -22312,7 +22312,7 @@ const MASK_BY = { rule: "Rules", yours: "Your rules", word: "Your words", model:
 const SHIELD = "M8 1.8 13 3.6v4.1c0 3-2.1 5.4-5 6.5-2.9-1.1-5-3.5-5-6.5V3.6Z";
 const PLACEHOLDER = /\{\{[^{}\s]{1,64}\}\}/g;
 let maskSum = null;          // the summary Insights › Masking read last: its kinds' colours
-const maskValues = new Map(); // placeholder → what it stood for, as this magpie told it
+const maskValues = new Map(); // placeholder → what it stood for, as this magpie-friday told it
 const maskKindName = (k) => MASK_KINDS[k] ? t(MASK_KINDS[k]) : k;
 const maskByName = (b) => MASK_BY[b] ? t(MASK_BY[b]) : b;
 // a kind's colour is its place in the summary's ranking, so the bar, the
@@ -22334,7 +22334,7 @@ function maskDot(k) {
   return d;
 }
 
-// maskValue: what placeholder p stood for, or null where this magpie no
+// maskValue: what placeholder p stood for, or null where this magpie-friday no
 // longer knows. A value it doesn't know isn't kept as such: the same value
 // masked again after a restart is known again.
 function maskValue(p) {
@@ -22370,7 +22370,7 @@ function maskTip(anchor, v) {
     if (maskTipEl !== tip) return;
     if (s === null) {
       val.className = "v gone";
-      val.textContent = t("Not in memory: magpie has restarted since. The value itself is never written to disk");
+      val.textContent = t("Not in memory: magpie-friday has restarted since. The value itself is never written to disk");
     } else val.textContent = s;
     place();
   });
@@ -22425,10 +22425,10 @@ function openMaskRecord(key) {
   show("masking").then((went) => { if (went !== false && key && view === "masking") magpie.call("masking", "focus", key); });
 }
 
-// renderRedactRules: the user's own rules for secrets magpie's don't know, a
+// renderRedactRules: the user's own rules for secrets magpie-friday's don't know, a
 // gateway's oc_sk_… key say (#195) — one row each, and a row to add one by a
 // prefix or a regular expression. They are set on their own, all of them each
-// time, so one magpie can't use (a pattern that doesn't compile) is said in
+// time, so one magpie-friday can't use (a pattern that doesn't compile) is said in
 // the row, what was typed kept, and the rest stay as they were.
 let ruleDraft = { kind: "", by: "prefix", match: "", err: "" };
 function renderRedactRules(s, row) {
@@ -22454,7 +22454,7 @@ function renderRedactRules(s, row) {
     i.oninput = () => { d.kind = kind.value; d.match = match.value; };
     i.onkeydown = (e) => { e.stopPropagation(); if (e.key === "Enter") add.onclick(); };
   }
-  row(t("Masking rules"), d.err || t("Secrets magpie doesn't know, such as a gateway's own keys: what they start with, or a regular expression. Masked while Mask secrets is on"),
+  row(t("Masking rules"), d.err || t("Secrets magpie-friday doesn't know, such as a gateway's own keys: what they start with, or a regular expression. Masked while Mask secrets is on"),
     kind, by, match, add);
   // its words above in full, the fields on a line of their own under them
   const head = $("#redactList").lastElementChild;
@@ -22571,7 +22571,7 @@ function renderMaskActions(s) {
 
 // renderMaskTry: text typed here is masked as a request would be now, and
 // shown as the vendor would get it, with what was found and what would be
-// done. It is sent to this magpie only, kept nowhere, and nothing of it
+// done. It is sent to this magpie-friday only, kept nowhere, and nothing of it
 // is remembered (/api/masking/preview).
 let maskTry = { text: "", res: null, seq: 0, timer: 0 };
 function renderMaskTry(s) {
@@ -22655,7 +22655,7 @@ function maskTryDraw(out) {
 // editRedactRule: the rule at n, open to change in its place (nf1qaz2w on
 // Discord: rules could only be removed) — its name, prefix or regex and
 // what to match, laid out as the row that adds one. Save sends it alone,
-// checked as an added rule is: one magpie can't use is said in the row,
+// checked as an added rule is: one magpie-friday can't use is said in the row,
 // what was typed kept and every rule as it was. Cancel (or Escape) leaves
 // the rule as it was.
 let ruleEdit = null; // { at, was, kind, by, match, err }
@@ -22706,7 +22706,7 @@ function editRedactRule(r, n, row) {
 
 // renderPort: the gateway's address on this computer (Magic_zero on Discord:
 // 3425 taken by another program, or one easier to tell apart). Only its
-// port, 1024 up, is typed here; magpie moves its gateway there and every
+// port, 1024 up, is typed here; magpie-friday moves its gateway there and every
 // agent it connected with it, or says why it can't (another program has
 // it). MAGPIE_ADDR, a whole host:port, comes first and the field shows it,
 // off (Chicring on Discord: the row was titled a port while it showed one).
@@ -22716,7 +22716,7 @@ let portDraft = { value: null, err: "" };
 function portSays(m) {
   let x;
   if ((x = /^port (\d+) is in use by another program/.exec(m))) return t("Port {p} is in use by another program: pick another one", { p: x[1] });
-  if ((x = /^another magpie serves the gateway at (\S+):/.exec(m))) return t("Another magpie serves the gateway at {url}: set its port there, or quit it first", { url: x[1] });
+  if ((x = /^another magpie-friday serves the gateway at (\S+):/.exec(m))) return t("Another magpie-friday serves the gateway at {url}: set its port there, or quit it first", { url: x[1] });
   if (/from 1024 to 65535/.test(m)) return t("A port is a number from 1024 to 65535");
   return t(m);
 }
@@ -22740,7 +22740,7 @@ function renderPort(s) {
   } else if (d.err) {
     sub.textContent = d.err;
     sub.classList.add("err");
-  } else sub.textContent = t("Only the port is set here, 1024 to 65535; MAGPIE_ADDR=host:port sets the whole address instead. Agents magpie connected move with it. Now {url}", { url: s.gateway || "" });
+  } else sub.textContent = t("Only the port is set here, 1024 to 65535; MAGPIE_ADDR=host:port sets the whole address instead. Agents magpie-friday connected move with it. Now {url}", { url: s.gateway || "" });
   who.append(sub);
   save.onclick = () => {
     const p = Number(field.value.trim());
@@ -22786,7 +22786,7 @@ let corsDraft = { value: "", err: "" };
 // corsSays is the gateway's word on an origin it didn't take, in the
 // page's language
 function corsSays(m) {
-  if (/wildcard/.test(m)) return t("Name each origin: a wildcard would let every web page use magpie");
+  if (/wildcard/.test(m)) return t("Name each origin: a wildcard would let every web page use magpie-friday");
   if (/is not an (extension's )?origin/.test(m)) return t("Write an origin as http://localhost:3000 or https://app.example.com, or a browser extension's as chrome-extension://, moz-extension:// or safari-web-extension:// followed by its ID");
   return t(m);
 }
@@ -22813,7 +22813,7 @@ function renderCORS(s) {
   field.onkeydown = (e) => { e.stopPropagation(); if (e.key === "Enter") add.onclick(); };
   const r = el("div", "row pref rule-row");
   const who = el("div", "who");
-  who.append(el("div", "name", t("Web pages that may call magpie")),
+  who.append(el("div", "name", t("Web pages that may call magpie-friday")),
     el("div", "sub" + (d.err ? " err" : ""), d.err || t("Scripts on these origins can call the gateway from a browser, each request with a gateway key from Gateway. A page from any other site is refused; pages on this computer are not")));
   const val = el("div", "val rule-add");
   val.append(field, add);
@@ -22832,13 +22832,13 @@ function renderCORS(s) {
   }
 }
 
-// renderAllow: the addresses other computers may reach magpie from at
-// all (lc on Discord: magpie in Docker on a public host), as IPs and CIDR
+// renderAllow: the addresses other computers may reach magpie-friday from at
+// all (lc on Discord: magpie-friday in Docker on a public host), as IPs and CIDR
 // ranges, under Share on local network — a row to add one, and one row
 // each to take it away. None listed lets every address in, with a gateway
 // key, as before; this computer is always let in. MAGPIE_ALLOW_IPS, where
 // set, is the list, shown and not edited here.
-// A list that would shut out the page saving it names the address magpie
+// A list that would shut out the page saving it names the address magpie-friday
 // sees the page from (Mathresearcher on Discord: which address?), and
 // offers to add it to the list that was refused; behind Docker or a proxy
 // that is the proxy's, not the user's computer's (gateway.peerAddr).
@@ -22846,7 +22846,7 @@ let allowDraft = { value: "", err: "", addr: "", tried: null };
 function allowSays(m) {
   if (/is not an IP address/.test(m)) return t("Write an address as 203.0.113.7, or a range as 10.0.0.0/8 or 2001:db8::/32");
   const out = /shut out (\S+), the address/.exec(m);
-  if (out) return t("That list leaves out {addr}, the address magpie sees this page open from: add it first, or this page can’t reach magpie", { addr: out[1] });
+  if (out) return t("That list leaves out {addr}, the address magpie-friday sees this page open from: add it first, or this page can’t reach magpie-friday", { addr: out[1] });
   if (/MAGPIE_ALLOW_IPS/.test(m)) return t("MAGPIE_ALLOW_IPS sets this list; change it there");
   return t(m);
 }
@@ -22867,8 +22867,8 @@ function renderAllow(s) {
     });
   const r = el("div", "row pref rule-row");
   const who = el("div", "who");
-  const sub = d.err || (env ? t("Set by MAGPIE_ALLOW_IPS. Other computers reach magpie only from these addresses, even with a gateway key; this computer always can")
-    : t("Other computers reach magpie only from these addresses or ranges (CIDR), even with a gateway key; this computer always can. None listed lets every address in"));
+  const sub = d.err || (env ? t("Set by MAGPIE_ALLOW_IPS. Other computers reach magpie-friday only from these addresses, even with a gateway key; this computer always can")
+    : t("Other computers reach magpie-friday only from these addresses or ranges (CIDR), even with a gateway key; this computer always can. None listed lets every address in"));
   who.append(el("div", "name", t("Allowed addresses")), el("div", "sub" + (d.err ? " err" : ""), sub));
   // the address the refusal named, added to the list that was refused in
   // one click
@@ -22941,11 +22941,11 @@ function renderLAN(s) {
     if (ns.rekeyed) status(ns.rekeyed, "err");
   })
     .catch((e) => { status(t(e.message), "err"); renderSettings(); });
-  row(t("Share on local network"), t("Agents on other computers on this network, or through a tunnel to this one such as Cloudflare Tunnel, can use magpie’s models with a gateway key from Gateway"), "",
+  row(t("Share on local network"), t("Agents on other computers on this network, or through a tunnel to this one such as Cloudflare Tunnel, can use magpie-friday’s models with a gateway key from Gateway"), "",
     segs([["off", t("Off")], ["on", t("On")]], s.lan ? "on" : "off", (v) => set({ on: v === "on" })));
   if (!s.lan) return;
   let urls = s.lanURLs || [], sub = "";
-  // in a container magpie finds only the container's own addresses; the
+  // in a container magpie-friday finds only the container's own addresses; the
   // page opened over the network was reached at the host's, so the
   // gateway is offered there, on its port
   if (s.lanContainer) {
@@ -22991,7 +22991,7 @@ function renderLAN(s) {
   if (sub) row(t("In a container"), sub, "").classList.add("lan-container");
 }
 
-// renderUpdate fills in the version row: whether a newer magpie is out.
+// renderUpdate fills in the version row: whether a newer magpie-friday is out.
 // The app checks and downloads on its own, so usually the row just offers
 // the restart; a check can also be asked for. That check leaves the button
 // where it is, dimmed, and a second click does nothing. A read still out
@@ -23022,7 +23022,7 @@ async function renderUpdate(r, u) {
   let pageShown = false;
   const open = () => (web ? window.open(u.url, "_blank", "noopener") : api("open", { url: u.url }).catch(() => {}));
   const dim = () => { for (const b of val.querySelectorAll("button")) { b.disabled = true; b.classList.add("busy"); } };
-  // where GitHub is slow to magpie, the update can be fetched in the
+  // where GitHub is slow to magpie-friday, the update can be fetched in the
   // browser instead, through its own proxy or accelerator (PapainTea on X)
   const page = () => {
     if (!u.url) return;
@@ -23097,7 +23097,7 @@ async function renderUpdate(r, u) {
         }, 1000);
         break;
       }
-      if (u.gaveUp) sub.textContent += " · " + t("the gateway stayed busy for an hour, so magpie didn't restart; it updates when you restart or quit it");
+      if (u.gaveUp) sub.textContent += " · " + t("the gateway stayed busy for an hour, so magpie-friday didn't restart; it updates when you restart or quit it");
       else if (busyNow) sub.textContent += " · " + busyNow;
       if (u.gaveUp) sub.classList.add("wraps");
       btn(t("Restart to update"), () => (u.error ? install() : confirmUpdate(u, () => install())));
@@ -23175,8 +23175,8 @@ async function renderUpdate(r, u) {
       // it again; Check tries it once more.
       const b = u.blocked || {};
       sub.textContent = b.policy
-        ? t("{v} didn't start on this computer: Windows' Smart App Control (or another app control policy) blocked the new version, which isn't signed. magpie stays on {cur}. Download it and run it yourself, or turn Smart App Control off and check again", { v: u.latest || b.version, cur: u.current })
-        : t("{v} didn't start on this computer, so magpie stays on {cur}", { v: u.latest || b.version, cur: u.current }) + (b.error ? " · " + b.error : "");
+        ? t("{v} didn't start on this computer: Windows' Smart App Control (or another app control policy) blocked the new version, which isn't signed. magpie-friday stays on {cur}. Download it and run it yourself, or turn Smart App Control off and check again", { v: u.latest || b.version, cur: u.current })
+        : t("{v} didn't start on this computer, so magpie-friday stays on {cur}", { v: u.latest || b.version, cur: u.current }) + (b.error ? " · " + b.error : "");
       sub.title = b.error || u.error || "";
       sub.classList.add("wraps");
       if (u.url) btn(t("Download"), open);
@@ -23258,7 +23258,7 @@ function wbCheckinLine(r) {
     case "claimed":
     case "done":
       // maybe the vendor's day before (#3326)
-      if (r.again) return t("{user}: {name} says already checked in; magpie asks again later", { user: r.user, name: checkinVendorName(r) });
+      if (r.again) return t("{user}: {name} says already checked in; magpie-friday asks again later", { user: r.user, name: checkinVendorName(r) });
       return t("{user} checked in today", { user: r.user }) + (r.credit ? " +" + r.credit : "")
         + (r.streak ? ", " + t("{n}-day streak", { n: r.streak }) : "");
     case "ineligible":
@@ -23353,7 +23353,7 @@ let guardUntil = 0;
 const readerScrolls = (ms) => { quotaFocus = ""; purposeUntil = Math.max(purposeUntil, performance.now() + ms); held = null; guardUntil = 0; };
 function scrollOnPurpose(e, ms = 1000) {
   if (!e?.isTrusted || performance.now() - e.timeStamp > 1000) {
-    console.warn("magpie: a scroll not asked for by the reader was refused");
+    console.warn("magpie-friday: a scroll not asked for by the reader was refused");
     return false;
   }
   readerScrolls(ms);
@@ -23940,9 +23940,9 @@ $("#prefs").onclick = () => { openSettings(); $("#prefs").blur(); };
 
 // The header's refresh reads again what the page shown draws (#844): on
 // Agents it looks for the agents on this computer again (one just installed
-// or removed, or its settings changed outside magpie), on Usage it reads the
+// or removed, or its settings changed outside magpie-friday), on Usage it reads the
 // usage and the allowances now, and elsewhere it refreshes the model lists.
-// A newer magpie is looked for on its own, and from Settings › About's Check.
+// A newer magpie-friday is looked for on its own, and from Settings › About's Check.
 function refreshKind() {
   if (mode === "panel") return { agents: "agents", usage: "allowances", stats: "requests" }[panelTab] || "models";
   return { agents: "agents", usage: "usage" }[view] || "models";
@@ -24022,9 +24022,9 @@ if (mode === "window") { $("#open").remove(); $("#openMain").remove(); $("#quit"
 else { $("#nav").remove(); $("#side").remove(); }
 if (mode !== "window" || !document.body.classList.contains("linux")) $("#winclose").remove();
 
-// Config files may change underneath us (another magpie, an editor); reload when
+// Config files may change underneath us (another magpie-friday, an editor); reload when
 // the panel comes back into view.
-// The magpie in the corner flaps and wags its tail as the window opens and
+// The magpie-friday in the corner flaps and wags its tail as the window opens and
 // when the pointer comes over it.
 function wag() {
   const logo = document.querySelector(".brand .logo");
@@ -24035,8 +24035,8 @@ function wag() {
 document.querySelector(".brand")?.addEventListener("mouseenter", wag);
 setTimeout(wag, 250);
 
-// magpie web on a phone, or a browser as narrow: the header is two rows,
-// the magpie and the icons over the tabs, which scroll sideways when they
+// magpie-friday web on a phone, or a browser as narrow: the header is two rows,
+// the magpie-friday and the icons over the tabs, which scroll sideways when they
 // don't fit, the one open kept in sight
 function phoneWeb() { return document.body.classList.contains("web") && matchMedia("(max-width: 760px), (pointer: coarse) and (max-width: 1024px)").matches; }
 function navInSight() {
@@ -24049,7 +24049,7 @@ function navInSight() {
 matchMedia("(max-width: 760px), (pointer: coarse) and (max-width: 1024px)").addEventListener?.("change", () => { layoutNav(); fitTop(); navInSight(); });
 
 // A narrow window has no room for the whole header: the name goes, leaving
-// the magpie, and Update becomes its arrow; narrower still, the tabs stop
+// the magpie-friday, and Update becomes its arrow; narrower still, the tabs stop
 // centring and take the room between, and at the narrowest they draw in,
 // further still when they don't fit (the 560px window at 150%).
 function fitTop() {
@@ -24092,7 +24092,7 @@ document.fonts?.addEventListener("loadingdone", fitTop);
 // A window wide enough has its pages down a sidebar, as a Mac app's: in
 // groups, the open page's own tabs under it, Settings at its foot and the
 // gateway's address under that, the header saying where the reader is
-// ("Work / Library / MCP servers"). Narrower, and magpie web on a phone,
+// ("Work / Library / MCP servers"). Narrower, and magpie-friday web on a phone,
 // the pages go back into the header as tabs and each page shows its own
 // tabs again, as iPadOS's sidebar turns into a tab bar when it has no room.
 // It is the same #nav, its buttons and handlers, moved between the two.
@@ -24112,7 +24112,7 @@ try { navPick = localStorage.getItem("magpie.navLayout") || ""; } catch { /* by 
 if (navPick !== "side" && navPick !== "top") navPick = "";
 function layoutNav() {
   if (mode !== "window") return;
-  // magpie web on a phone has its own tab bar and no title bar
+  // magpie-friday web on a phone has its own tab bar and no title bar
   const on = !phoneWeb() && (navPick ? navPick === "side" : sideQuery.matches);
   if (layoutNav.done && on === sideNav()) {
     // the button goes with the phone's layout all the same
@@ -24674,7 +24674,7 @@ function loadBack() {
   return flight.done;
 }
 document.addEventListener("visibilitychange", () => { if (!document.hidden) { loadBack(); wag(); refreshLanes(); } });
-// an agent's config can be rewritten, or the agent run round magpie, while the
+// an agent's config can be rewritten, or the agent run round magpie-friday, while the
 // window is up: ask what drifted now and then, and redraw only on a change —
 // never under an open menu
 setInterval(async () => {
@@ -24753,7 +24753,7 @@ setInterval(renderPluginDot, 15 * 60 * 1000);
 // swapped for blurred stand-in letters while it's on, as the page redraws
 // too; the account itself is kept aside to put back.
 //
-// accountNames are the names of subscription accounts magpie has told the
+// accountNames are the names of subscription accounts magpie-friday has told the
 // page of (noteAccounts, from what the API answered), beside the accounts
 // of the providers and allowances it holds now.
 const accountNames = new Set();
@@ -24969,7 +24969,7 @@ window.noteAccounts = noteAccounts;
   setMasked(masked, true);
 })();
 
-// Opened on a magpie://import link: fetch what it describes (once — the
+// Opened on a magpie-friday://import link: fetch what it describes (once — the
 // id is spent) and ask before adding it.
 if (mode === "window" && params.get("import")) {
   const id = params.get("import");

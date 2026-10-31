@@ -9,7 +9,7 @@ import (
 )
 
 // A conversation stays with the key or account that answered it across a
-// restart of magpie, an update's included, while the vendor still has it
+// restart of magpie-friday, an update's included, while the vendor still has it
 // cached there (vincentzhang on Discord: restarted, the session went to
 // the first account; updated and restarted, back to the second, and the
 // prompt cache was read by neither).
@@ -30,7 +30,7 @@ func TestAffinitySurvivesRestart(t *testing.T) {
 		t.Fatalf("affinity file mode %v, want 0600", fi.Mode().Perm())
 	}
 
-	// a restart: what magpie had in memory is gone, ka is no longer resting
+	// a restart: what magpie-friday had in memory is gone, ka is no longer resting
 	sticks.Lock()
 	sticks.m, sticks.from, sticks.mod = map[string]stick{}, "", time.Time{}
 	sticks.Unlock()

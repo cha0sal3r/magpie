@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Claude Desktop's model menu lists the models picked for it on the Agents
@@ -70,7 +70,7 @@ func TestClaudeDesktopPickedModels(t *testing.T) {
 		t.Fatalf("both shown: %v", all)
 	}
 
-	// three picked, the other DeepSeek, the routing group magpie found for
+	// three picked, the other DeepSeek, the routing group magpie-friday found for
 	// the two and GLM left out: only those three, the DeepSeek still with
 	// its provider after it
 	hide := []string{"relay/deepseek-v4.1-flash", "opencode-go/glm-5"}
@@ -192,7 +192,7 @@ func TestClaudeDesktopNamesFollowSuffixMode(t *testing.T) {
 // A Claude Desktop build that has no mythos word (the Store's 1.6608.2,
 // sublatesublate-design) keeps a gateway model only when its id reads as a
 // sonnet|opus|haiku tier or has claude, sonnet, opus, haiku or anthropic in
-// it, so every reasoning-level model listed by mythos-magpie-<n> vanished
+// it, so every reasoning-level model listed by mythos-magpie-friday-<n> vanished
 // from its menu. To a build whose User-Agent names no 2.x, a
 // reasoning-level model is listed by its plain alias, which every build
 // keeps; one that says 2.x keeps the picker alias.
@@ -252,7 +252,7 @@ func TestClaudeDesktopOldBuildModels(t *testing.T) {
 	// a 2.x build is still offered the effort picker, and so is a request
 	// that names no build (the Code tab's Claude Code, known by its key)
 	for _, ua := range []string{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Claude/2.7032.0 Chrome/140.0.0.0 Electron/37.2.0 Safari/537.36", "claude-cli/2.1.295 (external, claude-desktop)", ""} {
-		if id := list(ua)["opencode-go/deepseek-v4.1-flash"]; !regexp.MustCompile(`^mythos-magpie-\d{10}$`).MatchString(id) {
+		if id := list(ua)["opencode-go/deepseek-v4.1-flash"]; !regexp.MustCompile(`^mythos-magpie-friday-\d{10}$`).MatchString(id) {
 			t.Errorf("User-Agent %q: deepseek-v4.1-flash is listed as %q, want the mythos picker alias", ua, id)
 		}
 	}

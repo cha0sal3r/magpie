@@ -8,13 +8,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // azureStoreless plays Azure OpenAI's Responses as it answers a request
 // with store false: an item given by id alone, with nothing sealed in it,
 // is looked up among stored items, and there are none, so the whole
-// request is turned away with a 400 (#1008's text, word for word; magpie names the provider before it).
+// request is turned away with a 400 (#1008's text, word for word; magpie-friday names the provider before it).
 type azureStoreless struct{ inputs [][]map[string]any }
 
 func (a *azureStoreless) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +47,7 @@ func (a *azureStoreless) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // Codex on an Azure OpenAI deployment of a GPT model, as in the issue:
 // earlier turns went out translated (Codex offers web search on every
-// turn), and their replies gave Codex reasoning items magpie made, an id
+// turn), and their replies gave Codex reasoning items magpie-friday made, an id
 // (rs_ and newID) with a summary and nothing sealed. Codex hands them back
 // on every turn, and its compaction, which offers no tools, is relayed as
 // it is: Azure, keeping nothing, answered "Item with id 'rs_…' not found"
@@ -111,7 +111,7 @@ func TestAzureCompactionWithoutMagpiesReasoning(t *testing.T) {
 	}
 }
 
-// A relay in front of Azure or OpenAI, which magpie can't tell from any
+// A relay in front of Azure or OpenAI, which magpie-friday can't tell from any
 // other, answers the summary request with Azure's 400: it is asked again
 // with the conversation as text, as a 404 is (#866), and the compaction
 // completes.

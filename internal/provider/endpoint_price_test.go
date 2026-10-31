@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // useEndpointCatalog puts testdata/endpoint_catalog.json in the catalog
@@ -65,7 +65,7 @@ func TestEndpointCatalogPrices(t *testing.T) {
 		}
 	}
 
-	// an Anthropic API's: magpie keeps its base as its root, models.dev
+	// an Anthropic API's: magpie-friday keeps its base as its root, models.dev
 	// writes it with its /v1
 	tm := normalize(Provider{ID: "tm", Key: "k", Anthropic: "https://tinker.thinkingmachines.dev/services/tinker-prod/anthropic/api/v1"})
 	inkling := catalog.Price{Input: 1.87, Output: 4.68, CacheRead: 0.374}
@@ -73,7 +73,7 @@ func TestEndpointCatalogPrices(t *testing.T) {
 		t.Errorf("at an Anthropic endpoint: %q, %+v %v, want thinkingmachines at %+v", tm.EndpointCatalog(), pr, ok, inkling)
 	}
 
-	// what `magpie model price 002/Qwen3.8-27B` and the Usage page read
+	// what `magpie-friday model price 002/Qwen3.8-27B` and the Usage page read
 	if err := Save(normalize(Provider{ID: "002", Name: "002", Key: "k", Chat: amdEndpoint})); err != nil {
 		t.Fatal(err)
 	}

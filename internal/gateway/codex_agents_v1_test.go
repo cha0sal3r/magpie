@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/yetone/magpie/internal/codexcat"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/codexcat"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // With the Settings switch on, the ChatGPT backend's models reach Codex

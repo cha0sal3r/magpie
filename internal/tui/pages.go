@@ -19,11 +19,11 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/fx"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/fx"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 type page int
@@ -133,20 +133,20 @@ func (m model) updateProviders(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		}
 		if p.IsVertex() {
 			// its token is minted from the user's Google credentials
-			m.flash, m.flashOK = p.Name+" takes no key · magpie provider set "+p.ID+" credentials=… impersonate=… changes its Google credentials", false
+			m.flash, m.flashOK = p.Name+" takes no key · magpie-friday provider set "+p.ID+" credentials=… impersonate=… changes its Google credentials", false
 			return m, nil
 		}
 		in := newInput("the API key")
 		in.EchoMode = textinput.EchoPassword
 		in.EchoCharacter = '•'
 		m.openAsk(ask{crumbs: []string{"providers", p.Name, "key"}, input: in,
-			hint: "now " + dash(provider.Mask(p.Key)) + " · the key is kept in magpie's providers file",
+			hint: "now " + dash(provider.Mask(p.Key)) + " · the key is kept in magpie-friday's providers file",
 			onEnter: func(v string) tea.Cmd {
 				return saveProvider(p.ID, func(p *provider.Provider) { p.Key = v; provider.ForgetBalances() }, p.Name+" key "+provider.Mask(v))
 			}})
 	case "w":
 		if p.IsVertex() {
-			m.flash, m.flashOK = p.Name+" is asked at your Google Cloud project · magpie provider set "+p.ID+" project=… location=… changes it", false
+			m.flash, m.flashOK = p.Name+" is asked at your Google Cloud project · magpie-friday provider set "+p.ID+" project=… location=… changes it", false
 			return m, nil
 		}
 		pr := provider.Preset(p.Preset)
@@ -176,7 +176,7 @@ func (m model) updateProviders(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 		if pr == nil || pr.Endpoint == "" {
-			m.flash, m.flashOK = p.Name+" is asked at its vendor's address · magpie provider set "+p.ID+" url=… changes a custom one's", false
+			m.flash, m.flashOK = p.Name+" is asked at its vendor's address · magpie-friday provider set "+p.ID+" url=… changes a custom one's", false
 			return m, nil
 		}
 		now := p.Chat
@@ -200,7 +200,7 @@ func (m model) updateProviders(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		in := newInput("a tag, e.g. relay")
 		in.SetValue(p.Family)
 		m.openAsk(ask{crumbs: []string{"providers", p.Name, "family"}, input: in, empty: true,
-			hint: "agents can be shown only some families: magpie visible <agent> <family>",
+			hint: "agents can be shown only some families: magpie-friday visible <agent> <family>",
 			onEnter: func(v string) tea.Cmd {
 				return saveProvider(p.ID, func(p *provider.Provider) { p.Family = v }, p.Name+" family "+dash(v))
 			}})
@@ -371,7 +371,7 @@ func modelOptions(id string) []agent.Option {
 			note = "● on"
 		}
 		if n, ok := names[id]; ok {
-			name = n // the user's (magpie model name)
+			name = n // the user's (magpie-friday model name)
 		}
 		if name != "" && name != id {
 			note += " · " + name
@@ -439,16 +439,16 @@ func (m *model) openProviderModels(id string) {
 }
 
 // kindNote is what a preset is, beside its name in the add list: another
-// computer's magpie is said to be one, not filed under the relays (Avalon
+// computer's magpie-friday is said to be one, not filed under the relays (Avalon
 // on Discord didn't find it there).
 func kindNote(k provider.Kind) string {
 	if k == provider.KindRemote {
-		return "another computer's magpie, shared on its network"
+		return "another computer's magpie-friday, shared on its network"
 	}
 	return string(k)
 }
 
-// openPresets picks a vendor magpie knows, then asks for its key, or for
+// openPresets picks a vendor magpie-friday knows, then asks for its key, or for
 // Google Vertex AI the project it takes in place of one.
 func (m *model) openPresets() {
 	var items []agent.Option
@@ -469,7 +469,7 @@ func (m *model) openPresets() {
 	}
 	m.pk = picker{
 		crumbs: []string{"providers", "add"},
-		input:  newInput("a vendor magpie knows, or custom for your own API"),
+		input:  newInput("a vendor magpie-friday knows, or custom for your own API"),
 		items:  items,
 		onPick: func(id string) tea.Cmd {
 			if i := slices.IndexFunc(customAPIs, func(c customAPI) bool { return c.id == id }); i >= 0 {
@@ -484,7 +484,7 @@ func (m *model) openPresets() {
 					return askMsg{vertexProjectAsk(p)}
 				}
 				// a vendor reached at the user's own address (a remote
-				// magpie, Azure OpenAI) has none of the preset's: it is
+				// magpie-friday, Azure OpenAI) has none of the preset's: it is
 				// asked for first, as the app's editor asks it
 				if pr := provider.Preset(id); pr != nil && pr.Endpoint != "" {
 					return askMsg{endpointAsk(*pr, []string{"providers", "add", p.Name, "address"}, "", func(addr string) tea.Cmd {
@@ -513,7 +513,7 @@ func (m *model) openPresets() {
 }
 
 // customAPI is an API a provider of the user's own is asked on, as the
-// app's custom provider editor names it, and magpie provider add's url=,
+// app's custom provider editor names it, and magpie-friday provider add's url=,
 // responses=, anthropic= and gemini= set it.
 type customAPI struct {
 	id, name, example string
@@ -521,7 +521,7 @@ type customAPI struct {
 }
 
 // customAPIs are what a custom provider is added as from the TUI, which
-// had vendors magpie knows alone (hezz1891 on Discord: a server's TUI had
+// had vendors magpie-friday knows alone (hezz1891 on Discord: a server's TUI had
 // no way to add one's own relay).
 var customAPIs = []customAPI{
 	{"custom-openai", "OpenAI compatible (Chat Completions)", "https://api.example.com/v1", func(p *provider.Provider, u string) { p.Chat = u }},
@@ -543,7 +543,7 @@ func customURLAsk(api customAPI) ask {
 				}
 				in := newInput(u.Hostname())
 				return askMsg{ask{crumbs: []string{"providers", "add", "custom", "name"}, input: in,
-					hint: "its name in magpie · enter for " + u.Hostname(), empty: true,
+					hint: "its name in magpie-friday · enter for " + u.Hostname(), empty: true,
 					onEnter: func(name string) tea.Cmd {
 						return func() tea.Msg {
 							if name == "" {
@@ -630,7 +630,7 @@ func addKeyAsk(p provider.Provider) ask {
 	in := newInput("the API key")
 	in.EchoMode = textinput.EchoPassword
 	in.EchoCharacter = '•'
-	hint := "the key is kept in magpie's providers file"
+	hint := "the key is kept in magpie-friday's providers file"
 	if p.KeysURL != "" {
 		hint = "keys: " + p.KeysURL
 	}
@@ -649,7 +649,7 @@ func addKeyAsk(p provider.Provider) ask {
 func vertexProjectAsk(p provider.Provider) ask {
 	return ask{crumbs: []string{"providers", "add", p.Name, "project"}, input: newInput("your Google Cloud project's id"), empty: true,
 		hint: "no key: signed with gcloud's Application Default Credentials (gcloud auth application-default login)\n" +
-			"magpie provider set " + provider.FreeID(p.ID) + " location=… credentials=… impersonate=… changes the rest",
+			"magpie-friday provider set " + provider.FreeID(p.ID) + " location=… credentials=… impersonate=… changes the rest",
 		onEnter: func(project string) tea.Cmd {
 			p.Vertex = &provider.Vertex{Project: project}
 			return addCmd(p)
@@ -687,8 +687,8 @@ func addCmd(p provider.Provider) tea.Cmd {
 }
 
 // endpointAsk asks for the address of a vendor reached at the user's own
-// (pr.Endpoint is its example): a remote magpie's, as the other
-// computer's magpie shows it in Settings → Network and sharing, under
+// (pr.Endpoint is its example): a remote magpie-friday's, as the other
+// computer's magpie-friday shows it in Settings → Network and sharing, under
 // Share on local network.
 // Nothing typed is said to be needed, as the app's editor says it.
 func endpointAsk(pr provider.PresetDef, crumbs []string, now string, then func(string) tea.Cmd) ask {
@@ -755,7 +755,7 @@ func (m model) viewProviders() string {
 		case p.Off:
 			r.key = "○ switched off"
 		case p.Account != nil && signedOut(p):
-			// every account in use refused, as magpie providers says it
+			// every account in use refused, as magpie-friday providers says it
 			r.key = "○ " + p.Account.User + " is signed out"
 		case p.Account != nil:
 			r.key = "● " + p.Account.User
@@ -763,7 +763,7 @@ func (m model) viewProviders() string {
 			r.key = "○ needs a project"
 		case p.IsVertex():
 			// no key: a token minted from the user's Google credentials,
-			// as magpie providers says it
+			// as magpie-friday providers says it
 			r.key = "● Google credentials"
 			if p.Vertex != nil && p.Vertex.Impersonate != "" {
 				r.key += " as " + p.Vertex.Impersonate
@@ -778,7 +778,7 @@ func (m model) viewProviders() string {
 		r.models = fmt.Sprintf("%d models", len(p.Exposed()))
 		var notes []string
 		if p.Off {
-			// how to switch it on again, as magpie providers says it
+			// how to switch it on again, as magpie-friday providers says it
 			notes = append(notes, "o switches it on")
 		}
 		if v, ok := m.bal[p.ID]; ok {
@@ -870,15 +870,15 @@ var (
 
 // checkinCmd presses WorkBuddy's daily check-in (签到) now for every
 // WorkBuddy (China) account signed in here not in yet today, all at once,
-// as the app's Usage card's "Check in now" and magpie accounts checkin do:
+// as the app's Usage card's "Check in now" and magpie-friday accounts checkin do:
 // the built-in's or the plugin's (akic404 on Discord: the TUI had no way
 // to); and Trae CN's (每日签到) for each Trae CN account (#694), and
 // MiniMax Code's for each MiniMax Code account (#811), and Qoder's daily
 // credits for each Qoder account, and each plugin's own check-in
 // (auth.checkin) for its accounts. It says
 // how each account stands: the credits and streak, in
-// already today, or why not. A shared magpie's accounts are checked in
-// on that magpie, from its own app, TUI or CLI.
+// already today, or why not. A shared magpie-friday's accounts are checked in
+// on that magpie-friday, from its own app, TUI or CLI.
 func checkinCmd() tea.Msg {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
@@ -1001,15 +1001,15 @@ func checkinWhy(r provider.WorkBuddyCheckin) string {
 }
 
 // againWords is a provisional answer (WorkBuddyCheckin.Again) in words:
-// it may be the vendor's day before, so magpie asks again later (#3326).
+// it may be the vendor's day before, so magpie-friday asks again later (#3326).
 func againWords(r provider.WorkBuddyCheckin) string {
 	switch r.Outcome {
 	case provider.CheckinDone:
-		return "says already checked in · its day may not have turned, magpie asks again later"
+		return "says already checked in · its day may not have turned, magpie-friday asks again later"
 	case provider.CheckinIneligible:
-		return "not eligible now · magpie asks again later"
+		return "not eligible now · magpie-friday asks again later"
 	}
-	return "no check-in event now · magpie asks again later"
+	return "no check-in event now · magpie-friday asks again later"
 }
 
 // ownAppName is the vendor whose own app alone gets r's check-in credits.
@@ -1213,7 +1213,7 @@ func (m model) viewUsage() string {
 	}
 	d := m.direct
 	if s.Calls == 0 && d.Calls == 0 {
-		b.WriteString(pad + "  " + sMuted.Render("no calls in this time · route an agent through magpie and its usage shows up here"))
+		b.WriteString(pad + "  " + sMuted.Render("no calls in this time · route an agent through magpie-friday and its usage shows up here"))
 		return b.String()
 	}
 	names := map[string]string{}
@@ -1225,14 +1225,14 @@ func (m model) viewUsage() string {
 		room = max(2, room/2)
 	}
 	if s.Calls == 0 {
-		b.WriteString(pad + "  " + sMuted.Render("no calls through magpie in this time") + "\n\n")
+		b.WriteString(pad + "  " + sMuted.Render("no calls through magpie-friday in this time") + "\n\n")
 	} else {
 		m.usageBlock(&b, s, room, names)
 	}
 	// the calls the agents made on their own, as the app's Requests tab
 	// counts them beside the gateway's (Kumo31 on Discord)
 	if d.Calls > 0 {
-		b.WriteString(pad + "  " + sFaint.Render("not through magpie · the agents' own requests, read from their session files") + "\n")
+		b.WriteString(pad + "  " + sFaint.Render("not through magpie-friday · the agents' own requests, read from their session files") + "\n")
 		m.usageBlock(&b, d, room, names)
 	}
 	return strings.TrimRight(b.String(), "\n")
@@ -1281,7 +1281,7 @@ func (m model) usageBlock(b *strings.Builder, s usage.Summary, room int, names m
 		}
 		for i, g := range gs {
 			if i == room {
-				b.WriteString(pad + "  " + sFaint.Render(fmt.Sprintf("and %d more · magpie usage", len(gs)-room)) + "\n")
+				b.WriteString(pad + "  " + sFaint.Render(fmt.Sprintf("and %d more · magpie-friday usage", len(gs)-room)) + "\n")
 				break
 			}
 			share := fmt.Sprintf("%3.0f%%", 100*float64(g.Tokens())/float64(max(1, s.Tokens())))

@@ -42,7 +42,7 @@ func npmTarball(t *testing.T, name, version string) []byte {
 }
 
 // A registry of the package's versions, published at the times given,
-// npm's newest last: what bun and magpie both ask.
+// npm's newest last: what bun and magpie-friday both ask.
 func heldRegistry(t *testing.T, pkg string, published map[string]time.Time, newest string) {
 	t.Helper()
 	tarballs := map[string][]byte{}
@@ -91,7 +91,7 @@ func heldRegistry(t *testing.T, pkg string, published map[string]time.Time, newe
 // (sweanng424 on Discord: Factory stayed at 0.1.18 with 0.1.21 out, through
 // restarts and the hourly updates). A minimumReleaseAge in the user's
 // bunfig made bun take the newest version older than it for "latest", and
-// exit 0: magpie's Update, Update all, the hourly update and the moved
+// exit 0: magpie-friday's Update, Update all, the hourly update and the moved
 // built-in's update each said nothing, or that it was updated.
 func TestUpdateBunHoldsBackSaysWhy(t *testing.T) {
 	sandbox(t)
@@ -166,11 +166,11 @@ func TestAgeText(t *testing.T) {
 	}
 }
 
-// Update all (and magpie plugin update) brings a plugin pinned to an older
+// Update all (and magpie-friday plugin update) brings a plugin pinned to an older
 // version to npm's newest, unpinned, as its row's Update does: the page
 // counts it among the updates, and before, Update all installed the pinned
 // version again, said "Plugins updated", and the row still said the newer
-// one was out (ARNO on Discord: 非官方插件…更新到最新版，magpie依然提示有更新).
+// one was out (ARNO on Discord: 非官方插件…更新到最新版，magpie-friday依然提示有更新).
 // A pinned one already at npm's newest stays pinned.
 func TestUpdateAllUpdatesAPinnedPlugin(t *testing.T) {
 	sandbox(t)

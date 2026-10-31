@@ -13,7 +13,7 @@ const dictionary = new Function(translationSource.slice(0, translationSource.ind
 
 function serve(lang, posts, refusal = "") {
   const settings = {
-    theme: "light", lang, tray: "panel", version: "test", dir: "/tmp/magpie",
+    theme: "light", lang, tray: "panel", version: "test", dir: "/tmp/magpie-friday",
     gateway: "http://127.0.0.1:3425", visionModels: [], imageGenModels: [],
     fx: { rate: 7.2, stale: false },
   };
@@ -69,7 +69,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         }
         await page.waitForTimeout(300);
       };
-      // magpie moves the page only for the reader (scrollOnPurpose), so a
+      // magpie-friday moves the page only for the reader (scrollOnPurpose), so a
       // row above or below the window is wheeled to, never scrolled into view
       const toStart = async () => {
         await page.mouse.move(width / 2, 300);
@@ -97,12 +97,12 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       assert.equal(await form.locator(".editor-error").textContent(), tr("Name the GitHub repository as owner/repo"));
       assert.equal(posts.length, 0, "an incomplete binding posts nothing");
       await box(L.repo).fill("alice/private");
-      await box(L.folder).fill("magpie-sync");
+      await box(L.folder).fill("magpie-friday-sync");
       await box(L.token).fill("fixture-token");
       await box(L.phrase).fill("correct horse");
       await toEnd();
       await form.locator(".bar .primary").click();
-      assert.deepEqual(posts, [{ url: "github://alice/private/magpie-sync", branch: "", password: "fixture-token", passphrase: "correct horse", keys: true, agents: true, library: true }]);
+      assert.deepEqual(posts, [{ url: "github://alice/private/magpie-friday-sync", branch: "", password: "fixture-token", passphrase: "correct horse", keys: true, agents: true, library: true }]);
       await page.waitForFunction((name) => document.querySelector("#syncList .row.pref .name")?.textContent === name, tr("GitHub sync"));
       assert.equal(await first.locator(".name").textContent(), tr("GitHub sync"));
       await toStart();

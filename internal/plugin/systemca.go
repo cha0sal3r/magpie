@@ -11,13 +11,13 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
 // caEnv has Bun trust what this machine trusts. Bun checks TLS against
 // the roots it ships, not the system's, so behind a box that re-signs
 // HTTPS (a company proxy, a VPN, Surge's or Proxyman's MITM) whose root
-// the user installed, magpie gets through and Bun doesn't: `bun add`
+// the user installed, magpie-friday gets through and Bun doesn't: `bun add`
 // fails with "UNABLE_TO_VERIFY_LEAF_SIGNATURE downloading package
 // manifest", and a plugin's requests fail the same way. NODE_EXTRA_CA_CERTS
 // adds the system's roots to Bun's, for installs and for the host alike.

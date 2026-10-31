@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Whether a model an agent asks for is served here is answered from the
@@ -24,7 +24,7 @@ func TestUnservedKeptWhileCatalogStays(t *testing.T) {
 	if unserved("m1") || unserved("big/m150") || !unserved("claude-sonnet-4-6") || !unserved("nope/claude-sonnet-4-6") {
 		t.Fatal("served wrong before anything is kept")
 	}
-	// ids with a provider in them, as magpie writes into agents' configs:
+	// ids with a provider in them, as magpie-friday writes into agents' configs:
 	// a bare one asks the routing groups first, which the request's
 	// routing builds too
 	allocs := testing.AllocsPerRun(20, func() {

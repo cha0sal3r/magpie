@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // paced is a vendor that streams its events a gap apart, the first at
@@ -389,7 +389,7 @@ func burstChunks(proto provider.Protocol, words, per, out int) [][]string {
 // all in one burst, wrote nothing over the wait, and tells no speed (John
 // on Discord: a Kimi Code reply to OpenCode read 1,367 tok/s): before,
 // its 5,000 tokens over the 600 ms from its first word to its end read
-// about 8,300 tok/s. The burst is 5,000 tokens so that the time magpie
+// about 8,300 tok/s. The burst is 5,000 tokens so that the time magpie-friday
 // takes to pass it on (138 ms on a busy macOS runner at 8db24fd6) reads
 // faster than any real stream (MaxDecodeSpeed), as a real burst does;
 // 1,000 read 7,246 tok/s. One that streamed steadily keeps its speed, over
@@ -429,7 +429,7 @@ func TestBurstTellsNoSpeed(t *testing.T) {
 				u := lastUsage(t)
 				span := u.Millis - u.TTFT
 				// the upstream's wait starts when it sent the first word,
-				// which magpie reads a moment later: the span is the gap
+				// which magpie-friday reads a moment later: the span is the gap
 				// less that moment (599 ms of 600 on a busy macOS runner)
 				if u.TTFT <= 0 || span < gap.Milliseconds()*9/10 {
 					t.Fatalf("usage ttft %d, ms %d; want the end %v after the first word", u.TTFT, u.Millis, gap)
@@ -464,7 +464,7 @@ func TestCodexBackendBurstTellsNoSpeed(t *testing.T) {
 	}
 	u := lastUsage(t)
 	// the end after the wait, less the moment the first word took to
-	// reach magpie (599 ms of 600 on macOS CI at 58f45d05)
+	// reach magpie-friday (599 ms of 600 on macOS CI at 58f45d05)
 	if u.Millis-u.TTFT < 540 || u.Output != 5000 {
 		t.Fatalf("usage %+v", u)
 	}

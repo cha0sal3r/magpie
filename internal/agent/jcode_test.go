@@ -10,8 +10,8 @@ import (
 
 	toml "github.com/pelletier/go-toml/v2"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // jcodeConfig is a config.toml as jcode 0.94.0 writes it after `jcode
@@ -37,7 +37,7 @@ id = "deepseek-chat"
 `
 
 // jcodeHome is a HOME with jcode's ~/.jcode holding body as its
-// config.toml, and magpie with a provider of two models, one of them with
+// config.toml, and magpie-friday with a provider of two models, one of them with
 // effort levels.
 func jcodeHome(t *testing.T, body string) (home, path string) {
 	t.Helper()
@@ -84,11 +84,11 @@ func jcodeTable(m map[string]any, keys ...string) map[string]any {
 	return m
 }
 
-// jcodeModelsOf is magpie's profile's models, by id.
+// jcodeModelsOf is magpie-friday's profile's models, by id.
 func jcodeModelsOf(t *testing.T, m map[string]any) map[string]map[string]any {
 	t.Helper()
 	out := map[string]map[string]any{}
-	list, _ := jcodeTable(m, "providers", "magpie")["models"].([]any)
+	list, _ := jcodeTable(m, "providers", "magpie-friday")["models"].([]any)
 	for _, x := range list {
 		e := x.(map[string]any)
 		out[e["id"].(string)] = e
@@ -96,8 +96,8 @@ func jcodeModelsOf(t *testing.T, m map[string]any) map[string]map[string]any {
 	return out
 }
 
-// Connecting jcode adds magpie's profile — the gateway, with a key naming
-// jcode, and every one of magpie's models — and starts jcode on the model
+// Connecting jcode adds magpie-friday's profile — the gateway, with a key naming
+// jcode, and every one of magpie-friday's models — and starts jcode on the model
 // picked. The user's own profile and pick stay in the file, and Disconnect
 // gives the file back byte for byte.
 func TestJcode(t *testing.T) {
@@ -113,29 +113,29 @@ func TestJcode(t *testing.T) {
 	var own, ours bool
 	for _, o := range f.Options(a.Values()) {
 		own = own || o.Value == "deepseek-chat"
-		ours = ours || o.Value == "magpie/kimi/k2"
+		ours = ours || o.Value == "magpie-friday/kimi/k2"
 	}
 	if !own || !ours {
-		t.Fatalf("options: own %v magpie %v", own, ours)
+		t.Fatalf("options: own %v magpie-friday %v", own, ours)
 	}
 
-	if err := a.Pick("model", "magpie/kimi/k2"); err != nil {
+	if err := a.Pick("model", "magpie-friday/kimi/k2"); err != nil {
 		t.Fatal(err)
 	}
 	m := jcodeParse(t, path)
-	if p := jcodeTable(m, "provider"); p["default_provider"] != "magpie" || p["default_model"] != "kimi/k2" {
+	if p := jcodeTable(m, "provider"); p["default_provider"] != "magpie-friday" || p["default_model"] != "kimi/k2" {
 		t.Fatalf("[provider]: %v", p)
 	}
-	if !a.Wired() || f.Get() != "magpie/kimi/k2" {
+	if !a.Wired() || f.Get() != "magpie-friday/kimi/k2" {
 		t.Fatalf("wired %v, model %q", a.Wired(), f.Get())
 	}
 	if c := a.Check(); c != "" {
 		t.Fatalf("check: %s", c)
 	}
-	p := jcodeTable(m, "providers", "magpie")
+	p := jcodeTable(m, "providers", "magpie-friday")
 	if p["type"] != "openai-compatible" || p["base_url"] != here(home).v1() || p["requires_api_key"] != true ||
 		p["api_key"] != agentKeyAt("jcode", here(home).gw()) || p["default_model"] != "kimi/k2" {
-		t.Fatalf("magpie's profile: %v", p)
+		t.Fatalf("magpie-friday's profile: %v", p)
 	}
 	models := jcodeModelsOf(t, m)
 	k2, vision := models["kimi/k2"], models["kimi/k2-vision"]
@@ -155,11 +155,11 @@ func TestJcode(t *testing.T) {
 		t.Fatalf("the user's own profile or comment changed:\n%s", b)
 	}
 
-	// switching between magpie's models keeps what jcode was on before
-	if err := a.Pick("model", "magpie/kimi/k2-vision"); err != nil {
+	// switching between magpie-friday's models keeps what jcode was on before
+	if err := a.Pick("model", "magpie-friday/kimi/k2-vision"); err != nil {
 		t.Fatal(err)
 	}
-	if got := f.Get(); got != "magpie/kimi/k2-vision" {
+	if got := f.Get(); got != "magpie-friday/kimi/k2-vision" {
 		t.Fatalf("model %q", got)
 	}
 	if err := a.Disconnect(); err != nil {
@@ -173,12 +173,12 @@ func TestJcode(t *testing.T) {
 	}
 }
 
-// A model of jcode's own picked while it is on magpie takes magpie out: the
+// A model of jcode's own picked while it is on magpie-friday takes magpie-friday out: the
 // profile goes, and jcode is on the user's own provider with that model.
 func TestJcodeOwnModelTakesMagpieOut(t *testing.T) {
 	home, path := jcodeHome(t, jcodeConfig)
 	a := jcode(home)
-	if err := a.Pick("model", "magpie/kimi/k2"); err != nil {
+	if err := a.Pick("model", "magpie-friday/kimi/k2"); err != nil {
 		t.Fatal(err)
 	}
 	if err := a.Pick("model", "deepseek-reasoner"); err != nil {
@@ -193,47 +193,47 @@ func TestJcodeOwnModelTakesMagpieOut(t *testing.T) {
 	}
 }
 
-// What the user sets in magpie's profile — a header, an effort on one of
+// What the user sets in magpie-friday's profile — a header, an effort on one of
 // its models — is theirs, also after jcode saved the file itself (its
-// models then are [[providers.magpie.models]] tables): a catalog sync
+// models then are [[providers.magpie-friday.models]] tables): a catalog sync
 // rewrites the models and the endpoint, not those. A sync with nothing to
 // change doesn't write.
 func TestJcodeSyncKeepsTheirs(t *testing.T) {
 	home, path := jcodeHome(t, "")
 	a := jcode(home)
-	if err := a.Pick("model", "magpie/kimi/k2"); err != nil {
+	if err := a.Pick("model", "magpie-friday/kimi/k2"); err != nil {
 		t.Fatal(err)
 	}
 	gw := here(home)
 	// as jcode's Config::save writes it, with what the user changed in it
 	saved := `[provider]
-default_provider = "magpie"
+default_provider = "magpie-friday"
 default_model = "kimi/k2"
 
-[providers.magpie]
+[providers.magpie-friday]
 type = "openai-compatible"
 base_url = "` + gw.v1() + `"
 api_key = "` + agentKeyAt("jcode", gw.gw()) + `"
 default_model = "kimi/k2"
 requires_api_key = true
 
-[[providers.magpie.models]]
+[[providers.magpie-friday.models]]
 id = "kimi/k2"
 reasoning = true
 reasoning_effort = "high"
 context_window = 262144
 input = ["text"]
 
-[[providers.magpie.models]]
+[[providers.magpie-friday.models]]
 id = "kimi/k2-vision"
 context_window = 128000
 input = ["text", "image"]
 
-[providers.magpie.headers]
+[providers.magpie-friday.headers]
 X-Team = "mine"
 `
 	writeFile(t, path, saved)
-	// a model magpie lists no more leaves jcode's list
+	// a model magpie-friday lists no more leaves jcode's list
 	if err := catalog.SaveLive("kimi", "https://api.moonshot.cn/v1", []catalog.Model{
 		{ID: "k2", Context: 262144, Efforts: []string{"low", "medium", "high"}},
 	}); err != nil {
@@ -251,7 +251,7 @@ X-Team = "mine"
 	if len(models) != 1 || models["kimi/k2"]["reasoning_effort"] != "high" {
 		t.Fatalf("models: %v", models)
 	}
-	if h := jcodeTable(m, "providers", "magpie", "headers"); h["X-Team"] != "mine" {
+	if h := jcodeTable(m, "providers", "magpie-friday", "headers"); h["X-Team"] != "mine" {
 		t.Fatalf("the user's header: %v", h)
 	}
 	if c := a.Check(); c != "" {
@@ -270,7 +270,7 @@ X-Team = "mine"
 		t.Fatalf("a sync with nothing to change wrote the file (%v)", st.ModTime())
 	}
 
-	// Disconnect takes magpie's profile out whole, its array tables and
+	// Disconnect takes magpie-friday's profile out whole, its array tables and
 	// the user's header in it too, and leaves jcode with no pick, as before
 	if err := a.Disconnect(); err != nil {
 		t.Fatal(err)
@@ -280,7 +280,7 @@ X-Team = "mine"
 	}
 }
 
-// jcode's folder is $JCODE_HOME when it is set; magpie's profile gone from
+// jcode's folder is $JCODE_HOME when it is set; magpie-friday's profile gone from
 // the file while jcode still starts on it is said.
 func TestJcodeHome(t *testing.T) {
 	home, _ := jcodeHome(t, "")
@@ -291,13 +291,13 @@ func TestJcodeHome(t *testing.T) {
 	if a.Path != filepath.Join(dir, "config.toml") || a.Detected() {
 		t.Fatalf("path %q detected %v", a.Path, a.Detected())
 	}
-	if err := a.Pick("model", "magpie/kimi/k2"); err != nil {
+	if err := a.Pick("model", "magpie-friday/kimi/k2"); err != nil {
 		t.Fatal(err)
 	}
 	if !a.Wired() || !a.Detected() {
 		t.Fatalf("wired %v detected %v", a.Wired(), a.Detected())
 	}
-	writeFile(t, a.Path, "[provider]\ndefault_provider = \"magpie\"\ndefault_model = \"kimi/k2\"\n")
+	writeFile(t, a.Path, "[provider]\ndefault_provider = \"magpie-friday\"\ndefault_model = \"kimi/k2\"\n")
 	if c := a.Check(); !strings.Contains(c, "is gone") {
 		t.Fatalf("check: %q", c)
 	}

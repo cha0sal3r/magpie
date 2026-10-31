@@ -6,12 +6,12 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // An omp bun installed is asked its version though ~/.bun/bin isn't on
-// magpie's PATH, as on Windows and in WSL (whqtian on Discord: on Ubuntu
-// omp's models still offered xhigh in place of max). A `magpie serve`, or
+// magpie-friday's PATH, as on Windows and in WSL (whqtian on Discord: on Ubuntu
+// omp's models still offered xhigh in place of max). A `magpie-friday serve`, or
 // a service started with a PATH that lacks it, found no omp at all, so its
 // version stayed unknown and was taken for one older than 16.4.0.
 func TestOmpVersionOffPath(t *testing.T) {

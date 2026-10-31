@@ -9,7 +9,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // decideFleet is System One APIs whose every key answers as status says
@@ -86,7 +86,7 @@ func TestSystemOneDecisionGroupFailsOver(t *testing.T) {
 	call := func(path, body string) *httptest.ResponseRecorder {
 		rec := httptest.NewRecorder()
 		req := httptest.NewRequest("POST", path, strings.NewReader(body))
-		req.Header.Set("Authorization", "Bearer magpie")
+		req.Header.Set("Authorization", "Bearer magpie-friday")
 		s.Handler().ServeHTTP(rec, req)
 		return rec
 	}
@@ -202,7 +202,7 @@ func TestDecisionProviderKeysFailOver(t *testing.T) {
 			call := func() *httptest.ResponseRecorder {
 				rec := httptest.NewRecorder()
 				req := httptest.NewRequest("POST", "/v1/systemone", strings.NewReader(`{"model":"jev/jev-latest","state":{"message":"hi"},"questions":{"intent":{"type":"choice"}}}`))
-				req.Header.Set("Authorization", "Bearer magpie")
+				req.Header.Set("Authorization", "Bearer magpie-friday")
 				s.Handler().ServeHTTP(rec, req)
 				return rec
 			}

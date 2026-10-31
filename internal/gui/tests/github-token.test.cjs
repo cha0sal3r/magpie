@@ -29,7 +29,7 @@ const UNTIL = "2030-01-02T03:04:00Z";
 function serve(lang, posted, st) {
   const settings = () => ({ lang, theme: "light", searchVendors: [], searchAPIs: [], githubTokenMask: st.mask, githubTokenFrom: st.from });
   const lib = {
-    dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+    dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
     agents: [{ id: "codex", name: "Codex", icon: "", skills: `${HOME}/.codex/skills`, mcp: `${HOME}/.codex/mcp.json` }],
     instructions: { agents: [], sets: [] }, foundServers: [], projects: [], foundSkills: [], servers: [],
     skills: [{ name: "pdf", description: "PDFs", kind: "github", agents: ["codex"], source: "https://github.com/owner/repo/tree/main/pdf" }],

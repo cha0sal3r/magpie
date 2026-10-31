@@ -11,7 +11,7 @@ import (
 // page asks for them. After an update that changes how a file is read, that
 // is every file again: 8.9 GB of Claude Code and Codex sessions took ~40 s
 // of CPU, and with twice as many readers as cores it held every core for
-// the first ~15 s of magpie's start (#1665, laowangba233: the CPU full on
+// the first ~15 s of magpie-friday's start (#1665, laowangba233: the CPU full on
 // each start). Nobody waits on the warm-up, so it reads with a quarter of
 // the cores; a page that asks for sessions meanwhile (Ask) has the reading
 // go at full speed again, as it then waits on it.

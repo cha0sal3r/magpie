@@ -12,7 +12,7 @@ import (
 func TestGitRemoteIsNoEmail(t *testing.T) {
 	o := Options{Secrets: true, Personal: true}
 	for _, s := range []string{
-		"git@github.com:yetone/magpie.git",
+		"git@github.com:cha0sal3r/magpie-friday.git",
 		"git clone git@gitlab.com:group/sub/repo.git",
 		"origin\tgit@gitee.com:owner/repo.git (fetch)",
 		"ssh -T git@github.com",

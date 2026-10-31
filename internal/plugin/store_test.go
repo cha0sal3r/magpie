@@ -12,11 +12,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
-// storeSandbox gives the test its own magpie folders, without the Bun the
+// storeSandbox gives the test its own magpie-friday folders, without the Bun the
 // other tests need: these only read and write plugins.json.
 func storeSandbox(t testing.TB) string {
 	t.Helper()
@@ -30,7 +30,7 @@ func storeSandbox(t testing.TB) string {
 	return dir
 }
 
-// writeList puts plugins.json where magpie keeps it.
+// writeList puts plugins.json where magpie-friday keeps it.
 func writeList(t testing.TB, body string) {
 	t.Helper()
 	if err := os.WriteFile(listPath(), []byte(body), 0o600); err != nil {
@@ -48,7 +48,7 @@ func TestLoadMissingIsEmptyNotGrown(t *testing.T) {
 
 // TestLoadKeepsWhatAPartialFileGave: what a file that doesn't parse whole
 // gives is what Load gives, as it always was — the error is no more read
-// than it was, so a half-written file can't empty a list a magpie is using.
+// than it was, so a half-written file can't empty a list a magpie-friday is using.
 func TestLoadKeepsWhatAPartialFileGave(t *testing.T) {
 	for _, tc := range []struct{ name, body string }{
 		{"truncated", `{"plugins":[{"spec":"a"},{"spec":"b"`},
@@ -84,7 +84,7 @@ func TestLoadKeepsWhatAPartialFileGave(t *testing.T) {
 }
 
 // TestLoadCopyIsIndependent: what Load gives may be changed anywhere in it,
-// and what magpie keeps is not.
+// and what magpie-friday keeps is not.
 func TestLoadCopyIsIndependent(t *testing.T) {
 	storeSandbox(t)
 	writeList(t, `{"plugins":[{"spec":"a","options":{"k":{"n":[1]}}}],"config":{"p":{"q":["x"]}}}`)
@@ -107,7 +107,7 @@ func TestLoadCopyIsIndependent(t *testing.T) {
 		t.Fatalf("a nested config value changed with a copy: %v", q)
 	}
 	if _, ok := again.Config["new"]; ok {
-		t.Fatal("a new config key reached what magpie keeps")
+		t.Fatal("a new config key reached what magpie-friday keeps")
 	}
 }
 
@@ -212,7 +212,7 @@ func TestLoadDeleteRecreateAndReadError(t *testing.T) {
 	}
 }
 
-// TestLoadPerConfigDir: what one magpie folder keeps is not another's.
+// TestLoadPerConfigDir: what one magpie-friday folder keeps is not another's.
 func TestLoadPerConfigDir(t *testing.T) {
 	dir := storeSandbox(t)
 	writeList(t, `{"plugins":[{"spec":"one"}]}`)
@@ -235,7 +235,7 @@ func TestLoadPerConfigDir(t *testing.T) {
 }
 
 // TestLoadConcurrentWithSavesAndEdits: reading the list while another
-// magpie's writes land (each of them a rename) never gives half a file, and
+// magpie-friday's writes land (each of them a rename) never gives half a file, and
 // add, off and remove work under it.
 func TestLoadConcurrentWithSavesAndEdits(t *testing.T) {
 	dir := storeSandbox(t)

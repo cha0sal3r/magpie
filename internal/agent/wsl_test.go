@@ -12,7 +12,7 @@ import (
 	"time"
 	"unicode/utf16"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 func utf16le(s string, bom bool) []byte {
@@ -74,11 +74,11 @@ func TestParseProbe(t *testing.T) {
 	}
 }
 
-// A path magpie opens through \\wsl.localhost is the distro's own path in
+// A path magpie-friday opens through \\wsl.localhost is the distro's own path in
 // the distro's config.
 func TestWSLPaths(t *testing.T) {
 	d := distro{Root: `\\wsl.localhost\Ubuntu`}
-	if got := d.native(`\\wsl.localhost\Ubuntu\home\me\.codex\magpie-models.json`); got != "/home/me/.codex/magpie-models.json" {
+	if got := d.native(`\\wsl.localhost\Ubuntu\home\me\.codex\magpie-friday-models.json`); got != "/home/me/.codex/magpie-friday-models.json" {
 		t.Error(got)
 	}
 	if got := d.native(`\\WSL.LOCALHOST\Ubuntu\home\me`); got != "/home/me" {
@@ -106,7 +106,7 @@ func fakeDistro(home string, mirrored bool) distro {
 		Has: map[string]bool{"dir:.codex": true}, Gateway: "172.20.0.1", Mirrored: mirrored, Running: true}
 }
 
-// Codex in a distro under NAT, not signed in: magpie as its provider at the
+// Codex in a distro under NAT, not signed in: magpie-friday as its provider at the
 // Windows host, its catalog named by the distro's path, what was there
 // stashed under the distro's agent.
 func TestWSLCodexProvider(t *testing.T) {
@@ -121,11 +121,11 @@ func TestWSLCodexProvider(t *testing.T) {
 	}
 	cfg := read()
 	nat := "http://172.20.0.1:" + gateway.Port()
-	if !strings.Contains(cfg, `model_catalog_json = "`+d.Home+`/.codex/magpie-models.json"`) ||
-		!strings.Contains(cfg, `base_url = "`+nat+`/v1"`) || !strings.Contains(cfg, `model_provider = "magpie"`) {
+	if !strings.Contains(cfg, `model_catalog_json = "`+d.Home+`/.codex/magpie-friday-models.json"`) ||
+		!strings.Contains(cfg, `base_url = "`+nat+`/v1"`) || !strings.Contains(cfg, `model_provider = "magpie-friday"`) {
 		t.Fatalf("config:\n%s", cfg)
 	}
-	if _, err := os.Stat(filepath.Join(home, ".codex", "magpie-models.json")); err != nil {
+	if _, err := os.Stat(filepath.Join(home, ".codex", "magpie-friday-models.json")); err != nil {
 		t.Fatal(err)
 	}
 	if c := a.Check(); c != "" {
@@ -146,7 +146,7 @@ func TestWSLCodexProvider(t *testing.T) {
 }
 
 // Signed in and mirrored: the base URL is 127.0.0.1, as on Windows; under
-// NAT it is the host, and either is known as magpie's again.
+// NAT it is the host, and either is known as magpie-friday's again.
 func TestWSLCodexBaseURL(t *testing.T) {
 	for _, mirrored := range []bool{true, false} {
 		home, read := codexHome(t, `{"OPENAI_API_KEY":"sk-x"}`, "model = \"gpt-5.5\"\n")
@@ -211,7 +211,7 @@ func fakeWSL(t *testing.T, installed, running string, probes, roots map[string]s
 }
 
 // A stopped distro is never asked anything nor opened: one Codex was found
-// in before is listed as magpie last saw it, and picking a value goes to its
+// in before is listed as magpie-friday last saw it, and picking a value goes to its
 // files (which starts it). Running ones are probed once; one without Codex,
 // or one no longer installed, isn't kept.
 func TestWSLStoppedDistro(t *testing.T) {
@@ -313,7 +313,7 @@ func TestWSLListFails(t *testing.T) {
 	}
 }
 
-// TJHHHH on Discord: magpie kept starting WSL while they repaired it. An
+// TJHHHH on Discord: magpie-friday kept starting WSL while they repaired it. An
 // agent made while its distro ran is still read after the user stops it
 // (wsl --shutdown): its fields shown, the catalog synced, its check, the
 // requests it made. None of them opens the stopped distro, which would

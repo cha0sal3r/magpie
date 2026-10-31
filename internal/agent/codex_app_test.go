@@ -26,7 +26,7 @@ func TestCodexAppReopen(t *testing.T) {
 	t.Setenv("CODEX_HOME", "")
 	dir := filepath.Join(home, ".codex")
 	os.MkdirAll(dir, 0o755)
-	os.WriteFile(filepath.Join(dir, "config.toml"), []byte("model_provider = \"magpie\"\n"), 0o600)
+	os.WriteFile(filepath.Join(dir, "config.toml"), []byte("model_provider = \"magpie-friday\"\n"), 0o600)
 
 	const bundle = "/Applications/Codex.app"
 	up := true

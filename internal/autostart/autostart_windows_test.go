@@ -9,7 +9,7 @@ import (
 
 // Turning Open at login off has to say so when it cannot reach the Run key.
 // A Run key whose ACL refuses SET_VALUE is still readable, so nothing else
-// changed: the magpie value stays where it was and Windows starts it at the
+// changed: the magpie-friday value stays where it was and Windows starts it at the
 // next sign-in, which is the opposite of what was asked for. No Run key at
 // all is nothing to turn off, and is not an error.
 func TestDisableReportsAKeyItCannotReach(t *testing.T) {
@@ -37,7 +37,7 @@ func TestDisableReportsAKeyItCannotReach(t *testing.T) {
 }
 
 // A Run key that cannot be read is not read as off: Windows may still be
-// starting magpie, and the switch says so when it can't turn it off.
+// starting magpie-friday, and the switch says so when it can't turn it off.
 func TestEnabledUnreadableKeyIsNotOff(t *testing.T) {
 	restore := openRunKey
 	t.Cleanup(func() { openRunKey = restore })
@@ -57,7 +57,7 @@ func TestEnabledUnreadableKeyIsNotOff(t *testing.T) {
 
 // Turning Open at login on has to say so when it cannot clear Task Manager's
 // Startup apps marker. The Run value is written either way, so the switch
-// would read as on, but the marker says Windows is to leave magpie switched
+// would read as on, but the marker says Windows is to leave magpie-friday switched
 // off: Set(true) answering success there is the same lie Set(false) used to
 // tell. No marker at all is nothing to clear, and is not an error.
 func TestClearApprovedMarkerReportsOneItCannotReach(t *testing.T) {
@@ -109,7 +109,7 @@ func TestSwitchedOffUnreadableOrAbsentMarkerIsNotOff(t *testing.T) {
 // the ordinary one: Startup apps writes the marker key the first time it
 // lists an entry, so a user who never opened it has no key, and Windows
 // still starts every Run value it has. Reading that as switched off told
-// Settings "login: off" for a magpie that does start.
+// Settings "login: off" for a magpie-friday that does start.
 func TestEnabledWithNoMarkerIsOn(t *testing.T) {
 	restoreRun, restoreApproved := openRunKey, openApprovedKey
 	restoreRead := readRunValue
@@ -117,7 +117,7 @@ func TestEnabledWithNoMarkerIsOn(t *testing.T) {
 	openRunKey = func(registry.Key, string, uint32) (registry.Key, error) {
 		return 0, nil
 	}
-	readRunValue = func(registry.Key) (string, error) { return "C:\\magpie.exe", nil }
+	readRunValue = func(registry.Key) (string, error) { return "C:\\magpie-friday.exe", nil }
 	openApprovedKey = func(registry.Key, string, uint32) (registry.Key, error) {
 		return 0, registry.ErrNotExist
 	}

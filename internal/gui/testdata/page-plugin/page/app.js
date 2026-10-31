@@ -1,4 +1,4 @@
-// What magpie's window gives a page: the theme, its own options, and the
+// What magpie-friday's window gives a page: the theme, its own options, and the
 // reads package.json's magpie.permissions declares.
 (async () => {
   await magpie.ready;

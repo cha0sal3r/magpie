@@ -24,7 +24,7 @@ type Note struct {
 }
 
 // NotesFeed is where the notes of past releases are listed: beside the
-// update feed, on magpie's site. MAGPIE_NOTES_FEED points it elsewhere.
+// update feed, on magpie-friday's site. MAGPIE_NOTES_FEED points it elsewhere.
 func NotesFeed() string {
 	if f := os.Getenv("MAGPIE_NOTES_FEED"); f != "" {
 		return f
@@ -35,7 +35,7 @@ func NotesFeed() string {
 // ReleasePage is version's page on GitHub, where its notes are when the
 // site can't give them (#661).
 func ReleasePage(version string) string {
-	return "https://github.com/yetone/magpie-releases/releases/tag/v" + strings.TrimPrefix(strings.TrimSpace(version), "v")
+	return "https://github.com/cha0sal3r/magpie-friday-releases/releases/tag/v" + strings.TrimPrefix(strings.TrimSpace(version), "v")
 }
 
 // NotesBetween asks the site for the notes of every release after after
@@ -134,7 +134,7 @@ func withLang(feed, lang string) string {
 	return u.String()
 }
 
-// MaxNotes is how many releases' notes are shown at most: magpie releases
+// MaxNotes is how many releases' notes are shown at most: magpie-friday releases
 // often, and a long-unopened one would have pages of them.
 const MaxNotes = 40
 
@@ -207,7 +207,7 @@ var heading = regexp.MustCompile(`^(#{1,6})\s+(.*?)\s*#*\s*$`)
 var installHeadings = []string{"Install", "安装", "安裝", "インストール"}
 
 // StripInstall takes a release's "Install" section (in any language) out of
-// its notes: the download links, which mean nothing to a magpie that just
+// its notes: the download links, which mean nothing to a magpie-friday that just
 // updated itself.
 // The section runs to the next heading of its level or above.
 func StripInstall(md string) string {
@@ -230,11 +230,11 @@ func StripInstall(md string) string {
 	return strings.TrimSpace(strings.Join(out, "\n"))
 }
 
-// ShowNotes decides, as magpie starts on current having last run as last
+// ShowNotes decides, as magpie-friday starts on current having last run as last
 // ("" when it never said), whether to show what changed since, and from
 // which version on (exclusive). Only an upgrade between releases shows:
 // not a fresh install, the same version again, a downgrade, or a build
-// from source. A magpie from before versions were kept has no last; when
+// from source. A magpie-friday from before versions were kept has no last; when
 // it was already in use (existed) its own version's notes are shown, from
 // "", which Between takes as upto's alone.
 func ShowNotes(last, current string, existed bool) (after string, show bool) {

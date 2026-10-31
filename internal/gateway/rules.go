@@ -16,7 +16,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // ruleClock is the time a turn's rules look at (a rule's hours), and its
@@ -32,7 +32,7 @@ type RuleHit struct {
 	More []string `json:"more,omitempty"`
 	When []string `json:"when,omitempty"`
 	Held bool     `json:"held,omitempty"` // decided when the turn began
-	// Waits: the turn began before magpie saw it (or its rule was changed
+	// Waits: the turn began before magpie-friday saw it (or its rule was changed
 	// since), so no rule moves it; the next turn is looked at afresh
 	Waits bool `json:"waits,omitempty"`
 	// Grown: within the turn the conversation grew past what the model it
@@ -113,7 +113,7 @@ type turnRule struct {
 	// answered is when the vendor last answered the conversation: its
 	// cache of it is read from then (ruleAnswered)
 	answered time.Time
-	size     int // how long magpie took the conversation's last request to be (estimate)
+	size     int // how long magpie-friday took the conversation's last request to be (estimate)
 	// hour is what the vendor said it keeps of the conversation for an
 	// hour (Anthropic's 1-hour cache writes), warm past cacheCold (#2302)
 	hour hourCache
@@ -751,7 +751,7 @@ func ruleOver(hit *RuleHit, ms []provider.Member, cs []candidate, pl planned, af
 // is one of that member's keys or accounts — the outermost group's rule
 // that names one, as the turn's pick is the outermost group's — fitted to
 // the levels c's model has. A model whose levels aren't known is asked as
-// it would be without the rule: magpie can't tell it thinks. "" for none.
+// it would be without the rule: magpie-friday can't tell it thinks. "" for none.
 // A rule after it that only fails over (Then) asks nothing of its member.
 func ruleEffort(c candidate, hit *RuleHit, nested []NestedRule) string {
 	hits := []*RuleHit{hit}
@@ -865,5 +865,5 @@ func pausedError(asked string, paused []provider.Paused) string {
 		}
 		bits = append(bits, fmt.Sprintf("%s (%s: %s)", p.Member, by, strings.Join(p.When, " · ")))
 	}
-	return fmt.Sprintf("every model of %s is paused now by its rules: %s; change the rules on Magpie's Routing page, or ask again when they end", asked, strings.Join(bits, ", "))
+	return fmt.Sprintf("every model of %s is paused now by its rules: %s; change the rules on magpie-friday's Routing page, or ask again when they end", asked, strings.Join(bits, ", "))
 }

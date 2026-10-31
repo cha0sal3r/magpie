@@ -1,6 +1,6 @@
 package imagemcp
 
-// An agent in WSL starts this Windows magpie through WSL's interop (#900),
+// An agent in WSL starts this Windows magpie-friday through WSL's interop (#900),
 // with --wsl <distro> (and --mount, --home where the distro's differ): the
 // paths it gives — its roots, a reference image, where to save — are the
 // distro's, opened here through \\wsl.localhost\<distro> (or C:\ for

@@ -172,7 +172,7 @@ func TestStoresLiveAsLongAsTheirLastUser(t *testing.T) {
 
 // A path listed twice in one read is read once. Each listing was a job of
 // its own on one parsing entry, so the second publish closed a nil
-// channel and took magpie down a few seconds after every start (#2932).
+// channel and took magpie-friday down a few seconds after every start (#2932).
 func TestRefreshReadsAPathListedTwiceOnce(t *testing.T) {
 	inZone(t, 0)
 	claude, _ := setup(t)

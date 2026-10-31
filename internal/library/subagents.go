@@ -15,8 +15,8 @@ import (
 	"unicode/utf8"
 
 	"github.com/pelletier/go-toml/v2"
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // Subagents (#2283) are agents of their own the main agent hands a task
@@ -37,10 +37,10 @@ import (
 //
 // Only Claude Code takes a subagent's skills, and only Claude Code and
 // Droid its servers by name; every other agent's subagents use whatever
-// the agent has (the page says so). What magpie wrote is recorded file
-// by file with its hash (Applied.Subagents): a file still as magpie wrote
-// it is magpie's to rewrite or remove, one the user changed is theirs from
-// then on, and a file by that name magpie didn't write is never touched.
+// the agent has (the page says so). What magpie-friday wrote is recorded file
+// by file with its hash (Applied.Subagents): a file still as magpie-friday wrote
+// it is magpie-friday's to rewrite or remove, one the user changed is theirs from
+// then on, and a file by that name magpie-friday didn't write is never touched.
 
 // Subagent is one the agents ticked for it are given.
 type Subagent struct {
@@ -52,7 +52,7 @@ type Subagent struct {
 	Agents      []string `json:"agents"`
 }
 
-// SubagentFile is a file magpie wrote for a subagent, and the hash of what
+// SubagentFile is a file magpie-friday wrote for a subagent, and the hash of what
 // it wrote there.
 type SubagentFile struct {
 	Name string `json:"name"`
@@ -92,7 +92,7 @@ func (sp *subagentSpec) path(name string) string { return filepath.Join(sp.dir, 
 func subagentSpecOf(t *Target) (*subagentSpec, string) {
 	a := t.Agent
 	if a.WSL != "" {
-		return nil, "magpie gives no subagents to an agent in WSL yet"
+		return nil, "magpie-friday gives no subagents to an agent in WSL yet"
 	}
 	md := func(dir string, keys func(s *Subagent, skills, mcp []string) [][2]string) *subagentSpec {
 		return &subagentSpec{dir: dir, ext: ".md", render: func(s *Subagent, skills, mcp []string) []byte {
@@ -151,7 +151,7 @@ func subagentSpecOf(t *Target) (*subagentSpec, string) {
 		sp.ext = ".agent.md"
 		return sp, ""
 	}
-	return nil, "magpie can't give " + a.Name + " subagents: it reads none from a folder of its own"
+	return nil, "magpie-friday can't give " + a.Name + " subagents: it reads none from a folder of its own"
 }
 
 // yamlStr is s as a YAML scalar: JSON's quoted string is one.
@@ -304,14 +304,14 @@ func (l *Library) syncSubagents(t *Target, b *backups, res *Result) {
 			// gone: written again below if it is still wanted
 			continue
 		case err != nil:
-			// can't tell whether it is still magpie's: left, and kept on
+			// can't tell whether it is still magpie-friday's: left, and kept on
 			// record, untouched
 			res.fail(id, "subagent:"+f.Name, err)
 			kept = append(kept, f)
 			done[f.Path] = true
 			continue
 		case subagentHash(cur) != f.Hash:
-			// changed since magpie wrote it: the user's from now on, which
+			// changed since magpie-friday wrote it: the user's from now on, which
 			// the loop below says if the library still wants that name
 			continue
 		}
@@ -347,9 +347,9 @@ func (l *Library) syncSubagents(t *Target, b *backups, res *Result) {
 		cur, err := os.ReadFile(path)
 		switch {
 		case err == nil && bytes.Equal(cur, body):
-			// the same as magpie would write: taken as magpie's
+			// the same as magpie-friday would write: taken as magpie-friday's
 		case err == nil:
-			res.fail(id, "subagent:"+s.Name, fmt.Errorf("%s has a subagent of its own at %s, which magpie leaves as it is", t.Agent.Name, path))
+			res.fail(id, "subagent:"+s.Name, fmt.Errorf("%s has a subagent of its own at %s, which magpie-friday leaves as it is", t.Agent.Name, path))
 			continue
 		case !os.IsNotExist(err):
 			res.fail(id, "subagent:"+s.Name, err)
@@ -368,7 +368,7 @@ func (l *Library) syncSubagents(t *Target, b *backups, res *Result) {
 // ---- changes ---------------------------------------------------------------
 
 // SaveSubagent adds a subagent, or replaces the one called old (renaming
-// it: the files magpie wrote by the old name go).
+// it: the files magpie-friday wrote by the old name go).
 func SaveSubagent(old string, s Subagent) (*Result, error) {
 	s.Name = strings.TrimSpace(s.Name)
 	s.Description = strings.Join(strings.Fields(s.Description), " ")
@@ -413,7 +413,7 @@ func SubagentAgentsSet(name string, agents []string) (*Result, error) {
 }
 
 // RemoveSubagents takes the subagents named out of the library, and the
-// files magpie wrote of them, still as it wrote them, out of every agent.
+// files magpie-friday wrote of them, still as it wrote them, out of every agent.
 func RemoveSubagents(names []string) (*Result, error) {
 	if len(names) == 0 {
 		return nil, errors.New("no subagents to remove")
@@ -443,7 +443,7 @@ type SubagentView struct {
 // SubagentAgentView is an agent the Subagents tab lists.
 type SubagentAgentView struct {
 	ID string `json:"id"`
-	// Dir is where its subagents are; No is why magpie can't give it any
+	// Dir is where its subagents are; No is why magpie-friday can't give it any
 	Dir string `json:"dir,omitempty"`
 	No  string `json:"no,omitempty"`
 	WSL bool   `json:"wsl,omitempty"`

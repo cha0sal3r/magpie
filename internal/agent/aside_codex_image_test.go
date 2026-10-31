@@ -9,12 +9,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // #1865: a ChatGPT account is offered one GPT Image for Aside's image
 // model, as its backend draws the same for any name; Aside's
-// magpie/codex/gpt-image-2.5, picked when magpie offered it, is still
+// magpie-friday/codex/gpt-image-2.5, picked when magpie-friday offered it, is still
 // taken as that one, not turned away as no image model.
 func TestAsideCodexOneGPTImage(t *testing.T) {
 	asideHome(t)
@@ -35,15 +35,15 @@ func TestAsideCodexOneGPTImage(t *testing.T) {
 			codex = append(codex, o.Value)
 		}
 	}
-	if len(codex) != 1 || codex[0] != "magpie/codex/gpt-image-2" {
-		t.Fatalf("codex image options %v, want only magpie/codex/gpt-image-2", codex)
+	if len(codex) != 1 || codex[0] != "magpie-friday/codex/gpt-image-2" {
+		t.Fatalf("codex image options %v, want only magpie-friday/codex/gpt-image-2", codex)
 	}
-	for _, v := range []string{"magpie/codex/gpt-image-2", "magpie/codex/gpt-image-2.5"} {
+	for _, v := range []string{"magpie-friday/codex/gpt-image-2", "magpie-friday/codex/gpt-image-2.5"} {
 		if !asideImageOffered(v) {
 			t.Errorf("%s not offered", v)
 		}
 	}
-	if asideImageOffered("magpie/codex/gpt-6.1-sol") {
+	if asideImageOffered("magpie-friday/codex/gpt-6.1-sol") {
 		t.Error("a chat model offered as an image model")
 	}
 }

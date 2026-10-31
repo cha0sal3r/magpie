@@ -6,13 +6,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // Each call's record names the subscription account that answered it, as
 // the Routing trace names it (#557): the one X-Magpie-Account pinned, on
-// magpie's endpoint and on Codex's own, and never a token of the account's.
+// magpie-friday's endpoint and on Codex's own, and never a token of the account's.
 func TestUsageNamesPinnedAccount(t *testing.T) {
 	twoAccounts(t)
 	s := New()

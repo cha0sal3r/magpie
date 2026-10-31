@@ -498,7 +498,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       page.setDefaultTimeout(5000);
       const uuid = "578bd3d1-834b-43fb-b40c-ed9d17ad7731", errors = [], titleRequests = [];
       const feed = { titleRequests, names: (input) => input.sessions ? { titles: { ["claude:" + uuid]: "路由会话名" } } : {} };
-      const fixture = [req(1, "claude", uuid, 0.01), { ...req(2, "claude", "magpie-set", 0.01), native_session: "unnamed-session" }, req(3, "codex", "chat", 0.01)];
+      const fixture = [req(1, "claude", uuid, 0.01), { ...req(2, "claude", "magpie-friday-set", 0.01), native_session: "unnamed-session" }, req(3, "codex", "chat", 0.01)];
       page.on("pageerror", (e) => errors.push(e.message));
       await page.route("**/*", serve(lang, feed, fixture));
       t.after(async () => { feed.next?.([]); await browser.close(); });
@@ -509,7 +509,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       assert.match(await named.locator(".nm").getAttribute("title"), new RegExp(uuid));
       const asked = titleRequests.find((x) => x.sessions);
       assert.deepEqual([...asked.sessions].sort(), ["claude:" + uuid, "claude:unnamed-session"], "asks by the agent's own id, never Codex's");
-      assert.equal(await page.locator("button.rt-session").filter({ hasText: "Claude Code · magpie-set" }).count(), 1, "an unknown name keeps the id");
+      assert.equal(await page.locator("button.rt-session").filter({ hasText: "Claude Code · magpie-friday-set" }).count(), 1, "an unknown name keeps the id");
       for (let i = 0; i < 50 && !feed.next; i++) await page.waitForTimeout(20);
       assert(feed.next, "long poll started");
       feed.next([...fixture, req(4, "claude", uuid, 0.02)]);

@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// A request magpie sent a provider on its own (the editor's Test, Detect
+// A request magpie-friday sent a provider on its own (the editor's Test, Detect
 // APIs, a model list: neiko and gys619 on Discord) is a row of the Requests
 // tab, with a badge naming what it was for and saying it is counted in no
 // total. In every language, Chromium and WebKit, wide and narrow, light and
@@ -13,7 +13,7 @@ const { chromium, webkit } = require("playwright");
 const assets = path.resolve(__dirname, "../assets");
 const tot = (calls, tokens, cost) => ({ calls, errors: 0, input: tokens * 0.2, output: tokens * 0.1, cache_write: 0, cache_read: tokens * 0.7, cost });
 const ROW = { t: new Date().toISOString(), agent: "claude", agentName: "Claude Code", icon: "claudecode-color", provider: "anthropic", providerName: "Claude", model: "claude-sonnet-5", in: 2, out: 600, cache_write: 0, cache_read: 3900, ms: 2380, status: 200, cost: 0.08, priced: true };
-const PROBE = { ...ROW, agent: "magpie", agentName: "magpie", icon: "", provider: "relay", providerName: "Relay", model: "gpt-9", in: 0, out: 0, cache_read: 0, ms: 120, status: 401, cost: 0, priced: false, source: "probe", kind: "provider_test", endpoint: "/v1/chat/completions" };
+const PROBE = { ...ROW, agent: "magpie-friday", agentName: "magpie-friday", icon: "", provider: "relay", providerName: "Relay", model: "gpt-9", in: 0, out: 0, cache_read: 0, ms: 120, status: 401, cost: 0, priced: false, source: "probe", kind: "provider_test", endpoint: "/v1/chat/completions" };
 
 function page(q, reported) {
   const rows = [ROW, ...(reported ? [PROBE] : [])];
@@ -34,7 +34,7 @@ function server(lang, theme, reported, asked) {
     if (url.pathname === "/api/state") return json({ agents: [], profiles: [], settings: { lang, theme }, fx: { rate: 7.2, at: new Date().toISOString() } });
     if (url.pathname === "/api/usage/requests") { asked.push(url.searchParams); return json(page(url.searchParams, reported)); }
     if (url.pathname === "/api/usage/quotas") return json([]);
-    if (url.pathname === "/api/usage") return json({ calls: 1, errors: 0, input: 1, output: 1, cache_read: 0, cache_write: 0, reasoning: 0, unpriced: 0, cost: 1, bucket: "day", series: [], agents: [], models: [], path: "~/.config/magpie/usage.jsonl" });
+    if (url.pathname === "/api/usage") return json({ calls: 1, errors: 0, input: 1, output: 1, cache_read: 0, cache_write: 0, reasoning: 0, unpriced: 0, cost: 1, bucket: "day", series: [], agents: [], models: [], path: "~/.config/magpie-friday/usage.jsonl" });
     if (url.pathname === "/api/sessions") return json({ sessions: [], dirs: [] });
     if (url.pathname === "/api/sessions/stats") return json({ from: "", to: "", days: [], agents: {} });
     if (url.pathname === "/api/groups") return json({ groups: [], models: [] });
@@ -56,7 +56,7 @@ const L = {
 };
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
-  test(engine + ": magpie's own test is a row of its own", async (t) => {
+  test(engine + ": magpie-friday's own test is a row of its own", async (t) => {
     assert(["chromium", "webkit"].includes(engine), "BROWSER must be chromium or webkit");
     const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: "chromium" }));
     t.after(() => browser.close());
@@ -91,7 +91,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
           // the gateway's row has none, and the probe's own badge says it isn't counted
           assert.equal(await p.locator(".led .src.reported").count(), 0);
           const own = p.locator(".led tr:has(.src.probe) .own-badge");
-          assert.equal(await own.count(), 1, "the row is magpie's own");
+          assert.equal(await own.count(), 1, "the row is magpie-friday's own");
           assert((await own.getAttribute("title")).includes(w.why), "and its badge says it counts nowhere");
           // no coloured stripe down its side, and the page doesn't scroll sideways
           assert(parseFloat(await badge.evaluate((b) => getComputedStyle(b).borderLeftWidth)) <= 1);

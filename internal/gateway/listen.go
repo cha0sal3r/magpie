@@ -9,11 +9,11 @@ import (
 // one, for `make dev`: a restarted backend takes the gateway's port up
 // before the one before it lets go, and that one finishes the streams it
 // has instead of cutting them. Set before ListenAndServe; off, a second
-// magpie can't bind the port, which is how it learns one already serves.
+// magpie-friday can't bind the port, which is how it learns one already serves.
 var Handover bool
 
 // Listen listens on addr, beside another process when Handover is on;
-// or takes the socket the magpie before this one handed over (Inherit)
+// or takes the socket the magpie-friday before this one handed over (Inherit)
 // when it listens there.
 func Listen(addr string) (net.Listener, error) {
 	if ln, ack := takeInherited(addr); ln != nil {

@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // nutstoreDAV answers as #1259's error says 坚果云 (Nutstore) does: a HEAD
@@ -59,7 +59,7 @@ func (d *nutstoreDAV) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			r.URL.Path, len(body), r.URL.Path[strings.LastIndex(r.URL.Path, "/")+1:])
 	case r.Method == http.MethodPut && (r.ContentLength < 0 || len(r.TransferEncoding) > 0):
 		// a body sent without its length (chunked) is turned away here, so
-		// the test also holds that magpie's writes say how long they are
+		// the test also holds that magpie-friday's writes say how long they are
 		w.WriteHeader(http.StatusLengthRequired)
 	case r.Method == http.MethodPut:
 		b, _ := io.ReadAll(r.Body)
@@ -68,7 +68,7 @@ func (d *nutstoreDAV) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if d.dirs[urlDir(r.URL.Path)] { // a write, not the 409 before the folder is made
 			d.puts++
 		}
-		if d.cut && strings.HasPrefix(r.URL.Path, "/dav/magpie/usage/") {
+		if d.cut && strings.HasPrefix(r.URL.Path, "/dav/magpie-friday/usage/") {
 			d.sent = len(b)
 			b = b[:len(b)/2]
 			d.kept = len(b)
@@ -122,7 +122,7 @@ func TestNutstoreHeadSaysNoLength(t *testing.T) {
 		defer f.mu.Unlock()
 		var days int
 		for p, b := range f.files {
-			if strings.HasPrefix(p, "/dav/magpie/usage/") && strings.HasSuffix(p, usageExt) && len(b) > 0 {
+			if strings.HasPrefix(p, "/dav/magpie-friday/usage/") && strings.HasSuffix(p, usageExt) && len(b) > 0 {
 				days++
 			}
 		}
@@ -163,7 +163,7 @@ func TestNutstoreHeadSaysNoLength(t *testing.T) {
 func TestNutstoreBackupWrite(t *testing.T) {
 	f, cfg := nutstoreServer(t, false)
 	f.mu.Lock()
-	f.dirs["/dav/magpie"] = true
+	f.dirs["/dav/magpie-friday"] = true
 	f.mu.Unlock()
 	d, err := newDAV(cfg)
 	if err != nil {
@@ -176,7 +176,7 @@ func TestNutstoreBackupWrite(t *testing.T) {
 	}
 	f.mu.Lock()
 	defer f.mu.Unlock()
-	if f.puts != 1 || v.ETag == "" || len(f.files["/dav/magpie/"+file]) != len(data) {
-		t.Errorf("puts %d, ETag %q, kept %d: want one whole write and its ETag", f.puts, v.ETag, len(f.files["/dav/magpie/"+file]))
+	if f.puts != 1 || v.ETag == "" || len(f.files["/dav/magpie-friday/"+file]) != len(data) {
+		t.Errorf("puts %d, ETag %q, kept %d: want one whole write and its ETag", f.puts, v.ETag, len(f.files["/dav/magpie-friday/"+file]))
 	}
 }

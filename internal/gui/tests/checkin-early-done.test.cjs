@@ -1,10 +1,10 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // #3326 (connoryang331): AutoClaw CN, WorkBuddy, Trae and others answered
 // "already checked in" at 00:00 Beijing, before their own day had turned,
-// and magpie showed "Checked in today" and never asked again. An answer
-// magpie asks again (again: true) is not shown as today's check-in: its
-// card says the vendor said already, magpie asks again later, and keeps
-// Check in now, whose press asks the vendor. A done answer magpie keeps
+// and magpie-friday showed "Checked in today" and never asked again. An answer
+// magpie-friday asks again (again: true) is not shown as today's check-in: its
+// card says the vendor said already, magpie-friday asks again later, and keeps
+// Check in now, whose press asks the vendor. A done answer magpie-friday keeps
 // (no again) is still "Checked in today" with no press. The press says
 // what came of it: claimed now (+credits), already checked in today, not
 // available yet, failed. English,
@@ -53,11 +53,11 @@ function serve(lang, asked) {
 }
 
 const again = {
-  en: "AutoClaw CN says already checked in; its day may not have turned yet, so magpie asks again later",
-  zh: "AutoClaw CN 回复已签到，但它的签到日可能还没翻页，magpie 稍后会再问",
-  "zh-TW": "AutoClaw CN 回覆已簽到，但它的簽到日可能還沒換日，magpie 稍後會再問",
-  ja: "AutoClaw CN はチェックイン済みと答えましたが、まだ日付が切り替わっていない可能性があるため、magpie は後でもう一度確認します",
-  de: "AutoClaw CN meldet bereits eingecheckt; sein Tag hat vielleicht noch nicht gewechselt, daher fragt magpie später erneut",
+  en: "AutoClaw CN says already checked in; its day may not have turned yet, so magpie-friday asks again later",
+  zh: "AutoClaw CN 回复已签到，但它的签到日可能还没翻页，magpie-friday 稍后会再问",
+  "zh-TW": "AutoClaw CN 回覆已簽到，但它的簽到日可能還沒換日，magpie-friday 稍後會再問",
+  ja: "AutoClaw CN はチェックイン済みと答えましたが、まだ日付が切り替わっていない可能性があるため、magpie-friday は後でもう一度確認します",
+  de: "AutoClaw CN meldet bereits eingecheckt; sein Tag hat vielleicht noch nicht gewechselt, daher fragt magpie-friday später erneut",
 };
 const said = {
   en: { claimed: "Claimed: 1 (+200 credits)", already2: "Already checked in today: 2", notYet3: "Not available yet: 3", mixed: "Claimed: 2 (+150 credits) · Already checked in today: 1 · Check-in failed for 1 account(s)" },
@@ -93,7 +93,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         assert.equal(await of("ann").locator(".ci-now").count(), 0, "a kept done is settled, no press");
 
         const now = of("hu").locator(".ci-now");
-        assert.equal(await now.count(), 1, "an answer magpie asks again keeps Check in now");
+        assert.equal(await now.count(), 1, "an answer magpie-friday asks again keeps Check in now");
         await reach(page, now);
         await now.click();
         await page.waitForFunction((want) => document.querySelector("#status")?.textContent === want, said[lang].claimed);

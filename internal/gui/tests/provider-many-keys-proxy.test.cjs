@@ -1,6 +1,6 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // A provider with hundreds of keys (@NetRozee on X: a thousand keys on a
-// custom endpoint froze magpie): its editor's per-key proxy lines fold as
+// custom endpoint froze magpie-friday): its editor's per-key proxy lines fold as
 // its Accounts list does. Folded, the first five and the keys with a proxy
 // of their own, and All 300 keys; opened, a filter and a page of 50 lines
 // and how many more. A key picked in the filter keeps its pick folded

@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 func TestGatewayKeysBackupRoundTrip(t *testing.T) {
@@ -114,7 +114,7 @@ func TestOlderBackupRecoversLegacyGatewayCredential(t *testing.T) {
 	if _, err := Restore(b, Parts{Settings: true}); err != nil {
 		t.Fatal(err)
 	}
-	if who, ok := access.Authenticate(b.Settings.LANKey); !ok || who.KeyName != "Magpie" {
+	if who, ok := access.Authenticate(b.Settings.LANKey); !ok || who.KeyName != "magpie-friday" {
 		t.Fatal("old backup's migration marker lost its credential", who, ok)
 	}
 }
@@ -169,7 +169,7 @@ func TestGatewayKeyRestoreFailureKeepsSettingsAndKeys(t *testing.T) {
 				t.Fatal(err)
 			}
 			incoming := cur
-			incoming.Theme, incoming.LANKeyID, incoming.LANKey = "dark", "restored", "sk-magpie-restored"
+			incoming.Theme, incoming.LANKeyID, incoming.LANKey = "dark", "restored", "sk-magpie-friday-restored"
 			keys := []access.Key{{ID: incoming.LANKeyID, Name: "Restored", Secret: incoming.LANKey, LAN: true}}
 			if failure == "invalid-settings" {
 				incoming.Theme = "invalid-theme"

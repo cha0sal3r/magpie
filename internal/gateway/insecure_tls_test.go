@@ -9,10 +9,10 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// lanVendor is a server speaking each API magpie asks, behind a
+// lanVendor is a server speaking each API magpie-friday asks, behind a
 // certificate nothing trusts, as a vLLM or Ollama on the LAN with a
 // self-signed cert is (#2383); asked are the paths it was asked.
 func lanVendor(t *testing.T) (*httptest.Server, func() []string) {

@@ -6,14 +6,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // A tunnel or proxy on this computer (cloudflared, ngrok, Tailscale serve,
 // frp, Caddy) reaches the gateway on loopback for clients anywhere (#1022).
 // What it forwards carries a forwarding header, and is answered as from
-// another machine: refused while magpie isn't shared, and with sharing on
+// another machine: refused while magpie-friday isn't shared, and with sharing on
 // only with an enabled gateway key — on every route, the model calls, the
 // quotas, the MCP sign-ins. An agent on loopback without those headers is
 // let in as before, with any token.
@@ -46,24 +46,24 @@ func TestProxiedLoopbackNeedsTheKey(t *testing.T) {
 		"Tailscale serve": {"Tailscale-User-Login", "someone@example.com"},
 	}
 
-	if c, _ := call("/v1/messages", "Authorization", "Bearer magpie"); c != 200 || reached != "|Bearer magpie" {
+	if c, _ := call("/v1/messages", "Authorization", "Bearer magpie-friday"); c != 200 || reached != "|Bearer magpie-friday" {
 		t.Fatal("an agent on loopback:", c, reached)
 	}
 	for name, hdr := range tunnels {
-		c, body := call("/v1/messages", append([]string{"Authorization", "Bearer magpie"}, hdr...)...)
+		c, body := call("/v1/messages", append([]string{"Authorization", "Bearer magpie-friday"}, hdr...)...)
 		if c != http.StatusForbidden || reached != "" || !strings.Contains(body, "proxy or tunnel") || !strings.Contains(body, "Share on local network") {
-			t.Fatalf("%s, magpie not shared: %d %q reached=%q", name, c, body, reached)
+			t.Fatalf("%s, magpie-friday not shared: %d %q reached=%q", name, c, body, reached)
 		}
 	}
 
-	keys, secrets := newCaller(t, "Tunnel client") // shares magpie
+	keys, secrets := newCaller(t, "Tunnel client") // shares magpie-friday
 	for name, hdr := range tunnels {
-		for _, bad := range [][]string{nil, {"Authorization", "Bearer magpie"}, {"x-api-key", "sk-magpie-wrong"}} {
+		for _, bad := range [][]string{nil, {"Authorization", "Bearer magpie-friday"}, {"x-api-key", "sk-magpie-friday-wrong"}} {
 			if c, _ := call("/v1/messages", append(append([]string{}, bad...), hdr...)...); c != http.StatusUnauthorized || reached != "" {
 				t.Fatalf("%s with %v: %d reached=%q", name, bad, c, reached)
 			}
 		}
-		if c, _ := call("/v1/messages", append([]string{"Authorization", "Bearer " + secrets[0]}, hdr...)...); c != 200 || reached != keys[0].ID+"|Bearer magpie" {
+		if c, _ := call("/v1/messages", append([]string{"Authorization", "Bearer " + secrets[0]}, hdr...)...); c != 200 || reached != keys[0].ID+"|Bearer magpie-friday" {
 			t.Fatalf("%s with the key: %d reached=%q", name, c, reached)
 		}
 	}
@@ -80,7 +80,7 @@ func TestProxiedLoopbackNeedsTheKey(t *testing.T) {
 	s := settings.Load()
 	s.LAN = false
 	settings.Save(s)
-	if c, _ := call("/v1/messages", "Authorization", "Bearer magpie", "X-Forwarded-For", "10.0.0.2"); c != 200 {
+	if c, _ := call("/v1/messages", "Authorization", "Bearer magpie-friday", "X-Forwarded-For", "10.0.0.2"); c != 200 {
 		t.Fatal("MAGPIE_TRUST_PROXY:", c)
 	}
 	t.Setenv("MAGPIE_TRUST_PROXY", "")
@@ -92,7 +92,7 @@ func TestProxiedLoopbackNeedsTheKey(t *testing.T) {
 		t.Fatal("MAGPIE_ADDR on loopback, through a tunnel:", c)
 	}
 	t.Setenv("MAGPIE_ADDR", "0.0.0.0:4555")
-	if c, _ := call("/v1/messages", "Authorization", "Bearer magpie", "Cf-Connecting-IP", "203.0.113.9"); c != http.StatusUnauthorized {
+	if c, _ := call("/v1/messages", "Authorization", "Bearer magpie-friday", "Cf-Connecting-IP", "203.0.113.9"); c != http.StatusUnauthorized {
 		t.Fatal("MAGPIE_ADDR on the network, through a tunnel, no key:", c)
 	}
 }
@@ -114,11 +114,11 @@ func TestProxiedLoopbackRoutes(t *testing.T) {
 		h.ServeHTTP(w, r)
 		return w.Code
 	}
-	cf := []string{"Cf-Connecting-IP", "203.0.113.9", "Host", "magpie.example.com"}
-	if c := call("GET", "/v1/magpie/quotas"); c != 200 {
+	cf := []string{"Cf-Connecting-IP", "203.0.113.9", "Host", "magpie-friday.example.com"}
+	if c := call("GET", "/v1/magpie-friday/quotas"); c != 200 {
 		t.Fatal("quotas on loopback:", c)
 	}
-	for _, p := range []string{"/v1/magpie/quotas", "/v1/magpie/quotas/history", "/v1/models", "/v1/magpie/omarchy"} {
+	for _, p := range []string{"/v1/magpie-friday/quotas", "/v1/magpie-friday/quotas/history", "/v1/models", "/v1/magpie-friday/omarchy"} {
 		if c := call("GET", p, cf...); c != http.StatusForbidden {
 			t.Fatal(p, "through a tunnel, not shared:", c)
 		}
@@ -127,13 +127,13 @@ func TestProxiedLoopbackRoutes(t *testing.T) {
 		t.Fatal("MCP through a tunnel, not shared:", c)
 	}
 	_, secrets := newCaller(t, "Tunnel client")
-	if c := call("GET", "/v1/magpie/quotas", cf...); c != http.StatusUnauthorized {
+	if c := call("GET", "/v1/magpie-friday/quotas", cf...); c != http.StatusUnauthorized {
 		t.Fatal("quotas through a tunnel without the key:", c)
 	}
-	if c := call("GET", "/v1/magpie/quotas", append([]string{"x-api-key", secrets[0]}, cf...)...); c != 200 {
+	if c := call("GET", "/v1/magpie-friday/quotas", append([]string{"x-api-key", secrets[0]}, cf...)...); c != 200 {
 		t.Fatal("quotas through a tunnel with the key:", c)
 	}
-	if c := call("GET", "/v1/magpie/omarchy", append([]string{"x-api-key", secrets[0]}, cf...)...); c != http.StatusForbidden {
+	if c := call("GET", "/v1/magpie-friday/omarchy", append([]string{"x-api-key", secrets[0]}, cf...)...); c != http.StatusForbidden {
 		t.Fatal("the Omarchy theme is this machine's only:", c)
 	}
 	if c := call("POST", "/mcp/docs", cf...); c != http.StatusUnauthorized {
@@ -165,14 +165,14 @@ func TestSharedKeepsPinnedAddr(t *testing.T) {
 	}
 	serve := []string{"Tailscale-User-Login", "someone@example.com", "X-Forwarded-For", "100.64.0.7"}
 
-	_, secrets := newCaller(t, "Tailnet laptop") // shares magpie
+	_, secrets := newCaller(t, "Tailnet laptop") // shares magpie-friday
 	if a := listenAddr(); a != "127.0.0.1:4555" {
 		t.Fatal("shared, MAGPIE_ADDR on loopback, listens on", a)
 	}
 	if u := LANURLs(); len(u) != 0 {
 		t.Fatal("shared on loopback offers", u)
 	}
-	for _, bad := range [][]string{nil, {"Authorization", "Bearer magpie"}, {"x-api-key", "sk-magpie-wrong"}} {
+	for _, bad := range [][]string{nil, {"Authorization", "Bearer magpie-friday"}, {"x-api-key", "sk-magpie-friday-wrong"}} {
 		if c := call(append(append([]string{}, bad...), serve...)...); c != http.StatusUnauthorized || reached {
 			t.Fatalf("through Serve with %v: %d reached=%v", bad, c, reached)
 		}

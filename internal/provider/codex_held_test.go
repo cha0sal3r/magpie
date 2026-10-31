@@ -11,13 +11,13 @@ import (
 	"time"
 )
 
-// The account Codex is signed in to is out (CodexUsedUp, which makes magpie
+// The account Codex is signed in to is out (CodexUsedUp, which makes magpie-friday
 // Codex's provider and the Codex app lose its ChatGPT sign-in) only when the
 // Codex app itself holds it: the backend says it isn't allowed and it has no
 // credits to go on with, a workspace one past its overage too. A window at
 // 100% alone isn't: a Pro account with credits read 100% on its week and
 // "allowed": false, and the app kept sending, the backend answering 200,
-// while magpie had taken Codex out of ChatGPT ("Sign in to ChatGPT to start
+// while magpie-friday had taken Codex out of ChatGPT ("Sign in to ChatGPT to start
 // a durable thread"). The two fixtures are real /wham/usage replies, ids
 // replaced.
 func TestCodexUsedUpIsWhatTheAppHolds(t *testing.T) {
@@ -98,7 +98,7 @@ func TestCodexUsedUpIsWhatTheAppHolds(t *testing.T) {
 		{"Enterprise view-only without credits, within its overage", within("enterprise_cbp_view_only", as), false},
 		{"Pro without credits, its overage open", within("pro", as), true},
 		// the app's reserve experiment holds these on no credits, overage
-		// or not, and magpie can't see whether it is on
+		// or not, and magpie-friday can't see whether it is on
 		{"Team without credits, within its overage", within("team", as), true},
 		{"Business at its spend cap", within("business", func(m map[string]any) {
 			m["spend_control"].(map[string]any)["reached"] = true
@@ -138,7 +138,7 @@ func TestCodexUsedUpIsWhatTheAppHolds(t *testing.T) {
 
 // A held reading kept for when /wham/usage fails stops saying held once
 // the window that held it has started again, as its usage does: else a
-// 503 after the reset kept Codex on magpie, out of ChatGPT, with room.
+// 503 after the reset kept Codex on magpie-friday, out of ChatGPT, with room.
 func TestCodexHeldKeptOnlyTillTheReset(t *testing.T) {
 	body := heldUsage(t)
 	body["rate_limit"].(map[string]any)["primary_window"].(map[string]any)["reset_at"] = time.Now().Add(time.Hour).Unix()

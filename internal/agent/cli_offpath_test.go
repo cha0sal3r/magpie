@@ -8,7 +8,7 @@ import (
 
 // 悠悠哥 on Discord (macOS): the Agents page listed "Codex 0.162.1" under
 // Not set up while `which -a codex` found nothing and ~/.codex wasn't
-// there. magpie adds the folders users' tools go in to its own PATH
+// there. magpie-friday adds the folders users' tools go in to its own PATH
 // (proc.UserPath: nvm's newest Node among them), so a codex installed with
 // npm under a Node the terminal no longer uses is found, and runs, though
 // no terminal finds it. It is still listed, but its CLI now says where it
@@ -43,7 +43,7 @@ func TestCLIFoundOffTerminalPath(t *testing.T) {
 	if err := os.Symlink(filepath.Join("..", "lib", "node_modules", "@openai", "codex", "bin", "codex.js"), bin); err != nil {
 		t.Skipf("no symlinks here: %v", err)
 	}
-	// magpie's PATH after UserPath has nvm's folder; the terminal's hasn't
+	// magpie-friday's PATH after UserPath has nvm's folder; the terminal's hasn't
 	t.Setenv("PATH", bindir)
 	terminal := []string{filepath.Join(home, "elsewhere"), "/usr/bin", "/bin"}
 	wasLogin := loginPath
@@ -53,7 +53,7 @@ func TestCLIFoundOffTerminalPath(t *testing.T) {
 	dir := filepath.Join(home, ".codex")
 	codex := &Agent{ID: "codex", Name: "Codex", Bin: "codex", Dir: dir, Path: filepath.Join(dir, "config.toml")}
 	if !codex.Detected() {
-		t.Fatal("codex on magpie's PATH not detected")
+		t.Fatal("codex on magpie-friday's PATH not detected")
 	}
 	c, ok := codex.CLI()
 	if !ok || c.Version != "0.162.1" {

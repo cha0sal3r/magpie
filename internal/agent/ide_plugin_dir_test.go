@@ -93,7 +93,7 @@ func TestQoderSettingsFromAnIDEPluginIsNotTheCLI(t *testing.T) {
 // (Qoder-win-x64-user.exe, Qoder-CN-win-x64-user.exe) and no qodercli
 // (#2138). The app runs Qoder's CLI as its agent with ~/.qoder (~/.qoder-cn),
 // writes .qoder-app-status.json there, and its settings.json may hold only
-// the enabledPlugins of its bundled plugin: Qoder is there, and magpie's
+// the enabledPlugins of its bundled plugin: Qoder is there, and magpie-friday's
 // provider reaches it. The JetBrains plugin's folder (#1495) has no status
 // file and still isn't Qoder.
 func TestQoderAppIsQoder(t *testing.T) {

@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // library is a vendor with an embeddings model and a reranker; what each
@@ -92,7 +92,7 @@ func TestEmbeddingsGoToTheModelsProvider(t *testing.T) {
 	if len(sent) != 1 || !strings.Contains(sent[0], `"model":"embed-1"`) || !strings.Contains(sent[0], `"input":["hello","world"]`) || !strings.Contains(sent[0], `"dimensions":2`) || !strings.Contains(sent[0], `"encoding_format":"float"`) {
 		t.Fatalf("vendor was sent %v", sent)
 	}
-	// the bare /embeddings an SDK given magpie's root as its base posts to
+	// the bare /embeddings an SDK given magpie-friday's root as its base posts to
 	if code, raw := postRetrieval(t, s, "/embeddings", `{"model":"embed-1","input":"hi"}`); code != 200 {
 		t.Fatalf("bare path: %d %s", code, raw)
 	}
@@ -163,18 +163,18 @@ func TestPresetPlanEmbeddingResolvesOutsideChatModels(t *testing.T) {
 
 func TestRerankGoesToTheModelsProvider(t *testing.T) {
 	s, l := shelved(t)
-	code, raw := postRetrieval(t, s, "/v1/rerank", `{"model":"lib/rerank-1","query":"magpie","documents":["a crow","a magpie"],"top_n":2,"return_documents":true}`)
+	code, raw := postRetrieval(t, s, "/v1/rerank", `{"model":"lib/rerank-1","query":"magpie-friday","documents":["a crow","a magpie-friday"],"top_n":2,"return_documents":true}`)
 	if code != 200 || !strings.Contains(raw, `"relevance_score":0.9`) {
 		t.Fatalf("%d %s", code, raw)
 	}
 	sent := l.got("/v1/rerank")
-	if len(sent) != 1 || !strings.Contains(sent[0], `"model":"rerank-1"`) || !strings.Contains(sent[0], `"query":"magpie"`) || !strings.Contains(sent[0], `"top_n":2`) {
+	if len(sent) != 1 || !strings.Contains(sent[0], `"model":"rerank-1"`) || !strings.Contains(sent[0], `"query":"magpie-friday"`) || !strings.Contains(sent[0], `"top_n":2`) {
 		t.Fatalf("vendor was sent %v", sent)
 	}
 }
 
 // What the vendor refuses comes back with its code and its words; a model
-// magpie doesn't know is a 404 before any vendor is asked.
+// magpie-friday doesn't know is a 404 before any vendor is asked.
 func TestRetrievalFailures(t *testing.T) {
 	s, l := shelved(t)
 	if code, raw := postRetrieval(t, s, "/v1/embeddings", `{"model":"lib/chat-model","input":"hi"}`); code != 400 || !strings.Contains(raw, "chat-model is not an embedding model") {

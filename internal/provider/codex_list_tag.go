@@ -5,16 +5,16 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/filememo"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/filememo"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // Codex's list's tag is asked for on every GET of its models and every
 // backend reply that carries X-Models-Etag (gateway.modelsEtag), and
 // each time it built the whole catalog: 3.5 MB a call while a request
 // held the catalog, 22 MB without, with 8 providers of 40 models. A live
-// heap profile of a magpie at rest had 2.1 GB of it in 67 minutes, the
+// heap profile of a magpie-friday at rest had 2.1 GB of it in 67 minutes, the
 // Codex app asking for its models. It is kept now while nothing it is
 // built from changed.
 
@@ -29,9 +29,9 @@ var codexListTagFor = time.Minute
 const codexListSettled = 2 * time.Second
 
 // codexListStamp is what the tag is built from, read without building it:
-// the writes this magpie made or was told of (Changed, a plugin's change,
+// the writes this magpie-friday made or was told of (Changed, a plugin's change,
 // catalog.Touched or Reset, filememo.Forget), the environment, and the
-// files another process writes — magpie's providers, settings and
+// files another process writes — magpie-friday's providers, settings and
 // models.dev catalog, and Codex's config (the effort new sessions start
 // at), sign-in and model cache.
 type codexListStamp struct {

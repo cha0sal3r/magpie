@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // A request turned away by a key's or account's queue answers 429 (that part
@@ -81,7 +81,7 @@ func ledger429s() int {
 }
 
 // The contrast that makes this a defect rather than a design choice: a refusal
-// turned away the same way, for a model magpie does not know, does reach the
+// turned away the same way, for a model magpie-friday does not know, does reach the
 // ledger, because it goes through turnedAway().
 func TestUnknownModelRefusalIsInTheUsageLedger(t *testing.T) {
 	fresh(t)

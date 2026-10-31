@@ -7,14 +7,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // piDistroHome is a distro's / in a temp dir with a user whose ~/.pi holds
-// settings (none when ""); magpie's own HOME is another temp dir, whose
+// settings (none when ""); magpie-friday's own HOME is another temp dir, whose
 // ~/.pi nothing may touch.
 func piDistroHome(t *testing.T, settings string) (root, home string) {
 	t.Helper()
@@ -92,7 +92,7 @@ func TestWSLPiDiscovered(t *testing.T) {
 	}
 }
 
-// Picking one of magpie's models writes Pi's settings.json and models.json
+// Picking one of magpie-friday's models writes Pi's settings.json and models.json
 // in the distro's home, the provider block the same as this machine's Pi
 // gets (thinkingLevelMap and all) but naming the gateway as the distro
 // reaches it: Windows' address under NAT, 127.0.0.1 when mirrored. This
@@ -115,7 +115,7 @@ func TestWSLPiPick(t *testing.T) {
 		d := distro{Name: "Ubuntu", Root: root, Home: "/home/me", Has: map[string]bool{"dir:.pi": true},
 			Gateway: "172.20.0.1", Mirrored: mirrored, Running: true}
 		a := wslPi(d)
-		if err := a.Field("model").Set("magpie/relay/glm-4.6"); err != nil {
+		if err := a.Field("model").Set("magpie-friday/relay/glm-4.6"); err != nil {
 			t.Fatal(err)
 		}
 		if err := a.Field("effort").Set("high"); err != nil {
@@ -123,7 +123,7 @@ func TestWSLPiPick(t *testing.T) {
 		}
 		dir := filepath.Join(home, ".pi", "agent")
 		settings, models := filepath.Join(dir, "settings.json"), filepath.Join(dir, "models.json")
-		if p, _ := edit.GetJSON(settings, "defaultProvider"); p != "magpie" {
+		if p, _ := edit.GetJSON(settings, "defaultProvider"); p != "magpie-friday" {
 			t.Fatalf("settings:\n%s", readFile(settings))
 		}
 		if m, _ := edit.GetJSON(settings, "defaultModel"); m != "relay/glm-4.6" {
@@ -139,7 +139,7 @@ func TestWSLPiPick(t *testing.T) {
 		if err := json.Unmarshal([]byte(readFile(models)), &file); err != nil {
 			t.Fatal(err)
 		}
-		got := file.Providers["magpie"]
+		got := file.Providers["magpie-friday"]
 		if got["baseUrl"] != gw+"/v1" || got["apiKey"] != gateway.Token {
 			t.Fatalf("mirrored %v: %v", mirrored, got)
 		}
@@ -170,7 +170,7 @@ func TestWSLPiPick(t *testing.T) {
 }
 
 // A stopped distro's Pi is never asked anything nor opened: it is listed
-// as magpie last saw it, its options come from magpie alone, and a pick
+// as magpie-friday last saw it, its options come from magpie-friday alone, and a pick
 // starts the distro, then writes its files.
 func TestWSLPiStopped(t *testing.T) {
 	root, home := piDistroHome(t, `{"defaultProvider": "xai", "defaultModel": "on-disk"}`)
@@ -212,7 +212,7 @@ func TestWSLPiStopped(t *testing.T) {
 		t.Fatal("a stopped distro's files were touched")
 	}
 
-	if err := a.Field("model").Set("magpie/relay/glm-4.6"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	if strings.Join(*asked, ",") != "Stopped" {
@@ -224,7 +224,7 @@ func TestWSLPiStopped(t *testing.T) {
 	if !strings.Contains(readFile(filepath.Join(home, ".pi", "agent", "models.json")), `"baseUrl"`) {
 		t.Fatal("no models.json")
 	}
-	if v := a.Field("model").Get(); v != "magpie/relay/glm-4.6" {
+	if v := a.Field("model").Get(); v != "magpie-friday/relay/glm-4.6" {
 		t.Fatal(v)
 	}
 }

@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // stdoutOf is what f prints.
@@ -29,9 +29,9 @@ func stdoutOf(t *testing.T, f func() error) (string, error) {
 	return string(<-done), err
 }
 
-// magpie quota history tells each account's windows over time as magpie
+// magpie-friday quota history tells each account's windows over time as magpie-friday
 // kept them, narrowed to a provider or an account and to --days; --json is
-// what GET /v1/magpie/quotas/history answers (#802).
+// what GET /v1/magpie-friday/quotas/history answers (#802).
 func TestQuotaHistoryCmd(t *testing.T) {
 	groupsHome(t)
 	now := time.Now().UTC().Truncate(time.Second)

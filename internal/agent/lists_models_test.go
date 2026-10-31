@@ -7,7 +7,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // listsSandbox is a HOME of its own with one provider of two models.
@@ -25,7 +25,7 @@ func listsSandbox(t *testing.T) (home, cfg string) {
 	return home, cfg
 }
 
-// An agent whose switch puts magpie's models in a picker of its own, with
+// An agent whose switch puts magpie-friday's models in a picker of its own, with
 // no field of its picking among them, lists only the ones picked for it on
 // the Agents page, as every other agent does: ZCode was given every model,
 // with no way to hide one (#1508, NovaTrailX). ListsModels is what gives
@@ -59,7 +59,7 @@ func TestEveryPickerOfMagpiesModelsCanBeNarrowed(t *testing.T) {
 		}
 	}
 	if len(bare) > 0 {
-		t.Errorf("magpie's models are put in these agents' pickers with no way to pick which: %v", bare)
+		t.Errorf("magpie-friday's models are put in these agents' pickers with no way to pick which: %v", bare)
 	}
 	for _, id := range []string{"zcode", "pencil", "openpencil", "t3code", "workbuddy", "workbuddy-ai", copilotJBID, CursorLocalID} {
 		if !slices.Contains(menus, id) {
@@ -71,16 +71,16 @@ func TestEveryPickerOfMagpiesModelsCanBeNarrowed(t *testing.T) {
 // The models taken out of ZCode's list on the Agents page are out of both
 // files it reads, config.json and provider_config.json, and come back when
 // they are put back; what the user set by hand stays: their own providers,
-// rules and keys, and their manual rule for a model of magpie's (#1508).
+// rules and keys, and their manual rule for a model of magpie-friday's (#1508).
 func TestZCodeListsOnlyThePicked(t *testing.T) {
 	home, _ := listsSandbox(t)
 	dir := filepath.Join(home, ".zcode", "v2")
 	path, rules := filepath.Join(dir, "config.json"), filepath.Join(dir, "provider_config.json")
 	os.MkdirAll(dir, 0o755)
 	os.WriteFile(path, []byte(`{"provider":{"builtin:bigmodel":{"name":"Bigmodel","kind":"anthropic","enabled":true},"mine":{"name":"Mine","kind":"openai","models":{"m1":{"name":"M1"}}}},"theme":"dark"}`), 0o644)
-	os.WriteFile(rules, []byte(`{"schemaVersion":1,"config":{"providerConfigRules":{"providerRules":[{"providerId":"mine","enabled":true,"config":{"personalModelIds":["m1"]}}]},"modelConfigRules":{"providerModelRules":[{"providerId":"mine","modelId":"m1","config":{"properties":{"contextWindow":1000}}}],"manualProviderModelRules":[{"providerId":"magpie","modelId":"deepseek/pro","config":{"enabled":true,"properties":{"contextWindow":4242}}}]}},"ui":{"lang":"zh"}}`), 0o600)
+	os.WriteFile(rules, []byte(`{"schemaVersion":1,"config":{"providerConfigRules":{"providerRules":[{"providerId":"mine","enabled":true,"config":{"personalModelIds":["m1"]}}]},"modelConfigRules":{"providerModelRules":[{"providerId":"mine","modelId":"m1","config":{"properties":{"contextWindow":1000}}}],"manualProviderModelRules":[{"providerId":"magpie-friday","modelId":"deepseek/pro","config":{"enabled":true,"properties":{"contextWindow":4242}}}]}},"ui":{"lang":"zh"}}`), 0o600)
 	a := zcode(home)
-	if err := a.Field("provider").Set("magpie"); err != nil {
+	if err := a.Field("provider").Set("magpie-friday"); err != nil {
 		t.Fatal(err)
 	}
 	type configDoc struct {
@@ -125,7 +125,7 @@ func TestZCodeListsOnlyThePicked(t *testing.T) {
 		return d
 	}
 	listed := func() (config, personal, ruled []string) {
-		for id := range readConfig().Provider["magpie"]["models"].(map[string]any) {
+		for id := range readConfig().Provider["magpie-friday"]["models"].(map[string]any) {
 			config = append(config, id)
 		}
 		d := readRules()

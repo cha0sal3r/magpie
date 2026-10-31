@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // cursorLocalEnvD is the environment.d file systemd's user session reads
@@ -20,7 +20,7 @@ func cursorLocalEnvD() string {
 		home, _ := os.UserHomeDir()
 		cfg = filepath.Join(home, ".config")
 	}
-	return filepath.Join(cfg, "environment.d", "magpie-cursor-local.conf")
+	return filepath.Join(cfg, "environment.d", "magpie-friday-cursor-local.conf")
 }
 
 // setUserEnv writes the variables to environment.d, for the sessions from

@@ -3,11 +3,11 @@ package agent
 // omp (oh-my-pi, a fork of Pi) keeps its settings in ~/.omp/agent/config.yml
 // (or where ompDir says its variables move it),
 // the model of each role under modelRoles as "provider/model", and providers
-// of the user's own in models.yml beside it. magpie adds itself there as the
-// provider "magpie", keyless (auth: none) on loopback, with the catalog as its models; a
-// model through magpie is "magpie/<provider>/<model>", which omp matches
+// of the user's own in models.yml beside it. magpie-friday adds itself there as the
+// provider "magpie-friday", keyless (auth: none) on loopback, with the catalog as its models; a
+// model through magpie-friday is "magpie-friday/<provider>/<model>", which omp matches
 // whole against provider/id. The other roles, the fallback chains and the
-// like may name them as well (ompRefKeys); magpie stays while any does.
+// like may name them as well (ompRefKeys); magpie-friday stays while any does.
 
 import (
 	"fmt"
@@ -18,12 +18,12 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/dirent"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/dirent"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 	"gopkg.in/yaml.v3"
 )
 
@@ -35,9 +35,9 @@ var ompEfforts = []string{"minimal", "low", "medium", "high", "xhigh", "max"}
 // models under each key; the key is a role's name, the only kind omp 16
 // takes (agent-session.ts), or from omp 18 a model selector as well
 // (retry-fallback-chains.ts) — a role's name read with them is no model of
-// magpie's and is passed over), the models it cycles through (enabledModels,
+// magpie-friday's and is passed over), the models it cycles through (enabledModels,
 // also scoped to paths) and the models of task agents. An entry may end in a
-// thinking level ("magpie/deepseek/pro:max").
+// thinking level ("magpie-friday/deepseek/pro:max").
 var ompRefKeys = []string{"modelRoles", "retry.fallbackChains", "enabledModels", "task.agentModelOverrides"}
 
 // ompRefs calls fn on each model of a value under ompRefKeys, the spaces
@@ -77,7 +77,7 @@ func ompSplit(v string) (model, level string, one bool) {
 	return model, level, true
 }
 
-// ompOnMagpie: a role's value is one of magpie's models, at a level or not.
+// ompOnMagpie: a role's value is one of magpie-friday's models, at a level or not.
 func ompOnMagpie(v string) bool {
 	_, _, one := ompSplit(v)
 	return one && usesMagpie(v)
@@ -196,10 +196,10 @@ func ompIn(at place) *Agent {
 	return ompAt(at, filepath.Join(at.home, ".omp", "agent"), func() ompProviderEntry { return ompProviderAt(at.gw(), at.version) })
 }
 
-// ompAt is omp with its agent folder at dir, magpie's entry in its
+// ompAt is omp with its agent folder at dir, magpie-friday's entry in its
 // models.yml being entry's.
 func ompAt(at place, dir string, entry func() ompProviderEntry) *Agent {
-	// magpie's entry laid over the one in the models file at path (ompKept)
+	// magpie-friday's entry laid over the one in the models file at path (ompKept)
 	ompProvider := func(path string) any { return ompKept(path, entry()) }
 	// omp reads the .yml and falls back to the .yaml
 	pick := func(name string) string {
@@ -225,7 +225,7 @@ func ompAt(at place, dir string, entry func() ompProviderEntry) *Agent {
 		}
 	}
 	// onMagpie: a role, a fallback chain, … (ompRefKeys) still names one of
-	// magpie's models
+	// magpie-friday's models
 	onMagpie := func() (used bool, err error) {
 		err = edit.EditYAMLStrings(path, ompRefKeys, func(v string) string {
 			ompRefs(v, func(m string) string { used = used || usesMagpie(m); return m })
@@ -237,19 +237,19 @@ func ompAt(at place, dir string, entry func() ompProviderEntry) *Agent {
 		models := pick("models")
 		if _, err := os.Stat(models); err != nil {
 			// omp moves an older models.json to models.yml only while there is
-			// no models.yml, so one magpie writes first has to carry it over
+			// no models.yml, so one magpie-friday writes first has to carry it over
 			if err := edit.JSONToYAML(filepath.Join(dir, "models.json"), models); err != nil {
 				return err
 			}
 		}
 		return edit.SetYAML(models, edit.KV{Path: "providers." + magpieID, Value: ompProvider(models)})
 	}
-	// dropMagpie takes magpie's provider out of models.yml once nothing in
-	// the config is on magpie; while something is (a fallback chain, another
-	// role), it writes it afresh instead, so a role set off magpie — applying
+	// dropMagpie takes magpie-friday's provider out of models.yml once nothing in
+	// the config is on magpie-friday; while something is (a fallback chain, another
+	// role), it writes it afresh instead, so a role set off magpie-friday — applying
 	// again what Check found — mends the wiring that is left.
-	// The plain entries of enabledModels on magpie, which magpie adds there
-	// (omp_scope.go), don't count: once nothing else is on magpie they go
+	// The plain entries of enabledModels on magpie-friday, which magpie-friday adds there
+	// (omp_scope.go), don't count: once nothing else is on magpie-friday they go
 	// with its provider (#1769). Those scoped to folders are the user's, and
 	// count.
 	dropMagpie := func() error {
@@ -275,9 +275,9 @@ func ompAt(at place, dir string, entry func() ompProviderEntry) *Agent {
 	}
 	// was are the stash's keys for the roles, one each
 	var was []string
-	// role is the field for one of omp's model roles: one of magpie's brings
-	// magpie's provider into models.yml, and it goes once nothing is on it.
-	// What the user had there before magpie took the role over is stashed,
+	// role is the field for one of omp's model roles: one of magpie-friday's brings
+	// magpie-friday's provider into models.yml, and it goes once nothing is on it.
+	// What the user had there before magpie-friday took the role over is stashed,
 	// and resetting the role puts it back: a list of models as the YAML it
 	// was written in, a flow list flow and a block one block.
 	role := func(key, label, name string, quiet bool) Field {
@@ -384,7 +384,7 @@ func ompAt(at place, dir string, entry func() ompProviderEntry) *Agent {
 		// (commit/model-selection.ts), tiny names sessions and classifies
 		// and takes smol's model, memory takes tiny's, else smol's
 		// (ROLE_CONFIGURED_FALLBACK). omp's other roles (KIND_ROLE_IDS)
-		// are for kinds of model other than the chat models magpie writes
+		// are for kinds of model other than the chat models magpie-friday writes
 		// for omp: image making, web search, speech, dictation, and the
 		// judge its find tool turns on for a TypeSafe jev model
 		role("commit", "commit", "commit", true),
@@ -409,7 +409,7 @@ func ompAt(at place, dir string, entry func() ompProviderEntry) *Agent {
 	// ":level" omp reads off the end of the role's model
 	// (splitThinkingSuffix, resolveModelRoleValue): #1397, the slow role at
 	// high while sessions start at medium. It is the role's value written
-	// again, so it goes through the role's own Set (magpie's provider, the
+	// again, so it goes through the role's own Set (magpie-friday's provider, the
 	// stash). Offered while the role is one model: a role that follows
 	// another, or a list omp falls back through, has no level here. Unset,
 	// the role runs at the session's level
@@ -460,13 +460,13 @@ func ompAt(at place, dir string, entry func() ompProviderEntry) *Agent {
 			if err := syncYAML(models, "providers."+magpieID, func() any { return ompProvider(models) }); err != nil {
 				return err
 			}
-			// an entry on a model magpie no longer gives omp names nothing
+			// an entry on a model magpie-friday no longer gives omp names nothing
 			// (#2055, scope_gone.go)
 			return ompScopeSynced(path, models, gone)
 		},
 		// a provider renamed takes its models' ids in models.yml with it; a
 		// name left on the old one omp would pass over, with a warning. So
-		// does what a role had before magpie (a list may name magpie's
+		// does what a role had before magpie-friday (a list may name magpie-friday's
 		// models), which a reset puts back
 		RenameRefs: func(from, to string) (bool, error) {
 			old, now := magpieID+"/"+from+"/", magpieID+"/"+to+"/"
@@ -513,7 +513,7 @@ func ompAt(at place, dir string, entry func() ompProviderEntry) *Agent {
 			return ""
 		},
 		Check: func() string {
-			// whatever keeps magpie's provider in models.yml has its wiring
+			// whatever keeps magpie-friday's provider in models.yml has its wiring
 			// checked, a fallback chain alone as much as a role
 			if used, _ := onMagpie(); !used {
 				return ""
@@ -523,7 +523,7 @@ func ompAt(at place, dir string, entry func() ompProviderEntry) *Agent {
 				"baseUrl", at.v1()); d != "" {
 				return d
 			}
-			// a default role on magpie that enabledModels leaves out never
+			// a default role on magpie-friday that enabledModels leaves out never
 			// starts; setting it again adds it there (#1769)
 			if def := roleGet("default")(); ompOnMagpie(def) {
 				if m := ompScopeLeavesOut(path, def); m != "" {
@@ -605,13 +605,13 @@ var ompVersion = func() string { return (&Agent{ID: "omp", Bin: "omp"}).Installe
 
 // ompTakesMax says whether omp at version v takes max in models.yml. One
 // whose version isn't known is taken for an older one: a max it refuses
-// costs every model magpie gives it, an xhigh in its place only the top
+// costs every model magpie-friday gives it, an xhigh in its place only the top
 // level of a model that has both.
 func ompTakesMax(v string) bool {
 	return v != "" && !Newer(ompMaxSince, v)
 }
 
-// ompProvider is magpie's entry in models.yml. The thinking efforts are the
+// ompProvider is magpie-friday's entry in models.yml. The thinking efforts are the
 // levels omp offers for the model; on Chat it sends them as
 // reasoning_effort.
 //
@@ -684,13 +684,13 @@ func ompProviderAt(gw, version string) ompProviderEntry {
 	return e
 }
 
-// ompKept is magpie's entry e laid over the one in the models.yml at path.
+// ompKept is magpie-friday's entry e laid over the one in the models.yml at path.
 // omp keeps keys its schema doesn't name and never writes the file itself,
-// so what is there beside magpie's is the user's: modelOverrides (a model's
+// so what is there beside magpie-friday's is the user's: modelOverrides (a model's
 // context or cost), discovery, disableStrictTools, remoteCompaction, a
 // header or compat flag of their own (models-config-schema-bundle.ts
 // ProviderConfigSchema). Each stays; the address, API, auth, key and model
-// list are magpie's, an auth or key it no longer writes gone with it, so a
+// list are magpie-friday's, an auth or key it no longer writes gone with it, so a
 // loopback's auth: none never sits beside the key a WSL omp needs (#2030).
 func ompKept(path string, e ompProviderEntry) any {
 	return yamlKept(path, "providers."+magpieID, e, "baseUrl", "api", "auth", "apiKey", "models")
@@ -703,7 +703,7 @@ func ompKept(path string, e ompProviderEntry) any {
 // either one had. A provider in both stays one group, where it first comes:
 // the picker draws a heading at each change of group. A provider with only
 // discovery has its models listed by omp asking it at run time, out of
-// magpie's sight, so it offers none here.
+// magpie-friday's sight, so it offers none here.
 func ompOwnOptions(modelsFile, cur string) []Option {
 	var f struct {
 		Providers map[string]struct {

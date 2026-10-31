@@ -3,10 +3,10 @@ package gateway
 import "testing"
 
 // A 429 that is a per-minute rate limit rests a minute, not the quarter
-// hour of a used-up plan — however magpie or the vendor words it (#153).
+// hour of a used-up plan — however magpie-friday or the vendor words it (#153).
 func TestRateLimitIsNotQuota(t *testing.T) {
 	for body, want := range map[string]string{
-		// as magpie words an upstream 429 for the agent
+		// as magpie-friday words an upstream 429 for the agent
 		`{"error":{"code":null,"message":"ORF: Rate limit exceeded: free-models-per-min","param":null,"type":"rate_limit_error"}}`:                                    failRate,
 		`{"error":{"message":"Rate limit reached for gpt-4o in organization org-x on tokens per min (TPM): Limit 30000, Used 29000"}}`:                                failRate,
 		`{"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your organization's rate limit of 50,000 input tokens per minute"}}`: failRate,

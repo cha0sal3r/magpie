@@ -4,10 +4,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
 )
 
-// magpie provider login asks a plugin's key by its method's label, with
+// magpie-friday provider login asks a plugin's key by its method's label, with
 // the placeholder the plugin gives as its hint (Lemon on Discord).
 func TestPluginKeyPrompt(t *testing.T) {
 	p := keyPrompt("Lemon", plugin.Method{Type: "api", Label: "Lemon API key (from lemon.example/keys)", Placeholder: "sk-lemon-…"})

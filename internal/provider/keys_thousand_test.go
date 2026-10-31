@@ -10,11 +10,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/agentenv"
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
-// @NetRozee on X: a custom endpoint given a thousand keys froze magpie.
+// @NetRozee on X: a custom endpoint given a thousand keys froze magpie-friday.
 // What a page or a request asks of a provider's keys is counted here, not
 // timed: each is asked once for all of them, never once a key.
 

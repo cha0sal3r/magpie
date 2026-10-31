@@ -6,13 +6,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
-// With magpie wired into Claude Code, `claude auth status` tells of magpie's
+// With magpie-friday wired into Claude Code, `claude auth status` tells of magpie-friday's
 // token: signed in, no email. The account is named from ~/.claude.json as
 // its saved login is, so it is the one Active and not also served beside
-// itself; the env magpie runs in is not handed to the CLI (#177).
+// itself; the env magpie-friday runs in is not handed to the CLI (#177).
 func TestClaudeAccountNamedAsItsLogin(t *testing.T) {
 	shellFakes(t)
 	isolate(t)
@@ -21,7 +21,7 @@ func TestClaudeAccountNamedAsItsLogin(t *testing.T) {
 	t.Setenv("USERPROFILE", home)
 	t.Setenv("CLAUDE_CONFIG_DIR", "")
 	t.Setenv("XDG_CONFIG_HOME", filepath.Join(home, ".config"))
-	t.Setenv("ANTHROPIC_AUTH_TOKEN", "magpie")
+	t.Setenv("ANTHROPIC_AUTH_TOKEN", "magpie-friday")
 	far := time.Now().Add(24 * time.Hour).UnixMilli()
 	oauth := func(tok string) map[string]any {
 		return map[string]any{"claudeAiOauth": map[string]any{"accessToken": tok, "refreshToken": "r-" + tok, "expiresAt": far, "subscriptionType": "max"}}

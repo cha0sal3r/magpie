@@ -31,10 +31,10 @@ import (
 
 	toml "github.com/pelletier/go-toml/v2"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // DevinExecutable finds the devin CLI; a var so tests can fake it.
@@ -342,7 +342,7 @@ func devinKnown(id string) (window, most int) {
 }
 
 // withDevinContexts fills in a saved list's windows and reply caps: Devin's own
-// numbers over what is there, which an older magpie took from models.dev — its
+// numbers over what is there, which an older magpie-friday took from models.dev — its
 // glm-5.2 at 1M where Devin gives 200K, its grok at 500K of reply where Devin
 // gives 100K — and models.dev's for what Devin's list doesn't name, or a
 // variant fetched before it was given its family's (claude-opus-5-5-high-fast
@@ -355,7 +355,7 @@ func withDevinContexts(ms []catalog.Model) []catalog.Model {
 		if m.ImageInput == nil {
 			out[i].ImageInput = images[m.ID]
 		}
-		// Devin's own numbers, over what an older magpie took from models.dev
+		// Devin's own numbers, over what an older magpie-friday took from models.dev
 		window, most := declared[m.ID][0], declared[m.ID][1]
 		if window > 0 {
 			out[i].Context = window
@@ -482,9 +482,9 @@ func devinCached() []DevinFamily {
 }
 
 // askDevinFamilies is the model list as the accounts signed in give it, the
-// one in use first: an account magpie signed in is asked in its own home,
+// one in use first: an account magpie-friday signed in is asked in its own home,
 // not the CLI's, which may be signed out (蓝猫 on Discord: with only a
-// magpie sign-in every request failed, as the family's id went to Devin
+// magpie-friday sign-in every request failed, as the family's id went to Devin
 // unturned into a variant, until `devin auth login`). The CLI's own is
 // asked last when it isn't among them, as it was before there were homes.
 func askDevinFamilies(ctx context.Context) ([]DevinFamily, error) {
@@ -628,9 +628,9 @@ func DevinAuthAt(home string) (key, server string, err error) {
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			if home != "" {
-				return "", "", errors.New("this Devin account's sign-in is gone; add it again in magpie")
+				return "", "", errors.New("this Devin account's sign-in is gone; add it again in magpie-friday")
 			}
-			return "", "", errors.New("Devin isn't signed in; sign in from magpie's Providers page or run `devin auth login`")
+			return "", "", errors.New("Devin isn't signed in; sign in from magpie-friday's Providers page or run `devin auth login`")
 		}
 		return "", "", err
 	}
@@ -703,7 +703,7 @@ func devinVariantIn(families []DevinFamily, model, effort string) string {
 	return model
 }
 
-// DevinSplit is an id Devin's config holds taken apart as magpie offers it:
+// DevinSplit is an id Devin's config holds taken apart as magpie-friday offers it:
 // the model (a family, or a family's fast run) and the effort the id is at.
 // A family's own id is at none — it follows the family's default — and an id
 // no family has at an effort (glm-5-2-1m, one Devin no longer lists) is
@@ -728,7 +728,7 @@ func DevinSplit(families []DevinFamily, id string) (model, effort string) {
 }
 
 // DevinPick is the id to give Devin's config for a model and effort picked as
-// magpie offers them (DevinSplit the other way round): a family's variant at
+// magpie-friday offers them (DevinSplit the other way round): a family's variant at
 // the effort, or the nearest it has; the family's own id with no effort, so
 // that it keeps following the family's default; a fast run's variant at the
 // effort, or at the family's default one. Any other id goes as it is.
@@ -887,7 +887,7 @@ func devinNearest(want string, levels []string) string {
 	return best
 }
 
-// devinModels is Devin's list as magpie offers it: each family one model,
+// devinModels is Devin's list as magpie-friday offers it: each family one model,
 // whose effort is picked as any model's is and turned into the variant at
 // it by the gateway (DevinVariant), rather than 600-odd ids that are
 // mostly one family at an effort each. See devinCollapse.

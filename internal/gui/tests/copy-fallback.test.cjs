@@ -1,9 +1,9 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// A copy magpie couldn't make (#1881, BabyLy233: on KDE Plasma Wayland the
-// app said "copied" and the clipboard stayed empty). magpie now refuses a
+// A copy magpie-friday couldn't make (#1881, BabyLy233: on KDE Plasma Wayland the
+// app said "copied" and the clipboard stayed empty). magpie-friday now refuses a
 // copy it couldn't read back (/api/copy answers 501), and the page tries the
 // clipboard API, then the copy command, and says it failed only when none
-// copied, with the text to copy by hand. A copy magpie made is not copied
+// copied, with the text to copy by hand. A copy magpie-friday made is not copied
 // again. Every language, Chromium and WebKit; no backend, the API is faked.
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
@@ -43,12 +43,12 @@ const W = {
   de: { anyway: "Trotzdem anmelden", copied: "Anmeldelink kopiert", failed: "Kopieren fehlgeschlagen. Hier markieren und selbst kopieren: " + LINK },
 };
 
-// magpie: /api/copy copies; api: the clipboard API copies; command: the
+// magpie-friday: /api/copy copies; api: the clipboard API copies; command: the
 // copy command copies; none: nothing does
 const CASES = [
-  { name: "magpie copies", magpie: true, api: true, command: true, want: "copied", writes: [], commands: [] },
-  { name: "magpie refuses, the clipboard API copies", magpie: false, api: true, command: true, want: "copied", writes: [LINK], commands: [] },
-  { name: "magpie and the clipboard API refuse, the copy command copies", magpie: false, api: false, command: true, want: "copied", writes: [LINK], commands: [LINK] },
+  { name: "magpie-friday copies", magpie: true, api: true, command: true, want: "copied", writes: [], commands: [] },
+  { name: "magpie-friday refuses, the clipboard API copies", magpie: false, api: true, command: true, want: "copied", writes: [LINK], commands: [] },
+  { name: "magpie-friday and the clipboard API refuse, the copy command copies", magpie: false, api: false, command: true, want: "copied", writes: [LINK], commands: [LINK] },
   { name: "nothing copies", magpie: false, api: false, command: false, want: "failed", writes: [LINK], commands: [LINK] },
 ];
 

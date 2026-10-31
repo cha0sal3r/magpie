@@ -9,14 +9,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // pkg is the package these tests add: an npm one, so add installs it
 // through the fake bun.
 const pkg = "@magpie-community/opencode-zed-auth"
 
-// offSandbox gives the test its own magpie folders and a Bun that installs
+// offSandbox gives the test its own magpie-friday folders and a Bun that installs
 // nothing real: $MAGPIE_BUN is this test binary, which stands in for bun as
 // the git plugin's test has it do (fakeBun), so no Bun is downloaded and npm
 // is never asked.

@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // quietUp is a Chat vendor that answers as its key, and keeps what it was
@@ -213,7 +213,7 @@ func TestGroupNonThinkingMemberNoEffort(t *testing.T) {
 	}
 	// E: a quiet member the user fixed at an effort is sent it: that is
 	// the user saying this model does think, over a catalog that may be
-	// wrong about it — which is what #950 was reported about — so magpie's
+	// wrong about it — which is what #950 was reported about — so magpie-friday's
 	// word doesn't override theirs
 	if err := provider.SaveGroup(provider.Group{Name: "Fix", Members: []string{"thinks/levelled", "quiet/plain:high"}, Routing: provider.Ordered}); err != nil {
 		t.Fatal(err)

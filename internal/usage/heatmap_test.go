@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
 )
 
 // The heatmap (#1369) is the last 53 weeks from a Monday, a day each by the
@@ -100,7 +100,7 @@ func TestHeatmapOf(t *testing.T) {
 // A live agent writes its session file all the time. The heatmap is kept
 // while only those files change, for heatFresh, so the Requests tab's
 // refresh doesn't work out a year of calls again each time (#3493); a call
-// through magpie is still counted at once, and a session's call once
+// through magpie-friday is still counted at once, and a session's call once
 // heatFresh is up.
 func TestHeatmapKeptWhileOnlySessionsChange(t *testing.T) {
 	pageHome(t)
@@ -131,7 +131,7 @@ func TestHeatmapKeptWhileOnlySessionsChange(t *testing.T) {
 	}
 	Append(Record{Time: now.Add(-time.Minute), Agent: "claude-code", Provider: "anthropic", Model: "x", Input: 5, Status: 200})
 	if n := calls(); n != 3 {
-		t.Fatalf("a call through magpie isn't counted at once: %d calls", n)
+		t.Fatalf("a call through magpie-friday isn't counted at once: %d calls", n)
 	}
 	writeCodexCall(t, file("c"), "c", "sc", `"vscode"`, "resp-c", "m", "low", now.Add(-time.Hour), 100, 10)
 	old := heatFresh

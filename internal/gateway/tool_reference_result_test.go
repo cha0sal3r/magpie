@@ -9,7 +9,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // openDesignVendor answers as OpenDesign's Anthropic endpoint answered
@@ -74,7 +74,7 @@ func (v *openDesignVendor) sent() []string {
 	return append([]string(nil), v.bodies...)
 }
 
-// #2124's repro.json, as the reporter posted it, with magpie's model.
+// #2124's repro.json, as the reporter posted it, with magpie-friday's model.
 func reporterRefsOnly(model string) string {
 	return `{
   "model": "` + model + `",

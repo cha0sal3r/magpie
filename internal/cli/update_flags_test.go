@@ -4,11 +4,11 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// magpie update takes --proxy and --mirror, as --flag value or
-// --flag=value, before or after check; magpie update mirror keeps one for
+// magpie-friday update takes --proxy and --mirror, as --flag value or
+// --flag=value, before or after check; magpie-friday update mirror keeps one for
 // every update, the app's too, and off clears it.
 func TestUpdateFlags(t *testing.T) {
 	rest, proxy, mirror, err := updateFlags([]string{"update", "--proxy", "socks5://127.0.0.1:1080", "check", "--mirror=https://mirror.example/"})
@@ -25,7 +25,7 @@ func TestUpdateFlags(t *testing.T) {
 		}
 	}
 	if err := updateCmd([]string{"update", "chek"}); err == nil {
-		t.Error("magpie update chek ran an update")
+		t.Error("magpie-friday update chek ran an update")
 	}
 
 	groupsHome(t)

@@ -2,12 +2,12 @@ package agent
 
 // An agent a plugin adds (internal/agentplug) is wired as a built-in one
 // that keeps its model in a file is: its model field picks among the
-// agent's own models and magpie's, and a model through magpie writes the
+// agent's own models and magpie-friday's, and a model through magpie-friday writes the
 // model, as the plugin spells it, and the keys the plugin's connect
 // returns (where the gateway is, its key). What the user had under every
-// key magpie writes is stashed first and put back when magpie steps out,
+// key magpie-friday writes is stashed first and put back when magpie-friday steps out,
 // so a plugin needs no code for that. The plugin says only where things
-// go; magpie does every write, to the one file the plugin names.
+// go; magpie-friday does every write, to the one file the plugin names.
 
 import (
 	"encoding/json"
@@ -19,17 +19,17 @@ import (
 
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/jsonc"
-	"github.com/yetone/magpie/internal/agentplug"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/agentplug"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 func init() {
-	// the agents plugins add come and go, unlike magpie's own; one whose
+	// the agents plugins add come and go, unlike magpie-friday's own; one whose
 	// id is a built-in's is the built-in's, which the gateway asks first
 	usage.PluginAgents = func() []usage.Known {
 		list, _ := agentplug.List()
@@ -41,16 +41,16 @@ func init() {
 	}
 }
 
-// pluggedStash is what magpie keeps of an agent plugin's file while it is
+// pluggedStash is what magpie-friday keeps of an agent plugin's file while it is
 // wired: what was under each key it wrote (absent where there was nothing,
 // as the file spells it), the model it wrote, and the key whose value is
-// the gateway's key, which says the wiring is still magpie's.
+// the gateway's key, which says the wiring is still magpie-friday's.
 type pluggedStash struct {
 	Had   map[string]string `json:"had"`
 	Ref   string            `json:"ref"`
 	Mark  string            `json:"mark,omitempty"`
 	Value string            `json:"value,omitempty"`
-	// Wrote are the strings magpie wrote, by key, for Check to tell
+	// Wrote are the strings magpie-friday wrote, by key, for Check to tell
 	// one changed since
 	Wrote map[string]string `json:"wrote,omitempty"`
 }
@@ -98,7 +98,7 @@ func pluggedAgents(home string, builtin []*Agent, errs map[string]string) []*Age
 	for _, p := range list {
 		if taken[p.Desc.ID] {
 			if errs != nil {
-				errs[p.Spec] = fmt.Sprintf("agent id %q is magpie's own agent's", p.Desc.ID)
+				errs[p.Spec] = fmt.Sprintf("agent id %q is magpie-friday's own agent's", p.Desc.ID)
 			}
 			continue
 		}
@@ -224,7 +224,7 @@ func plugged(home string, p *agentplug.Agent) *Agent {
 		b, _ := json.Marshal(st)
 		stash(map[string]string{key: string(b)})
 	}
-	// onMagpie: magpie wrote the file, and the gateway's key it wrote is
+	// onMagpie: magpie-friday wrote the file, and the gateway's key it wrote is
 	// still there
 	onMagpie := func() (pluggedStash, bool) {
 		st, ok := saved()
@@ -239,7 +239,7 @@ func plugged(home string, p *agentplug.Agent) *Agent {
 		}
 		return st, true
 	}
-	// restore puts back what the user had under every key magpie wrote
+	// restore puts back what the user had under every key magpie-friday wrote
 	restore := func(st pluggedStash) error {
 		var del []string
 		var kvs []edit.KV
@@ -260,7 +260,7 @@ func plugged(home string, p *agentplug.Agent) *Agent {
 		return nil
 	}
 	// only: the agent picks its model itself among those connect writes
-	// (#2374), so magpie writes no model, and the switch is its one field
+	// (#2374), so magpie-friday writes no model, and the switch is its one field
 	only := d.Model == ""
 	// wire writes ref and connect's keys, stashing what each key had; a
 	// connect-only agent's ref is ""
@@ -339,7 +339,7 @@ func plugged(home string, p *agentplug.Agent) *Agent {
 				st.Had[kv.Path] = "\x00"
 			}
 		}
-		// a key magpie wrote before that connect no longer returns gets
+		// a key magpie-friday wrote before that connect no longer returns gets
 		// what the user had back
 		var del []string
 		for _, k := range sortedKeys(st.Had) {
@@ -430,7 +430,7 @@ func plugged(home string, p *agentplug.Agent) *Agent {
 		},
 	}
 	if only {
-		// magpie as its provider, on or off: the models are the agent's
+		// magpie-friday as its provider, on or off: the models are the agent's
 		// to pick, in the list connect writes
 		a.Fields = []Field{{
 			Key: "provider", Label: "provider",
@@ -450,7 +450,7 @@ func plugged(home string, p *agentplug.Agent) *Agent {
 				return nil
 			},
 			Options: func(map[string]string) []Option {
-				return []Option{{Value: magpieID, Label: "magpie", Icon: "magpie"}}
+				return []Option{{Value: magpieID, Label: "magpie-friday", Icon: "magpie-friday"}}
 			},
 		}}
 	}
@@ -461,7 +461,7 @@ func plugged(home string, p *agentplug.Agent) *Agent {
 }
 
 // pluggedIcon is the picture the plugin gives its agent, else the one the
-// plugin market gives the plugin, else magpie's generic one.
+// plugin market gives the plugin, else magpie-friday's generic one.
 func pluggedIcon(p *agentplug.Agent) string {
 	if ic := provider.PluginOwnIcon(p.Desc.Icon); ic != "" {
 		return ic
@@ -469,7 +469,7 @@ func pluggedIcon(p *agentplug.Agent) string {
 	if ic := plugin.Icon(p.Spec, p.Desc.ID); ic != "" {
 		return ic
 	}
-	// magpie's glyph for one it has no picture of, not an empty square
+	// magpie-friday's glyph for one it has no picture of, not an empty square
 	return "generic"
 }
 

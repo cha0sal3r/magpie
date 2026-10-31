@@ -20,11 +20,11 @@ import (
 
 	"github.com/klauspost/compress/gzhttp"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/update"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/update"
 )
 
-// `magpie web` serves the window's page to a browser, for a computer that
+// `magpie-friday web` serves the window's page to a browser, for a computer that
 // can't show the app — no desktop, WSL, a server reached over SSH — with
 // the gateway beside it as the app has. What is the desktop's (the panel,
 // the tray, the Dock) does nothing there; a folder is named, not opened.
@@ -42,13 +42,13 @@ func (webHost) TintPanel([4]uint8, int) bool     { return false }
 func (webHost) TintTitleBar([4]uint8, bool) bool { return false }
 func (webHost) SetTextSize(int)                  {} // the browser zooms its own tab
 func (webHost) OpenFolder(path string) error {
-	return errors.New("in the browser magpie can't open folders: it is " + tilde(path))
+	return errors.New("in the browser magpie-friday can't open folders: it is " + tilde(path))
 }
 func (webHost) ChooseFolder(string) (string, error) {
-	return "", errors.New("in the browser magpie can't show a folder picker: type the folder's path")
+	return "", errors.New("in the browser magpie-friday can't show a folder picker: type the folder's path")
 }
 
-// Web is a started `magpie web`: its address and the link that signs a
+// Web is a started `magpie-friday web`: its address and the link that signs a
 // browser in.
 type Web struct {
 	Addr, Link string
@@ -66,7 +66,7 @@ var webReexec atomic.Bool
 const webRunKey = "MAGPIE_WEB_RUNKEY"
 
 // StartWeb serves the page on addr (host:port), as the given version of
-// magpie, which keeps itself up to date as the app does. Every request needs the
+// magpie-friday, which keeps itself up to date as the app does. Every request needs the
 // key the link carries, taken once into a cookie other sites' pages can't
 // send with a POST (every change is one), so neither a page elsewhere nor
 // anyone else on the network reaches the settings and keys behind it.
@@ -108,7 +108,7 @@ func StartWeb(addr, version string) (*Web, error) {
 		ReadHeaderTimeout: 30 * time.Second,
 	}
 	go w.srv.Serve(ln)
-	// Settings' AutoRestart: magpie web runs on as the new version (#2096)
+	// Settings' AutoRestart: magpie-friday web runs on as the new version (#2096)
 	updates.autoRestart = func() bool {
 		if restartInto(true, false, "", true) {
 			quit()
@@ -122,7 +122,7 @@ func StartWeb(addr, version string) (*Web, error) {
 }
 
 // ServesGateway says whether this process serves the gateway, which it
-// doesn't while another magpie (the service, the app, magpie serve) has
+// doesn't while another magpie-friday (the service, the app, magpie-friday serve) has
 // it: the page then shows that one's settings and accounts, read from the
 // same files, and this one takes the gateway up once that one is gone.
 func (w *Web) ServesGateway() bool { return served.Load() != nil }
@@ -218,7 +218,7 @@ func webGuard(cookie, key string, keep time.Duration, next http.Handler) http.Ha
 		}
 		if q := r.URL.Query(); q.Has("k") {
 			if !same(q.Get("k")) {
-				http.Error(rw, "this link's key is not this magpie web's: use the link it printed when it started", http.StatusUnauthorized)
+				http.Error(rw, "this link's key is not this magpie-friday web's: use the link it printed when it started", http.StatusUnauthorized)
 				return
 			}
 			q.Del("k")
@@ -231,7 +231,7 @@ func webGuard(cookie, key string, keep time.Duration, next http.Handler) http.Ha
 			r.Body = http.MaxBytesReader(rw, r.Body, 4096)
 			back := localPath(r.PostFormValue("back"))
 			if !same(r.PostFormValue("key")) {
-				webTurnedAway(rw, r, back, "That key is not this magpie web's.")
+				webTurnedAway(rw, r, back, "That key is not this magpie-friday web's.")
 				return
 			}
 			signIn(rw, r, back)
@@ -249,13 +249,13 @@ func webGuard(cookie, key string, keep time.Duration, next http.Handler) http.Ha
 		}
 		why, short := "This browser sent no sign-in cookie for this address. A browser keeps cookies per host, not per port, so another service on this host's other ports can take it away: by clearing its site data (a sign-out often does), or by filling the host's cookie limit. A page opened at another address than the one signed in at (an IP instead of a name) has none either.", "no cookie sent"
 		if len(sent) > 0 {
-			why, short = "This browser's sign-in cookie holds a key that isn't this magpie web's: the key changed after it signed in (MAGPIE_WEB_KEY changed, or a start without it made a new one).", "its cookie holds another key"
+			why, short = "This browser's sign-in cookie holds a key that isn't this magpie-friday web's: the key changed after it signed in (MAGPIE_WEB_KEY changed, or a start without it made a new one).", "its cookie holds another key"
 		}
 		if r.Method != http.MethodGet || !strings.Contains(r.Header.Get("Accept"), "text/html") {
-			http.Error(rw, "open the link magpie web printed when it started: it carries the key. "+why, http.StatusUnauthorized)
+			http.Error(rw, "open the link magpie-friday web printed when it started: it carries the key. "+why, http.StatusUnauthorized)
 			return
 		}
-		log.Printf("magpie web: turned away %s from %s: %s", r.URL.Path, r.RemoteAddr, short)
+		log.Printf("magpie-friday web: turned away %s from %s: %s", r.URL.Path, r.RemoteAddr, short)
 		webTurnedAway(rw, r, r.URL.RequestURI(), why)
 	})
 }
@@ -280,9 +280,9 @@ func webTurnedAway(rw http.ResponseWriter, r *http.Request, back, why string) {
 	rw.Header().Set("Content-Type", "text/html; charset=utf-8")
 	rw.Header().Set("Cache-Control", "no-store")
 	rw.WriteHeader(http.StatusUnauthorized)
-	fmt.Fprintf(rw, `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>magpie web</title>
+	fmt.Fprintf(rw, `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>magpie-friday web</title>
 <style>body{font:15px/1.5 system-ui,sans-serif;max-width:32em;margin:12vh auto;padding:0 16px;color:#222;background:#fafafa}@media(prefers-color-scheme:dark){body{color:#ddd;background:#1c1c1e}}input,button{font:inherit;padding:.4em .6em}input{width:100%%;box-sizing:border-box;margin:.5em 0}</style></head>
-<body><h1>magpie web</h1><p>%s</p><p>Paste the key (MAGPIE_WEB_KEY, or the k= in the link magpie web printed when it started):</p>
+<body><h1>magpie-friday web</h1><p>%s</p><p>Paste the key (MAGPIE_WEB_KEY, or the k= in the link magpie-friday web printed when it started):</p>
 <form method="post" action="%s"><input type="hidden" name="back" value="%s"><input type="password" name="key" autocomplete="current-password" autofocus required><button type="submit">Sign in</button></form></body></html>`,
 		html.EscapeString(why), webSignInPath, html.EscapeString(back))
 }
@@ -291,7 +291,7 @@ func webTurnedAway(rw http.ResponseWriter, r *http.Request, back, why string) {
 // machines open; key is the link's "/?k=…". MAGPIE_PUBLIC_URL with a port
 // of its own names the host the container's ports are published on, so
 // the page is at that host on its own port; one without (a reverse proxy's
-// https://magpie.example.com, #372) is where the page is, path and all.
+// https://magpie-friday.example.com, #372) is where the page is, path and all.
 func NetworkLinks(port, key string) []string {
 	if u, err := url.Parse(gateway.PublicURL()); err == nil && u.Host != "" && u.Port() == "" {
 		return []string{strings.TrimRight(u.String(), "/") + key}
@@ -322,20 +322,20 @@ func LANAddrs() []string {
 	return out
 }
 
-// webServed is all `magpie web` on port serves: the gateway's client
+// webServed is all `magpie-friday web` on port serves: the gateway's client
 // routes, judged by the gateway (onePort), and the page and its API behind
 // the allow list and the key.
 func webServed(port, key string, keep time.Duration, page http.Handler) http.Handler {
 	return onePort(gateway.AllowGuard(webHandler(port, key, keep, page)))
 }
 
-// webHandler is what `magpie web` on port serves: the page and its API
+// webHandler is what `magpie-friday web` on port serves: the page and its API
 // behind the key, compressed for the browser.
 func webHandler(port, key string, keep time.Duration, page http.Handler) http.Handler {
 	return webCompressed(webGuard("magpie_web_"+port, key, keep, page))
 }
 
-// webCompressed gzips what `magpie web` sends a browser that takes it: the
+// webCompressed gzips what `magpie-friday web` sends a browser that takes it: the
 // page's scripts, styles and SVG icons, and the API's JSON. They went out
 // as they are, about 4 MB for a first load before any data, and the
 // routing trace's JSON grows with every account a request could go to; a
@@ -344,7 +344,7 @@ func webHandler(port, key string, keep time.Duration, page http.Handler) http.Ha
 // Pictures already compressed go as they are.
 //
 // The app's own window gets the page from inside the process, with no
-// network between, so only `magpie web` compresses.
+// network between, so only `magpie-friday web` compresses.
 //
 // A gzipped file's ETag says so ("…-gzip"), as a validator of other bytes;
 // asked for again with it, the file is still a 304. A few bytes of padding
@@ -381,7 +381,7 @@ func compressible(ct string) bool {
 		strings.HasSuffix(ct, "json") || ct == "image/svg+xml"
 }
 
-// isWeb: the page is served to a browser by `magpie web`.
+// isWeb: the page is served to a browser by `magpie-friday web`.
 func isWeb(w Windows) bool { _, ok := w.(webHost); return ok }
 
 // onePort hands the gateway's client routes (gateway.ClientPath: /v1/…,
@@ -390,7 +390,7 @@ func isWeb(w Windows) bool { _, ok := w.(webHost); return ok }
 // (zgcwkj on Discord). Each such request is judged by the gateway's own
 // guards (Server.Front), not the page's key: an agent has no cookie, and a
 // request from another machine or through a proxy needs a gateway key
-// while magpie is shared, as on the gateway's port. Everything else (the
+// while magpie-friday is shared, as on the gateway's port. Everything else (the
 // page, its /api/*) stays behind the page's allow list and key.
 func onePort(page http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
@@ -406,7 +406,7 @@ func onePort(page http.Handler) http.Handler {
 	})
 }
 
-// toGateway passes a client route on to the gateway another magpie serves
+// toGateway passes a client route on to the gateway another magpie-friday serves
 // here (the service, the app), as it came: its Host, so a rebound page's
 // name is still refused, and its forwarding headers, so a request a proxy
 // passed on is still one from another machine. One from another machine
@@ -430,8 +430,8 @@ var toGateway = &httputil.ReverseProxy{
 	},
 	FlushInterval: -1, // streams as they come
 	ErrorHandler: func(rw http.ResponseWriter, r *http.Request, err error) {
-		log.Printf("magpie web: %s %s: the gateway at %s: %v", r.Method, r.URL.Path, gateway.URL(), err)
-		http.Error(rw, "magpie's gateway at "+gateway.URL()+" doesn't answer: "+err.Error(), http.StatusBadGateway)
+		log.Printf("magpie-friday web: %s %s: the gateway at %s: %v", r.Method, r.URL.Path, gateway.URL(), err)
+		http.Error(rw, "magpie-friday's gateway at "+gateway.URL()+" doesn't answer: "+err.Error(), http.StatusBadGateway)
 	},
 }
 

@@ -1,10 +1,10 @@
-// Package shortcut puts magpie in the Start menu on Windows. There it is
+// Package shortcut puts magpie-friday in the Start menu on Windows. There it is
 // one exe with no installer, so nothing else would: the first start of the
-// desktop app makes a Magpie shortcut in the user's Start menu opening the
+// desktop app makes a magpie-friday shortcut in the user's Start menu opening the
 // exe it runs as, and Windows search finds it by that. It is made once:
-// magpie remembers it did, and a shortcut the user deleted stays deleted
+// magpie-friday remembers it did, and a shortcut the user deleted stays deleted
 // (#508); one still there is pointed at the exe again when that was moved.
-// A portable magpie (a data folder beside it) makes none and registers
+// A portable magpie-friday (a data folder beside it) makes none and registers
 // nothing, leaving no trace on the machine. Elsewhere it does nothing —
 // the Mac has the app in Applications, Linux its own ways.
 package shortcut
@@ -17,31 +17,31 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/yetone/magpie/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
 )
 
 // Name is what the shortcut is called, and what Windows search finds.
-const Name = "Magpie"
+const Name = "magpie-friday"
 
-// StateName is the file in magpie's folder recording that the shortcut was
+// StateName is the file in magpie-friday's folder recording that the shortcut was
 // made, and for which exe.
 const StateName = "start-menu-shortcut"
 
 // what Ensure asks of the system; the tests put fakes in
 var (
-	// startMenu is where the shortcut goes (…\Start Menu\Programs\Magpie.lnk)
+	// startMenu is where the shortcut goes (…\Start Menu\Programs\magpie-friday.lnk)
 	startMenu = startMenuLink
 	// writeLink has the shortcut at lnk open exe, and reports whether it had to
 	writeLink = writeShortcut
-	// register has Win+R and `start magpie` find exe
+	// register has Win+R and `start magpie-friday` find exe
 	register = registerAppPath
-	// registered reports whether a magpie registered itself there before
+	// registered reports whether a magpie-friday registered itself there before
 	registered = registeredAppPath
 )
 
 // Ensure makes the shortcut on the first start, keeps it pointed at this
-// magpie after that while it is there, and never makes it again once the
-// user deleted it. A portable magpie makes none. It fails quietly — magpie
+// magpie-friday after that while it is there, and never makes it again once the
+// user deleted it. A portable magpie-friday makes none. It fails quietly — magpie-friday
 // runs the same without one — and is skipped with MAGPIE_NO_SHORTCUT=1
 // (tests, sandboxes).
 func Ensure() {
@@ -64,7 +64,7 @@ func Ensure() {
 var errNoStartMenu = errors.New("no Start menu here")
 
 // ensure is Ensure for exe, portable being the data folder of a portable
-// magpie ("" installed) and state the file remembering the shortcut was
+// magpie-friday ("" installed) and state the file remembering the shortcut was
 // made.
 func ensure(exe, portable, state string) error {
 	if portable != "" {
@@ -74,7 +74,7 @@ func ensure(exe, portable, state string) error {
 	if errors.Is(err, errNoStartMenu) {
 		return nil
 	}
-	// a magpie from before the state file registered itself at every start
+	// a magpie-friday from before the state file registered itself at every start
 	before := registered()
 	register(exe)
 	if err != nil {
@@ -87,7 +87,7 @@ func ensure(exe, portable, state string) error {
 			return nil
 		}
 		if before {
-			// an older magpie made it at its every start, and it is gone:
+			// an older magpie-friday made it at its every start, and it is gone:
 			// the user deleted it, so it isn't made again now either
 			return remember(state, exe)
 		}
@@ -107,10 +107,10 @@ func remember(state, exe string) error {
 }
 
 // aside is what an update moves the exe it replaces to, or stages the new
-// one as: magpie.exe.old, magpie.exe.old-2…, magpie.exe.new
+// one as: magpie-friday.exe.old, magpie-friday.exe.old-2…, magpie-friday.exe.new
 var aside = regexp.MustCompile(`(?i)(\.exe)\.(old(-\d+)?|new)$`)
 
-// Target is what the shortcut opens for exe: exe itself, but for a magpie
+// Target is what the shortcut opens for exe: exe itself, but for a magpie-friday
 // left running from where an update moved it aside, the exe in its place,
 // which is what the next start runs. An update replaces the exe where it
 // is, so the shortcut stays good through it.

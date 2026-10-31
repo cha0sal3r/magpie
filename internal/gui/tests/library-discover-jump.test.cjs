@@ -20,7 +20,7 @@ const servers = Array.from({ length: 40 }, (_, i) => ({ name: `server-${String(i
 
 function serve(lang, web) {
   const view = {
-    dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+    dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
     agents: [agent("claude", "Claude Code", "claudecode-color")],
     instructions: { agents: [], sets: [] }, servers, foundServers: [], projects: [], foundSkills: [], skills, problems: [],
   };

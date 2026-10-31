@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// A provider removed leaves the groups magpie found, the ones the user
+// A provider removed leaves the groups magpie-friday found, the ones the user
 // changed too, rather than staying in them to be taken out by hand
 // (Discord); one switched off is skipped and back once it is on again.
 // The user's own groups keep their members as they were, and a found

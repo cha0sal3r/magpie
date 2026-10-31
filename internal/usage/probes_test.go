@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/probelog"
+	"github.com/cha0sal3r/magpie-friday/internal/probelog"
 )
 
 // ledgerSpy is an Observer that only counts the rows Append hands it.
@@ -16,8 +16,8 @@ func (*ledgerSpy) Bodies() Bodies       { var b Bodies; return b }
 func (*ledgerSpy) Begin(Request) Watch  { return nil }
 func (s *ledgerSpy) Ledger(r Record)    { s.rows = append(s.rows, r) }
 
-// A request magpie sends a provider on its own (the editor's Test, Detect
-// APIs, a model list) is a row of the request log, marked as magpie's own
+// A request magpie-friday sends a provider on its own (the editor's Test, Detect
+// APIs, a model list) is a row of the request log, marked as magpie-friday's own
 // with what it was for, and counts in nothing: no total, source, group,
 // summary, Load, LastSeen, shared day or observer (neiko, gys619).
 func TestProbeRowsListedNotCounted(t *testing.T) {
@@ -44,7 +44,7 @@ func TestProbeRowsListedNotCounted(t *testing.T) {
 		t.Fatalf("probe rows %+v", page.Rows)
 	}
 	test := probes[1] // newest first
-	if probes[0].Kind != probelog.KindList || test.Kind != probelog.KindTest || test.Agent != "magpie" || test.Provider != "relay" ||
+	if probes[0].Kind != probelog.KindList || test.Kind != probelog.KindTest || test.Agent != "magpie-friday" || test.Provider != "relay" ||
 		test.ProviderAccount != "me" || test.Model != "gpt-9" || test.Status != 401 || test.Endpoint != "/v1/chat/completions" {
 		t.Fatalf("probe rows %+v", probes)
 	}
@@ -56,7 +56,7 @@ func TestProbeRowsListedNotCounted(t *testing.T) {
 	}
 	for dim, shares := range page.By {
 		for _, s := range shares {
-			if s.ID == "relay" || s.ID == "magpie" || s.ID == "gpt-9" {
+			if s.ID == "relay" || s.ID == "magpie-friday" || s.ID == "gpt-9" {
 				t.Fatalf("%s counts a probe: %+v", dim, shares)
 			}
 		}
@@ -67,8 +67,8 @@ func TestProbeRowsListedNotCounted(t *testing.T) {
 	if rs := Load(time.Time{}); len(rs) != 1 {
 		t.Fatalf("Load %+v", rs)
 	}
-	if !LastSeen("magpie").IsZero() {
-		t.Fatal("a probe is a request from agent magpie")
+	if !LastSeen("magpie-friday").IsZero() {
+		t.Fatal("a probe is a request from agent magpie-friday")
 	}
 	n := 0
 	for _, calls := range OwnDays(now.Add(-time.Hour)) {

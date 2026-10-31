@@ -8,14 +8,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Codex 0.162's TUI runs on a background app-server it starts once and
-// leaves running, which built its model list when it started: after magpie
+// leaves running, which built its model list when it started: after magpie-friday
 // changes Codex's list, a new codex session still shows Codex's own models
 // until that app-server is restarted, while the desktop app, restarted,
-// shows magpie's (TJHHHH, luci on Discord). Restarting the app and the open
+// shows magpie-friday's (TJHHHH, luci on Discord). Restarting the app and the open
 // sessions, as the advice said, leaves it; the advice after a change names
 // it and the command that restarts it, here and in WSL, where the Agents
 // row can't tell a stale copy.
@@ -40,19 +40,19 @@ func TestCodexAdviceNamesTheSharedAppServer(t *testing.T) {
 	}
 }
 
-// luci (Discord, Codex 0.162): after Codex was wired to magpie every new
+// luci (Discord, Codex 0.162): after Codex was wired to magpie-friday every new
 // codex showed Codex's own models, since the background app-server they
 // attach to was started before, on the official config. Said after a
 // change (the GUI's and the CLI's), the advice first checks that
-// app-server against magpie's change in this Codex's home: restarted by
-// magpie when no session is on it, named with the Agents page's Restart
+// app-server against magpie-friday's change in this Codex's home: restarted by
+// magpie-friday when no session is on it, named with the Agents page's Restart
 // when one is.
 func TestCodexNoticeKeepsTheDaemonCurrent(t *testing.T) {
 	home, _ := codexHome(t, "", "")
 	dir := filepath.Join(home, ".codex")
-	cfg, list := filepath.Join(dir, "config.toml"), filepath.Join(dir, "magpie-models.json")
-	os.WriteFile(cfg, []byte("model_provider = \"magpie\"\nmodel_catalog_json = \""+list+"\"\n"), 0o600)
-	os.WriteFile(list, []byte(`{"models":[{"slug":"magpie/a"}]}`), 0o644)
+	cfg, list := filepath.Join(dir, "config.toml"), filepath.Join(dir, "magpie-friday-models.json")
+	os.WriteFile(cfg, []byte("model_provider = \"magpie-friday\"\nmodel_catalog_json = \""+list+"\"\n"), 0o600)
+	os.WriteFile(list, []byte(`{"models":[{"slug":"magpie-friday/a"}]}`), 0o644)
 	then := time.Now().Add(-2 * time.Hour)
 	os.Chtimes(cfg, then, then)
 	os.Chtimes(list, then, then)
@@ -74,14 +74,14 @@ func TestCodexNoticeKeepsTheDaemonCurrent(t *testing.T) {
 	if len(asked) != 1 || asked[0] != dir || changed.Sub(then).Abs() > time.Second {
 		t.Fatalf("asked %v at %v, want %s at %v", asked, changed, dir, then)
 	}
-	// magpie's list changes: the daemon is checked against now
-	os.WriteFile(list, []byte(`{"models":[{"slug":"magpie/a"},{"slug":"magpie/b"}]}`), 0o644)
+	// magpie-friday's list changes: the daemon is checked against now
+	os.WriteFile(list, []byte(`{"models":[{"slug":"magpie-friday/a"},{"slug":"magpie-friday/b"}]}`), 0o644)
 	answer = provider.CodexDaemonCheck{Behind: true, Restarted: true, Since: then}
 	n := codex(home).Notice()
 	if time.Since(changed) > time.Minute {
-		t.Fatalf("checked against %v, not magpie's change", changed)
+		t.Fatalf("checked against %v, not magpie-friday's change", changed)
 	}
-	if !strings.Contains(n, "magpie restarted") {
+	if !strings.Contains(n, "magpie-friday restarted") {
 		t.Fatalf("restarted: %q", n)
 	}
 	// a session on it: the user is told where to restart it

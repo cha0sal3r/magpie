@@ -8,14 +8,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/mcpauth"
-	"github.com/yetone/magpie/internal/mcpauth/mcpauthtest"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/mcpauth"
+	"github.com/cha0sal3r/magpie-friday/internal/mcpauth/mcpauthtest"
 )
 
-// /mcp/<server> is a remote MCP server magpie signed in to (#615), as the
+// /mcp/<server> is a remote MCP server magpie-friday signed in to (#615), as the
 // agents reach it: a POST's JSON answer and its event stream, a GET's
-// stream and a DELETE go to the server with magpie's token in place of the
+// stream and a DELETE go to the server with magpie-friday's token in place of the
 // gateway's, and the session's headers both ways. A token the server
 // refuses is renewed once; one it won't renew is said to need signing in
 // again, never with a 401 that would set the agent signing in itself.
@@ -49,7 +49,7 @@ func TestMCPProxy(t *testing.T) {
 		t.Fatalf("initialize: %d %s %v", resp.StatusCode, b, resp.Header)
 	}
 	if got := f.Seen.Get("Authorization"); got != "Bearer "+token {
-		t.Fatalf("the server got Authorization %q, not magpie's token", got)
+		t.Fatalf("the server got Authorization %q, not magpie-friday's token", got)
 	}
 	if f.Seen.Get("X-Team") != "acme" || f.Seen.Get("Mcp-Protocol-Version") != "2025-06-18" {
 		t.Fatalf("headers not passed on: %v", f.Seen)
@@ -104,7 +104,7 @@ func TestMCPProxy(t *testing.T) {
 		t.Fatalf("a sign-in run out: %d %v %s", resp.StatusCode, resp.Header, b)
 	}
 
-	// a server magpie isn't signed in to
+	// a server magpie-friday isn't signed in to
 	req, _ := http.NewRequest("POST", gw.URL+"/mcp/notion", strings.NewReader("{}"))
 	r2, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -116,7 +116,7 @@ func TestMCPProxy(t *testing.T) {
 	}
 }
 
-// Another machine is lent magpie's sign-ins only with an enabled gateway
+// Another machine is lent magpie-friday's sign-ins only with an enabled gateway
 // key: a gateway MAGPIE_ADDR puts on the network asks for one too.
 func TestMCPProxyStaysHere(t *testing.T) {
 	fresh(t)
@@ -135,7 +135,7 @@ func TestMCPProxyStaysHere(t *testing.T) {
 
 // A WSL agent under NAT, at Windows' address, is lent the sign-in with the
 // key the gateway is shared with as its Authorization (library's through),
-// which the server never sees: it gets magpie's token. Without the key the
+// which the server never sees: it gets magpie-friday's token. Without the key the
 // call is a 401, which an MCP client takes for the server asking it to
 // sign in.
 func TestMCPProxyFromWSLWithLANKey(t *testing.T) {
@@ -175,7 +175,7 @@ func TestMCPProxyFromWSLWithLANKey(t *testing.T) {
 	}
 }
 
-// A web page can't borrow magpie's sign-ins through the browser: a request
+// A web page can't borrow magpie-friday's sign-ins through the browser: a request
 // with an Origin, or one to a hostname of the page's own pointed at
 // 127.0.0.1, is refused before it reaches the server.
 func TestMCPProxyNotForWebPages(t *testing.T) {
@@ -209,7 +209,7 @@ func TestMCPProxyNotForWebPages(t *testing.T) {
 // A server signed in to at an address with a query (Exa's
 // mcp.exa.ai/mcp?login, where its sign-in is) is reached at that address,
 // the query as it was, and the headers the Library gives it (a key) go
-// with magpie's token; only the gateway's own key stays here.
+// with magpie-friday's token; only the gateway's own key stays here.
 func TestMCPProxyKeepsQueryAndHeaders(t *testing.T) {
 	fresh(t)
 	f := mcpauthtest.New(t)
@@ -233,11 +233,11 @@ func TestMCPProxyKeepsQueryAndHeaders(t *testing.T) {
 			t.Fatalf("%s: %d %s", body, resp.StatusCode, b)
 		}
 	}
-	call(`{"jsonrpc":"2.0","id":1,"method":"initialize"}`, "X-Api-Key", "exa-key", "X-Exa-Source", "magpie")
+	call(`{"jsonrpc":"2.0","id":1,"method":"initialize"}`, "X-Api-Key", "exa-key", "X-Exa-Source", "magpie-friday")
 	if f.SeenQuery != "login" {
 		t.Fatalf("the server got the query %q, not login", f.SeenQuery)
 	}
-	if f.Seen.Get("X-Api-Key") != "exa-key" || f.Seen.Get("X-Exa-Source") != "magpie" {
+	if f.Seen.Get("X-Api-Key") != "exa-key" || f.Seen.Get("X-Exa-Source") != "magpie-friday" {
 		t.Fatalf("headers not passed on: %v", f.Seen)
 	}
 	token, _ := mcpauth.Token(t.Context(), "exa")
@@ -252,7 +252,7 @@ func TestMCPProxyKeepsQueryAndHeaders(t *testing.T) {
 	}
 }
 
-// A server that refuses even the token magpie just renewed no longer takes
+// A server that refuses even the token magpie-friday just renewed no longer takes
 // the sign-in: it is marked run out, for the Library to say so rather than
 // "Signed in" beside the server's refusal (新v学员 on Discord), and the
 // agent is told to sign in again, never with a 401.

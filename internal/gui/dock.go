@@ -3,11 +3,11 @@ package gui
 // dockMove is what setDock does to the app on the Mac.
 type dockMove struct {
 	policy bool // join the Dock or leave it
-	again  bool // activate magpie again by way of the Dock (activateAgain)
-	front  bool // activate magpie
+	again  bool // activate magpie-friday again by way of the Dock (activateAgain)
+	front  bool // activate magpie-friday
 }
 
-// dockStep: what setDock does for magpie in the Dock (regular) or not, to
+// dockStep: what setDock does for magpie-friday in the Dock (regular) or not, to
 // be in it (on) or not, brought to the front or not. Nothing when it is
 // where it should be. Leaving deactivates the app, so with front it is
 // activated after. Joining to the front, it is activated by way of the Dock:

@@ -23,7 +23,7 @@ const instructions = (extra) => ({
   agents: [{ agent: "claude", name: "Claude Code", icon: "", path: `${HOME}/.claude/CLAUDE.md`, on: true, extra: "" }],
 });
 const library = {
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: [{ id: "claude", name: "Claude Code", icon: "", instructions: `${HOME}/.claude/CLAUDE.md` }],
   instructions: instructions([{ id: "work", name: "Work", active: false, text: "Company rules." }]),
   foundServers: [], projects: [], foundSkills: [], skills: [], servers: [],

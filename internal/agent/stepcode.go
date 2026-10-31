@@ -15,14 +15,14 @@ import (
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/jsonc"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // StepCode keeps its configuration in ~/.stepcode/config.toml (or
 // the parent of an absolute STEP_CODING_AGENT_DIR) and its models in
 // models.json using Pi's provider format.
-// magpie manages defaultProvider and defaultModel in config.toml, and one
-// providers.magpie entry in models.json.
+// magpie-friday manages defaultProvider and defaultModel in config.toml, and one
+// providers.magpie-friday entry in models.json.
 
 func stepcode(home string) *Agent { return stepcodeIn(here(home)) }
 
@@ -45,7 +45,7 @@ func stepcodeProvider(at place) any {
 		ms = append(ms, piModelJSON(m, at.gw(), true))
 	}
 	return map[string]any{
-		"name":    "magpie",
+		"name":    "magpie-friday",
 		"baseUrl": at.v1(),
 		"api":     "openai-completions",
 		"apiKey":  agentKeyAt("stepcode", at.gw()),
@@ -257,7 +257,7 @@ func stepcodeStartup(cfg stepcodeTOML) string {
 
 // stepcodeRenameRefs moves enabledModels off a renamed provider, in the
 // file and in the scope disconnect remembers, so a reset does not put the
-// old id back and still takes out only what magpie appended.
+// old id back and still takes out only what magpie-friday appended.
 func stepcodeRenameRefs(at place, path, from, to string) (bool, error) {
 	cur, err := readStepcodeTOML(path)
 	if err != nil {
@@ -475,7 +475,7 @@ func stepcodeIn(at place) *Agent {
 			if err := syncJSON(modelsPath, "providers."+magpieID, block); err != nil {
 				return err
 			}
-			// an entry on a model magpie no longer gives StepCode names
+			// an entry on a model magpie-friday no longer gives StepCode names
 			// nothing (#2055, scope_gone.go)
 			return stepcodeScopeSynced(at, path, modelsPath, gone)
 		},

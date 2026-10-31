@@ -11,11 +11,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/mcpauth"
-	"github.com/yetone/magpie/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/mcpauth"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
 )
 
-// mcpClient relays the agents' requests to a remote MCP server magpie is
+// mcpClient relays the agents' requests to a remote MCP server magpie-friday is
 // signed in to. It has no timeout: a GET's event stream stays open for as
 // long as the agent keeps it.
 var mcpClient = &http.Client{Transport: mcpTransport()}
@@ -34,29 +34,29 @@ var mcpHop = map[string]bool{
 	"Transfer-Encoding": true, "Upgrade": true, "Content-Length": true, "Accept-Encoding": true,
 }
 
-// mcpProxy is /mcp/<server>: a remote MCP server magpie signed in to once,
+// mcpProxy is /mcp/<server>: a remote MCP server magpie-friday signed in to once,
 // for every agent the Library gives it to (#615). The agent speaks to it as
 // to the server itself (streamable HTTP: a POST answered with JSON or an
 // event stream, a GET's event stream, a DELETE that ends the session, with
-// Mcp-Session-Id), and magpie sends it on with its own token, renewing it
+// Mcp-Session-Id), and magpie-friday sends it on with its own token, renewing it
 // when it runs out or the server says it has.
 func (s *Server) mcpProxy(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
 	if !local(r) && !sharedWith(r) {
-		http.Error(w, "magpie lends its MCP sign-ins to another machine only when magpie is shared on the local network and the request carries its API key", http.StatusForbidden)
+		http.Error(w, "magpie-friday lends its MCP sign-ins to another machine only when magpie-friday is shared on the local network and the request carries its API key", http.StatusForbidden)
 		return
 	}
 	// a web page can make the browser send a request here too (a form, or
-	// a hostname of its own pointed at 127.0.0.1), and magpie would carry
+	// a hostname of its own pointed at 127.0.0.1), and magpie-friday would carry
 	// it to the server with the user's sign-in; agents send no Origin and
 	// name this computer, as the MCP spec has servers check
 	if r.Header.Get("Origin") != "" || !sharedWith(r) && !loopbackHost(r.Host) {
-		http.Error(w, "magpie lends its MCP sign-ins to agents, not to web pages", http.StatusForbidden)
+		http.Error(w, "magpie-friday lends its MCP sign-ins to agents, not to web pages", http.StatusForbidden)
 		return
 	}
 	rec, ok := mcpauth.Get(name)
 	if !ok {
-		http.Error(w, "magpie isn't signed in to an MCP server called "+name+": sign in to it in magpie's Library", http.StatusNotFound)
+		http.Error(w, "magpie-friday isn't signed in to an MCP server called "+name+": sign in to it in magpie-friday's Library", http.StatusNotFound)
 		return
 	}
 	// a body cut at the limit would go to the server as a shorter message
@@ -127,7 +127,7 @@ func (s *Server) mcpProxy(w http.ResponseWriter, r *http.Request) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == http.StatusUnauthorized {
-		// the agent would start a sign-in of its own, at magpie's address
+		// the agent would start a sign-in of its own, at magpie-friday's address
 		io.Copy(io.Discard, io.LimitReader(resp.Body, 1<<16))
 		mcpRefused(w, name, mcpauth.ErrExpired)
 		return
@@ -157,13 +157,13 @@ func (s *Server) mcpProxy(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// mcpRefused answers an agent whose request magpie has no token for. It is
+// mcpRefused answers an agent whose request magpie-friday has no token for. It is
 // not a 401, which would set the agent signing in itself.
 func mcpRefused(w http.ResponseWriter, name string, err error) {
 	status := http.StatusBadGateway
 	msg := err.Error()
 	if errors.Is(err, mcpauth.ErrExpired) || errors.Is(err, mcpauth.ErrNotSignedIn) {
-		msg = "magpie's sign-in to the MCP server " + name + " has run out: sign in to it again in magpie's Library"
+		msg = "magpie-friday's sign-in to the MCP server " + name + " has run out: sign in to it again in magpie-friday's Library"
 	}
 	http.Error(w, msg, status)
 }

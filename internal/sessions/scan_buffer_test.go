@@ -169,7 +169,7 @@ func TestScanStepsOverATooLongLineUngathered(t *testing.T) {
 }
 
 // Scans of big files share their read buffers: each took a new one of up
-// to 1 MiB, and a live magpie's scans allocated 3.8 GB of them in 48
+// to 1 MiB, and a live magpie-friday's scans allocated 3.8 GB of them in 48
 // minutes while ~157 MB was live.
 func TestScansShareTheirBuffers(t *testing.T) {
 	if raceOn {

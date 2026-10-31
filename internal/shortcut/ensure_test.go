@@ -12,7 +12,7 @@ type fakeSystem struct {
 	lnk    string
 	writes int
 	paths  []string // App Paths entries written
-	before bool     // an older magpie registered itself
+	before bool     // an older magpie-friday registered itself
 }
 
 func fake(t *testing.T) (*fakeSystem, string) {
@@ -29,7 +29,7 @@ func fake(t *testing.T) (*fakeSystem, string) {
 	}
 	register = func(exe string) { f.paths = append(f.paths, exe) }
 	registered = func() bool { return f.before }
-	return f, filepath.Join(dir, "magpie", StateName)
+	return f, filepath.Join(dir, "magpie-friday", StateName)
 }
 
 func exists(p string) bool { _, err := os.Stat(p); return err == nil }
@@ -38,7 +38,7 @@ func exists(p string) bool { _, err := os.Stat(p); return err == nil }
 // and not made again once the user deleted it.
 func TestEnsureOnce(t *testing.T) {
 	f, state := fake(t)
-	exe := `C:\Tools\magpie.exe`
+	exe := `C:\Tools\magpie-friday.exe`
 
 	if err := ensure(exe, "", state); err != nil {
 		t.Fatal(err)
@@ -46,7 +46,7 @@ func TestEnsureOnce(t *testing.T) {
 	if f.writes != 1 || !exists(f.lnk) || !exists(state) {
 		t.Fatalf("first start: %d writes, shortcut %v, state %v", f.writes, exists(f.lnk), exists(state))
 	}
-	// still there: kept pointed at this magpie (write leaves a good one be)
+	// still there: kept pointed at this magpie-friday (write leaves a good one be)
 	if err := ensure(exe, "", state); err != nil {
 		t.Fatal(err)
 	}
@@ -68,13 +68,13 @@ func TestEnsureOnce(t *testing.T) {
 	}
 }
 
-// A user who deleted the shortcut under a magpie from before the state
+// A user who deleted the shortcut under a magpie-friday from before the state
 // file (it registered App Paths at every start) doesn't get it back on
 // updating; one who kept it has it kept.
 func TestEnsureAfterOlderMagpie(t *testing.T) {
 	f, state := fake(t)
 	f.before = true
-	if err := ensure(`C:\Tools\magpie.exe`, "", state); err != nil {
+	if err := ensure(`C:\Tools\magpie-friday.exe`, "", state); err != nil {
 		t.Fatal(err)
 	}
 	if exists(f.lnk) || f.writes != 0 || !exists(state) {
@@ -84,7 +84,7 @@ func TestEnsureAfterOlderMagpie(t *testing.T) {
 	f, state = fake(t)
 	f.before = true
 	os.WriteFile(f.lnk, []byte("old"), 0o644)
-	if err := ensure(`C:\Tools\magpie.exe`, "", state); err != nil {
+	if err := ensure(`C:\Tools\magpie-friday.exe`, "", state); err != nil {
 		t.Fatal(err)
 	}
 	if f.writes != 1 || !exists(state) {
@@ -92,12 +92,12 @@ func TestEnsureAfterOlderMagpie(t *testing.T) {
 	}
 }
 
-// #508: a portable magpie makes no shortcut, registers nothing and keeps
+// #508: a portable magpie-friday makes no shortcut, registers nothing and keeps
 // no state.
 func TestEnsurePortable(t *testing.T) {
 	f, state := fake(t)
 	for i := 0; i < 2; i++ {
-		if err := ensure(`E:\Magpie\magpie.exe`, `E:\Magpie\data`, state); err != nil {
+		if err := ensure(`E:\magpie-friday\magpie-friday.exe`, `E:\magpie-friday\data`, state); err != nil {
 			t.Fatal(err)
 		}
 	}

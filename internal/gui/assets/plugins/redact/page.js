@@ -2,7 +2,7 @@
 // app.js, whose masking helpers it shares (maskTip, maskColor,
 // maskShape, maskValue: Settings' Try it and the masked calls' badges use
 // them too; Try it uses this page's maskMatches in turn). What a
-// placeholder stood for is in this magpie's memory alone, never on disk,
+// placeholder stood for is in this magpie-friday's memory alone, never on disk,
 // so after a restart it is gone; so is the text a request went out with
 // (/api/masking/sent), kept for the newest requests only.
 
@@ -255,7 +255,7 @@ function maskStrip(box, days, move) {
 }
 
 // maskFlow: hairlines from the agents into this computer, uneven as
-// written, and out of it to the providers, even as placeholders; magpie's
+// written, and out of it to the providers, even as placeholders; magpie-friday's
 // bird on the line between, so a screenshot says who masked them
 function maskFlow(sum, move) {
   const sec = el("div", "msk-fl"), flow = el("div", "mo-flow");
@@ -287,7 +287,7 @@ function maskFlow(sum, move) {
   const rowH = 34, H = Math.max(fromRows.length, toRows.length, 3) * rowH;
   const max = Math.max(...fromRows.map((r) => r.n), ...toRows.map((r) => r.n), 1);
   const hub = el("span", "msk-hub");
-  hub.title = "magpie";
+  hub.title = "magpie-friday";
   hub.innerHTML = '<svg viewBox="0 0 44 44" aria-hidden="true"><use href="#bird"/></svg>';
   // drawn in the middle's own pixels on each resize: a stretched viewBox
   // would bend the hairlines
@@ -342,7 +342,7 @@ function maskFlow(sum, move) {
   flow.style.height = H + "px";
   flow.append(from, mid, to);
   new ResizeObserver(draw).observe(mid);
-  sec.append(flow, el("div", "mo-cap", t("magpie masked these on this computer")));
+  sec.append(flow, el("div", "mo-cap", t("magpie-friday masked these on this computer")));
   return sec;
 }
 
@@ -700,7 +700,7 @@ function maskBlocked(r) {
   head.append(ic, el("h2", "", t("This request was not sent")));
   const kinds = [...new Set((r.values || []).filter((x) => x.a === "block").map((x) => x.k))];
   const a = maskWho(r.agent, "agent").name, p = r.provider ? maskWho(r.provider, "provider").name : t("A vendor");
-  box.append(head, el("p", "", t("It carried {kinds}, which you set to hold back, so magpie didn't send it to {provider}. {agent} got an error saying why.", { kinds: kinds.map(maskKindName).join(", ") || t("a value"), provider: p, agent: r.agent ? a : t("The agent") })));
+  box.append(head, el("p", "", t("It carried {kinds}, which you set to hold back, so magpie-friday didn't send it to {provider}. {agent} got an error saying why.", { kinds: kinds.map(maskKindName).join(", ") || t("a value"), provider: p, agent: r.agent ? a : t("The agent") })));
   const tools = el("div", "msk-btools");
   if (kinds.length) {
     const b = el("button", "text primary", t("Mask it instead"));
@@ -788,10 +788,10 @@ function maskContent(r, o, info) {
     // only the lines around each value are left: the request's whole text
     // was in memory, and is no longer
     if (!r.blocked) sec.append(el("p", "msk-gone", o.vals.size
-      ? t("This request's whole text is no longer in memory: magpie keeps it for the newest requests only. The lines around each value are still here.")
-      : t("What was written is kept in memory only, and magpie has restarted since. Still here: each value's kind, length and first characters, and the line around each placeholder as the vendor got it.")));
+      ? t("This request's whole text is no longer in memory: magpie-friday keeps it for the newest requests only. The lines around each value are still here.")
+      : t("What was written is kept in memory only, and magpie-friday has restarted since. Still here: each value's kind, length and first characters, and the line around each placeholder as the vendor got it.")));
     items = maskSnipTexts(r).map((text) => ({ leaf: { path: "", role: "", text } }));
-    if (!items.length) sec.append(el("div", "msk-none", t("The text around them was kept in memory only, and magpie has restarted since")));
+    if (!items.length) sec.append(el("div", "msk-none", t("The text around them was kept in memory only, and magpie-friday has restarted since")));
   }
   const list = el("div", "msk-msgs" + (view === "both" ? " both" : ""));
   if (view === "both") {
@@ -894,7 +894,7 @@ function maskHow(r, o, info) {
     b.onclick = () => { o.pick = o.pick === x.p ? "" : x.p; drawMaskOne(); };
     aside.append(b);
   }
-  aside.append(el("p", "msk-note", t("A value itself is in this computer's memory only: shown while it is pointed at or picked, and gone once magpie restarts. The record on disk keeps its kind, length and first characters.")));
+  aside.append(el("p", "msk-note", t("A value itself is in this computer's memory only: shown while it is pointed at or picked, and gone once magpie-friday restarts. The record on disk keeps its kind, length and first characters.")));
   return aside;
 }
 // a value picked lights its places; the rest fade

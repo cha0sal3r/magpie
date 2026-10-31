@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // onceRefused is an upstream that refuses each key once, with status,
@@ -86,7 +86,7 @@ func postAgg(t *testing.T, srv *Server) *httptest.ResponseRecorder {
 // zoecats on Discord (#feedback, 10-25), by default, with no switch
 // turned: a provider's key refused once out of its quota or credit, and
 // served the moment after. The agent's retry, and every request after
-// it, reach the upstream and are answered; magpie doesn't answer them
+// it, reach the upstream and are answered; magpie-friday doesn't answer them
 // from the rest, "out of its allowance: not asked again before …", for
 // the half hour it guessed. Each refusal a vendor gives for a limit: its
 // "insufficient_quota" (read as out of credit), a usage limit that names
@@ -133,7 +133,7 @@ func TestRetryAfterALimitIsAsked(t *testing.T) {
 }
 
 // Refused twice in a row, every key is held as #1772 wants, not asked
-// on every request; but a rest whose length magpie guessed (the half
+// on every request; but a rest whose length magpie-friday guessed (the half
 // hour out of credit, the quarter out of quota with no word of when) is
 // asked again once a minute, and its Retry-After says so, so an agent
 // that waits as told is answered within the minute the upstream is back.

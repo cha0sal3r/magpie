@@ -13,11 +13,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/sessions"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 type codexTestCall struct {
@@ -346,7 +346,7 @@ func TestCodexSessionAPIAddsOwnModelEffort(t *testing.T) {
 		t.Fatalf("GUI usage requests: %d %s", guiUsage.Code, guiUsage.Body)
 	}
 	gwUsage := httptest.NewRecorder()
-	gwRequest := httptest.NewRequest("GET", "/v1/magpie/usage/requests?period=all", nil)
+	gwRequest := httptest.NewRequest("GET", "/v1/magpie-friday/usage/requests?period=all", nil)
 	gwRequest.RemoteAddr = "127.0.0.1:5000"
 	gateway.New().Handler().ServeHTTP(gwUsage, gwRequest)
 	if gwUsage.Code != http.StatusOK {

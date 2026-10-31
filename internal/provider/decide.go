@@ -24,9 +24,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/probelog"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/probelog"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // JevLatest is the Jev a decision provider is asked with when the user
@@ -171,7 +171,7 @@ func decisionsID(id string) string { return id + ".decisions" }
 
 // DecisionModels are the decision models listed separately from a provider's
 // conversations: OpenRouter's own list, a Bailian Token Plan's decision
-// model, or a remote magpie's or a plugin's marked models.
+// model, or a remote magpie-friday's or a plugin's marked models.
 func (p Provider) DecisionModels() []catalog.Model {
 	if p.IsPlugin() {
 		if !p.Decides() {
@@ -186,7 +186,7 @@ func (p Provider) DecisionModels() []catalog.Model {
 }
 
 // decideListDue reports whether p's list of decision models at OpenRouter
-// is still to be fetched, or was fetched before magpie kept each model's
+// is still to be fetched, or was fetched before magpie-friday kept each model's
 // window and input (they show on the Providers page and the Gateway list
 // only once it is fetched again).
 func (p Provider) decideListDue() bool {
@@ -559,7 +559,7 @@ func Deciders() []Entry {
 
 // OfferedDeciders are the Deciders a routing group's pickers and templates
 // offer: of a provider whose decision models are listed beside its chat
-// models (OpenRouter's, a Bailian plan's, a plugin's, a remote magpie's),
+// models (OpenRouter's, a Bailian plan's, a plugin's, a remote magpie-friday's),
 // with picks saved, those among the picks alone, as its editor shows the
 // rest unpicked (coeo91 on Discord: two OpenRouter models picked, and a
 // new group's picker listed OpenRouter's twenty-odd decision models after
@@ -630,7 +630,7 @@ func RouteDecider(model string) (Provider, string, error) {
 	if pid, rest, ok := strings.Cut(model, "/"); ok && rest != "" {
 		if p, ok := deciderByID(pid); ok {
 			if !p.On() {
-				return Provider{}, "", decideBadRequest("%s is switched off in magpie", p.Name)
+				return Provider{}, "", decideBadRequest("%s is switched off in magpie-friday", p.Name)
 			}
 			m, ok := resolveDecideModel(p, rest)
 			if !ok {
@@ -641,7 +641,7 @@ func RouteDecider(model string) (Provider, string, error) {
 	}
 	if p, ok := deciderByID(model); ok {
 		if !p.On() {
-			return Provider{}, "", decideBadRequest("%s is switched off in magpie", p.Name)
+			return Provider{}, "", decideBadRequest("%s is switched off in magpie-friday", p.Name)
 		}
 		if m := p.Jev(); m != "" {
 			return p, m, nil
@@ -679,9 +679,9 @@ func RouteDecider(model string) (Provider, string, error) {
 		return hits[0].p, hits[0].m, nil
 	case 0:
 		if len(on) == 0 {
-			return Provider{}, "", decideNotFound("magpie has no Jev provider")
+			return Provider{}, "", decideNotFound("magpie-friday has no Jev provider")
 		}
-		return Provider{}, "", decideNotFound("magpie knows no Jev model %q; name the provider before it, like %s/%s", model, on[0].ID, on[0].Jev())
+		return Provider{}, "", decideNotFound("magpie-friday knows no Jev model %q; name the provider before it, like %s/%s", model, on[0].ID, on[0].Jev())
 	default:
 		ps := make([]Provider, len(hits))
 		for i, h := range hits {
@@ -701,7 +701,7 @@ func decideAmbiguous(model string, ps []Provider) error {
 }
 
 // decideRouteError is a System One routing failure, with the HTTP status
-// magpie answers.
+// magpie-friday answers.
 type decideRouteError struct {
 	msg    string
 	status int
@@ -718,7 +718,7 @@ func decideNotFound(format string, a ...any) error {
 }
 
 // DecideRouteStatus is the HTTP status a System One request gets for err
-// from RouteDecider: 400 when the model is named badly, 404 when magpie
+// from RouteDecider: 400 when the model is named badly, 404 when magpie-friday
 // has no such Jev provider.
 func DecideRouteStatus(err error) int {
 	var e *decideRouteError
@@ -919,7 +919,7 @@ func (p Provider) decideAsked(ctx context.Context) ([]catalog.Model, error) {
 // decision API, and says why it wasn't answered.
 func (p Provider) AskSystemOne(ctx context.Context, model string) error {
 	if pat, off := ModelDisabled(p.ID, model); off { // never asked (#1867)
-		return fmt.Errorf("model %s/%s is disabled in magpie (it matches %q)", p.ID, model, pat)
+		return fmt.Errorf("model %s/%s is disabled in magpie-friday (it matches %q)", p.ID, model, pat)
 	}
 	u, err := p.DecideModelURL(ctx, model)
 	if err != nil {

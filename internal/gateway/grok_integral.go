@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Grok's models write a whole number in a tool call's arguments with a
@@ -32,7 +32,7 @@ import (
 // the same arguments whether they come whole or in deltas cut anywhere:
 // what the deltas of a call add up to is what its done events say.
 
-// grokModel is whether id, the model as magpie or its upstream names it, is
+// grokModel is whether id, the model as magpie-friday or its upstream names it, is
 // one of Grok's, under whatever vendor prefix a relay or router gives it
 // (xai/grok-4.5, x-ai/grok-4).
 func grokModel(id string) bool {
@@ -43,7 +43,7 @@ func grokModel(id string) bool {
 }
 
 // grokServed is whether a request for model on p goes to a Grok model,
-// by magpie's id for it or the name it is sent upstream under.
+// by magpie-friday's id for it or the name it is sent upstream under.
 func grokServed(wires map[string]string, p provider.Provider, model string) bool {
 	return grokModel(model) || grokModel(provider.UpstreamNameIn(wires, p.ID, model))
 }

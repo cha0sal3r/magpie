@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/yetone/magpie/internal/probelog"
+	"github.com/cha0sal3r/magpie-friday/internal/probelog"
 )
 
 // A Google sign-in (Antigravity, Gemini CLI) speaks Code Assist alone, an

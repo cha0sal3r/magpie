@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // restAs rests ids (a provider, a key, or a provider's model) as routing
@@ -36,7 +36,7 @@ func restAs(t *testing.T, why string, ids ...string) {
 	})
 }
 
-// Image recognition left to magpie picks a describer with allowance left
+// Image recognition left to magpie-friday picks a describer with allowance left
 // over one out of it, whatever their order: the cheaper key's describer
 // out of quota, resting after a refusal or read used up alike, gives way
 // to the dearer one (#1801, hibaliqya-yonma: each image went on to an
@@ -169,7 +169,7 @@ func TestSpentModelAcrossAccounts(t *testing.T) {
 	}
 }
 
-// With every describer out of allowance, an image isn't sent to magpie's
+// With every describer out of allowance, an image isn't sent to magpie-friday's
 // pick to be refused again: the request is turned away saying so, on the
 // gateway and the vision MCP alike, until the window renews. A describer
 // the Settings name is asked as before.
@@ -229,7 +229,7 @@ func (f *searchFake) keys() []string {
 	return slices.Clone(f.asked)
 }
 
-// The web search magpie runs for a model that can't is a side request of
+// The web search magpie-friday runs for a model that can't is a side request of
 // the same kind: the searcher it picks has allowance left, and one out of
 // it isn't asked, the next searcher or the search APIs searching instead.
 func TestSearcherPassesOverOneOut(t *testing.T) {
@@ -270,7 +270,7 @@ func TestSearcherPassesOverOneOut(t *testing.T) {
 		t.Fatalf("asked with %q", got)
 	}
 
-	// both out: magpie still offers its search, and asks neither
+	// both out: magpie-friday still offers its search, and asks neither
 	windows[other+"-key"] = week(100, time.Now().Add(time.Hour))
 	if !canSearch() {
 		t.Fatal("search no longer offered with its searchers out for now")

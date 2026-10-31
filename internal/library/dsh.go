@@ -5,17 +5,17 @@ package library
 // profile's cordis.patch.yml, or config.yaml before profiles) adds with a
 // top-level insert:
 //
-//	- insert: # magpie
-//	    - id: magpie-mcp-fs
+//	- insert: # magpie-friday
+//	    - id: magpie-friday-mcp-fs
 //	      name: "@deepseek-ai/dsh-mcp-client"
 //	      config:
 //	        serverName: fs
 //	        transport: stdio
 //	        command: npx
 //
-// magpie writes each server as an insert of its own, marked; a row the
+// magpie-friday writes each server as an insert of its own, marked; a row the
 // user inserted is read like any other agent's entry, and one by a name
-// magpie writes is taken out of the user's insert for magpie's.
+// magpie-friday writes is taken out of the user's insert for magpie-friday's.
 
 import (
 	"bytes"
@@ -30,12 +30,12 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 const dshMCPPlugin = "@deepseek-ai/dsh-mcp-client"
 
-const dshMark = "- insert: # magpie"
+const dshMark = "- insert: # magpie-friday"
 
 // dshServerName is what dsh-mcp-client takes as a serverName.
 var dshServerName = regexp.MustCompile(`^[A-Za-z0-9_-]{1,32}$`)
@@ -100,10 +100,10 @@ func dshRead(path string) (*dshPatches, error) {
 			// with one (#2667), and it stays in the head it is written back
 			// with, so the file keeps it. Only at the left edge and before
 			// anything but comments: a second one starts a second
-			// document, which is no list magpie can edit.
+			// document, which is no list magpie-friday can edit.
 			marker := dshDocStart(l) && !opened
 			if t != "" && !strings.HasPrefix(t, "#") && t != "[]" && !marker {
-				return nil, fmt.Errorf("%s is not a list of entries magpie can edit", path)
+				return nil, fmt.Errorf("%s is not a list of entries magpie-friday can edit", path)
 			}
 			if t != "" && !strings.HasPrefix(t, "#") {
 				opened = true
@@ -112,7 +112,7 @@ func dshRead(path string) (*dshPatches, error) {
 				p.head = append(p.head, l)
 			}
 		case t != "" && !strings.HasPrefix(t, "#") && !strings.HasPrefix(l, " "):
-			return nil, fmt.Errorf("%s is not a list of entries magpie can edit", path)
+			return nil, fmt.Errorf("%s is not a list of entries magpie-friday can edit", path)
 		default:
 			p.items[len(p.items)-1] = append(p.items[len(p.items)-1], l)
 		}
@@ -242,7 +242,7 @@ func dshEntries(path string) (map[string]map[string]any, error) {
 	return out, nil
 }
 
-// dshPut writes the server as magpie's insert, in place of magpie's one
+// dshPut writes the server as magpie-friday's insert, in place of magpie-friday's one
 // by that name, or of the user's row, which leaves the user's insert.
 func dshPut(path, name string, o ordered) error {
 	p, err := dshRead(path)
@@ -251,7 +251,7 @@ func dshPut(path, name string, o ordered) error {
 	}
 	lines := []string{
 		dshMark,
-		"    - id: magpie-mcp-" + name,
+		"    - id: magpie-friday-mcp-" + name,
 		"      name: " + dshScalar(dshMCPPlugin),
 		"      config:",
 	}

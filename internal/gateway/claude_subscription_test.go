@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 func TestClaudeSubscriptionPromptKeepsForeignHarnessOutOfSystem(t *testing.T) {
@@ -430,14 +430,14 @@ func TestSweepBridgeProjectsTakesOnlyTheBridgesFolders(t *testing.T) {
 	claudeDir := filepath.Join(base, "claude")
 	projects := filepath.Join(claudeDir, "projects")
 	gone := []string{
-		claudeProjectName(filepath.Join(real, "magpie-claude-1097091858")),
-		claudeProjectName(filepath.Join(link, "T", "magpie-claude-42")),
+		claudeProjectName(filepath.Join(real, "magpie-friday-claude-1097091858")),
+		claudeProjectName(filepath.Join(link, "T", "magpie-friday-claude-42")),
 	}
 	kept := []string{
-		claudeProjectName(filepath.Join(real, "magpie-claude-")),
-		claudeProjectName(filepath.Join(real, "magpie-claude-12-x")),
+		claudeProjectName(filepath.Join(real, "magpie-friday-claude-")),
+		claudeProjectName(filepath.Join(real, "magpie-friday-claude-12-x")),
 		claudeProjectName(filepath.Join(real, "other")),
-		claudeProjectName("/Users/me/code/magpie-claude-7"),
+		claudeProjectName("/Users/me/code/magpie-friday-claude-7"),
 	}
 	for _, d := range append(append([]string{}, gone...), kept...) {
 		if err := os.MkdirAll(filepath.Join(projects, d), 0o755); err != nil {
@@ -483,12 +483,12 @@ func TestBridgeTempsSwept(t *testing.T) {
 		}
 		return dir
 	}
-	gone := []string{mk("magpie-claude-1097091858", true), mk("magpie-claude-42", true)}
+	gone := []string{mk("magpie-friday-claude-1097091858", true), mk("magpie-friday-claude-42", true)}
 	kept := []string{
-		mk("magpie-claude-777", false), // a run still going
-		mk("magpie-claude-work-501", true),
-		mk("magpie-claude-", true),
-		mk("magpie-claude-12-x", true),
+		mk("magpie-friday-claude-777", false), // a run still going
+		mk("magpie-friday-claude-work-501", true),
+		mk("magpie-friday-claude-", true),
+		mk("magpie-friday-claude-12-x", true),
 		mk("other-1", true),
 	}
 	sweepBridgeTemps(tmp)

@@ -29,19 +29,19 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/awake"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/filememo"
-	"github.com/yetone/magpie/internal/gwbudget"
-	"github.com/yetone/magpie/internal/gwmw"
-	"github.com/yetone/magpie/internal/gwtool"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/pluginrt"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/redact"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/awake"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/filememo"
+	"github.com/cha0sal3r/magpie-friday/internal/gwbudget"
+	"github.com/cha0sal3r/magpie-friday/internal/gwmw"
+	"github.com/cha0sal3r/magpie-friday/internal/gwtool"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/pluginrt"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/redact"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // DefaultAddr is where the gateway listens unless Settings' port or
@@ -50,7 +50,7 @@ const DefaultAddr = "127.0.0.1:3425"
 
 // Token is the bearer token agents are told to use. The gateway only
 // listens on loopback and accepts anything, but agents insist on one.
-const Token = "magpie"
+const Token = "magpie-friday"
 
 // TokenFor is the token an agent that says nothing of itself in its
 // User-Agent is told to use, so the gateway still knows it: Alma's requests
@@ -75,7 +75,7 @@ func agentOf(r *http.Request) string {
 		// cursor-agent talks to Cursor's backend alone, never to a
 		// gateway: a Cursor User-Agent here is Cursor Private Inference's
 		// ("Cursor-CLI/…") sent with a key other than its own, the one
-		// typed in its Open configuration or a model's settings ("magpie"),
+		// typed in its Open configuration or a model's settings ("magpie-friday"),
 		// and it is shown its models as with its key (mamba on Discord)
 		return "cursor-local"
 	}
@@ -109,9 +109,9 @@ func codexForClaudeCode(h http.Header) bool {
 	return false
 }
 
-// startedByAgent says whether a request is from no agent magpie knows but
+// startedByAgent says whether a request is from no agent magpie-friday knows but
 // from something an agent started with its environment (a hook's script): it
-// came with the plain gateway token, not one magpie gave an agent, and
+// came with the plain gateway token, not one magpie-friday gave an agent, and
 // its User-Agent names no agent.
 func startedByAgent(r *http.Request, agent string) bool {
 	if _, ok := strings.CutPrefix(callerKey(r), Token+"-"); ok {
@@ -121,7 +121,7 @@ func startedByAgent(r *http.Request, agent string) bool {
 }
 
 // StandIn is the model an agent is set to use in place of one it named that
-// magpie doesn't serve it: Claude Code asks for claude-haiku-… by name for
+// magpie-friday doesn't serve it: Claude Code asks for claude-haiku-… by name for
 // its small tasks, whatever its haiku tier is set to, and that goes to the
 // tier's model rather than to some provider that happens to list the name.
 // "" leaves the model as asked. Set by main.
@@ -145,7 +145,7 @@ func withWires(r *http.Request) *http.Request {
 }
 
 // wiresOf is the names in force for ctx: the ones withWires read, or the
-// ones in force now for a request magpie made for itself and never carried
+// ones in force now for a request magpie-friday made for itself and never carried
 // them on.
 func wiresOf(ctx context.Context) map[string]string {
 	if load, ok := ctx.Value(wiresKey{}).(func() map[string]string); ok {
@@ -154,7 +154,7 @@ func wiresOf(ctx context.Context) map[string]string {
 	return settings.Shared().ModelWires
 }
 
-// standIn is StandIn's model for one magpie shows no entry for: not a
+// standIn is StandIn's model for one magpie-friday shows no entry for: not a
 // catalog id or model, nor a ready provider's "provider/model".
 func standIn(agent, asked string) string {
 	if StandIn == nil || !unserved(asked) {
@@ -170,29 +170,29 @@ func standIn(agent, asked string) string {
 // claudeFamily is a full id of one of the model families Claude Code has a
 // tier for, as Claude Code or a wrapper of it names one: claude-sonnet-4-6,
 // claude-fable-5-1, claude-haiku-4-5-20251001, claude-3-5-sonnet-20241022,
-// whatever the version, matched by family so a release magpie has never
+// whatever the version, matched by family so a release magpie-friday has never
 // heard of is one too. A provider's "a/claude-…" is not one.
 var claudeFamily = regexp.MustCompile(`^claude-(?:[0-9][0-9.-]*-)?(?:opus|sonnet|haiku|fable)(?:[-.@:]|$)`)
 
 // claudeTierStandIn is the model Claude Code is set to use for the tier of
-// a full Claude id it names (StandIn), even one magpie serves: Claude Code
+// a full Claude id it names (StandIn), even one magpie-friday serves: Claude Code
 // asks for claude-haiku-… by name for its small tasks, and a wrapper (T3
 // Code, KevinXC on Discord) asks for every model by its full id, so
-// claude-sonnet-5 went to the Claude account magpie serves it on, spent,
+// claude-sonnet-5 went to the Claude account magpie-friday serves it on, spent,
 // while claude-sonnet-4-6, which no provider of the user's listed, went to
 // the sonnet tier. Every id of a family now goes to its tier, as Claude
 // Code's own aliases do. A routing group of the user's own named by the id
-// still has it; one magpie found (auto-…) was never picked for it. "" when
+// still has it; one magpie-friday found (auto-…) was never picked for it. "" when
 // the id is no such one, the agent isn't Claude Code, or Claude Code isn't
-// routed through magpie (StandIn says nothing).
+// routed through magpie-friday (StandIn says nothing).
 //
-// A client magpie doesn't know as an agent (Python-urllib, an Anthropic SDK)
-// naming such an id that magpie doesn't serve is taken for one Claude Code
+// A client magpie-friday doesn't know as an agent (Python-urllib, an Anthropic SDK)
+// naming such an id that magpie-friday doesn't serve is taken for one Claude Code
 // started: a hook, statusline or plugin script inherits Claude Code's
 // ANTHROPIC_BASE_URL and token, and asks for claude-sonnet-4-6 by name,
 // which went nowhere, a 404 (tbxark on X). It gets Claude Code's tier too.
 // An id the user does serve (a Claude account, an Anthropic key) goes
-// where it is served, and an agent magpie knows keeps its own models.
+// where it is served, and an agent magpie-friday knows keeps its own models.
 func claudeTierStandIn(r *http.Request, agent, asked string) string {
 	if StandIn == nil || !claudeFamily.MatchString(strings.ToLower(strings.TrimSuffix(asked, "[1m]"))) {
 		return ""
@@ -213,7 +213,7 @@ func claudeTierStandIn(r *http.Request, agent, asked string) string {
 	return m
 }
 
-// unserved: magpie shows no entry for the model — not a catalog id or
+// unserved: magpie-friday shows no entry for the model — not a catalog id or
 // model, nor the "provider/model" of a provider that is on (a routing
 // group's id is taken as served). A switched-off provider's is unserved: a
 // session that started before it was switched off still asks for the model
@@ -254,9 +254,9 @@ func namesInCatalog() map[string]bool {
 }
 
 // switchedOff says a request for model went nowhere because p, which
-// serves it, is switched off in magpie (provider.Provider.Off).
+// serves it, is switched off in magpie-friday (provider.Provider.Off).
 func switchedOff(p provider.Provider, model string) string {
-	return fmt.Sprintf("%s is switched off in Magpie, so %q is not served; switch it on again in Magpie's Providers to use it", p.Name, model)
+	return fmt.Sprintf("%s is switched off in magpie-friday, so %q is not served; switch it on again in magpie-friday's Providers to use it", p.Name, model)
 }
 
 // Version is set by main.
@@ -267,7 +267,7 @@ var Version = "dev"
 func Addr() string { return settings.GatewayAddr() }
 
 // SavedURL is URL by Settings alone, MAGPIE_ADDR left aside: where the
-// installed magpie, whose settings these are, is reached.
+// installed magpie-friday, whose settings these are, is reached.
 func SavedURL() string { return "http://" + settings.SavedAddr() }
 
 // URL is the base URL agents use, e.g. http://127.0.0.1:3425: a gateway
@@ -281,12 +281,12 @@ func URL() string {
 }
 
 // Window says this process shows the routing of the gateway it serves:
-// the app's window (a tray's too, when opened) or magpie web's page, and
-// not magpie serve, which has none. Set by the gui.
+// the app's window (a tray's too, when opened) or magpie-friday web's page, and
+// not magpie-friday serve, which has none. Set by the gui.
 var Window bool
 
 // Serves says how this process was started (app, tray, web, serve or tui):
-// the Routing page of another magpie on this computer, which shows this
+// the Routing page of another magpie-friday on this computer, which shows this
 // one's routing, names it (#2606). Set by the cli.
 var Serves = "app"
 
@@ -296,29 +296,29 @@ func Running() bool {
 	return running
 }
 
-// Serving asks the address what answers there: whether a magpie gateway
-// does, and whether the magpie serving it has a window its routing can be
+// Serving asks the address what answers there: whether a magpie-friday gateway
+// does, and whether the magpie-friday serving it has a window its routing can be
 // watched in (#110).
 func Serving() (running, window bool) {
 	s := ServedBy()
 	return s.Running, s.Window
 }
 
-// Served is what the magpie answering at the gateway's address says of
+// Served is what the magpie-friday answering at the gateway's address says of
 // itself.
 type Served struct {
-	Running bool   // a magpie gateway answers
+	Running bool   // a magpie-friday gateway answers
 	Window  bool   // its routing can be watched in its window (#110)
 	Version string // its version; "" from one that doesn't say
 	Pid     int    // its process id; 0 from one that doesn't say
 	Serves  string // how it was started: app, tray, web, serve or tui; "" from one that doesn't say
 }
 
-// ServedBy asks the address which magpie answers there. Another magpie can
-// keep the port after this one is updated (a magpie serve left running, a
+// ServedBy asks the address which magpie-friday answers there. Another magpie-friday can
+// keep the port after this one is updated (a magpie-friday serve left running, a
 // second copy, one that didn't quit), and every agent's request is then
 // still that one's to send: in #506 a Factory 403 came worded as v0.1.550
-// and earlier word it to two people whose magpie said v0.1.630, so none of
+// and earlier word it to two people whose magpie-friday said v0.1.630, so none of
 // the fixes since reached their requests. Its version tells it apart.
 func ServedBy() Served {
 	c := &http.Client{Timeout: 700 * time.Millisecond}
@@ -335,15 +335,15 @@ func ServedBy() Served {
 		Pid     int    `json:"pid"`
 		Serves  string `json:"serves"`
 	}
-	if decodeJSON(b, &info) != nil || info.Name != "magpie" {
-		return Served{Running: bytes.Contains(b, []byte(`"magpie"`)), Window: bytes.Contains(b, []byte(`"window":true`))}
+	if decodeJSON(b, &info) != nil || info.Name != "magpie-friday" {
+		return Served{Running: bytes.Contains(b, []byte(`"magpie-friday"`)), Window: bytes.Contains(b, []byte(`"window":true`))}
 	}
 	return Served{Running: true, Window: info.Window, Version: info.Version, Pid: info.Pid, Serves: info.Serves}
 }
 
 // Taken reports whether anything accepts connections at the gateway's
 // address, whether or not it answers ServedBy's question in time: a
-// magpie busy starting, or slow on a small server, still holds the port.
+// magpie-friday busy starting, or slow on a small server, still holds the port.
 func Taken() bool {
 	c, err := net.DialTimeout("tcp", strings.TrimPrefix(URL(), "http://"), 500*time.Millisecond)
 	if err != nil {
@@ -363,11 +363,11 @@ type Call struct {
 	Route int64     `json:"route,omitempty"`
 	Time  time.Time `json:"time"`
 	Agent string    `json:"agent"`         // who called, from the client's User-Agent
-	Via   string    `json:"via,omitempty"` // the computer a remote magpie's request came from (AgentHeader)
+	Via   string    `json:"via,omitempty"` // the computer a remote magpie-friday's request came from (AgentHeader)
 	// Kind: what the agent made the call for, when it isn't its turn —
 	// a Codex subagent's (callKind) — "" for a turn
 	Kind string `json:"kind,omitempty"`
-	// For: the request a call of magpie's own (a web search) was made for
+	// For: the request a call of magpie-friday's own (a web search) was made for
 	For *CallFor `json:"for,omitempty"`
 	// Masked: what masking swapped in it, nil for nothing
 	Masked   *Masked           `json:"masked,omitempty"`
@@ -439,7 +439,7 @@ type Server struct {
 	// front is Front's handler, built once
 	frontOnce sync.Once
 	front     http.Handler
-	// handedOff: another magpie serves the port now, and this one's end
+	// handedOff: another magpie-friday serves the port now, and this one's end
 	// waits for its requests in flight to finish (handover.go)
 	handedOff atomic.Bool
 	// what it serves other computers TLS with, nil without (tls.go)
@@ -550,14 +550,14 @@ func keepRecent(ring []Call, c Call) []Call {
 	return append(ring, c)
 }
 
-// WhileServing is work only the magpie serving the gateway does, begun
+// WhileServing is work only the magpie-friday serving the gateway does, begun
 // once it is bound and ended with it: one of the magpies running, never
 // two at once.
 var WhileServing []func(context.Context)
 
 // ListenAndServe runs the gateway until ctx ends, and returns once the
 // requests in flight then have finished: within 2s, or, handing over, as
-// long as a stream takes. A bind error means another magpie is already
+// long as a stream takes. A bind error means another magpie-friday is already
 // serving, which is fine for the caller to ignore.
 func (s *Server) ListenAndServe(ctx context.Context) error {
 	migrateLANKeyBestEffort()
@@ -575,14 +575,14 @@ func (s *Server) ListenAndServe(ctx context.Context) error {
 	s.lnMu.Lock()
 	s.ln = ln
 	s.lnMu.Unlock()
-	// a socket handed over (handover.go): the magpie that had it stops
+	// a socket handed over (handover.go): the magpie-friday that had it stops
 	// accepting once told this one serves on it
 	if ack := takeAck(); ack != nil {
 		go ack()
 	}
 	// the observers plugins registered (usage.Observer) run while this
 	// process serves, and plugins turned on or off elsewhere (the window,
-	// `magpie plugin builtin`) come and go here too
+	// `magpie-friday plugin builtin`) come and go here too
 	stopObservers := usage.ServeObservers()
 	defer stopObservers()
 	// and the user's own routing groups are served while plugins/groups is
@@ -594,7 +594,7 @@ func (s *Server) ListenAndServe(ctx context.Context) error {
 		}
 	})
 	defer stopGroups()
-	// and magpie's own tools (its web search) are offered and answered
+	// and magpie-friday's own tools (its web search) are offered and answered
 	// while the plugin serving each is on (gwtool)
 	stopTools := gwtool.Gate()
 	defer stopTools()
@@ -622,7 +622,7 @@ func (s *Server) ListenAndServe(ctx context.Context) error {
 	go filememo.Watch(freshCtx, pluginrt.Path(), settings.Path(), provider.Path(), plugin.ListPath(), plugin.ToolsPath(), access.Path())
 	go pluginrt.KeepFresh(freshCtx, filememo.OthersEvery, settings.Path(), provider.Path(), plugin.ListPath(), plugin.ToolsPath(), access.Path())
 	srv := &http.Server{Handler: s.Front(), ReadHeaderTimeout: 30 * time.Second, IdleTimeout: 5 * time.Minute}
-	// the magpie serving the gateway, and only it, keeps the saved accounts
+	// the magpie-friday serving the gateway, and only it, keeps the saved accounts
 	// signed in, so two never refresh one sign-in at once
 	go provider.KeepLoginsAlive(ctx)
 	// and signs Codex and Claude Code in to their next account when the
@@ -647,7 +647,7 @@ func (s *Server) ListenAndServe(ctx context.Context) error {
 	go provider.KeepRetiringMoved(ctx)
 	// and fetches the partner list every hour, asked for or not
 	go provider.KeepPartnersFresh(ctx)
-	go provider.KeepPluginsListed(ctx) // models a plugin's vendor drops or adds, while magpie runs
+	go provider.KeepPluginsListed(ctx) // models a plugin's vendor drops or adds, while magpie-friday runs
 	// and fetches the lists of the providers the user asked to keep fresh (#2135)
 	go provider.KeepListsFresh(ctx)
 	// and keeps the community's plugins up to date, noting others' updates, and the Bun they run on
@@ -681,7 +681,7 @@ func (s *Server) ListenAndServe(ctx context.Context) error {
 		srv.Shutdown(c)
 		s.subscription.abortAll()
 		provider.FlushServed() // what answered last, kept for the next start and the CLI
-		flushSticks()          // who answered which conversation, for the next start or the magpie handed over to
+		flushSticks()          // who answered which conversation, for the next start or the magpie-friday handed over to
 	}()
 	for {
 		err := srv.Serve(ln)
@@ -715,7 +715,7 @@ func (s *Server) Handler() http.Handler {
 	// Claude Desktop's third-party gateway looks for one here before it
 	// takes the address
 	mux.HandleFunc("GET /api/hello", func(w http.ResponseWriter, r *http.Request) {
-		writeJSON(w, 200, map[string]any{"name": "magpie", "version": Version})
+		writeJSON(w, 200, map[string]any{"name": "magpie-friday", "version": Version})
 	})
 	// the Ollama API's model routes, for a client that takes a custom
 	// endpoint only as an Ollama server (ollama.go)
@@ -726,27 +726,27 @@ func (s *Server) Handler() http.Handler {
 	// (Zed's Ollama provider; ollama_chat.go)
 	mux.HandleFunc("POST /api/chat", s.ollamaChat(false))
 	mux.HandleFunc("POST /api/generate", s.ollamaChat(true))
-	mux.HandleFunc("GET /v1/magpie/quotas", s.quotas)
-	mux.HandleFunc("GET /v1/magpie/usage", s.usageSummary)
-	mux.HandleFunc("GET /v1/magpie/usage/requests", s.usageRequests)
-	mux.HandleFunc("POST /v1/magpie/usage/requests", s.usageIngest)
-	mux.HandleFunc("GET /v1/magpie/quotas/history", s.quotasHistory)
+	mux.HandleFunc("GET /v1/magpie-friday/quotas", s.quotas)
+	mux.HandleFunc("GET /v1/magpie-friday/usage", s.usageSummary)
+	mux.HandleFunc("GET /v1/magpie-friday/usage/requests", s.usageRequests)
+	mux.HandleFunc("POST /v1/magpie-friday/usage/requests", s.usageIngest)
+	mux.HandleFunc("GET /v1/magpie-friday/quotas/history", s.quotasHistory)
 	mux.HandleFunc("GET "+provider.RemoteCardsPath, s.quotaCards)
 	mux.HandleFunc("POST "+provider.RemoteRefreshPath, s.quotaCardsRefresh)
-	mux.HandleFunc("GET /v1/magpie/route", s.sessionRoute)
-	mux.HandleFunc("GET /v1/magpie/trace", s.gatewayTrace)
-	mux.HandleFunc("GET /v1/magpie/concurrency", s.concurrency)
-	mux.HandleFunc("GET /v1/magpie/limit", s.keyLimit)
-	// a heap profile of this process, for magpie heap (loopback only)
+	mux.HandleFunc("GET /v1/magpie-friday/route", s.sessionRoute)
+	mux.HandleFunc("GET /v1/magpie-friday/trace", s.gatewayTrace)
+	mux.HandleFunc("GET /v1/magpie-friday/concurrency", s.concurrency)
+	mux.HandleFunc("GET /v1/magpie-friday/limit", s.keyLimit)
+	// a heap profile of this process, for magpie-friday heap (loopback only)
 	mux.HandleFunc("GET "+HeapPath, s.heapProfile)
-	// a CPU profile of this process over some seconds, for magpie cpu
+	// a CPU profile of this process over some seconds, for magpie-friday cpu
 	// (loopback only)
 	mux.HandleFunc("GET "+CPUPath, s.cpuProfile)
-	// every goroutine's stack and wait, for magpie goroutines (loopback
+	// every goroutine's stack and wait, for magpie-friday goroutines (loopback
 	// only)
 	mux.HandleFunc("GET "+GoroutinesPath, s.goroutineDump)
-	mux.HandleFunc("GET /v1/magpie/omarchy", s.omarchyTheme)
-	mux.HandleFunc("OPTIONS /v1/magpie/omarchy", s.omarchyTheme)
+	mux.HandleFunc("GET /v1/magpie-friday/omarchy", s.omarchyTheme)
+	mux.HandleFunc("OPTIONS /v1/magpie-friday/omarchy", s.omarchyTheme)
 	mux.HandleFunc("POST /v1/chat/completions", s.handle(provider.Chat))
 	mux.HandleFunc("POST /chat/completions", s.handle(provider.Chat))
 	mux.HandleFunc("POST /v1/responses", s.handle(provider.Responses))
@@ -791,7 +791,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /v1beta/models", s.geminiModels)
 	mux.HandleFunc("POST /v1beta/models/{call...}", s.gemini)
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		writeError(w, provider.Chat, http.StatusNotFound, "magpie serves /v1/chat/completions, /v1/responses, /v1/messages, /v1/systemone, /v1/images/generations, /v1/images/edits, /v1/videos, /v1/embeddings, /v1/rerank, /v1/audio/transcriptions, /v1/audio/translations and /v1beta/models/*")
+		writeError(w, provider.Chat, http.StatusNotFound, "magpie-friday serves /v1/chat/completions, /v1/responses, /v1/messages, /v1/systemone, /v1/images/generations, /v1/images/edits, /v1/videos, /v1/embeddings, /v1/rerank, /v1/audio/transcriptions, /v1/audio/translations and /v1beta/models/*")
 	})
 	// the goroutine dump first, ahead of every lock the rest can be stuck
 	// on (dumpFirst)
@@ -799,14 +799,14 @@ func (s *Server) Handler() http.Handler {
 }
 
 // responsesOverHTTP answers a GET on /v1/responses, which is how a client
-// opens Responses over a WebSocket (#1005): magpie relays Responses over
+// opens Responses over a WebSocket (#1005): magpie-friday relays Responses over
 // HTTP alone, its stream as SSE, so the upgrade is told 426 — the answer a
 // client falls back to HTTP on at once (Codex does, as on CodexPath) — in
 // place of the 404 every unknown path gets, which read as a broken
 // gateway. A plain GET is told to POST.
 func responsesOverHTTP(w http.ResponseWriter, r *http.Request) {
 	if strings.EqualFold(r.Header.Get("Upgrade"), "websocket") {
-		writeError(w, provider.Responses, http.StatusUpgradeRequired, "magpie relays Responses over HTTP only: send POST /v1/responses (streamed as SSE); Responses over a WebSocket is not served")
+		writeError(w, provider.Responses, http.StatusUpgradeRequired, "magpie-friday relays Responses over HTTP only: send POST /v1/responses (streamed as SSE); Responses over a WebSocket is not served")
 		return
 	}
 	w.Header().Set("Allow", "POST")
@@ -814,16 +814,16 @@ func responsesOverHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // catalogSize is how many models the catalog has, as info says, kept by
-// provider.StampNow: every magpie on this computer asks another which
+// provider.StampNow: every magpie-friday on this computer asks another which
 // it is (ServedBy, a window's every 15s, each look at its state while it
 // doesn't serve), and each question built the whole catalog to count it,
 // 5.4 GB of a day's 36 GB of allocations.
 var catalogSize stamped[struct{}, int]
 
 func (s *Server) info(w http.ResponseWriter, r *http.Request) {
-	out := map[string]any{"name": "magpie", "version": Version, "models": catalogSize.get(struct{}{}, func() int { return len(provider.Catalog()) }), "window": Window,
-		"apis": []string{"/v1/chat/completions", "/v1/responses", "/v1/messages", "/v1/systemone", "/v1beta/models/{model}:generateContent", "/v1/images/generations", "/v1/images/edits", "/v1/videos", "/v1/embeddings", "/v1/rerank", "/v1/audio/transcriptions", "/v1/audio/translations", "/v1/magpie/quotas", "/v1/magpie/quotas/history", "/v1/magpie/usage", "/v1/magpie/usage/requests", "/v1/magpie/route", "/v1/magpie/trace", SearchMCPPath, VisionMCPPath, ImageMCPPath, ToolsMCPPath}}
-	// which process serves, for another magpie on this computer to name it
+	out := map[string]any{"name": "magpie-friday", "version": Version, "models": catalogSize.get(struct{}{}, func() int { return len(provider.Catalog()) }), "window": Window,
+		"apis": []string{"/v1/chat/completions", "/v1/responses", "/v1/messages", "/v1/systemone", "/v1beta/models/{model}:generateContent", "/v1/images/generations", "/v1/images/edits", "/v1/videos", "/v1/embeddings", "/v1/rerank", "/v1/audio/transcriptions", "/v1/audio/translations", "/v1/magpie-friday/quotas", "/v1/magpie-friday/quotas/history", "/v1/magpie-friday/usage", "/v1/magpie-friday/usage/requests", "/v1/magpie-friday/route", "/v1/magpie-friday/trace", SearchMCPPath, VisionMCPPath, ImageMCPPath, ToolsMCPPath}}
+	// which process serves, for another magpie-friday on this computer to name it
 	// on its Routing page (#2606); not told to another machine
 	if local(r) {
 		out["pid"], out["serves"] = os.Getpid(), Serves
@@ -831,8 +831,8 @@ func (s *Server) info(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, out)
 }
 
-// quotas is what is left of every subscription, plan and key magpie has,
-// for an agent choosing where to send its work (magpie quota --json is the
+// quotas is what is left of every subscription, plan and key magpie-friday has,
+// for an agent choosing where to send its work (magpie-friday quota --json is the
 // same). It names the accounts and their balances, so it answers this
 // machine, and another only with an enabled gateway key, which lanGuard
 // asks of it while the gateway is shared or MAGPIE_ADDR puts it on the
@@ -842,14 +842,14 @@ func (s *Server) info(w http.ResponseWriter, r *http.Request) {
 // told its quotas is told those of what it may use (scopeQuotas, #2216).
 func (s *Server) quotas(w http.ResponseWriter, r *http.Request) {
 	if !local(r) && !sharedWith(r) {
-		writeError(w, provider.Chat, http.StatusForbidden, "magpie's quotas are told to another machine only when magpie is shared on the local network (Settings → Network and sharing → Share on local network) and the request carries its API key (Authorization: Bearer <key> or x-api-key: <key>)")
+		writeError(w, provider.Chat, http.StatusForbidden, "magpie-friday's quotas are told to another machine only when magpie-friday is shared on the local network (Settings → Network and sharing → Share on local network) and the request carries its API key (Authorization: Bearer <key> or x-api-key: <key>)")
 		return
 	}
 	scope, ok := scopeQuotas(w, r)
 	if !ok {
 		return
 	}
-	// ?kept=1: what was last read, no vendor asked (magpie statusline,
+	// ?kept=1: what was last read, no vendor asked (magpie-friday statusline,
 	// run on every message, #1997)
 	if r.URL.Query().Get("kept") == "1" {
 		writeJSON(w, 200, map[string]any{"object": "list", "data": scope.quotas(provider.KeptQuotaReport(time.Now()))})
@@ -861,12 +861,12 @@ func (s *Server) quotas(w http.ResponseWriter, r *http.Request) {
 }
 
 // quotasHistory is what was left of each account's windows over time, as
-// this magpie (and the computers sharing usage with it) read them (#651):
+// this magpie-friday (and the computers sharing usage with it) read them (#651):
 // ?days= back (45 at most), ?provider= and ?user= to pick an account.
-// /v1/magpie/quotas stays the snapshot.
+// /v1/magpie-friday/quotas stays the snapshot.
 func (s *Server) quotasHistory(w http.ResponseWriter, r *http.Request) {
 	if !local(r) && !sharedWith(r) {
-		writeError(w, provider.Chat, http.StatusForbidden, "magpie's quotas are told to another machine only when magpie is shared on the local network (Settings → Network and sharing → Share on local network) and the request carries its API key (Authorization: Bearer <key> or x-api-key: <key>)")
+		writeError(w, provider.Chat, http.StatusForbidden, "magpie-friday's quotas are told to another machine only when magpie-friday is shared on the local network (Settings → Network and sharing → Share on local network) and the request carries its API key (Authorization: Bearer <key> or x-api-key: <key>)")
 		return
 	}
 	scope, ok := scopeQuotas(w, r)
@@ -877,12 +877,12 @@ func (s *Server) quotasHistory(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, map[string]any{"object": "list", "data": scope.histories(provider.QuotaHistories(provider.QuotaHistorySince(q.Get("days"), time.Now()), q.Get("provider"), q.Get("user")))})
 }
 
-// quotaCards is the Usage page's cards as this magpie last read them, for
-// another magpie that has this one as its provider (remote-magpie) to
+// quotaCards is the Usage page's cards as this magpie-friday last read them, for
+// another magpie-friday that has this one as its provider (remote-magpie-friday) to
 // show: its own cache, however old, and no vendor asked for it.
 func (s *Server) quotaCards(w http.ResponseWriter, r *http.Request) {
 	if !local(r) && !sharedWith(r) {
-		writeError(w, provider.Chat, http.StatusForbidden, "magpie's quotas are told to another machine only when magpie is shared on the local network (Settings → Network and sharing → Share on local network) and the request carries its API key (Authorization: Bearer <key> or x-api-key: <key>)")
+		writeError(w, provider.Chat, http.StatusForbidden, "magpie-friday's quotas are told to another machine only when magpie-friday is shared on the local network (Settings → Network and sharing → Share on local network) and the request carries its API key (Authorization: Bearer <key> or x-api-key: <key>)")
 		return
 	}
 	scope, ok := scopeQuotas(w, r)
@@ -892,7 +892,7 @@ func (s *Server) quotaCards(w http.ResponseWriter, r *http.Request) {
 	writeCards(w, r, scope)
 }
 
-// remoteRefreshes is when another magpie last had each card read again
+// remoteRefreshes is when another magpie-friday last had each card read again
 // here: one refreshed by hand is read at most once in remoteRefreshGap,
 // however often it is asked, so the vendor sees no more than this
 // computer's own refresh button would make it.
@@ -903,12 +903,12 @@ var remoteRefreshes = struct {
 
 const remoteRefreshGap = 30 * time.Second
 
-// quotaCardsRefresh is a card's refresh pressed on another magpie: the
+// quotaCardsRefresh is a card's refresh pressed on another magpie-friday: the
 // card (?provider=, &user=) is read again here, or every card when none
 // is named, then the cards are answered as quotaCards answers them.
 func (s *Server) quotaCardsRefresh(w http.ResponseWriter, r *http.Request) {
 	if !local(r) && !sharedWith(r) {
-		writeError(w, provider.Chat, http.StatusForbidden, "magpie's quotas are told to another machine only when magpie is shared on the local network (Settings → Network and sharing → Share on local network) and the request carries its API key (Authorization: Bearer <key> or x-api-key: <key>)")
+		writeError(w, provider.Chat, http.StatusForbidden, "magpie-friday's quotas are told to another machine only when magpie-friday is shared on the local network (Settings → Network and sharing → Share on local network) and the request carries its API key (Authorization: Bearer <key> or x-api-key: <key>)")
 		return
 	}
 	scope, ok := scopeQuotas(w, r)
@@ -916,8 +916,8 @@ func (s *Server) quotaCardsRefresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	id, user := r.URL.Query().Get("provider"), r.URL.Query().Get("user")
-	if strings.Contains(id, "/") || provider.IsRemoteCard(id) { // a card this magpie has from another: not passed on
-		writeError(w, provider.Chat, http.StatusBadRequest, "this magpie reads only its own cards again")
+	if strings.Contains(id, "/") || provider.IsRemoteCard(id) { // a card this magpie-friday has from another: not passed on
+		writeError(w, provider.Chat, http.StatusBadRequest, "this magpie-friday reads only its own cards again")
 		return
 	}
 	// a key told only some cards (#2216) has only those read again: a
@@ -969,7 +969,7 @@ func modelObject(e provider.Entry) map[string]any {
 		"owned_by": e.Provider.ID, "display_name": e.PlainName(), "reasoning": e.Thinks(), "supported_reasoning_levels": levels,
 		"reasoning_levels": flat}
 	// the window, as the names clients read it by: a group's context
-	// (magpie group set … context=) included
+	// (magpie-friday group set … context=) included
 	if e.Context > 0 {
 		m["context_window"], m["context_length"], m["max_input_tokens"] = e.Context, e.Context, e.Context
 	}
@@ -978,7 +978,7 @@ func modelObject(e provider.Entry) map[string]any {
 	if out := e.PublishedOutput(); out > 0 {
 		m["max_output_tokens"] = out
 	}
-	// for another magpie that has this one as its provider (remote-magpie):
+	// for another magpie-friday that has this one as its provider (remote-magpie-friday):
 	// the APIs a request for the model goes on as it is, so it sends each
 	// one on an API of these rather than having it translated twice, and
 	// whether it takes images
@@ -1059,7 +1059,7 @@ func cursorLocalModel(m map[string]any, e provider.Entry) {
 	m["capabilities"] = c
 }
 
-// drawerObjects are the image models magpie draws with, as another magpie
+// drawerObjects are the image models magpie-friday draws with, as another magpie-friday
 // asks for them in its list (provider.DrawersHeader): "kind": "image",
 // which an agent's list never has, so it takes none for a model to chat
 // with. A gateway key held to some models is told of those alone, as its
@@ -1088,8 +1088,8 @@ func drawerObjects(r *http.Request) []map[string]any {
 	return out
 }
 
-// videomakerObjects are the video models magpie makes videos with, as
-// another magpie asks for them (provider.VideomakersHeader): "kind": "video".
+// videomakerObjects are the video models magpie-friday makes videos with, as
+// another magpie-friday asks for them (provider.VideomakersHeader): "kind": "video".
 // A gateway key held to some models or accounts is told of those alone,
 // as its chat list is (#2579).
 func videomakerObjects(r *http.Request) []map[string]any {
@@ -1127,16 +1127,16 @@ func (s *Server) models(w http.ResponseWriter, r *http.Request) {
 		data = scienceModels(shown)
 	} else {
 		labels := provider.Labels(shown)
-		// for another magpie: how it searches the web for each model
+		// for another magpie-friday: how it searches the web for each model
 		magpie := r.Header.Get(provider.DrawersHeader) != ""
 		searches := magpie && canSearch()
-		// for another magpie, what each model costs here, so its usage
+		// for another magpie-friday, what each model costs here, so its usage
 		// there is counted at the same price: told only to this computer
-		// and to one this magpie is shared with by a gateway key, as the
+		// and to one this magpie-friday is shared with by a gateway key, as the
 		// prices are the user's own settings
 		//
 		// and to any client, OpenRouter's pricing for each model it knows
-		// a price of (cleary5779 on Discord: an agent built on magpie
+		// a price of (cleary5779 on Discord: an agent built on magpie-friday
 		// shows what a call costs), told to the same callers: the price is
 		// what the Usage page counts the model at, the user's own included.
 		// The settings, groups and providers are read once for the list
@@ -1148,14 +1148,14 @@ func (s *Server) models(w http.ResponseWriter, r *http.Request) {
 			priceOf = provider.EntryPricer(settings.Load(), provider.GroupFinder())
 		}
 		// the tiers Codex here is offered on each model (#1234), for every
-		// client: another magpie offers them to its own Codex, and Cindy
+		// client: another magpie-friday offers them to its own Codex, and Cindy
 		// shows its Fast switch on a model whose tiers hold priority
 		// (#1914). A model with none says nothing
 		tiers := codexTiers(shown)
 		// each model by its bare id as well, after the provider/model ids,
 		// when the user asked for it (settings.BareModelIDs): a client
 		// moved from another proxy asks for gpt-5.6-sol (love1sbug on X).
-		// Never for another magpie, whose provider would list each twice.
+		// Never for another magpie-friday, whose provider would list each twice.
 		// Each row is the entry the bare id reaches, its label that one's.
 		rows, ids := slices.Clip(shown), map[int]string{}
 		if !magpie && provider.BareModelIDs() {
@@ -1187,7 +1187,7 @@ func (s *Server) models(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 			}
-			// for another magpie: its name as the agents' lists here call
+			// for another magpie-friday: its name as the agents' lists here call
 			// it, with its provider's after it unless the user wants it
 			// plain, so two providers' models of one name are told apart
 			// there as they are here
@@ -1207,7 +1207,7 @@ func (s *Server) models(w http.ResponseWriter, r *http.Request) {
 	if r.Header.Get(provider.DecidersHeader) != "" {
 		// the decision models its own pickers offer: of a provider with
 		// picks (OpenRouter's twenty-odd), the picked ones, so another
-		// magpie lists what its Gateway page shows (GokoShiki on Discord)
+		// magpie-friday lists what its Gateway page shows (GokoShiki on Discord)
 		deciders := keyAllowed(r, provider.OfferedDeciders(nil))
 		for i := range deciders {
 			deciders[i].Name = cmp.Or(deciders[i].Name, deciders[i].Model)
@@ -1265,12 +1265,12 @@ func (s *Server) model(w http.ResponseWriter, r *http.Request) {
 	writeError(w, provider.Chat, 404, "unknown model "+id)
 }
 
-// unprefixed is the model magpie serves by an id Claude Desktop was given
-// for it (claudeLooking): anthropic/magpie-<number>, mythos-magpie-<number>,
-// magpie-<number>.anthropic.<Claude model>, or, as it listed them
-// before, "anthropic/" put in front of magpie's id — or by its flat
+// unprefixed is the model magpie-friday serves by an id Claude Desktop was given
+// for it (claudeLooking): anthropic/magpie-friday-<number>, mythos-magpie-friday-<number>,
+// magpie-friday-<number>.anthropic.<Claude model>, or, as it listed them
+// before, "anthropic/" put in front of magpie-friday's id — or by its flat
 // spelling (unflat) or its Claude version dashed (provider.ClaudeUndashed).
-// An id that is magpie's as it stands (a provider named
+// An id that is magpie-friday's as it stands (a provider named
 // anthropic) is left alone.
 func unprefixed(id string) string {
 	if real, ok := aliased(id); ok {
@@ -1296,7 +1296,7 @@ func unprefixed(id string) string {
 }
 
 // askedAt splits a model asked for at an effort of its own,
-// "<model>:<level>" (before a [1m] mark) — a Claude Code tier magpie set one
+// "<model>:<level>" (before a [1m] mark) — a Claude Code tier magpie-friday set one
 // on (#536) — into the model and the level, "" for none. As a routing
 // group's member is read (#189), only a level's name after the last colon is
 // one, and a model a provider has by the whole id ("x:high") is taken whole.
@@ -1507,7 +1507,7 @@ func (s *Server) handle(from provider.Protocol) http.HandlerFunc {
 			return
 		}
 		noteAsked(r.Context(), model)
-		// Codex with magpie as its provider: spawn_agent names every
+		// Codex with magpie-friday as its provider: spawn_agent names every
 		// model a subagent may be put on, not only Codex's first five
 		// (Gearclickist on Discord)
 		if from == provider.Responses && (fromCodex(r.Header) || agentOf(r) == "codex") {
@@ -1537,7 +1537,7 @@ func (s *Server) handle(from provider.Protocol) http.HandlerFunc {
 			}
 			provider.SawClient(provider.ClientClaudeCode, seen)
 		}
-		// Codex with magpie as its provider asks for a thread's title
+		// Codex with magpie-friday as its provider asks for a thread's title
 		// here (#743)
 		if from == provider.Responses {
 			if to := codexTitlesTo(r.Header, body, true); to != "" {
@@ -1558,8 +1558,8 @@ func (s *Server) handle(from provider.Protocol) http.HandlerFunc {
 			}
 			// Codex compacts remotely, a compaction_trigger here, on a
 			// provider table named "OpenAI" (CC Switch's relay tables,
-			// which magpie points here, #1301): the summary is magpie's to
-			// make, as on CodexPath, and magpie's summaries go back as text;
+			// which magpie-friday points here, #1301): the summary is magpie-friday's to
+			// make, as on CodexPath, and magpie-friday's summaries go back as text;
 			// a provider set to compact natively is asked Codex's own (#1099)
 			if bytes.Contains(body, []byte(`"compaction`)) {
 				var compact bool
@@ -1667,7 +1667,7 @@ func estimate(req *Request) int {
 // serve routes one parsed-enough request to its provider.
 func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Protocol, body []byte) {
 	start := time.Now()
-	// a client's "off" is magpie's none, for every route and check below
+	// a client's "off" is magpie-friday's none, for every route and check below
 	// that reads the body's effort (plugins#334)
 	body = offAsNone(from, body)
 	// the upstream names in force for this request, read once here rather
@@ -1714,11 +1714,11 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 	holdBody(r.Context(), plain)
 	capture := &captureResponseWriter{ResponseWriter: w}
 	if wholeBodies {
-		capture.whole = &spool{limit: wholeBodyLimit, pattern: "magpie-whole-*"}
+		capture.whole = &spool{limit: wholeBodyLimit, pattern: "magpie-friday-whole-*"}
 	}
 	w = capture
 	// the agent it is recorded as, the one on the computer it was passed
-	// on from for a remote magpie's request; agent the one that sent it,
+	// on from for a remote magpie-friday's request; agent the one that sent it,
 	// which what is done with it goes by
 	who, agent := callerOf(r), agentOf(r)
 	metadata := requestSessionMetadata(r.Header, body)
@@ -1792,7 +1792,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 			return id
 		}
 		if id, ok := provider.AutoStandIn(m); ok {
-			// a group magpie found, while the user has those off: its
+			// a group magpie-friday found, while the user has those off: its
 			// model from one provider, rather than refused
 			return id
 		}
@@ -1805,7 +1805,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 	} else if m := claudeTierStandIn(r, agent, asked); m != "" {
 		// Claude Code (or a wrapper, T3 Code) naming one of Anthropic's
 		// models by its full id: the model it is set to use for that tier,
-		// whether or not magpie serves the id too
+		// whether or not magpie-friday serves the id too
 		asked = grouped(at(m))
 	} else if g := grouped(asked); g != asked {
 		asked = g
@@ -1867,7 +1867,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 		msg := unknownModel(call.Model, "")
 		if g, ok := provider.DisabledGroup(asked); ok {
 			call.Error = "group switched off"
-			msg = fmt.Sprintf("the routing group %s is switched off in Magpie, so %q is not served; switch it on again on Magpie's Routing page to use it", g.Name, call.Model)
+			msg = fmt.Sprintf("the routing group %s is switched off in magpie-friday, so %q is not served; switch it on again on magpie-friday's Routing page to use it", g.Name, call.Model)
 		} else if g, _, ok := provider.FindGroup(asked); ok && g.Decides() {
 			// a group of decision models answers System One, not this
 			call.Status, call.Error = 400, "a decision group"
@@ -2156,7 +2156,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 		who := keyWho
 		var members map[string]bool
 		if chose {
-			// magpie's own call for the key — a web search, a picture
+			// magpie-friday's own call for the key — a web search, a picture
 			// described, a Codex title: of the models the user picked, so
 			// the models don't hold it, but the spend lands on an account,
 			// and the accounts hold it too
@@ -2206,7 +2206,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 		} else {
 			msg, back = cappedError(call.Model, held, time.Now())
 			if strictHeld != nil {
-				msg += ". The conversation stays strictly on that account (Stays: Strict), so magpie doesn't move it to another"
+				msg += ". The conversation stays strictly on that account (Stays: Strict), so magpie-friday doesn't move it to another"
 			}
 			record = cappedRecord(held)
 		}
@@ -2311,7 +2311,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 	}
 	if isGroup && seenGroup == nil {
 		// without a model to describe it, a new image goes only to the
-		// members that see it (#756) — to members magpie knows nothing
+		// members that see it (#756) — to members magpie-friday knows nothing
 		// of when none is known to see, as a model of its own would be
 		// sent it. With one, the members keep their order, a text-only
 		// one given it described.
@@ -2474,7 +2474,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 		kept = k
 	}
 	var sentMs int64 // ms from the request to its answering try going to the vendor
-	// of it, magpie's own, the tries that failed first and the wait for a
+	// of it, magpie-friday's own, the tries that failed first and the wait for a
 	// slot (usage.Record.Own, Retried, Queued: #1532)
 	var ownMs, retriedMs, queuedMs int64
 	var firstBegan time.Time // when the first try began
@@ -2501,7 +2501,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 	// asked again in place, tries the route doesn't list (#2436)
 	reloops, reasked := 0, 0
 	// ended is when the last try's reply ended: the request's ms end there,
-	// not after what magpie writes down of it once it has (#1939: sticks
+	// not after what magpie-friday writes down of it once it has (#1939: sticks
 	// and the provider's last answer, saved to disk, took seconds on a busy
 	// disk, and the reply's speed counted them as its own)
 	var ended time.Time
@@ -2701,7 +2701,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 			}
 		}
 		if fixed == "" && ruled == "" && effort == "" && agentPick != "" && c.p.Thinks(c.model) {
-			// the effort picked in magpie for an agent whose config can't
+			// the effort picked in magpie-friday for an agent whose config can't
 			// carry one (Cursor Private Inference, #1003), in place of the
 			// level it sent, on a model that reasons; a member fixed at
 			// one, a suffix and the turn's pick are more particular
@@ -2837,7 +2837,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 			// told to ask then rather than at once
 			msg := fmt.Sprintf("%s (out of its allowance: not asked again before %s)", rested.said, heldClock(back, time.Now()))
 			held, heldBack, call.Status, call.Error = true, back, rested.Status, c.p.Name+": "+msg
-			// the answer names who held it, as one asked would: a magpie
+			// the answer names who held it, as one asked would: a magpie-friday
 			// using this one rests that model of it alone (remoteModelRest)
 			noteMember(hw, r, c.p, c.model)
 			writeError(hw, from, call.Status, msg)
@@ -2864,7 +2864,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 			// when the request last went out to the vendor, its body
 			// written: what came after is the vendor's (Record.Sent).
 			// Before it, from when it began to go out, is connecting and
-			// sending the body, and before that magpie's (#1532); and each
+			// sending the body, and before that magpie-friday's (#1532); and each
 			// step of its way out, for the Routing page to say whose time
 			// a slow turn was (TryNet)
 			ctx = httptrace.WithClientTrace(ctx, nt.hooks(&asking, &asked, &wrote))
@@ -3702,7 +3702,7 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 		}
 		if !hw.passing && hw.code() == http.StatusTooManyRequests && hw.header.Get("Retry-After") == "" {
 			// the vendor said nothing of when: the agent is told when
-			// magpie asks again, the first of those it rested back
+			// magpie-friday asks again, the first of those it rested back
 			if heldBack.IsZero() {
 				heldBack, _ = soonestBack(cands[:i+1])
 			}
@@ -3963,7 +3963,7 @@ func (s *Server) attempt(w http.ResponseWriter, r *http.Request, from provider.P
 	if relay && from != provider.Anthropic && p.OnMessages(model) && slices.Contains(s.usable(p, model), provider.Anthropic) {
 		relay = false
 	}
-	// a web search offered is done by the provider, or by magpie for it,
+	// a web search offered is done by the provider, or by magpie-friday for it,
 	// which a relayed request can't. The request is translated on the
 	// client's own API all the same, not on Chat: Codex offers web_search
 	// on every turn, and on a provider serving Responses each went out as
@@ -3991,7 +3991,7 @@ func (s *Server) attempt(w http.ResponseWriter, r *http.Request, from provider.P
 	// (upstreamPath). A client that asked for one JSON body is translated,
 	// which reads that SSE and writes the JSON. Relaying it would hand the
 	// client the data: lines under a 200. Vertex AI answers generateContent
-	// whole, and a translation would drop what the client asked that magpie
+	// whole, and a translation would drop what the client asked that magpie-friday
 	// doesn't read (its safetySettings, topK, schema, thinkingBudget 0)
 	if relay && from == provider.Gemini && !streamOf(body) && !p.IsVertex() {
 		relay = false
@@ -4001,7 +4001,7 @@ func (s *Server) attempt(w http.ResponseWriter, r *http.Request, from provider.P
 	// must be set to false for non-streaming calls". One asked for whole is
 	// asked streamed on Chat and given back whole, its thinking as the
 	// model would have done it (ZekeXiao on X: a group's classifier on the
-	// Qwen Token Plan, which magpie asks for one body)
+	// Qwen Token Plan, which magpie-friday asks for one body)
 	if relay && from == provider.Chat && !streamOf(body) && dashScope(p) {
 		relay, ownAPI = false, true
 	}
@@ -4263,7 +4263,7 @@ func (s *Server) forwardOnce(ctx context.Context, p provider.Provider, to provid
 	defer provider.LetGo(req)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json, text/event-stream")
-	// magpie's, or the agent's own where the provider is set to pass it
+	// magpie-friday's, or the agent's own where the provider is set to pass it
 	// on (#1851); a signed-in account's signing, a client the vendor
 	// serves (OpenCode's, Cline's, Kilo's) and the user's own header put
 	// theirs on after
@@ -4278,7 +4278,7 @@ func (s *Server) forwardOnce(ctx context.Context, p provider.Provider, to provid
 		if p.Account == nil && fromClaudeCode(in) {
 			// a relay that serves only Claude Code (#179: "only accessible
 			// via the official Claude CLI") knows it by its own headers,
-			// which go on as it sent them; its key to magpie never does
+			// which go on as it sent them; its key to magpie-friday never does
 			for k, vs := range in {
 				if claudeCodeHeader(k) {
 					req.Header[k] = slices.Clone(vs)
@@ -4296,7 +4296,7 @@ func (s *Server) forwardOnce(ctx context.Context, p provider.Provider, to provid
 		// allows Codex official clients") knows it by its User-Agent,
 		// originator and x-codex- headers, which go on as Codex sent them,
 		// as they do when Codex talks to the relay itself; its key to
-		// magpie never does. A test asked as Codex asks with them
+		// magpie-friday never does. A test asked as Codex asks with them
 		// (provider.TestAs)
 		seen := http.Header{}
 		lite := liteKept(p, to, true)
@@ -4509,7 +4509,7 @@ func (s *Server) passthrough(w http.ResponseWriter, r *http.Request, p provider.
 			body = withReasoningText(body)
 		} else {
 			if strings.HasSuffix(p.Host(), "openai.com") || p.IsAzure() || !s.fits(p.ID, bareReasoningRefused(model), proto) {
-				// reasoning magpie gave Codex, an id with nothing sealed in
+				// reasoning magpie-friday gave Codex, an id with nothing sealed in
 				// it, which they'd look up and not find (#1008), nor does an
 				// upstream that has turned it away before (#1044)
 				body = withoutBareReasoning(body)
@@ -4583,7 +4583,7 @@ func (s *Server) passthrough(w http.ResponseWriter, r *http.Request, p provider.
 		geminiWhole = !streamOf(body)
 		body = withoutFields(body, "stream")
 	case provider.Anthropic:
-		// Claude Code's advisor, named by magpie's id (advisor.go)
+		// Claude Code's advisor, named by magpie-friday's id (advisor.go)
 		body = advisorTools(body, p, upstream, wiresOf(r.Context()))
 		if p.IsBedrock() {
 			// Claude Code's metadata.user_id, a JSON string these days, is
@@ -5084,7 +5084,7 @@ func (s *Server) passthrough(w http.ResponseWriter, r *http.Request, p provider.
 		}
 		return w.Write(b)
 	}
-	// apart is what goes before an event magpie appends: a blank line,
+	// apart is what goes before an event magpie-friday appends: a blank line,
 	// after the line still pending if the upstream's last write stopped
 	// inside one
 	apart := func() []byte {
@@ -5465,7 +5465,7 @@ func (s *Server) forwardTranslated(ctx context.Context, p provider.Provider, to 
 		}
 		// the tier the client asked for goes to a provider the user added
 		// by its address as it was asked (Request.Tier), and to another
-		// magpie, which offered it and serves it as its own Codex would be
+		// magpie-friday, which offered it and serves it as its own Codex would be
 		// (#1234), and to a provider plugin, on its Chat or Responses, when
 		// it is one the plugin says the model is served at (#2514)
 		own := p.Preset == "" && p.Account == nil || p.IsRemoteMagpie()
@@ -5542,7 +5542,7 @@ func (s *Server) forwardTranslated(ctx context.Context, p provider.Provider, to 
 			body = withoutLoneToolChoice(body)
 		}
 		if to == provider.Chat && req.WebSearch && p.IsRemoteMagpie() {
-			// the other magpie searches for it (search_remote.go)
+			// the other magpie-friday searches for it (search_remote.go)
 			body = withFields(body, map[string]any{"web_search_options": map[string]any{}})
 		}
 		if !s.fits(p.ID, historyToolsRefused, to) {
@@ -5554,12 +5554,12 @@ func (s *Server) forwardTranslated(ctx context.Context, p provider.Provider, to 
 		if to == provider.CodeAssist && p.Account != nil {
 			// the envelope is named in there, where the id it carries is
 			// known: on Antigravity that is the variant the effort picked,
-			// not the model magpie knows
+			// not the model magpie-friday knows
 			body = codeAssistBody(p, req, model, wires)
 		} else if wire != model {
 			// the vendor's own name for the model goes in the model field
 			// and nowhere else: everything above shaped the request from
-			// the model magpie knows, which is what those decisions are
+			// the model magpie-friday knows, which is what those decisions are
 			// about
 			body = rewriteModel(body, wire)
 		}
@@ -5632,7 +5632,7 @@ func (s *Server) forwardTranslated(ctx context.Context, p provider.Provider, to 
 		if req.endsWithAssistant() && refusesPrefill(res.StatusCode, b) {
 			// the model takes no prefill (#1447), remembered for it alone.
 			// A conversation the client ended with the assistant's message
-			// is asked again with a user turn after it; magpie's own
+			// is asked again with a user turn after it; magpie-friday's own
 			// continuation of a cut reply isn't (streamTranslated)
 			s.markUnfit(p.ID, prefillRefused(model), to)
 			if req.LastIsTurn && !req.Resume {
@@ -5711,7 +5711,7 @@ func (s *Server) forwardTranslated(ctx context.Context, p provider.Provider, to 
 		}
 		if req.OwnEffort {
 			if refused, value := ownEffortRefused(res.StatusCode, b, req.Effort); refused {
-				// the effort magpie added for auto mode's classifier
+				// the effort magpie-friday added for auto mode's classifier
 				// (fitAutoModeClassifier) turned away: none, by a model
 				// that reasons, is asked again at low; any other refusal,
 				// the field's, without it, as before. Remembered either way
@@ -6206,7 +6206,7 @@ func (s *Server) translate(w http.ResponseWriter, r *http.Request, p provider.Pr
 	}
 	if request.WebSearch {
 		// an API on which the provider searches by itself comes first;
-		// without one, its model is given magpie's search. A searcher
+		// without one, its model is given magpie-friday's search. A searcher
 		// asked for another model goes there too: on its first API
 		// (DeepSeek's Chat) it had no search tool and answered from
 		// nothing (#669)
@@ -6819,7 +6819,7 @@ const SessionHeader = "X-Magpie-Session"
 // user (an email, a login) or its id in the routing trace: only it is
 // tried, and when it can't take the request the caller is told why rather
 // than another account answering — a probe of one account needs that one.
-// It goes no further than magpie.
+// It goes no further than magpie-friday.
 const AccountHeader = "X-Magpie-Account"
 
 // sessionOf is the session a request names, "" when it names none.
@@ -6855,7 +6855,7 @@ func subOf(in http.Header) string {
 	return sub
 }
 
-// nativeSessionOf keeps the client session even when magpie's header overrides it.
+// nativeSessionOf keeps the client session even when magpie-friday's header overrides it.
 func nativeSessionOf(in http.Header) string {
 	for _, h := range sessionHeaders {
 		if v := strings.TrimSpace(in.Get(h)); v != "" {
@@ -6910,7 +6910,7 @@ func conversationID(in http.Header, body []byte) string {
 		first = body
 	}
 	sum := sha256.Sum256(first)
-	return "magpie-" + hex.EncodeToString(sum[:12])
+	return "magpie-friday-" + hex.EncodeToString(sum[:12])
 }
 
 // offSpelled is a client's effort spelled "off", which no OpenAI API
@@ -6920,7 +6920,7 @@ func conversationID(in http.Header, body []byte) string {
 func offSpelled(e string) bool { return strings.EqualFold(strings.TrimSpace(e), "off") }
 
 // offAsNone is a Chat or Responses body asking reasoning "off"
-// (reasoning_effort, or reasoning.effort) asking for magpie's own off
+// (reasoning_effort, or reasoning.effort) asking for magpie-friday's own off
 // level, none, instead: what every check and route reads the effort by,
 // and what fitEffort fits to the model's own off level, or its least
 // where it has none, as "none" asked is. A body with no such field goes
@@ -7032,7 +7032,7 @@ func forcesTool(choice string) bool {
 // schema; and a vendor that holds the forced tool to strict mode instead
 // answers `tools.N.custom: For 'object' type, 'additionalProperties' must
 // be explicitly set to false` (#668), which Anthropic says only of a
-// strict tool, and magpie sends none.
+// strict tool, and magpie-friday sends none.
 var toolChoiceRefused = regexp.MustCompile(`(?i)tool_choice\W+type\W+tool\W+and\W+any\W+are not supported|tools\.\d+\.custom\W+for\W+object\W+type\W+additionalProperties\W+must be explicitly set to false`)
 
 // unforced is req with its forced tool_choice left to the model: a named
@@ -7462,13 +7462,13 @@ func tooLong(status int, msg string) bool {
 var paceWords = regexp.MustCompile(`(?i)rate.?limit|per (minute|hour|day)|\bTP[MD]\b|please wait|try again later|throttl`)
 
 // splitSent tells what of sent, the ms from the request (start) to its
-// answering try's body written, was magpie's own work, the tries that
+// answering try's body written, was magpie-friday's own work, the tries that
 // failed first with their pauses (from the first try's start to this
 // one's), and this try's wait for a slot (queued). asked is when the
 // request that went out began to (GetConn, UnixNano; 0 when unknown):
 // after it is connecting and sending the body, which is neither. #1532:
 // OpenCode Go held a try ~100 s before its 503, and the detail called the
-// whole of it magpie's.
+// whole of it magpie-friday's.
 func splitSent(sent int64, start, firstBegan, began time.Time, asked, queued int64) (own, retried, waited int64) {
 	retried = min(max(began.Sub(firstBegan).Milliseconds(), 0), sent)
 	waited = min(max(queued, 0), sent-retried)

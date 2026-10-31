@@ -6,7 +6,7 @@ import "bytes"
 // message and in toolUseResult: a screenshot is a line of megabytes, and a
 // cold read gathered each one whole (takeLong) to read a timestamp, the
 // folder and the session id off it. ~200 such lines in a 10GB projects
-// folder held 110MB live at the read's peak and set magpie's RSS (#3318).
+// folder held 110MB live at the read's peak and set magpie-friday's RSS (#3318).
 // Such a line is now handed on thinned: every string in it cut to thinKeep
 // bytes, the rest kept as it was. A Codex prompt with screenshots is the
 // same (a line of 5 to 15MB, 154 of them in a 50GB sessions folder): its

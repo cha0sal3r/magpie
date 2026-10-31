@@ -61,9 +61,9 @@ func TestCodexStartupTimeout(t *testing.T) {
 }
 
 // A startup timeout the user wrote in Codex's config.toml by hand is never
-// written over: one there before magpie had any, one changed by hand after
-// magpie wrote its own, and Codex's older startup_timeout_ms. Once the
-// user's is taken out, magpie's goes in.
+// written over: one there before magpie-friday had any, one changed by hand after
+// magpie-friday wrote its own, and Codex's older startup_timeout_ms. Once the
+// user's is taken out, magpie-friday's goes in.
 func TestCodexStartupTimeoutKeepsUsers(t *testing.T) {
 	h := sandbox(t)
 	cfg := filepath.Join(h, ".codex/config.toml")
@@ -85,7 +85,7 @@ func TestCodexStartupTimeoutKeepsUsers(t *testing.T) {
 		}
 	}
 
-	// the user's before magpie had one
+	// the user's before magpie-friday had one
 	hand("command = ", "startup_timeout_sec = 90\ncommand = ")
 	srv.StartupTimeout = 20
 	ok(t)(SaveServer("slow", srv))
@@ -94,7 +94,7 @@ func TestCodexStartupTimeoutKeepsUsers(t *testing.T) {
 		t.Fatalf("%d startup_timeout_sec:\n%s", n, read(t, cfg))
 	}
 
-	// taken out by hand: magpie's goes in, and follows the library
+	// taken out by hand: magpie-friday's goes in, and follows the library
 	hand("startup_timeout_sec = 90\n", "")
 	ok(t)(Sync())
 	want("startup_timeout_sec", 20)
@@ -102,7 +102,7 @@ func TestCodexStartupTimeoutKeepsUsers(t *testing.T) {
 	ok(t)(SaveServer("slow", srv))
 	want("startup_timeout_sec", 25)
 
-	// magpie's changed by hand is the user's from then on
+	// magpie-friday's changed by hand is the user's from then on
 	hand("startup_timeout_sec = 25", "startup_timeout_sec = 75")
 	srv.StartupTimeout = 30
 	ok(t)(SaveServer("slow", srv))
@@ -111,7 +111,7 @@ func TestCodexStartupTimeoutKeepsUsers(t *testing.T) {
 	ok(t)(SaveServer("slow", srv))
 	want("startup_timeout_sec", 75)
 
-	// Codex reads startup_timeout_ms only without _sec: magpie writes no
+	// Codex reads startup_timeout_ms only without _sec: magpie-friday writes no
 	// _sec beside the user's _ms
 	hand("startup_timeout_sec = 75", "startup_timeout_ms = 40000")
 	srv.StartupTimeout = 20

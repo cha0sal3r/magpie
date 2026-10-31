@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 func TestWorkBuddy(t *testing.T) {
@@ -42,7 +42,7 @@ func TestWorkBuddy(t *testing.T) {
 	if f.Get() != "" {
 		t.Fatalf("get: %q", f.Get())
 	}
-	if err := f.Set("magpie"); err != nil {
+	if err := f.Set("magpie-friday"); err != nil {
 		t.Fatal(err)
 	}
 	ms := read()
@@ -50,11 +50,11 @@ func TestWorkBuddy(t *testing.T) {
 		t.Fatalf("models: %v", ms)
 	}
 	pro := ms[1]
-	if pro["id"] != "deepseek/pro" || pro["vendor"] != "magpie" || pro["apiKey"] != "magpie-workbuddy" ||
+	if pro["id"] != "deepseek/pro" || pro["vendor"] != "magpie-friday" || pro["apiKey"] != "magpie-friday-workbuddy" ||
 		pro["url"] != gatewayV1()+"/chat/completions" || pro["supportsToolCall"] != true || pro["maxInputTokens"] == nil {
-		t.Fatalf("magpie model: %v", pro)
+		t.Fatalf("magpie-friday model: %v", pro)
 	}
-	if f.Get() != "magpie" {
+	if f.Get() != "magpie-friday" {
 		t.Fatalf("get: %q", f.Get())
 	}
 
@@ -83,12 +83,12 @@ func TestWorkBuddy(t *testing.T) {
 		t.Fatal(err)
 	}
 	if len(read()) != 1 {
-		t.Fatal("sync put magpie back")
+		t.Fatal("sync put magpie-friday back")
 	}
 
 	// the CLI's object form, with a list of the models to show
 	os.WriteFile(path, []byte(`{"models":[{"id":"mine","url":"https://x/v1/chat/completions"}],"availableModels":["mine"],"other":1}`), 0o600)
-	if err := f.Set("magpie"); err != nil {
+	if err := f.Set("magpie-friday"); err != nil {
 		t.Fatal(err)
 	}
 	var doc struct {
@@ -126,9 +126,9 @@ func TestWorkBuddyEfforts(t *testing.T) {
 	}
 }
 
-// WorkBuddy pointed at a magpie on another machine stays there through a
-// sync, with that magpie's key (悠悠哥 on Discord: models moved to the
-// magpie on a NAS were put back on this machine's), while one on this
+// WorkBuddy pointed at a magpie-friday on another machine stays there through a
+// sync, with that magpie-friday's key (悠悠哥 on Discord: models moved to the
+// magpie-friday on a NAS were put back on this machine's), while one on this
 // machine's loopback follows the gateway.
 func TestWorkBuddyKeepsRemoteAddress(t *testing.T) {
 	home := t.TempDir()
@@ -180,13 +180,13 @@ func TestWorkBuddyKeepsRemoteAddress(t *testing.T) {
 		}
 	}
 
-	// an address on this machine is magpie's own and follows the gateway
+	// an address on this machine is magpie-friday's own and follows the gateway
 	point("http://localhost:9999/v1/chat/completions", "old")
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
 	for _, m := range read() {
-		if m["url"] != gatewayV1()+"/chat/completions" || m["apiKey"] != "magpie-workbuddy" {
+		if m["url"] != gatewayV1()+"/chat/completions" || m["apiKey"] != "magpie-friday-workbuddy" {
 			t.Fatalf("local address not followed: %v", m)
 		}
 	}
@@ -194,7 +194,7 @@ func TestWorkBuddyKeepsRemoteAddress(t *testing.T) {
 
 // WorkBuddy AI, the international build, reads ~/.workbuddy-ai/models.json
 // (its product.json's dataFolderName), not ~/.workbuddy's (#1494, ysicing):
-// magpie's models go there, as a bare list, under its own key, and the
+// magpie-friday's models go there, as a bare list, under its own key, and the
 // China build's file is left as it was.
 func TestWorkBuddyAIWritesItsOwnFolder(t *testing.T) {
 	home := t.TempDir()
@@ -224,7 +224,7 @@ func TestWorkBuddyAIWritesItsOwnFolder(t *testing.T) {
 	if !a.Detected() {
 		t.Fatal("not detected")
 	}
-	if err := a.Field("provider").Set("magpie"); err != nil {
+	if err := a.Field("provider").Set("magpie-friday"); err != nil {
 		t.Fatal(err)
 	}
 	var ms []map[string]any
@@ -232,10 +232,10 @@ func TestWorkBuddyAIWritesItsOwnFolder(t *testing.T) {
 	if err := json.Unmarshal(b, &ms); err != nil {
 		t.Fatalf("not a bare list: %v\n%s", err, b)
 	}
-	if len(ms) != 1 || ms[0]["id"] != "deepseek/pro" || ms[0]["apiKey"] != "magpie-workbuddy-ai" {
+	if len(ms) != 1 || ms[0]["id"] != "deepseek/pro" || ms[0]["apiKey"] != "magpie-friday-workbuddy-ai" {
 		t.Fatalf("models: %v", ms)
 	}
-	if got := a.Field("provider").Get(); got != "magpie" {
+	if got := a.Field("provider").Get(); got != "magpie-friday" {
 		t.Fatalf("get: %q", got)
 	}
 	if b, _ := os.ReadFile(cn); string(b) != `[{"id":"qwen-local","local":true}]` {

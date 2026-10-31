@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-// An agent's credentials file linked in from elsewhere (#323): magpie's
+// An agent's credentials file linked in from elsewhere (#323): magpie-friday's
 // writes go to the file it points at and the link stays, its mode 0600.
 func TestPrivateWritesKeepSymlink(t *testing.T) {
 	d := t.TempDir()

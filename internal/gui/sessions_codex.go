@@ -3,7 +3,7 @@ package gui
 import (
 	"slices"
 
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
 )
 
 func addCodexModelEffort(s *sessions.Session, byThread map[string][]sessions.ModelEffort) {

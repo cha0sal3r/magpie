@@ -156,7 +156,7 @@ func TestChatGPTAPISignIn(t *testing.T) {
 	if !strings.HasPrefix(st.URL, f.auth.URL+"/api/accounts/authorize?") {
 		t.Fatalf("opens %s", st.URL)
 	}
-	for k, want := range map[string]string{"client_id": "dynamic_agent_client", "agent_name_hint": "magpie",
+	for k, want := range map[string]string{"client_id": "dynamic_agent_client", "agent_name_hint": "magpie-friday",
 		"response_type": "code", "resource": "https://api.openai.com/v1", "code_challenge_method": "S256",
 		"scope": "openid profile email offline_access resource.invoke chatgpt.tokens.use.direct"} {
 		if q.Get(k) != want {

@@ -8,10 +8,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
-// Settings' Command line (PAMI on Discord): which magpie each shell runs,
+// Settings' Command line (PAMI on Discord): which magpie-friday each shell runs,
 // and this app's put there — a link in the folder on PATH, over another
 // copy that ran first, or in ~/.local/bin with the one shell's profile the
 // user picked given that folder. Everything is in a temporary home; no
@@ -21,7 +21,7 @@ func TestCLIOnPath(t *testing.T) {
 	t.Setenv("HOME", h)
 	t.Setenv("ZDOTDIR", "")
 	t.Setenv("XDG_CONFIG_HOME", filepath.Join(h, ".config"))
-	exe := filepath.Join(h, "Applications", "magpie.app", "Contents", "MacOS", "magpie")
+	exe := filepath.Join(h, "Applications", "magpie-friday.app", "Contents", "MacOS", "magpie-friday")
 	bin := filepath.Join(h, ".local", "bin")
 	other := filepath.Join(h, "other")
 	for _, d := range []string{filepath.Dir(exe), bin, other} {
@@ -55,10 +55,10 @@ func TestCLIOnPath(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !v.Ours || v.Command != filepath.Join(bin, "magpie") || !v.Shells[0].Ours || v.Shells[1].Ours {
+	if !v.Ours || v.Command != filepath.Join(bin, "magpie-friday") || !v.Shells[0].Ours || v.Shells[1].Ours {
 		t.Fatalf("after Add: %+v", v)
 	}
-	if l, err := os.Readlink(filepath.Join(bin, "magpie")); err != nil || l != exe {
+	if l, err := os.Readlink(filepath.Join(bin, "magpie-friday")); err != nil || l != exe {
 		t.Fatalf("link = %q, %v", l, err)
 	}
 	if _, err := os.Stat(filepath.Join(h, ".zshrc")); !os.IsNotExist(err) {
@@ -80,7 +80,7 @@ func TestCLIOnPath(t *testing.T) {
 	}
 
 	// another copy that runs first is replaced by the link, as install.sh's ln -sf
-	copied := filepath.Join(other, "magpie")
+	copied := filepath.Join(other, "magpie-friday")
 	testenv.Program(t, copied, "#!/bin/sh\necho old\n")
 	paths["/bin/zsh"] = []string{other, bin}
 	if v = ReadCLI(); v.Ours || v.Command != copied || v.Dir != other {
@@ -95,7 +95,7 @@ func TestCLIOnPath(t *testing.T) {
 
 	// no folder on PATH: Add says so, and zsh picked gets its profile
 	os.Remove(copied)
-	os.Remove(filepath.Join(bin, "magpie"))
+	os.Remove(filepath.Join(bin, "magpie-friday"))
 	paths["/bin/zsh"] = []string{"/usr/bin"}
 	if v = ReadCLI(); v.Dir != "" {
 		t.Fatalf("no folder: %+v", v)
@@ -111,29 +111,29 @@ func TestCLIOnPath(t *testing.T) {
 	if !strings.HasPrefix(string(b), "alias ll='ls -l'\n") || !strings.Contains(string(b), "\n"+`export PATH="$HOME/.local/bin:$PATH"`+"\n") {
 		t.Fatalf(".zshrc:\n%s", b)
 	}
-	if l, _ := os.Readlink(filepath.Join(bin, "magpie")); l != exe {
+	if l, _ := os.Readlink(filepath.Join(bin, "magpie-friday")); l != exe {
 		t.Fatal("zsh picked didn't link the command in ~/.local/bin")
 	}
 	if _, err := AddCLI("nu"); err == nil {
 		t.Fatal("a shell that isn't offered was written")
 	}
 
-	// a magpie.app elsewhere says its version without being run
-	app := filepath.Join(h, "Old", "magpie.app", "Contents")
+	// a magpie-friday.app elsewhere says its version without being run
+	app := filepath.Join(h, "Old", "magpie-friday.app", "Contents")
 	os.MkdirAll(filepath.Join(app, "MacOS"), 0o755)
-	testenv.Program(t, filepath.Join(app, "MacOS", "magpie"), "#!/bin/sh\nexit 1\n")
+	testenv.Program(t, filepath.Join(app, "MacOS", "magpie-friday"), "#!/bin/sh\nexit 1\n")
 	os.WriteFile(filepath.Join(app, "Info.plist"), []byte("<dict><key>CFBundleShortVersionString</key>\n<string>0.1.500</string></dict>"), 0o644)
-	if got := otherVersion(filepath.Join(app, "MacOS", "magpie")); got != "0.1.500" {
+	if got := otherVersion(filepath.Join(app, "MacOS", "magpie-friday")); got != "0.1.500" {
 		t.Fatalf("version = %q", got)
 	}
 
 	// a translocated app is refused, nothing written
 	cliStuck = func() string { return "translocated" }
-	os.Remove(filepath.Join(bin, "magpie"))
+	os.Remove(filepath.Join(bin, "magpie-friday"))
 	if _, err := AddCLI(""); err == nil {
 		t.Fatal("a translocated app was linked")
 	}
-	if _, err := os.Lstat(filepath.Join(bin, "magpie")); !os.IsNotExist(err) {
+	if _, err := os.Lstat(filepath.Join(bin, "magpie-friday")); !os.IsNotExist(err) {
 		t.Fatal("a translocated app's link was made")
 	}
 }

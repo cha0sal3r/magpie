@@ -37,7 +37,7 @@ function serve(lang, off) {
     }
     if (url.pathname === "/api/sessions/overview") return json({ count: 2, median: 5000, p90: 5000, days: [1], top: { tokens: [], cost: [], active: [] } });
     if (url.pathname === "/api/sessions/manage") {
-      return json({ agents: [{ agent: "codex", count: list.length, deletable: true, name: "Codex", icon: "openai" }], agent: "codex", sessions: list.map((s) => ({ ...s, size: 4096, messages: 6, files: 1, deletable: true })), terminal: true, trash: [], trashDir: "~/magpie/trash/sessions" });
+      return json({ agents: [{ agent: "codex", count: list.length, deletable: true, name: "Codex", icon: "openai" }], agent: "codex", sessions: list.map((s) => ({ ...s, size: 4096, messages: 6, files: 1, deletable: true })), terminal: true, trash: [], trashDir: "~/magpie-friday/trash/sessions" });
     }
     if (url.pathname === "/api/groups") return json({ groups: [] });
     if (url.pathname === "/api/usage/quotas") return json([]);

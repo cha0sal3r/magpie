@@ -14,17 +14,17 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
-// The part of an agent's instructions file magpie writes sits between
+// The part of an agent's instructions file magpie-friday writes sits between
 // these two lines; the rest of the file is the user's.
 const (
-	blockBegin = "<!-- magpie:begin · written by magpie from its Library -->"
-	blockEnd   = "<!-- magpie:end -->"
+	blockBegin = "<!-- magpie-friday:begin · written by magpie-friday from its Library -->"
+	blockEnd   = "<!-- magpie-friday:end -->"
 )
 
-// defaultSet is the set magpie had before there were more: its text is
+// defaultSet is the set magpie-friday had before there were more: its text is
 // where the one shared text always was.
 const defaultSet = "default"
 
@@ -112,8 +112,8 @@ func extraPath(agent string) string {
 	return filepath.Join(Dir(), "instructions", fileName(agent)+".md")
 }
 
-// setText is a set's text as kept at p. Magpie's part is left out of it:
-// that part is what magpie wrote from the set, never the set. A set kept in
+// setText is a set's text as kept at p. magpie-friday's part is left out of it:
+// that part is what magpie-friday wrote from the set, never the set. A set kept in
 // the file an agent reads (instructions.md linked to ~/.claude/CLAUDE.md, or
 // both linked to one file of the user's, #2349) has one, and read with it
 // every write put the whole file into its own part again, so the file
@@ -142,7 +142,7 @@ func writeText(path, text string) error {
 	return edit.WriteAtomic(path, []byte(text+"\n"))
 }
 
-// wanted is what magpie writes into the agent's file: the shared text and
+// wanted is what magpie-friday writes into the agent's file: the shared text and
 // the agent's own additions after it; "" for nothing.
 func (l *Library) wanted(agent string) string {
 	if !slices.Contains(l.Instructions.Agents, agent) {
@@ -157,8 +157,8 @@ func (l *Library) wanted(agent string) string {
 	return strings.Join(parts, "\n\n")
 }
 
-// split takes a file apart: what is before magpie's part, magpie's part,
-// and what is after it. ok is false when magpie has no part in it.
+// split takes a file apart: what is before magpie-friday's part, magpie-friday's part,
+// and what is after it. ok is false when magpie-friday has no part in it.
 func split(file string) (before, block, after string, ok bool) {
 	i := strings.Index(file, blockBegin)
 	if i < 0 {
@@ -172,7 +172,7 @@ func split(file string) (before, block, after string, ok bool) {
 	return file[:i], strings.TrimSpace(rest[:j]), rest[j+len(blockEnd):], true
 }
 
-// own is the file without magpie's part: the user's own instructions.
+// own is the file without magpie-friday's part: the user's own instructions.
 // Every part goes, and an end line left over: a part written into itself
 // (#2349) holds others, each ended after the first end.
 func own(file string) string {
@@ -194,7 +194,7 @@ func own(file string) string {
 	return strings.TrimSpace(file)
 }
 
-// withBlock is the file with magpie's part set to text, or taken out for "".
+// withBlock is the file with magpie-friday's part set to text, or taken out for "".
 // A new part goes after what the user has written.
 func withBlock(file, text string) string {
 	file = strings.ReplaceAll(file, "\r\n", "\n")
@@ -242,7 +242,7 @@ func (l *Library) syncInstructions(t *Target, b *backups, res *Result) {
 	file := string(raw)
 	if l.isSetFile(t.Instructions) {
 		// the agent reads the set's own file, so it has the text already:
-		// magpie writes no part into it, and takes out one written before
+		// magpie-friday writes no part into it, and takes out one written before
 		a.Instructions, a.InstrHash = false, ""
 		file = strings.ReplaceAll(file, "\r\n", "\n")
 		if !strings.Contains(file, blockBegin) && !strings.Contains(file, blockEnd) {
@@ -302,7 +302,7 @@ type AgentInstructions struct {
 	On       bool   `json:"on"`
 	Extra    string `json:"extra"`              // what this agent gets besides
 	Own      int    `json:"own"`                // lines of the user's own in the file
-	Edited   bool   `json:"edited,omitempty"`   // magpie's part was changed in the file
+	Edited   bool   `json:"edited,omitempty"`   // magpie-friday's part was changed in the file
 	Override string `json:"override,omitempty"` // a file the agent reads instead
 	Profile  bool   `json:"profile,omitempty"`  // the file is the user's profile to the agent (Target.Profile)
 }
@@ -370,7 +370,7 @@ type InstructionsChange struct {
 	Shared *string            `json:"shared,omitempty"`
 	Agents []string           `json:"agents,omitempty"`
 	Extra  map[string]*string `json:"extra,omitempty"`
-	// Rewrite writes magpie's part again into these agents' files, over
+	// Rewrite writes magpie-friday's part again into these agents' files, over
 	// edits made there.
 	Rewrite []string `json:"rewrite,omitempty"`
 	// The sets: texts by set, a set to switch the agents to, one to add
@@ -455,7 +455,7 @@ func SaveInstructions(c InstructionsChange) (*Result, error) {
 func ImportInstructions(id string) (*Result, error) {
 	t := targetByID(id)
 	if t == nil || t.Instructions == "" {
-		return nil, fmt.Errorf("%s has no instructions file magpie knows", id)
+		return nil, fmt.Errorf("%s has no instructions file magpie-friday knows", id)
 	}
 	if t.Profile {
 		// moved out, the profile would go into every agent's file, and the
@@ -594,7 +594,7 @@ func (l *Library) changeSets(c InstructionsChange) error {
 }
 
 // linkable is the file a new set can be linked to, made absolute, or why
-// not: a file magpie writes into (an agent's own instructions, where the
+// not: a file magpie-friday writes into (an agent's own instructions, where the
 // set would be read from the text written from it), one of the library's
 // own, a folder, or one another set has.
 func (l *Library) linkable(file string) (string, error) {
@@ -615,7 +615,7 @@ func (l *Library) linkable(file string) (string, error) {
 		return "", fmt.Errorf("%s is a folder: give a file", file)
 	}
 	if strings.Contains(readText(file), blockBegin) {
-		return "", fmt.Errorf("magpie writes its instructions into %s: a set can't be kept there too", file)
+		return "", fmt.Errorf("magpie-friday writes its instructions into %s: a set can't be kept there too", file)
 	}
 	if lib := realBelow(Dir()); real == lib || strings.HasPrefix(real, lib+string(filepath.Separator)) || real == realBelow(path()) {
 		return "", fmt.Errorf("%s is the library's own", file)
@@ -628,7 +628,7 @@ func (l *Library) linkable(file string) (string, error) {
 	for _, t := range everyTarget() {
 		for _, p := range []string{t.Instructions, t.Override} {
 			if p != "" && realBelow(p) == real {
-				return "", fmt.Errorf("%s is %s's own instructions, which magpie writes into: a set can't be kept there", file, t.Agent.Name)
+				return "", fmt.Errorf("%s is %s's own instructions, which magpie-friday writes into: a set can't be kept there", file, t.Agent.Name)
 			}
 		}
 	}

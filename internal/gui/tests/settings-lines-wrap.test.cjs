@@ -23,7 +23,7 @@ const assets = path.resolve(process.env.MAGPIE_WRAP_ASSETS || path.join(__dirnam
 function settings(lang) {
   return {
     theme: "light", lang, tray: "panel", currency: "usd", textSize: 100, proxy: "", proxyNow: "none", proxySource: "none",
-    redact: true, redactPersonal: true, redactWords: [], version: "0.1.400", dir: "~/.config/magpie", gateway: "http://127.0.0.1:3425",
+    redact: true, redactPersonal: true, redactWords: [], version: "0.1.400", dir: "~/.config/magpie-friday", gateway: "http://127.0.0.1:3425",
     lanURLs: [], searchVendors: [], searchAPIs: [], vision: "", imageGen: "",
     visionModels: [{ id: "codex/gpt-5", name: "GPT-5", provider: "codex", providerName: "Codex" }],
     // a ChatGPT account draws, so Image generation has its second note

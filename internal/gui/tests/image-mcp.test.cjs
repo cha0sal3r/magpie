@@ -1,7 +1,7 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// magpie's image generation as an MCP server (JonahFu on X): Settings ›
+// magpie-friday's image generation as an MCP server (JonahFu on X): Settings ›
 // Models has an "Image generation MCP server" row, after image
-// recognition's, with the gateway's address of it, /mcp/magpie/image, to
+// recognition's, with the gateway's address of it, /mcp/magpie-friday/image, to
 // copy into any agent, and says what its tools give back and that a
 // gateway key goes with it from another computer. In every language, in
 // both engines, wide and narrow.
@@ -12,7 +12,7 @@ const { test } = require("node:test");
 const { chromium, webkit } = require("playwright");
 
 const assets = path.resolve(__dirname, "../assets");
-const address = "http://127.0.0.1:3999/mcp/magpie/image";
+const address = "http://127.0.0.1:3999/mcp/magpie-friday/image";
 const tools = /generate_image.*generate_video.*generation_result.*Authorization: Bearer <key>/;
 const words = {
   en: { name: "Image generation MCP server", sub: tools },

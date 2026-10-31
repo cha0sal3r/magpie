@@ -50,14 +50,14 @@ const CASES = {
   en: {
     title: /^Updates with npm\.cmd install .*, as administrator: Windows asks first$/,
     declined: `Gemini CLI is installed in ${PF}, which only an administrator can change, and the administrator prompt was declined.`,
-    none: `Gemini CLI is installed in ${PF}, which only an administrator can change, and magpie couldn't ask Windows for one (no administrator prompt: The service cannot be started).`,
+    none: `Gemini CLI is installed in ${PF}, which only an administrator can change, and magpie-friday couldn't ask Windows for one (no administrator prompt: The service cannot be started).`,
     fix: `run ${CMD} in a terminal opened as administrator, or move npm's global folder to one of your own (npm config set prefix "%APPDATA%\\npm") and install Gemini CLI again.`,
     install: `npm installs into ${PF} here, which only an administrator can change`,
   },
   zh: {
     title: /^通过 npm\.cmd install .* 以管理员身份更新：Windows 会先询问$/,
     declined: `Gemini CLI 安装在 ${PF}，这个目录只有管理员能修改，而管理员授权提示被拒绝了。`,
-    none: `Gemini CLI 安装在 ${PF}，这个目录只有管理员能修改，而 magpie 没能向 Windows 请求管理员权限（no administrator prompt: The service cannot be started）。`,
+    none: `Gemini CLI 安装在 ${PF}，这个目录只有管理员能修改，而 magpie-friday 没能向 Windows 请求管理员权限（no administrator prompt: The service cannot be started）。`,
     fix: `或在以管理员身份打开的终端里运行 ${CMD}，或把 npm 的全局目录改到自己的文件夹（npm config set prefix "%APPDATA%\\npm"）后重新安装 Gemini CLI。`,
     install: `这里 npm 会安装到 ${PF}，这个目录只有管理员能修改`,
   },

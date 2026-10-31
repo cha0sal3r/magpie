@@ -31,7 +31,7 @@ func TestCleanRulesSeveralModels(t *testing.T) {
 }
 
 // A group saved before More reads as it was; one saved with it keeps
-// Use first, which is what a magpie from before More sends to.
+// Use first, which is what a magpie-friday from before More sends to.
 func TestRuleMoreOnDisk(t *testing.T) {
 	var old Rule
 	if err := json.Unmarshal([]byte(`{"use":"b/big","tokens":5}`), &old); err != nil || old.Use != "b/big" || old.More != nil {
@@ -136,7 +136,7 @@ func TestRuledEntrySeveralModels(t *testing.T) {
 	}
 }
 
-// A shared group's rule keeps the models this magpie has, in order; one
+// A shared group's rule keeps the models this magpie-friday has, in order; one
 // it hasn't is left out of the rule, and the rule goes when none is here.
 func TestSharedGroupRuleSeveralModels(t *testing.T) {
 	shareHome(t, Provider{ID: "mine", Name: "Mine", Key: "k", Chat: "http://127.0.0.1:1/v1", Models: []string{"x", "y"}})

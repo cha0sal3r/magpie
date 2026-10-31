@@ -9,13 +9,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // fakeRTK is an rtk on PATH that acts as rtk 0.50's installer does for
 // Claude Code, OpenCode and Cursor: installing OpenCode or Cursor gives it to
-// Claude Code as well. Its uninstaller isn't there: magpie doesn't use it.
+// Claude Code as well. Its uninstaller isn't there: magpie-friday doesn't use it.
 const fakeRTK = `#!/bin/sh
 c="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 claude() { [ -d "$c" ] && echo '{"hooks":{"PreToolUse":[{"hooks":[{"command":"rtk hook claude"}]}]}}' > "$c/settings.json"; }
@@ -288,7 +288,7 @@ func TestRTKOpenCode2(t *testing.T) {
 	if exists(plugin) {
 		t.Fatal("rtk 0.51's plugin was written for OpenCode 2")
 	}
-	// one written before (by an older magpie, or rtk init by hand) is on,
+	// one written before (by an older magpie-friday, or rtk init by hand) is on,
 	// and goes
 	write(t, plugin, "export const RtkOpenCodePlugin: Plugin = async ({ $ }) => {\n")
 	if !row().On {
@@ -462,7 +462,7 @@ func TestRTKGainRead(t *testing.T) {
 		t.Fatalf("failed: gain %+v, err %q", v.Gain, v.GainErr)
 	}
 	gain(`echo 'No tracking data yet.'; exit 0`)
-	if v := ReadRTK(); v.Gain != nil || v.GainErr != "rtk gain printed no summary magpie can read: No tracking data yet." {
+	if v := ReadRTK(); v.Gain != nil || v.GainErr != "rtk gain printed no summary magpie-friday can read: No tracking data yet." {
 		t.Fatalf("not JSON: gain %+v, err %q", v.Gain, v.GainErr)
 	}
 }
@@ -492,7 +492,7 @@ func TestCodexSandbox(t *testing.T) {
 
 // TestRTKNoHookListed (Discord, lc: rtk 没有识别 deepseek harness): an
 // agent RTK has no hook for, DeepSeek Harness, is listed all the same with
-// why, not left out as if magpie hadn't seen it, and it can't be switched on.
+// why, not left out as if magpie-friday hadn't seen it, and it can't be switched on.
 func TestRTKNoHookListed(t *testing.T) {
 	h := sandbox(t)
 	bin := filepath.Join(h, "bin")
@@ -515,7 +515,7 @@ func TestRTKNoHookListed(t *testing.T) {
 		t.Fatalf("switched on: %v", err)
 	}
 	if _, err := RTKTakes("dsh"); err == nil || !strings.Contains(err.Error(), "rewriting the shell command") {
-		t.Fatalf("magpie library rtk on dsh: %v", err)
+		t.Fatalf("magpie-friday library rtk on dsh: %v", err)
 	}
 }
 
@@ -542,7 +542,7 @@ echo "Test with: git status"
 
 // TestRTKHermesHome (新v学员 on Discord, native Windows): Hermes's folder is
 // %LOCALAPPDATA%\hermes there, and rtk's installer wrote its plugin into it,
-// while magpie looked for the plugin in ~/.hermes: "rtk's installer didn't
+// while magpie-friday looked for the plugin in ~/.hermes: "rtk's installer didn't
 // add its hook to Hermes Agent". The plugin is looked for, and taken out,
 // in Hermes's own folder (appdir.HermesHome), and the installer is told
 // that folder, since rtk itself knows only $HERMES_HOME and ~/.hermes.
@@ -628,7 +628,7 @@ func TestRTKNoHookGrokApp(t *testing.T) {
 		t.Fatalf("switched on: %v", err)
 	}
 	if _, err := RTKTakes("grok-app"); err == nil || !strings.Contains(err.Error(), "no Grok or Grok App agent") {
-		t.Fatalf("magpie library rtk on grok-app: %v", err)
+		t.Fatalf("magpie-friday library rtk on grok-app: %v", err)
 	}
 }
 
@@ -653,6 +653,6 @@ func TestRTKNoHookGrokBuild(t *testing.T) {
 		t.Fatalf("switched on: %v", err)
 	}
 	if _, err := RTKTakes("grok"); err == nil || !strings.Contains(err.Error(), "no Grok agent") {
-		t.Fatalf("magpie library rtk on grok: %v", err)
+		t.Fatalf("magpie-friday library rtk on grok: %v", err)
 	}
 }

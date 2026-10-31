@@ -1,15 +1,15 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // Claude Code's model picker had every model twice (#496): its own, and
-// the same models through magpie on the Claude subscription added there,
+// the same models through magpie-friday on the Claude subscription added there,
 // which is the very account Claude Code is signed in to; and models.dev's
 // alias and dated id of one model each had a row (claude-opus-4-5,
 // claude-opus-4-5-20251101). The rows on its own account now fold into
 // one, opened at a click without the page moving; an alias and its dated
 // id are one row, the alias's, or the dated one's while that is the value
 // set. In English and Chinese. No backend: the API is faked here.
-// The fold row ends Claude Code's own rows, which come after magpie's
-// (abledo on Discord: they hid every magpie model below the fold), though
-// the account is listed among magpie's (where it was, Claude Code was
+// The fold row ends Claude Code's own rows, which come after magpie-friday's
+// (abledo on Discord: they hid every magpie-friday model below the fold), though
+// the account is listed among magpie-friday's (where it was, Claude Code was
 // headed twice);
 // a click on it leaves the keys to the filter (focus went to the page, and
 // Esc and the arrows did nothing); a query shows the rows it finds, so an id
@@ -24,7 +24,7 @@ const { chromium, webkit } = require("playwright");
 
 const assets = path.resolve(__dirname, "../assets");
 const own = (value, note, alias) => ({ value, note, icon: "claude-color", group: "Claude Code", direct: "Anthropic", ...(alias ? { alias } : {}) });
-const via = (value, label, alias) => ({ value, label, note: "me@example.com · via magpie", icon: "claudecode-color", group: "Claude Code",
+const via = (value, label, alias) => ({ value, label, note: "me@example.com · via magpie-friday", icon: "claudecode-color", group: "Claude Code",
   ref: value.replace("[1m]", ""), same: true, ...(alias ? { alias } : {}) });
 // in the backend's order: Claude Code's own, the providers the user added,
 // then the signed-in accounts (provider.All)
@@ -34,7 +34,7 @@ const options = [
   own("claude-opus-4-5-20251101", "Claude Opus 4.5", "claude-opus-4-5"),
   own("claude-sonnet-4-5", "Claude Sonnet 4.5 (latest)"),
   own("claude-sonnet-4-5-20250929", "Claude Sonnet 4.5", "claude-sonnet-4-5"),
-  { value: "deepseek/deepseek-v4", label: "DeepSeek V4", note: "DeepSeek · via magpie", icon: "deepseek-color", group: "DeepSeek", ref: "deepseek/deepseek-v4" },
+  { value: "deepseek/deepseek-v4", label: "DeepSeek V4", note: "DeepSeek · via magpie-friday", icon: "deepseek-color", group: "DeepSeek", ref: "deepseek/deepseek-v4" },
   via("claude/claude-opus-5-5[1m]", "Claude Opus 5.5"),
   via("claude/claude-opus-4-5", "Claude Opus 4.5 (latest)"),
   via("claude/claude-opus-4-5-20251101", "Claude Opus 4.5", "claude/claude-opus-4-5"),
@@ -71,8 +71,8 @@ function server(lang, value, sets) {
 
 const row = '.row.agent[data-id="claude"]';
 const words = {
-  en: { two: "2 models via magpie", one: "1 model via magpie", whose: "me@example.com · the account Claude Code is signed in to" },
-  zh: { two: "2 个模型经 magpie", one: "1 个模型经 magpie", whose: "me@example.com · 即 Claude Code 自己登录的账号" },
+  en: { two: "2 models via magpie-friday", one: "1 model via magpie-friday", whose: "me@example.com · the account Claude Code is signed in to" },
+  zh: { two: "2 个模型经 magpie-friday", one: "1 个模型经 magpie-friday", whose: "me@example.com · 即 Claude Code 自己登录的账号" },
 };
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
@@ -113,14 +113,14 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         // an alias and its dated id: the alias alone
         assert(names.includes("claude-opus-4-5") && !names.includes("claude-opus-4-5-20251101"), names.join(", "));
         assert(names.includes("claude-sonnet-4-5") && !names.includes("claude-sonnet-4-5-20250929"), names.join(", "));
-        // Claude Code's own account through magpie: one folded row
+        // Claude Code's own account through magpie-friday: one folded row
         assert(!names.some((n) => /^Claude Opus/.test(n || "")), names.join(", "));
         const fold = list.filter((r) => r.fold);
         assert.equal(fold.length, 1, names.join(", "));
         assert.equal(fold[0].v, w.two);
         assert.equal(fold[0].n, w.whose);
         assert(names.includes("DeepSeek V4"), "another provider's stay unfolded");
-        // magpie's first, then Claude Code's own rows and the fold after
+        // magpie-friday's first, then Claude Code's own rows and the fold after
         // them: Claude Code is headed once
         assert.deepEqual(await page.locator("#list li.group").allTextContents(), ["DeepSeek", "Claude Code"]);
         assert.equal(await page.locator("#list li:last-child.fold").count(), 1);
@@ -133,13 +133,13 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         assert.equal(await page.locator("#pop:not([hidden])").count(), 1, "the picker stays open");
         assert.equal(await foldRow.getAttribute("aria-expanded"), "true");
         list = await rows(page);
-        // opened: the two through magpie, the dated one still one with its alias
+        // opened: the two through magpie-friday, the dated one still one with its alias
         assert.deepEqual(list.filter((r) => /^Claude Opus/.test(r.v)).map((r) => r.v), ["Claude Opus 5.5", "Claude Opus 4.5 (latest)"]);
         assert.equal(await view.evaluate((v) => v.scrollTop), before.view, "the click moved the page");
         assert.equal(await page.evaluate(() => scrollY), before.win, "the click moved the page");
         assert(Math.abs((await foldRow.boundingBox()).y - before.box.y) <= 2, "the row stays under the pointer");
 
-        // closed again, then one picked through magpie after opening it
+        // closed again, then one picked through magpie-friday after opening it
         await foldRow.click();
         assert(!(await rows(page)).some((r) => /^Claude Opus/.test(r.v)));
         await foldRow.click();
@@ -152,8 +152,8 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         list = await rows(page);
         // after Default and, connected, the way back
         assert.deepEqual(list[2], { v: "Claude Opus 5.5", n: "me@example.com", cur: true, fold: false }, JSON.stringify(list));
-        // "via magpie" is said once, as its tag, beside Claude Code's own marked direct (#726)
-        assert.equal(await page.locator("#list li.cur .badge.path.via").textContent(), lang === "en" ? "via magpie" : "经 magpie");
+        // "via magpie-friday" is said once, as its tag, beside Claude Code's own marked direct (#726)
+        assert.equal(await page.locator("#list li.cur .badge.path.via").textContent(), lang === "en" ? "via magpie-friday" : "经 magpie-friday");
         assert.equal(await page.locator("#list li:not(.cur)", { hasText: "claude-opus-5-5" }).first().locator(".badge.path.direct").count(), 1);
         assert.equal(list.filter((r) => r.fold).map((r) => r.v).join(), w.one);
         await page.context().close();

@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // pickedSearchSetup is a search for glm/glm-flash, which can't search, with
@@ -147,7 +147,7 @@ func TestPickedSearcherIsNotHandedOn(t *testing.T) {
 	}
 }
 
-// When the searcher magpie picked by itself fails or finds nothing and the
+// When the searcher magpie-friday picked by itself fails or finds nothing and the
 // next one searches in its place, the row of the search that answered
 // names the first and why: one that answered without searching is said so,
 // apart from one that searched and named no page.
@@ -159,7 +159,7 @@ func TestSearchInPlaceOfAutoSaysWhy(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			_, next, _ := pickedSearchSetup(t, tc.failing, provider.Responses)
 			if p, m, ok := searcher(); !ok || p.ID != "ds" || m != "deepseek-flash" {
-				t.Fatalf("magpie's searcher is %s/%s", p.ID, m)
+				t.Fatalf("magpie-friday's searcher is %s/%s", p.ID, m)
 			}
 			s := New()
 			searchForGLM(t, s)

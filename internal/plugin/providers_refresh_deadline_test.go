@@ -12,11 +12,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// refreshSandbox isolates the test's magpie folders and replaces the
+// refreshSandbox isolates the test's magpie-friday folders and replaces the
 // bounded provider refresh with ask, so a stalled or failing ask is
 // proved without Bun, a host or a network. The folders are the test's
 // own, as sandbox's are, so nothing under a real HOME is touched.
@@ -30,7 +30,7 @@ func refreshSandbox(t *testing.T, ask func(ctx context.Context, epoch uint64) er
 	// a Bun is at hand, as HasBun's check needs to let the refresh start:
 	// the replaced ask never runs it
 	t.Setenv("MAGPIE_BUN", "bun-not-really")
-	// the plugin's providers as this magpie keeps them
+	// the plugin's providers as this magpie-friday keeps them
 	if err := os.MkdirAll(settings.Dir(), 0o700); err != nil {
 		t.Fatal(err)
 	}
@@ -196,7 +196,7 @@ func TestRefreshSingleFlight(t *testing.T) {
 	}
 }
 
-// Another magpie's invalidation while a refresh is running must not be
+// Another magpie-friday's invalidation while a refresh is running must not be
 // overwritten by that refresh's older completion.
 func TestRefreshOutlivedByInvalidation(t *testing.T) {
 	stale := make(chan struct{})

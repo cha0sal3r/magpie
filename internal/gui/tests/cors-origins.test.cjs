@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// Web pages that may call magpie (#1051, SkyAerope: a page on
+// Web pages that may call magpie-friday (#1051, SkyAerope: a page on
 // http://localhost:3000 couldn't read the gateway's answers): Settings ›
 // Network lists them by origin. One is added from a field and its Add
 // button (or Enter), saved as the gateway cleaned it, and taken away with
@@ -24,7 +24,7 @@ function settingsPayload(over) {
     dock: false, dockWindow: false, proxy: "", redact: false, redactPersonal: false, redactWords: [],
     codexWarmup: "", claudeWarmup: "", codexWarmAt: "", claudeWarmAt: "", workbuddyCheckin: false, noStats: false,
     trayUsage: "", trayUsageEvery: 3, vision: "", imageGen: "",
-    version: "0.1.400", dir: "/config/magpie", gateway: "http://127.0.0.1:3425",
+    version: "0.1.400", dir: "/config/magpie-friday", gateway: "http://127.0.0.1:3425",
     proxyNow: "none", proxySource: "none", login: false,
     visionModels: [], imageGenModels: [], workbuddyCheckins: [],
     lan: false, lanURLs: [],
@@ -38,7 +38,7 @@ function settingsPayload(over) {
 function clean(list) {
   const out = [];
   for (const raw of list) {
-    if (raw.includes("*")) return { error: `"${raw}": name each origin; a wildcard would let every web page use magpie` };
+    if (raw.includes("*")) return { error: `"${raw}": name each origin; a wildcard would let every web page use magpie-friday` };
     const ext = /^(chrome-extension|moz-extension|safari-web-extension):\/\/(.*?)\/?$/.exec(raw.trim().toLowerCase());
     if (ext) {
       const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -84,19 +84,19 @@ function server(lang, posts) {
 
 const words = {
   en: {
-    head: "Web pages", name: "Web pages that may call magpie", add: "Add", remove: "Remove",
+    head: "Web pages", name: "Web pages that may call magpie-friday", add: "Add", remove: "Remove",
     sub: "Scripts on these origins can call the gateway from a browser, each request with a gateway key from Gateway. A page from any other site is refused; pages on this computer are not",
-    wildcard: "Name each origin: a wildcard would let every web page use magpie",
+    wildcard: "Name each origin: a wildcard would let every web page use magpie-friday",
     notOrigin: "Write an origin as http://localhost:3000 or https://app.example.com, or a browser extension's as chrome-extension://, moz-extension:// or safari-web-extension:// followed by its ID",
   },
   zh: {
-    head: "网页", name: "允许调用 magpie 的网页", add: "添加", remove: "移除",
+    head: "网页", name: "允许调用 magpie-friday 的网页", add: "添加", remove: "移除",
     sub: null, wildcard: null, notOrigin: null, // read from i18n.js below
   },
 };
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
-  test(engine + ": web pages that may call magpie are listed by origin (#1051)", async (t) => {
+  test(engine + ": web pages that may call magpie-friday are listed by origin (#1051)", async (t) => {
     assert(["chromium", "webkit"].includes(engine), "BROWSER must be chromium or webkit");
     const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: "chromium" }));
     t.after(() => browser.close());

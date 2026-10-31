@@ -9,14 +9,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // barWin is the desktop app as a Windows; the Bar icon routes reach no
 // method of it.
 type barWin struct{ Windows }
 
-// Settings' Bar icon tells the app whether magpie's icon is in Omarchy's
+// Settings' Bar icon tells the app whether magpie-friday's icon is in Omarchy's
 // bar, so the tray's own item leaves the bar's tray while the widget is
 // there and comes back once it is taken out (Alex on Discord: with Bar icon
 // on, Omarchy's bar showed two magpies).
@@ -52,6 +52,6 @@ func TestBarIconTellsTheTray(t *testing.T) {
 	}
 	post(`{"on":false}`)
 	if len(told) != 2 || told[1] {
-		t.Fatalf("Bar icon off: the tray was told %v, want [true false] (no magpie left in the bar)", told)
+		t.Fatalf("Bar icon off: the tray was told %v, want [true false] (no magpie-friday left in the bar)", told)
 	}
 }

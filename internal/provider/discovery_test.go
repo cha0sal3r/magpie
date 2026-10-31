@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // openWatch turns each path into a FIFO and records every open of one for
@@ -256,7 +256,7 @@ func TestAccountDiscoverySetting(t *testing.T) {
 	if !restored.NoAccountDiscovery {
 		t.Error("a restored backup turned discovery back on")
 	}
-	if err := SwitchLogin("codex", "x@example.com"); err == nil || !strings.Contains(err.Error(), "magpie accounts discovery on") {
+	if err := SwitchLogin("codex", "x@example.com"); err == nil || !strings.Contains(err.Error(), "magpie-friday accounts discovery on") {
 		t.Errorf("the refusal says how to turn it back on: %v", err)
 	}
 }

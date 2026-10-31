@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
-  "id": "usemagpie.magpie",
-  "name": "magpie",
+  "id": "usemagpie.magpie-friday",
+  "name": "magpie-friday",
   "version": "1.0.0",
-  "author": "magpie",
+  "author": "magpie-friday",
   "license": "MIT",
-  "description": "magpie's icon in the bar: a click drops down its panel, a right click opens its window.",
+  "description": "magpie-friday's icon in the bar: a click drops down its panel, a right click opens its window.",
   "kinds": ["bar-widget"],
   "entryPoints": {
     "barWidget": "Widget.qml"
   },
   "barWidget": {
-    "displayName": "magpie",
-    "description": "Pick every agent's model from the bar: a click drops down magpie's panel, a right click opens its window.",
+    "displayName": "magpie-friday",
+    "description": "Pick every agent's model from the bar: a click drops down magpie-friday's panel, a right click opens its window.",
     "category": "AI",
-    "aliases": ["magpie"],
+    "aliases": ["magpie-friday"],
     "allowMultiple": false,
     "defaultSection": "right"
   }

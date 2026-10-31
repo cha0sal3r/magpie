@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // kimiRefuseDetails answers as api.kimi.com/coding/v1 did on 2026-10-12 a
@@ -72,7 +72,7 @@ func TestReasoningDetailsRefusedAtPosition(t *testing.T) {
 	srv := New()
 	req := `{"model":"m1","stream":false,"messages":[{"role":"user","content":"Read note.txt."},` +
 		`{"role":"assistant","content":null,"tool_calls":[{"id":"call_1","type":"function","function":{"name":"read","arguments":"{}"}}],"reasoning_details":[{"type":"reasoning.text","text":"Let me read it.","format":"unknown","index":0}]},` +
-		`{"role":"tool","tool_call_id":"call_1","content":"secret: magpie"}]}`
+		`{"role":"tool","tool_call_id":"call_1","content":"secret: magpie-friday"}]}`
 	for _, want := range []int{2, 1} {
 		f.calls = 0
 		code, body := postTo(t, srv, "/v1/chat/completions", req)

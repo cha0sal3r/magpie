@@ -26,7 +26,7 @@ var edgeUnbuffered = regexp.MustCompile(`(?i)exceeded request buffer limit while
 
 // codexDropBody is the request size from which that 503 may be about the
 // request. ylorn (Discord, v0.1.1179) got it for every Codex turn a PNG
-// screenshot took past about 1 MiB, also without magpie. It isn't a limit:
+// screenshot took past about 1 MiB, also without magpie-friday. It isn't a limit:
 // bodies of 0.5 to 20 MiB were answered from here (a2b96139c), and
 // ScarfQian's (#1628) came back 200 on the ninth try after eight of these
 // 503s through another tool. "remote connection failure" is Envoy failing
@@ -37,13 +37,13 @@ const codexDropBody = 1 << 20
 // codexDropped has read it as that 503 to a request this large: what the
 // accounts loop tells it by, through its own error shape, to ask again
 // without resting anybody.
-const codexResetSaid = "This usually passes, so magpie asked again without resting the account."
+const codexResetSaid = "This usually passes, so magpie-friday asked again without resting the account."
 
 // codexDropped is the reply, still the 503 it is, that a ChatGPT Codex
 // backend gave a request of size bytes when it closed the connection
 // before answering one this large. It says what happened and, should it
 // keep happening, what makes the request smaller. It stays a 503 so
-// magpie and then Codex ask again: told 413, Codex never does, and the
+// magpie-friday and then Codex ask again: told 413, Codex never does, and the
 // next turn carries the same images, so the conversation was stuck on a
 // drop the next try may not get (#1628). A smaller request's reset is left
 // as it came.
@@ -66,7 +66,7 @@ func codexDropped(res *http.Response, size int) *http.Response {
 	res.Body.Close()
 	what := "ChatGPT's Codex backend closed the connection before answering this %.1f MiB request (503: %s). "
 	if unbuffered {
-		// a 503 from here on: Codex, pi and magpie's own loop ask again
+		// a 503 from here on: Codex, pi and magpie-friday's own loop ask again
 		// for a 503, and none of them for a 507
 		what = "ChatGPT's Codex backend failed this %.1f MiB request, and its front couldn't try again, as the request is more than it holds to retry (507: %s). "
 	}

@@ -23,7 +23,7 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Codex's own client sizes every inline image it sends to ChatGPT before
@@ -32,7 +32,7 @@ import (
 // down with a triangle filter and written again in its own format — PNG
 // as PNG, JPEG as JPEG at quality 85 — and a GIF as PNG; one that fits
 // goes as it came. Another agent signed in to the same ChatGPT account
-// through magpie sends its screenshots whole, and ChatGPT dropped
+// through magpie-friday sends its screenshots whole, and ChatGPT dropped
 // ylorn's (Discord, v0.1.1179) once one took a turn past about 1 MiB.
 // codexImagesFit does what Codex's client does, for a Codex account only.
 //

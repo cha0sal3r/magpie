@@ -10,9 +10,9 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/yetone/magpie/internal/mcpauth"
-	"github.com/yetone/magpie/internal/mcpauth/mcpauthtest"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/mcpauth"
+	"github.com/cha0sal3r/magpie-friday/internal/mcpauth/mcpauthtest"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 type heldTokenResponse struct {

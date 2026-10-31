@@ -17,7 +17,7 @@ const DIR = "C:\\Program Files\\WinGet\\Links";
 const UPGRADE = "winget upgrade --id rtk-ai.rtk --exact --silent --accept-package-agreements --accept-source-agreements --disable-interactivity";
 const agent = (id, name) => ({ id, name, icon: "", skills: `${HOME}/.${id}/skills`, mcp: `${HOME}/.${id}/mcp.json` });
 const lib = () => ({
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: [agent("codex", "Codex")],
   instructions: { agents: [], sets: [] }, foundServers: [], projects: [], foundSkills: [], skills: [], servers: [],
 });
@@ -52,13 +52,13 @@ const CASES = {
     title: `Runs ${UPGRADE}, as administrator: Windows asks first`,
     plain: `Runs ${UPGRADE}`,
     declined: `The upgrade failed: RTK is installed in ${DIR}, which only an administrator can change, and the administrator prompt was declined. Try again and allow it, or run ${UPGRADE} in a terminal opened as administrator.`,
-    none: `The upgrade failed: RTK needs an administrator here, and magpie couldn't ask Windows for one (no administrator prompt: The service cannot be started). Try again and allow it, or run ${UPGRADE} in a terminal opened as administrator.`,
+    none: `The upgrade failed: RTK needs an administrator here, and magpie-friday couldn't ask Windows for one (no administrator prompt: The service cannot be started). Try again and allow it, or run ${UPGRADE} in a terminal opened as administrator.`,
   },
   zh: {
     title: `将以管理员身份运行 ${UPGRADE}：Windows 会先询问`,
     plain: `将运行 ${UPGRADE}`,
     declined: `升级失败：RTK 安装在 ${DIR}，这个目录只有管理员能修改，而管理员授权提示被拒绝了。 请再试一次并允许授权，或在以管理员身份打开的终端里运行 ${UPGRADE}。`,
-    none: `升级失败：RTK 在这里需要管理员权限，而 magpie 没能向 Windows 请求管理员权限（no administrator prompt: The service cannot be started）。 请再试一次并允许授权，或在以管理员身份打开的终端里运行 ${UPGRADE}。`,
+    none: `升级失败：RTK 在这里需要管理员权限，而 magpie-friday 没能向 Windows 请求管理员权限（no administrator prompt: The service cannot be started）。 请再试一次并允许授权，或在以管理员身份打开的终端里运行 ${UPGRADE}。`,
   },
   // the other languages: translated, never npm's advice
   ja: {}, de: {}, "zh-TW": {},

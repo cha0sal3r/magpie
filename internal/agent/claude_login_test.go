@@ -5,10 +5,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 func saveDeepseek(t *testing.T) {
@@ -18,12 +18,12 @@ func saveDeepseek(t *testing.T) {
 	}
 }
 
-// Claude Code running through magpie can keep its claude.ai sign-in: its
+// Claude Code running through magpie-friday can keep its claude.ai sign-in: its
 // sign-in field at claudeai leaves ANTHROPIC_AUTH_TOKEN empty, which Claude
 // Code reads as no key, so it stays signed in to claude.ai and sends that
-// sign-in to magpie. Every later write — a model, a tier, the subagents,
+// sign-in to magpie-friday. Every later write — a model, a tier, the subagents,
 // a /model pick followed, Reapply — keeps it so, and a key put there by
-// hand is said, not taken for magpie's.
+// hand is said, not taken for magpie-friday's.
 func TestClaudeKeepsItsClaudeAISignIn(t *testing.T) {
 	t.Setenv("MAGPIE_ADDR", "")
 	home, path := claudeSettings(t, `{"theme":"dark"}`)
@@ -35,16 +35,16 @@ func TestClaudeKeepsItsClaudeAISignIn(t *testing.T) {
 		t.Fatal("Claude Code has no sign-in field")
 	}
 	if o := login.Options(a.Values()); len(o) != 0 {
-		t.Fatalf("sign-ins offered before Claude Code runs through magpie: %v", o)
+		t.Fatalf("sign-ins offered before Claude Code runs through magpie-friday: %v", o)
 	}
 	if err := login.Set("claudeai"); err == nil {
-		t.Fatal("a sign-in kept before Claude Code runs through magpie")
+		t.Fatal("a sign-in kept before Claude Code runs through magpie-friday")
 	}
 	if err := a.Apply("model", "deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	if tok, _ := env("ANTHROPIC_AUTH_TOKEN"); tok != gateway.Token {
-		t.Fatalf("magpie's key by default, got %q", tok)
+		t.Fatalf("magpie-friday's key by default, got %q", tok)
 	}
 	if o := login.Options(a.Values()); len(o) != 2 {
 		t.Fatalf("sign-ins %v", o)
@@ -97,7 +97,7 @@ func TestClaudeKeepsItsClaudeAISignIn(t *testing.T) {
 	if err := edit.SetJSON(path, edit.KV{Path: "env.ANTHROPIC_AUTH_TOKEN", Value: "sk-other"}); err != nil {
 		t.Fatal(err)
 	}
-	if c := a.Check(); !strings.Contains(c, "sends magpie that key, not its claude.ai sign-in") {
+	if c := a.Check(); !strings.Contains(c, "sends magpie-friday that key, not its claude.ai sign-in") {
 		t.Fatalf("a key beside the sign-in kept: %q", c)
 	}
 	if err := a.Reapply(); err != nil {
@@ -105,25 +105,25 @@ func TestClaudeKeepsItsClaudeAISignIn(t *testing.T) {
 	}
 	kept("reapplied over a key")
 
-	// back to magpie's key
+	// back to magpie-friday's key
 	if err := a.Apply("login", ""); err != nil {
 		t.Fatal(err)
 	}
 	if tok, _ := env("ANTHROPIC_AUTH_TOKEN"); tok != gateway.Token || a.Values()["login"] != "" || a.Drift() != nil {
-		t.Fatalf("magpie's key again: token %q, values %v, drift %+v", tok, a.Values(), a.Drift())
+		t.Fatalf("magpie-friday's key again: token %q, values %v, drift %+v", tok, a.Values(), a.Drift())
 	}
-	// magpie's key emptied or taken out by hand: said, with the way to keep it so
+	// magpie-friday's key emptied or taken out by hand: said, with the way to keep it so
 	if err := edit.SetJSON(path, edit.KV{Path: "env.ANTHROPIC_AUTH_TOKEN", Value: ""}); err != nil {
 		t.Fatal(err)
 	}
 	if c := a.Check(); !strings.Contains(c, "is empty") || !strings.Contains(c, "set its sign-in to claude.ai") {
-		t.Fatalf("magpie's key emptied: %q", c)
+		t.Fatalf("magpie-friday's key emptied: %q", c)
 	}
 	if err := edit.DelJSON(path, "env.ANTHROPIC_AUTH_TOKEN"); err != nil {
 		t.Fatal(err)
 	}
 	if c := a.Check(); !strings.Contains(c, "is gone") {
-		t.Fatalf("magpie's key gone: %q", c)
+		t.Fatalf("magpie-friday's key gone: %q", c)
 	}
 	if v, _ := edit.GetJSON(path, "theme"); v != "dark" {
 		t.Fatal("theme lost")
@@ -151,7 +151,7 @@ func TestClaudeSignInThroughDisconnect(t *testing.T) {
 		t.Fatalf("switched off:\n%s", readFile(path))
 	}
 	if v := a.Values()["login"]; v != "" {
-		t.Fatalf("sign-in %q off magpie", v)
+		t.Fatalf("sign-in %q off magpie-friday", v)
 	}
 	if err := a.Connect(); err != nil {
 		t.Fatal(err)
@@ -161,8 +161,8 @@ func TestClaudeSignInThroughDisconnect(t *testing.T) {
 	}
 }
 
-// An empty key at an endpoint the user set after magpie stepped out is
-// theirs, though Claude Code kept its claude.ai sign-in through magpie
+// An empty key at an endpoint the user set after magpie-friday stepped out is
+// theirs, though Claude Code kept its claude.ai sign-in through magpie-friday
 // before: its model default leaves it (yetone on #1218).
 func TestClaudeOwnEndpointWithAnEmptyKey(t *testing.T) {
 	t.Setenv("MAGPIE_ADDR", "")
@@ -192,7 +192,7 @@ func TestClaudeOwnEndpointWithAnEmptyKey(t *testing.T) {
 }
 
 // Moved to another port, Claude Code keeps its sign-in; left at an old
-// one, its model default takes out magpie's empty key with the address.
+// one, its model default takes out magpie-friday's empty key with the address.
 func TestClaudeSignInAcrossPorts(t *testing.T) {
 	t.Setenv("MAGPIE_ADDR", "")
 	home, path := claudeSettings(t, `{"theme":"dark"}`)
@@ -226,7 +226,7 @@ func TestClaudeSignInAcrossPorts(t *testing.T) {
 	}
 }
 
-// From a WSL distro under NAT, with magpie shared on the network, the
+// From a WSL distro under NAT, with magpie-friday shared on the network, the
 // gateway takes only the sharing key: Claude Code there can't keep its
 // sign-in, and isn't offered it. Mirrored, it reaches loopback and can.
 func TestWSLClaudeSignInWhereTheGatewayTakesAnyKey(t *testing.T) {
@@ -258,7 +258,7 @@ func TestWSLClaudeSignInWhereTheGatewayTakesAnyKey(t *testing.T) {
 	}
 }
 
-// A stopped distro's Claude Code on magpie's model is offered its claude.ai
+// A stopped distro's Claude Code on magpie-friday's model is offered its claude.ai
 // sign-in only where the gateway takes any key, as a running one is.
 func TestWSLClaudeStoppedSignIn(t *testing.T) {
 	t.Cleanup(func() { access.ConfigureLAN(false, false) })
@@ -279,9 +279,9 @@ func TestWSLClaudeStoppedSignIn(t *testing.T) {
 	}
 }
 
-// Wired in, then the gateway moved without magpie following (it wasn't
-// running): a magpie model picked at the older address takes nothing of
-// magpie's there for the user's, with its key or its claude.ai sign-in.
+// Wired in, then the gateway moved without magpie-friday following (it wasn't
+// running): a magpie-friday model picked at the older address takes nothing of
+// magpie-friday's there for the user's, with its key or its claude.ai sign-in.
 // Switched off, Claude Code gets its own endpoint and key back; on its own
 // model, no gateway address is left.
 func TestClaudeAtAnOlderGatewayAddress(t *testing.T) {

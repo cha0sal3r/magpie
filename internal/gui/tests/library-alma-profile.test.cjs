@@ -13,7 +13,7 @@ const { chromium, webkit } = require("playwright");
 const assets = path.resolve(__dirname, "../assets");
 const HOME = "/Users/foobra";
 const library = {
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: [{ id: "alma", name: "Alma", icon: "alma", instructions: `${HOME}/.config/alma/USER.md` }],
   instructions: {
     shared: "Be brief.",
@@ -50,11 +50,11 @@ const move = {
   de: "Eigenes in den gemeinsamen Text verschieben",
 };
 const note = {
-  en: "This file is Alma's profile of you: magpie adds its part after yours and leaves your own lines in it. A USER.md in a workspace is read instead of this one.",
-  zh: "该文件是 Alma 对你的个人资料：magpie 会把它的部分加在你的内容之后，你自己的内容保留在文件里。工作区中的 USER.md 会代替此文件被读取。",
-  "zh-TW": "該檔案是 Alma 對你的個人資料：magpie 會把它的部分加在你的內容之後，你自己的內容保留在檔案裡。工作區中的 USER.md 會取代此檔案被讀取。",
-  ja: "このファイルは Alma にとってのあなたのプロフィールです。magpie は自分の部分をあなたの内容の後に追加し、あなた自身の行はそのまま残します。ワークスペースに USER.md があると、こちらの代わりにそれが読み込まれます。",
-  de: "Diese Datei ist das Profil, das Alma von dir hat: magpie fügt seinen Teil nach deinem an und lässt deine eigenen Zeilen darin. Eine USER.md in einem Workspace wird stattdessen gelesen.",
+  en: "This file is Alma's profile of you: magpie-friday adds its part after yours and leaves your own lines in it. A USER.md in a workspace is read instead of this one.",
+  zh: "该文件是 Alma 对你的个人资料：magpie-friday 会把它的部分加在你的内容之后，你自己的内容保留在文件里。工作区中的 USER.md 会代替此文件被读取。",
+  "zh-TW": "該檔案是 Alma 對你的個人資料：magpie-friday 會把它的部分加在你的內容之後，你自己的內容保留在檔案裡。工作區中的 USER.md 會取代此檔案被讀取。",
+  ja: "このファイルは Alma にとってのあなたのプロフィールです。magpie-friday は自分の部分をあなたの内容の後に追加し、あなた自身の行はそのまま残します。ワークスペースに USER.md があると、こちらの代わりにそれが読み込まれます。",
+  de: "Diese Datei ist das Profil, das Alma von dir hat: magpie-friday fügt seinen Teil nach deinem an und lässt deine eigenen Zeilen darin. Eine USER.md in einem Workspace wird stattdessen gelesen.",
 };
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {

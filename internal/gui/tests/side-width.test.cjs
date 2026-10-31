@@ -80,7 +80,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       assert.equal(await width(page), 320);
       await drag(page, 130);
       assert.equal(await width(page), 168);
-      // at its narrowest every page's name, Settings and the magpie read whole
+      // at its narrowest every page's name, Settings and the magpie-friday read whole
       const cut = await page.locator("#side :is(.nav-gl, button[data-view] > span, #prefs .side-l, .brand)").evaluateAll((es) => es.filter((e) => e.scrollWidth > e.clientWidth + 1 || e.getBoundingClientRect().right > 168).map((e) => e.textContent.trim()));
       assert.deepEqual(cut, []);
 
@@ -143,7 +143,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       await context.close();
     });
 
-    await t.test("magpie web on an iPad: a finger drags it", async () => {
+    await t.test("magpie-friday web on an iPad: a finger drags it", async () => {
       const context = await browser.newContext({ viewport: { width: 1180, height: 820 }, reducedMotion: "reduce", hasTouch: true, isMobile: engine === "chromium" });
       const page = await context.newPage();
       page.setDefaultTimeout(5000);
@@ -165,7 +165,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       await context.close();
     });
 
-    await t.test("magpie web on a phone: no sidebar, no edge", async () => {
+    await t.test("magpie-friday web on a phone: no sidebar, no edge", async () => {
       const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: "reduce", hasTouch: true, isMobile: engine === "chromium" });
       const page = await context.newPage();
       page.setDefaultTimeout(5000);

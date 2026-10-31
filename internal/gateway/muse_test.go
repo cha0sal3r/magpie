@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Muse Code lists its models from /muse-code/models on its endpoint's host
@@ -44,7 +44,7 @@ func TestMuseModels(t *testing.T) {
 	}
 }
 
-// A Responses stream magpie makes from another API starts with output an
+// A Responses stream magpie-friday makes from another API starts with output an
 // empty list, as OpenAI's does: Muse Code takes output null for a stream it
 // can't read and retries it until it gives up.
 func TestResponsesStartOutputList(t *testing.T) {

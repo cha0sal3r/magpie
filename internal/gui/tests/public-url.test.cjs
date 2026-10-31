@@ -15,7 +15,7 @@ const { test } = require("node:test");
 const { chromium, webkit } = require("playwright");
 
 const assets = path.resolve(__dirname, "../assets");
-const network = "https://magpie.example.com";
+const network = "https://magpie-friday.example.com";
 const cases = [
   {
     name: "loopback",
@@ -87,7 +87,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
             await page.goto("http://magpie.test/?view=gateway");
             await note.waitFor();
             assert.equal(await note.textContent(), w[c.note]);
-            if (c.noAnyKey) assert.equal(await page.locator("#connect code", { hasText: /^magpie$/ }).count(), 0, "a key-less magpie is offered");
+            if (c.noAnyKey) assert.equal(await page.locator("#connect code", { hasText: /^magpie-friday$/ }).count(), 0, "a key-less magpie-friday is offered");
             if (!c.picks) return;
             await page.locator("#connectAddress").click();
             await page.locator(".proto-menu .pm-item", { hasText: network }).click();

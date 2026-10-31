@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // cliHome is groupsHome with every other folder an agent keeps files in
@@ -36,7 +36,7 @@ func cliHome(t *testing.T) {
 }
 
 // homeFiles is every folder and file in the test's home, config and cache
-// folders, with each file's contents. Not magpie's cli-identity.json: who
+// folders, with each file's contents. Not magpie-friday's cli-identity.json: who
 // Cursor's and Devin's CLIs say is signed in, asked again behind a look a
 // minute after the last answer and kept when it comes, which may be during
 // a later command, or in a later test's home.
@@ -99,7 +99,7 @@ func writeHomeFile(t *testing.T, rel, s string) string {
 }
 
 // codexOnAdvanced is the reporter's machine: Codex's own config.toml, a
-// routing group advanced, and Codex put on it with magpie codex
+// routing group advanced, and Codex put on it with magpie-friday codex
 // group/advanced. It gives the config's path.
 func codexOnAdvanced(t *testing.T) string {
 	t.Helper()
@@ -108,7 +108,7 @@ func codexOnAdvanced(t *testing.T) string {
 		"model = \"gpt-5.5\"\nmodel_reasoning_effort = \"high\"\n\n[projects.\"/Users/me/work\"]\ntrust_level = \"trusted\"\n")
 	for _, args := range [][]string{{"group", "add", "advanced", "models=a/m,b/gpt-5.5"}, {"codex", "group/advanced"}} {
 		if _, err := printed(t, func() error { return run(args) }); err != nil {
-			t.Fatalf("magpie %s: %v", strings.Join(args, " "), err)
+			t.Fatalf("magpie-friday %s: %v", strings.Join(args, " "), err)
 		}
 	}
 	if b, _ := os.ReadFile(path); !strings.Contains(string(b), `"group/advanced"`) || !strings.Contains(string(b), "trust_level") {
@@ -117,16 +117,16 @@ func codexOnAdvanced(t *testing.T) string {
 	return path
 }
 
-// magpie codex --help printed "✓ Codex model --help" and wrote model =
-// "--help" into ~/.codex/config.toml, magpie taken out with it (reported
+// magpie-friday codex --help printed "✓ Codex model --help" and wrote model =
+// "--help" into ~/.codex/config.toml, magpie-friday taken out with it (reported
 // on 0.1.1082, Codex on group/advanced). --help, -h and help, wherever
 // they come, now show how to set Codex, and any other word that starts
 // with "-" is refused as a flag: neither writes a thing.
-// magpie codex model wrote model = "model" into Codex's config, magpie
-// taken out with it, and magpie codex effort model = "effort" (reported
-// with magpie codex --help, on 0.1.1082). A field's name alone, as typed
+// magpie-friday codex model wrote model = "model" into Codex's config, magpie-friday
+// taken out with it, and magpie-friday codex effort model = "effort" (reported
+// with magpie-friday codex --help, on 0.1.1082). A field's name alone, as typed
 // or as shown, now says what the field is set to, and a field's name is
-// refused as a value: magpie codex subagent effort ran the subagents on a
+// refused as a value: magpie-friday codex subagent effort ran the subagents on a
 // model called effort. Neither writes a thing.
 func TestAgentFieldNameShowsIt(t *testing.T) {
 	codexOnAdvanced(t)
@@ -142,50 +142,50 @@ func TestAgentFieldNameShowsIt(t *testing.T) {
 	} {
 		args := strings.Fields(c.args)
 		if c.want == "" {
-			// what tells a write: taking magpie out still does
+			// what tells a write: taking magpie-friday out still does
 			if _, err := printed(t, func() error { return run(args) }); err != nil || filesChanged(before, homeFiles(t)) == "" {
-				t.Fatalf("magpie %s: %v, and wrote nothing", c.args, err)
+				t.Fatalf("magpie-friday %s: %v, and wrote nothing", c.args, err)
 			}
 			continue
 		}
 		out, err := printed(t, func() error { return run(args) })
 		if err != nil || out != c.want {
-			t.Errorf("magpie %s: %v %q, want %q", c.args, err, out, c.want)
+			t.Errorf("magpie-friday %s: %v %q, want %q", c.args, err, out, c.want)
 		}
 		if diff := filesChanged(before, homeFiles(t)); diff != "" {
-			t.Fatalf("magpie %s wrote:\n%s", c.args, diff)
+			t.Fatalf("magpie-friday %s wrote:\n%s", c.args, diff)
 		}
 	}
 	codexOnAdvanced(t)
 	before = homeFiles(t)
 	for _, c := range []struct{ args, want string }{
-		{"codex subagent effort", `"subagent effort" is one field of Codex's: magpie codex subagent_effort shows it`},
-		{"codex subagents Effort", `"subagent effort" is one field of Codex's: magpie codex subagent_effort shows it`},
-		{"codex model effort", `"effort" is a field of Codex's, not a value for its model: magpie codex effort shows it`},
-		{"codex model Effort", `"Effort" is a field of Codex's, not a value for its model: magpie codex effort shows it`},
-		{"codex effort model", `"model" is a field of Codex's, not a value for its effort: magpie codex model shows it`},
-		{"codex model sign-in", `"sign-in" is a field of Codex's, not a value for its model: magpie codex login shows it`},
+		{"codex subagent effort", `"subagent effort" is one field of Codex's: magpie-friday codex subagent_effort shows it`},
+		{"codex subagents Effort", `"subagent effort" is one field of Codex's: magpie-friday codex subagent_effort shows it`},
+		{"codex model effort", `"effort" is a field of Codex's, not a value for its model: magpie-friday codex effort shows it`},
+		{"codex model Effort", `"Effort" is a field of Codex's, not a value for its model: magpie-friday codex effort shows it`},
+		{"codex effort model", `"model" is a field of Codex's, not a value for its effort: magpie-friday codex model shows it`},
+		{"codex model sign-in", `"sign-in" is a field of Codex's, not a value for its model: magpie-friday codex login shows it`},
 	} {
 		args := strings.Fields(c.args)
 		out, err := printed(t, func() error { return run(args) })
 		if err == nil || err.Error() != c.want || out != "" {
-			t.Errorf("magpie %s: %v %q, want %s", c.args, err, out, c.want)
+			t.Errorf("magpie-friday %s: %v %q, want %s", c.args, err, out, c.want)
 		}
 		if diff := filesChanged(before, homeFiles(t)); diff != "" {
-			t.Fatalf("magpie %s wrote:\n%s", c.args, diff)
+			t.Fatalf("magpie-friday %s wrote:\n%s", c.args, diff)
 		}
 	}
 	// a field's name in any case sets it too
 	out, err := printed(t, func() error { return run([]string{"codex", "EFFORT", "low"}) })
 	if err != nil || out != "✓ Codex effort low\n" || filesChanged(before, homeFiles(t)) == "" {
-		t.Errorf("magpie codex EFFORT low: %v %q", err, out)
+		t.Errorf("magpie-friday codex EFFORT low: %v %q", err, out)
 	}
 }
 
 // Every agent's fields go by their names the same way: alone, each shows
 // its field; after any field, each is refused. They were written as most
 // agents' model, and connected Claude Desktop, Cursor Private Inference,
-// Pencil, T3 Code, WorkBuddy and ZCode to magpie. Claude Code's opus,
+// Pencil, T3 Code, WorkBuddy and ZCode to magpie-friday. Claude Code's opus,
 // sonnet, haiku and fable name its model as well as its tiers, and stay
 // the model's (TestClaudeTierNamesSetTheModel).
 func TestEveryAgentFieldNameWritesNothing(t *testing.T) {
@@ -199,10 +199,10 @@ func TestEveryAgentFieldNameWritesNothing(t *testing.T) {
 		t.Helper()
 		out, err := printed(t, func() error { return run(args) })
 		if !ok(out, err) {
-			t.Errorf("magpie %s: %v %q, want %s", strings.Join(args, " "), err, out, want)
+			t.Errorf("magpie-friday %s: %v %q, want %s", strings.Join(args, " "), err, out, want)
 		}
 		if diff := filesChanged(before, homeFiles(t)); diff != "" {
-			t.Errorf("magpie %s wrote:\n%s", strings.Join(args, " "), diff)
+			t.Errorf("magpie-friday %s wrote:\n%s", strings.Join(args, " "), diff)
 			before = homeFiles(t)
 		}
 	}
@@ -230,9 +230,9 @@ func TestEveryAgentFieldNameWritesNothing(t *testing.T) {
 	}
 }
 
-// Claude Code's tiers are named as its model's aliases are: magpie claude
+// Claude Code's tiers are named as its model's aliases are: magpie-friday claude
 // opus sets its model to opus, as the docs have it, where another field's
-// name alone shows that field; magpie claude help says so.
+// name alone shows that field; magpie-friday claude help says so.
 func TestClaudeTierNamesSetTheModel(t *testing.T) {
 	cliHome(t)
 	path := writeHomeFile(t, filepath.Join(".claude", "settings.json"), "{\n  \"model\": \"claude-opus-4-5\",\n  \"theme\": \"dark\"\n}\n")
@@ -240,18 +240,18 @@ func TestClaudeTierNamesSetTheModel(t *testing.T) {
 		want := args[len(args)-1]
 		out, err := printed(t, func() error { return run(args) })
 		if b, _ := os.ReadFile(path); err != nil || out != "✓ Claude Code model "+want+"\n" || !strings.Contains(string(b), `"model": "`+want+`"`) {
-			t.Errorf("magpie %s: %v %q\n%s", strings.Join(args, " "), err, out, b)
+			t.Errorf("magpie-friday %s: %v %q\n%s", strings.Join(args, " "), err, out, b)
 		}
 	}
 	out, err := printed(t, func() error { return run([]string{"claude", "help"}) })
-	if err != nil || !strings.Contains(out, "\n  opus, sonnet, haiku and fable alone name the model: magpie claude opus sets its model to opus\n") {
-		t.Errorf("magpie claude help: %v\n%s", err, out)
+	if err != nil || !strings.Contains(out, "\n  opus, sonnet, haiku and fable alone name the model: magpie-friday claude opus sets its model to opus\n") {
+		t.Errorf("magpie-friday claude help: %v\n%s", err, out)
 	}
 	// in another case too, where Claude Code takes its aliases as they are
 	// spelled: the tier's field isn't shown for it
 	out, err = printed(t, func() error { return run([]string{"claude", "Opus"}) })
 	if err == nil || !strings.HasPrefix(err.Error(), `"Opus" is no model of Claude Code's`) || out != "" {
-		t.Errorf("magpie claude Opus: %v %q, want it refused as a model", err, out)
+		t.Errorf("magpie-friday claude Opus: %v %q, want it refused as a model", err, out)
 	}
 }
 
@@ -267,24 +267,24 @@ func TestClaudeUltracodeNamedAsAValue(t *testing.T) {
 	before := homeFiles(t)
 	for _, args := range [][]string{{"claude", "model", "ultracode"}, {"claude", "effort", "ultracode"}, {"claude", "effort", "Ultracode"}} {
 		out, err := printed(t, func() error { return run(args) })
-		if err == nil || !strings.HasSuffix(err.Error(), ": magpie claude ultracode on") || out != "" {
-			t.Errorf("magpie %s: %v %q, want it to say magpie claude ultracode on", strings.Join(args, " "), err, out)
+		if err == nil || !strings.HasSuffix(err.Error(), ": magpie-friday claude ultracode on") || out != "" {
+			t.Errorf("magpie-friday %s: %v %q, want it to say magpie-friday claude ultracode on", strings.Join(args, " "), err, out)
 		}
 		if diff := filesChanged(before, homeFiles(t)); diff != "" {
-			t.Fatalf("magpie %s wrote:\n%s", strings.Join(args, " "), diff)
+			t.Fatalf("magpie-friday %s wrote:\n%s", strings.Join(args, " "), diff)
 		}
 	}
 	if _, err := printed(t, func() error { return run([]string{"claude", "ultracode", "on"}) }); err != nil {
 		t.Fatal(err)
 	}
 	if b, _ := os.ReadFile(path); !strings.Contains(string(b), `"ultracode": true`) {
-		t.Errorf("magpie claude ultracode on wrote:\n%s", b)
+		t.Errorf("magpie-friday claude ultracode on wrote:\n%s", b)
 	}
 }
 
-// magpie codex DEFAULT wrote model = "DEFAULT" into Codex's config, magpie
-// taken out with it, and magpie codex effort Default wrote
-// model_reasoning_effort = "Default". default is magpie's word in any
+// magpie-friday codex DEFAULT wrote model = "DEFAULT" into Codex's config, magpie-friday
+// taken out with it, and magpie-friday codex effort Default wrote
+// model_reasoning_effort = "Default". default is magpie-friday's word in any
 // case, as help and a field's name are, and does what default does.
 func TestAgentDefaultInAnyCase(t *testing.T) {
 	path := codexOnAdvanced(t)
@@ -298,25 +298,25 @@ func TestAgentDefaultInAnyCase(t *testing.T) {
 		out, err := printed(t, func() error { return run(strings.Fields(c.args)) })
 		b, _ := os.ReadFile(path)
 		if err != nil || out != c.want || c.gone.Match(b) {
-			t.Errorf("magpie %s: %v %q, want %q\n%s", c.args, err, out, c.want, b)
+			t.Errorf("magpie-friday %s: %v %q, want %q\n%s", c.args, err, out, c.want, b)
 		}
 	}
 	for _, word := range []string{"DEFAULT", "Default"} {
 		path := codexOnAdvanced(t)
 		out, err := printed(t, func() error { return run([]string{"codex", word}) })
 		b, _ := os.ReadFile(path)
-		if err != nil || out != "✓ Codex model gpt-5.5\n  disconnected from magpie, back to what it had before\n" ||
+		if err != nil || out != "✓ Codex model gpt-5.5\n  disconnected from magpie-friday, back to what it had before\n" ||
 			!strings.Contains(string(b), "model = \"gpt-5.5\"\nmodel_reasoning_effort = \"high\"\n") || strings.Contains(string(b), "model_provider = ") {
-			t.Errorf("magpie codex %s: %v %q, want Codex back on gpt-5.5\n%s", word, err, out, b)
+			t.Errorf("magpie-friday codex %s: %v %q, want Codex back on gpt-5.5\n%s", word, err, out, b)
 		}
 	}
 }
 
-// magpie claude sonnet, run by an agent that took it for a query of the
+// magpie-friday claude sonnet, run by an agent that took it for a query of the
 // sonnet tier, put Claude Code back on the DeepSeek endpoint it had before
-// magpie, which refused Sonnet with a 400, and printed only "✓ Claude Code
+// magpie-friday, which refused Sonnet with a 400, and printed only "✓ Claude Code
 // model sonnet" (#2000, marshalys). An alias set while Claude Code is on
-// magpie now says it took magpie out, and how to connect it again; help
+// magpie-friday now says it took magpie-friday out, and how to connect it again; help
 // says so beside the aliases.
 func TestClaudeAliasSaysItTookMagpieOut(t *testing.T) {
 	for _, alias := range []string{"opus", "sonnet", "haiku", "fable"} {
@@ -325,26 +325,26 @@ func TestClaudeAliasSaysItTookMagpieOut(t *testing.T) {
 			"{\n  \"model\": \"deepseek-chat\",\n  \"env\": {\n    \"ANTHROPIC_BASE_URL\": \"https://deepseek.invalid/anthropic\",\n    \"ANTHROPIC_AUTH_TOKEN\": \"sk-own\"\n  }\n}\n")
 		for _, args := range [][]string{{"group", "add", "advanced", "models=a/m"}, {"claude", "group/advanced"}} {
 			if _, err := printed(t, func() error { return run(args) }); err != nil {
-				t.Fatalf("magpie %s: %v", strings.Join(args, " "), err)
+				t.Fatalf("magpie-friday %s: %v", strings.Join(args, " "), err)
 			}
 		}
 		if b, _ := os.ReadFile(path); strings.Contains(string(b), "deepseek.invalid") {
-			t.Fatalf("Claude Code isn't on magpie:\n%s", b)
+			t.Fatalf("Claude Code isn't on magpie-friday:\n%s", b)
 		}
 		out, err := printed(t, func() error { return run([]string{"claude", alias}) })
 		b, _ := os.ReadFile(path)
-		if err != nil || !strings.HasPrefix(out, "✓ Claude Code model "+alias+"\n  disconnected from magpie: "+alias+" is Claude Code's own") ||
-			!strings.Contains(out, "magpie claude <model>") || !strings.Contains(string(b), "deepseek.invalid") {
-			t.Errorf("magpie claude %s: %v %q, want it to say magpie is out\n%s", alias, err, out, b)
+		if err != nil || !strings.HasPrefix(out, "✓ Claude Code model "+alias+"\n  disconnected from magpie-friday: "+alias+" is Claude Code's own") ||
+			!strings.Contains(out, "magpie-friday claude <model>") || !strings.Contains(string(b), "deepseek.invalid") {
+			t.Errorf("magpie-friday claude %s: %v %q, want it to say magpie-friday is out\n%s", alias, err, out, b)
 		}
-		// set again, off magpie already: nothing to say
+		// set again, off magpie-friday already: nothing to say
 		out, err = printed(t, func() error { return run([]string{"claude", alias}) })
 		if err != nil || strings.Contains(out, "disconnected") {
-			t.Errorf("magpie claude %s, off magpie: %v %q", alias, err, out)
+			t.Errorf("magpie-friday claude %s, off magpie-friday: %v %q", alias, err, out)
 		}
 	}
 	out, err := printed(t, func() error { return run([]string{"claude", "help"}) })
-	if err != nil || !strings.Contains(out, "they are Claude Code's own models, not magpie's: setting one takes magpie out") {
-		t.Errorf("magpie claude help: %v\n%s", err, out)
+	if err != nil || !strings.Contains(out, "they are Claude Code's own models, not magpie-friday's: setting one takes magpie-friday out") {
+		t.Errorf("magpie-friday claude help: %v\n%s", err, out)
 	}
 }

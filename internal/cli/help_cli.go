@@ -6,17 +6,17 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/yetone/magpie/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
 )
 
 // helpAsked is whether args ask for help rather than for the command to
 // run: -h or --help anywhere, or help as the word after the command. It
 // is looked at before run does anything, since a command that took
-// --help for a value acted on it: `magpie snow --help` set Snow's model
-// to "--help", which took magpie out of it (#1457), and `magpie serve
+// --help for a value acted on it: `magpie-friday snow --help` set Snow's model
+// to "--help", which took magpie-friday out of it (#1457), and `magpie-friday serve
 // --help` started a gateway.
 func helpAsked(args []string) bool {
-	// what magpie is started with by others (Claude Code's MCP helper, the
+	// what magpie-friday is started with by others (Claude Code's MCP helper, the
 	// Agents page's dry run, a link, Windows' -Embedding) never carries
 	// an exact -h, --help or help
 	for _, a := range args {
@@ -27,8 +27,8 @@ func helpAsked(args []string) bool {
 	return len(args) > 1 && args[1] == "help"
 }
 
-// helpFor is what `magpie <command> --help` prints: the command's own
-// usage where it has one, its lines of magpie's usage otherwise, an
+// helpFor is what `magpie-friday <command> --help` prints: the command's own
+// usage where it has one, its lines of magpie-friday's usage otherwise, an
 // agent's forms and fields for an agent, and the whole usage for
 // anything else.
 func helpFor(args []string) string {
@@ -92,13 +92,13 @@ func helpFor(args []string) string {
 	return usage
 }
 
-// usageLines are the lines of magpie's usage for `magpie <cmd>`, with the
+// usageLines are the lines of magpie-friday's usage for `magpie-friday <cmd>`, with the
 // lines that carry on from them.
 func usageLines(cmd string) string {
 	var b strings.Builder
 	in := false
 	for _, l := range strings.Split(usage, "\n") {
-		if rest, ok := strings.CutPrefix(l, "  magpie "); ok {
+		if rest, ok := strings.CutPrefix(l, "  magpie-friday "); ok {
 			in = rest == cmd || strings.HasPrefix(rest, cmd+" ")
 		} else if !strings.HasPrefix(l, "          ") {
 			in = false
@@ -110,21 +110,21 @@ func usageLines(cmd string) string {
 	return b.String()
 }
 
-// agentHelp is `magpie <agent> --help`: the forms that set it, and its
+// agentHelp is `magpie-friday <agent> --help`: the forms that set it, and its
 // fields.
 func agentHelp(a *agent.Agent) string {
 	var b strings.Builder
 	id := a.ID
 	fmt.Fprintf(&b, "%s\n\n", a.Name)
-	fmt.Fprintf(&b, "  magpie %s                  show it\n", id)
+	fmt.Fprintf(&b, "  magpie-friday %s                  show it\n", id)
 	if len(a.Fields) == 0 {
 		return b.String()
 	}
-	fmt.Fprintf(&b, "  magpie %s <model>          set its model   (magpie models %s lists them)\n", id, id)
-	fmt.Fprintf(&b, "  magpie %s <field>          show one field\n", id)
-	fmt.Fprintf(&b, "  magpie %s <field> <value>  set another field\n", id)
-	fmt.Fprintf(&b, "  magpie %s default          take magpie out: back on what it had before\n", id)
-	fmt.Fprintf(&b, "  magpie %s <field> default  that field back to its own default\n", id)
+	fmt.Fprintf(&b, "  magpie-friday %s <model>          set its model   (magpie-friday models %s lists them)\n", id, id)
+	fmt.Fprintf(&b, "  magpie-friday %s <field>          show one field\n", id)
+	fmt.Fprintf(&b, "  magpie-friday %s <field> <value>  set another field\n", id)
+	fmt.Fprintf(&b, "  magpie-friday %s default          take magpie-friday out: back on what it had before\n", id)
+	fmt.Fprintf(&b, "  magpie-friday %s <field> default  that field back to its own default\n", id)
 	var keys []string
 	for _, f := range a.Fields {
 		keys = append(keys, f.Key)
@@ -142,15 +142,15 @@ func agentHelp(a *agent.Agent) string {
 		if n > 1 {
 			names = strings.Join(both[:n-1], ", ") + " and " + both[n-1]
 		}
-		fmt.Fprintf(&b, "  %s alone name the %s: magpie %s %s sets its %s to %s\n", names, a.Fields[0].Label, id, both[0], a.Fields[0].Label, both[0])
-		// they are the agent's own models, not magpie's: setting one takes
-		// magpie out (#2000, read as a query of the tier)
-		fmt.Fprintf(&b, "  they are %s's own models, not magpie's: setting one takes magpie out; magpie %s alone shows each\n", a.Name, id)
+		fmt.Fprintf(&b, "  %s alone name the %s: magpie-friday %s %s sets its %s to %s\n", names, a.Fields[0].Label, id, both[0], a.Fields[0].Label, both[0])
+		// they are the agent's own models, not magpie-friday's: setting one takes
+		// magpie-friday out (#2000, read as a query of the tier)
+		fmt.Fprintf(&b, "  they are %s's own models, not magpie-friday's: setting one takes magpie-friday out; magpie-friday %s alone shows each\n", a.Name, id)
 	}
 	return b.String()
 }
 
-// flagArg is an argument to `magpie <agent> …` that is a flag, which no
+// flagArg is an argument to `magpie-friday <agent> …` that is a flag, which no
 // agent form takes: it is said to be one, rather than set as a model or a
 // field's value. A negative number is a value.
 func flagArg(args []string) string {

@@ -1,10 +1,10 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // A Claude Code project folder renamed or moved (#1131): its row on the
-// Sessions page has Relocate project in its ⋯ menu, which opens magpie's
+// Sessions page has Relocate project in its ⋯ menu, which opens magpie-friday's
 // own dialog (never prompt()) with the old path and a field for the new one. Preview posts
 // sessions/relocate-claude with no token and says what would move; the same
 // button then confirms with the preview's token, and editing the path first
-// asks for a new preview. A folder with a session magpie can't write, or a
+// asks for a new preview. A folder with a session magpie-friday can't write, or a
 // gateway folder, has no Relocate. In every language, Chromium and WebKit,
 // at a narrow width; no backend, the API is faked here. The new-path field
 // spans the dialog, its label on one line above it, at the reporter's
@@ -39,7 +39,7 @@ function serve(lang, calls) {
     if (url.pathname === "/api/sessions/manage") {
       return json({
         agents: [{ agent: "claude", count: 3, deletable: true, name: "Claude Code", icon: "claude" }],
-        agent: "claude", sessions: list(), terminal: false, trash: [], trashDir: "~/Library/Application Support/magpie/trash/sessions",
+        agent: "claude", sessions: list(), terminal: false, trash: [], trashDir: "~/Library/Application Support/magpie-friday/trash/sessions",
       });
     }
     if (url.pathname === "/api/sessions/relocate-claude") {
@@ -49,7 +49,7 @@ function serve(lang, calls) {
       if (!body.token) return json(out);
       if (body.token !== out.token) return json({ error: "project files changed; preview the relocation again" }, 400);
       moved = true;
-      return json({ ...out, backup: "/home/me/.claude/magpie-relocations/project-1" });
+      return json({ ...out, backup: "/home/me/.claude/magpie-friday-relocations/project-1" });
     }
     if (url.pathname.startsWith("/api/")) return json({});
     const file = path.join(assets, url.pathname === "/" ? "index.html" : url.pathname);
@@ -67,7 +67,7 @@ const keys = ["Relocate project", "Relocate Claude Code project", "New absolute 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
   for (const lang of ["en", "zh", "zh-TW", "ja", "de"]) {
     for (const width of [1320, 1100, 900, 420]) {
-      test(`${engine} ${lang} ${width}px: a Claude Code folder is relocated after a preview, in magpie's own dialog`, async (t) => {
+      test(`${engine} ${lang} ${width}px: a Claude Code folder is relocated after a preview, in magpie-friday's own dialog`, async (t) => {
         const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: "chromium" }));
         const page = await (await browser.newContext({ viewport: { width, height: 640 }, reducedMotion: "reduce" })).newPage();
         t.after(async () => {
@@ -154,7 +154,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         await page.waitForFunction(() => document.querySelector("#modal .sm-ask button.primary")?.hidden);
         assert.equal(calls.length, 3);
         assert.deepEqual(calls[2], { from: "/work/old-app", to: "/work/new-app", wsl: "", token: "tk-/work/new-app" });
-        assert.equal((await info.textContent()).trim(), await tr("Relocation complete. Original files and recovery manifest: {dir}", { dir: "/home/me/.claude/magpie-relocations/project-1" }));
+        assert.equal((await info.textContent()).trim(), await tr("Relocation complete. Original files and recovery manifest: {dir}", { dir: "/home/me/.claude/magpie-friday-relocations/project-1" }));
         await folder("new-app").waitFor();
         assert.equal(await folder("old-app").count(), 0);
         assert.deepEqual(errors, []);

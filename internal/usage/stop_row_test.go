@@ -10,14 +10,14 @@ import (
 )
 
 // The upstream's own stop reason, which the gateway records with each call,
-// reaches the Requests page and /v1/magpie/usage/requests (its "Upstream
+// reaches the Requests page and /v1/magpie-friday/usage/requests (its "Upstream
 // stop reason"): it is what tells a reply the model ended from one cut
 // short, and the page reads its rows from the packed cache, which kept
 // every other string of a row but this one (#1927, Gluxggg).
 func TestRequestPageKeepsUpstreamStop(t *testing.T) {
 	pageHome(t)
 	now := time.Now()
-	// the reporter's row, as /v1/magpie/usage/requests gave it, with the
+	// the reporter's row, as /v1/magpie-friday/usage/requests gave it, with the
 	// stop reason the gateway wrote for it
 	Append(Record{RouteID: 1791852707775, Time: now, Agent: "dsh", Provider: "opendesign", Model: "deepseek-v4.1-flash", Requested: "opendesign/deepseek-v4.1-flash", Served: "deepseek-flash",
 		Input: 2724, Output: 777, CacheRead: 480128, Reasoning: 738, Effort: "max", Millis: 18832, TTFT: 12202, FirstText: 12202, Flow: 13, Status: 200,
@@ -59,7 +59,7 @@ func TestRequestPageKeepsUpstreamStop(t *testing.T) {
 // Every string of a call's record comes back from the packed row cache as
 // it went in: the stop reason (#1927) and the service tiers (#1784) were
 // each added to Record without it, and every row the Requests page and
-// /v1/magpie/usage/requests read came back with them empty. Computer is
+// /v1/magpie-friday/usage/requests read came back with them empty. Computer is
 // the chunk's, Source is the row's own (Row.Source, which the record's is
 // read back from only when it is "reported"), and the bodies are never
 // logged.

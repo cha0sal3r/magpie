@@ -10,12 +10,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Codex's model list goes in the order dragged on the Agents page (#855):
 // the list says it can be ordered, an order comes back in it and stays in
-// the settings, the hidden kept as they were; none puts magpie's back.
+// the settings, the hidden kept as they were; none puts magpie-friday's back.
 // Another agent's list takes an order of its own (#1052).
 func TestAgentModelOrderAPI(t *testing.T) {
 	home := t.TempDir()
@@ -88,7 +88,7 @@ func TestAgentModelOrderAPI(t *testing.T) {
 	if !slices.Equal(provider.ModelOrder("codex"), []string{"relay/m3", "relay/m1"}) {
 		t.Errorf("hiding lost the order: %v", provider.ModelOrder("codex"))
 	}
-	// none puts magpie's back
+	// none puts magpie-friday's back
 	if code, got = call("POST", "codex", `{"order":[]}`); code != 200 || got.Ordered || ids(got.Models)[0] != "relay/m1" {
 		t.Errorf("%d %+v", code, got)
 	}

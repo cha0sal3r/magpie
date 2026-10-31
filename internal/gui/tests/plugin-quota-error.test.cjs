@@ -2,7 +2,7 @@
 // A plugin's usage read that failed says the plugin's own reason on the
 // account's row, the Usage page's card and the tray's card, in every
 // language, rather than only "Allowance unavailable" with the reason in a
-// tooltip (aqiu817/magpie-sensenova#1; pluginError, plugin_usage.go).
+// tooltip (aqiu817/magpie-friday-sensenova#1; pluginError, plugin_usage.go).
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
@@ -28,7 +28,7 @@ function server(lang) {
 }
 
 // what the SenseNova plugin's usage hook returns when its console sign-in
-// fails (bouncedToLogin, magpie-sensenova i18n.mjs at 1fcd5fc), as magpie
+// fails (bouncedToLogin, magpie-friday-sensenova i18n.mjs at 1fcd5fc), as magpie-friday
 // passes it on: a reading of the plugin's, so pluginError is set
 const why = "登录后又被踢回登录页，账号密码可能不对";
 const quota = { provider: "sensenova", name: "SenseNova", plan: "Token Plan", user: "13800000000", windows: [], error: why, pluginError: true };
@@ -61,7 +61,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       const long = await page.evaluate((w) => quotaError(w + "\nstack at …", { pluginError: true }), "x".repeat(400));
       assert.ok(!long.includes("stack at"), long);
       assert.ok(long.length < 220, long);
-      // magpie's own errors keep their words: a plugin error it knows is
+      // magpie-friday's own errors keep their words: a plugin error it knows is
       // still said its way, and one that isn't the plugin's stays generic
       assert.equal(await page.evaluate(() => quotaError("your sign-in has expired", { pluginError: true })), await page.evaluate(() => t("Signed out — add this account again to use it")));
       assert.equal(await page.evaluate((w) => quotaError(w, { error: w }), why), generic);

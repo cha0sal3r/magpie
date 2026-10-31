@@ -9,13 +9,13 @@ import (
 
 	"github.com/pelletier/go-toml/v2"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // keptEffortHome is a sandbox HOME with a provider of thinking models: deep
-// (none, low, high: magpie's default high) and wide (low, medium, high:
-// magpie's default medium).
+// (none, low, high: magpie-friday's default high) and wide (low, medium, high:
+// magpie-friday's default medium).
 func keptEffortHome(t *testing.T, models ...string) string {
 	t.Helper()
 	home := t.TempDir()
@@ -49,14 +49,14 @@ func keptEffortModels(t *testing.T, models ...string) {
 	}
 }
 
-// 悠悠哥 on Discord: the default thinking effort set on one of magpie's
-// models in WorkBuddy was put back to magpie's on every sync. WorkBuddy's
+// 悠悠哥 on Discord: the default thinking effort set on one of magpie-friday's
+// models in WorkBuddy was put back to magpie-friday's on every sync. WorkBuddy's
 // Settings > Models saves an edited model whole into models.json, with
 // reasoning.defaultEffort (empty for its Auto) and the vendor of the
-// provider it matches, "Custom" for magpie's (WorkBuddy 5.x's
+// provider it matches, "Custom" for magpie-friday's (WorkBuddy 5.x's
 // inferProviderIdFromLocalCustomModel and the form's save); one set by hand
-// keeps vendor magpie. Either way a sync keeps the user's effort while the
-// model offers it, a new model gets magpie's default, and a model magpie no
+// keeps vendor magpie-friday. Either way a sync keeps the user's effort while the
+// model offers it, a new model gets magpie-friday's default, and a model magpie-friday no
 // longer has is taken out, with no second entry of any model.
 func TestWorkBuddyKeepsTheUsersDefaultEffort(t *testing.T) {
 	home := keptEffortHome(t)
@@ -104,7 +104,7 @@ func TestWorkBuddyKeepsTheUsersDefaultEffort(t *testing.T) {
 
 	ms := read()
 	if effort(ms["think/deep"]) != "high" || effort(ms["think/wide"]) != "medium" {
-		t.Fatalf("magpie's defaults: %v %v", effort(ms["think/deep"]), effort(ms["think/wide"]))
+		t.Fatalf("magpie-friday's defaults: %v %v", effort(ms["think/deep"]), effort(ms["think/wide"]))
 	}
 
 	// deep set by hand; wide saved from WorkBuddy's model settings
@@ -133,7 +133,7 @@ func TestWorkBuddyKeepsTheUsersDefaultEffort(t *testing.T) {
 		t.Fatalf("Auto: %v", ms["think/wide"])
 	}
 
-	// an effort the model no longer offers gives way to magpie's default
+	// an effort the model no longer offers gives way to magpie-friday's default
 	ms["think/deep"]["reasoning"].(map[string]any)["defaultEffort"] = "xhigh"
 	write(ms)
 	if err := a.Sync(); err != nil {
@@ -143,7 +143,7 @@ func TestWorkBuddyKeepsTheUsersDefaultEffort(t *testing.T) {
 		t.Fatalf("unoffered effort: %v", effort(ms["think/deep"]))
 	}
 
-	// a new model gets magpie's default; a model gone is taken out, the
+	// a new model gets magpie-friday's default; a model gone is taken out, the
 	// one saved from WorkBuddy's settings too
 	ms["think/deep"]["reasoning"].(map[string]any)["defaultEffort"] = "low"
 	ms["think/wide"]["vendor"] = "Custom"
@@ -175,7 +175,7 @@ func TestCodeBuddyKeepsTheUsersDefaultEffort(t *testing.T) {
 	path := filepath.Join(home, ".codebuddy", "models.json")
 	os.MkdirAll(filepath.Dir(path), 0o755)
 	a := codebuddy(home)
-	if err := a.Field("model").Set("magpie/think/deep"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/think/deep"); err != nil {
 		t.Fatal(err)
 	}
 	b, _ := os.ReadFile(path)
@@ -210,7 +210,7 @@ func TestZCodeKeepsTheUsersDefaultVariant(t *testing.T) {
 	json.Unmarshal(b, &doc)
 	r := doc["provider"].(map[string]any)[magpieID].(map[string]any)["models"].(map[string]any)["think/wide"].(map[string]any)["reasoning"].(map[string]any)
 	if r["defaultVariant"] != "medium" {
-		t.Fatalf("magpie's default: %s", b)
+		t.Fatalf("magpie-friday's default: %s", b)
 	}
 	r["defaultVariant"] = "high"
 	b, _ = json.Marshal(doc)
@@ -233,20 +233,20 @@ func TestZCodeKeepsTheUsersDefaultVariant(t *testing.T) {
 	}
 }
 
-// Kimi Code's default_effort set by hand on one of magpie's models stays
+// Kimi Code's default_effort set by hand on one of magpie-friday's models stays
 // through a sync.
 func TestKimiKeepsTheUsersDefaultEffort(t *testing.T) {
 	home := keptEffortHome(t)
 	path := filepath.Join(home, ".kimi-code", "config.toml")
 	writeFile(t, path, "")
 	a := kimi(home)
-	if err := a.Field("model").Set("magpie/think/deep"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/think/deep"); err != nil {
 		t.Fatal(err)
 	}
 	b, _ := os.ReadFile(path)
-	at := strings.Index(string(b), `[models."magpie/think/wide"]`)
+	at := strings.Index(string(b), `[models."magpie-friday/think/wide"]`)
 	if at < 0 || !strings.Contains(string(b[at:]), `default_effort = "high"`) {
-		t.Fatalf("magpie's default: %s", b)
+		t.Fatalf("magpie-friday's default: %s", b)
 	}
 	s := string(b[:at]) + strings.Replace(string(b[at:]), `default_effort = "high"`, `default_effort = "low"`, 1)
 	os.WriteFile(path, []byte(s), 0o600)
@@ -262,7 +262,7 @@ func TestKimiKeepsTheUsersDefaultEffort(t *testing.T) {
 	if err := toml.Unmarshal(b, &c); err != nil {
 		t.Fatalf("%v\n%s", err, b)
 	}
-	if c.Models["magpie/think/wide"].DefaultEffort != "low" || c.Models["magpie/think/deep"].DefaultEffort != "high" {
+	if c.Models["magpie-friday/think/wide"].DefaultEffort != "low" || c.Models["magpie-friday/think/deep"].DefaultEffort != "high" {
 		t.Fatalf("after sync: %s", b)
 	}
 }
@@ -272,12 +272,12 @@ func TestMiniMaxKeepsTheUsersDefaultEffort(t *testing.T) {
 	home, path := miniMaxHome(t)
 	keptEffortModels(t)
 	a := miniMax(home)
-	if err := a.Field("model").Set("magpie/think/deep"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/think/deep"); err != nil {
 		t.Fatal(err)
 	}
 	c, raw := readMiniMax(t, path)
 	if c.CustomProvider[magpieID].Models["think~wide"].Thinking.DefaultEffort != "high" {
-		t.Fatalf("magpie's default:\n%s", raw)
+		t.Fatalf("magpie-friday's default:\n%s", raw)
 	}
 	at := strings.Index(raw, "think~wide:")
 	raw = raw[:at] + strings.Replace(raw[at:], "defaultEffort: high", "defaultEffort: low", 1)

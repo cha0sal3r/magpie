@@ -26,7 +26,7 @@ func TestReasonixPlannerNativeSelections(t *testing.T) {
 	t.Run("return", func(t *testing.T) {
 		a, _ := reasonixFixture(t, original)
 		f := a.Field("planner")
-		if err := f.Set("magpie/a/pro"); err != nil {
+		if err := f.Set("magpie-friday/a/pro"); err != nil {
 			t.Fatal(err)
 		}
 		if !slices.ContainsFunc(f.Options(a.Values()), func(o Option) bool { return o.Value == "deepseek-pro" }) {

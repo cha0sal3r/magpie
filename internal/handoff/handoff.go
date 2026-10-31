@@ -1,11 +1,11 @@
-// Package handoff hands the gateway's listening socket from the magpie
+// Package handoff hands the gateway's listening socket from the magpie-friday
 // restarting to update to the version it started, so the port is never
 // closed between them: the new one serves on the same socket, and the old
 // one stops accepting and finishes what it has.
 //
-// The magpie handing over opens an Offer: a unix socket in a folder only
-// its user can enter, named in a pointer file in magpie's config folder.
-// The new magpie Takes it: it connects, says hello, and is sent the
+// The magpie-friday handing over opens an Offer: a unix socket in a folder only
+// its user can enter, named in a pointer file in magpie-friday's config folder.
+// The new magpie-friday Takes it: it connects, says hello, and is sent the
 // listening socket (SCM_RIGHTS) with a Meta; once its gateway serves on
 // it, it Acks, and the one before lets go. Only Unix has this (darwin and
 // linux); elsewhere Open says ErrUnsupported (Take finds nothing), and a restart waits
@@ -28,7 +28,7 @@ var ErrUnsupported = errors.New("handing the gateway over isn't supported here")
 // Offer.
 var self = os.Getpid
 
-// pointerName is the pointer file in magpie's config folder.
+// pointerName is the pointer file in magpie-friday's config folder.
 const pointerName = "handover.json"
 
 // pointerFresh is how long an Offer's pointer is taken: one older is a
@@ -39,11 +39,11 @@ const pointerFresh = 2 * time.Minute
 type pointer struct {
 	PID  int       `json:"pid"`
 	Sock string    `json:"sock"`
-	Exe  string    `json:"exe"` // the program the new magpie runs
+	Exe  string    `json:"exe"` // the program the new magpie-friday runs
 	At   time.Time `json:"at"`
 }
 
-// Hello is what the new magpie says it is.
+// Hello is what the new magpie-friday says it is.
 type Hello struct {
 	PID     int    `json:"pid"`
 	Version string `json:"version"`
@@ -53,10 +53,10 @@ type Hello struct {
 type Meta struct {
 	// Addr is where the socket listens.
 	Addr string `json:"addr"`
-	// Callbacks is the unix socket where the magpie handing over answers
+	// Callbacks is the unix socket where the magpie-friday handing over answers
 	// its own Claude Code runs' tool calls until it ends.
 	Callbacks string `json:"callbacks,omitempty"`
-	// PID is the magpie handing over.
+	// PID is the magpie-friday handing over.
 	PID int `json:"pid"`
 }
 

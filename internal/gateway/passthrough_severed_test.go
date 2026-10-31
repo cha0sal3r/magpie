@@ -115,7 +115,7 @@ func TestLoopCutMidLine(t *testing.T) {
 		t.Fatalf("the run-on reply was not cut by the loop guard: %s", body[:min(600, len(body))])
 	}
 	// the upstream's own last line is the only event the client may read
-	// unparseable: a join of two halves is magpie's doing
+	// unparseable: a join of two halves is magpie-friday's doing
 	joined := 0
 	readSSE(strings.NewReader(body), func(_, data string) error {
 		if strings.Contains(data, "\n") && json.Valid([]byte(data)) == false {

@@ -9,12 +9,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // #1515: a plugin's signed-in account (ZCode's, through
-// opencode-zcode-auth) takes a name of the user's own. It is magpie's,
+// opencode-zcode-auth) takes a name of the user's own. It is magpie-friday's,
 // in providers.json: plugin-auth.json and logins.json are not written.
 func TestAccountNameOfAPluginAccount(t *testing.T) {
 	bun := testenv.Bun(t)

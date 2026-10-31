@@ -57,7 +57,7 @@ func (c *studentCopilot) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // A Student plan, whose only choice is Auto (Discord: 请问有对copilot学生
-// 套餐的支持吗？就是只能自动路由模型的那个): magpie lists Auto, as Copilot's
+// 套餐的支持吗？就是只能自动路由模型的那个): magpie-friday lists Auto, as Copilot's
 // clients do, where it used to list nothing; a request for it asks
 // /models/session as the Copilot CLI does, is sent with the model Copilot
 // picked and the session's token, the session kept until it nears its end.
@@ -162,7 +162,7 @@ func TestCopilotAutoSessionShapes(t *testing.T) {
 	}
 }
 
-// A student signed in from magpie (the editors' sign-in, #256) got "Copilot
+// A student signed in from magpie-friday (the editors' sign-in, #256) got "Copilot
 // Auto: 404 Not Found": the session was asked without an API version, which
 // VS Code's Copilot Chat sends on every CAPI request (X-GitHub-Api-Version
 // 2025-10-01, @vscode/copilot-api 0.2.19). Its session answer names no

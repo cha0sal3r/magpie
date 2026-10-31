@@ -9,16 +9,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// A magpie in a container holding the gateway's port (leslie_luo on
-// Discord: magpie v0.1.552 in OrbStack had 3425, held on the Mac by
+// A magpie-friday in a container holding the gateway's port (leslie_luo on
+// Discord: magpie-friday v0.1.552 in OrbStack had 3425, held on the Mac by
 // OrbStack Helper). The take-over names it as a container's, not as a
 // program to quit, and leaves it running; and Settings' port, which was
-// refused while "another magpie" served, moves this magpie's gateway to a
-// port of its own. A magpie program of this computer's on the port still
+// refused while "another magpie-friday" served, moves this magpie-friday's gateway to a
+// port of its own. A magpie-friday program of this computer's on the port still
 // has its port set there. Run against copies of the test binary, on ports
 // of the test's own.
 func TestGatewayHeldByAContainer(t *testing.T) {
@@ -86,10 +86,10 @@ func TestGatewayHeldByAContainer(t *testing.T) {
 		return cmd, ended
 	}
 
-	// a magpie of this computer's on the port: its port is set there
-	local, localEnded := start("magpie")
+	// a magpie-friday of this computer's on the port: its port is set there
+	local, localEnded := start("magpie-friday")
 	if _, err := setPort(freePort(t)); err == nil || settings.Load().Port != from {
-		t.Fatalf("moved past a magpie of this computer's: %v", err)
+		t.Fatalf("moved past a magpie-friday of this computer's: %v", err)
 	}
 	local.Process.Kill()
 	<-localEnded
@@ -120,7 +120,7 @@ func TestGatewayHeldByAContainer(t *testing.T) {
 	}
 	select {
 	case <-helperEnded:
-		t.Fatal("the container's magpie was ended")
+		t.Fatal("the container's magpie-friday was ended")
 	default:
 	}
 }

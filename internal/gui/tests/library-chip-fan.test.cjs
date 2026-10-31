@@ -41,7 +41,7 @@ function server(lang, lib) {
 }
 
 const lib = () => ({
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: structuredClone(AGENTS),
   instructions: { agents: [], sets: [] }, foundServers: [], projects: [], foundSkills: [], problems: [], skills: [],
   servers: [{ name: "context7", transport: "stdio", command: "npx", args: ["-y", "@upstash/context7-mcp"], agents: ALL.slice(0, 3) }],

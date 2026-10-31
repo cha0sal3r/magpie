@@ -15,7 +15,7 @@ import (
 )
 
 // A separate process runs AppKit on its main thread. It uses an isolated
-// config and a minimal page, without starting magpie's backend or status item.
+// config and a minimal page, without starting magpie-friday's backend or status item.
 func TestTrayCellClickReleasedPanel(t *testing.T) {
 	out, err := runAppKit(t, 20*time.Second, []string{"MAGPIE_TEST_TRAY_PANEL=1"})
 	if err != nil || !strings.Contains(string(out), "tray quota: recreated and focused twice") {
@@ -29,7 +29,7 @@ func init() {
 	}
 	seen := make(chan string, 2)
 	app := application.New(application.Options{
-		Name: "magpie tray regression",
+		Name: "magpie-friday tray regression",
 		Mac:  application.MacOptions{ActivationPolicy: application.ActivationPolicyProhibited},
 		Assets: application.AssetOptions{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path == "/seen" {

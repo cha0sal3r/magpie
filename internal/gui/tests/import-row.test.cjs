@@ -1,7 +1,7 @@
-// An app magpie is added to by a link of its own (Cindy, Lody, AionUi) is a row like the
+// An app magpie-friday is added to by a link of its own (Cindy, Lody, AionUi) is a row like the
 // others on the Agents page (the owner: its wide button, with no line under
 // the name, sat apart from every other): a line under its name says whether
-// magpie is added, and its button stands where the others' model picker
+// magpie-friday is added, and its button stands where the others' model picker
 // does, as wide and lined up with it.
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
@@ -11,15 +11,15 @@ const { chromium, webkit } = require("playwright");
 
 const assets = path.resolve(__dirname, "../assets");
 
-// connected when Cindy has magpie, so neither is folded under Show more
+// connected when Cindy has magpie-friday, so neither is folded under Show more
 const crush = (wired) => ({
   id: "crush", name: "Crush", path: "/test/crush.json", icon: "crush", wired,
-  fields: [{ key: "model", label: "model", value: wired ? "magpie/deepseek-flash" : "", options: [{ value: "magpie/deepseek-flash", label: "DeepSeek Flash", ref: "deepseek/deepseek-flash" }] }],
+  fields: [{ key: "model", label: "model", value: wired ? "magpie-friday/deepseek-flash" : "", options: [{ value: "magpie-friday/deepseek-flash", label: "DeepSeek Flash", ref: "deepseek/deepseek-flash" }] }],
 });
 const cindy = (added) => ({ id: "cindy", name: "Cindy", path: "", icon: "cindy", import: "cindy://import?x=1", added, fields: [] });
-// AionUi's link as magpie makes it (agent.AionUiLink), its status the
+// AionUi's link as magpie-friday makes it (agent.AionUiLink), its status the
 // other way round from Cindy's so each run has both
-const AIONUI_LINK = "aionui://add-provider?api_key=magpie-aionui&base_url=http%3A%2F%2F127.0.0.1%3A3425%2Fv1&name=magpie&platform=custom";
+const AIONUI_LINK = "aionui://add-provider?api_key=magpie-friday-aionui&base_url=http%3A%2F%2F127.0.0.1%3A3425%2Fv1&name=magpie-friday&platform=custom";
 const aionui = (added) => ({ id: "aionui", name: "AionUi", path: "", icon: "aionui", import: AIONUI_LINK, added, fields: [] });
 
 async function serve(route, lang, added) {
@@ -39,20 +39,20 @@ async function serve(route, lang, added) {
 }
 
 const SAID = {
-  en: [/^Not added · Cindy asks to add magpie/, /^Added · magpie is a provider in Cindy/],
+  en: [/^Not added · Cindy asks to add magpie-friday/, /^Added · magpie-friday is a provider in Cindy/],
   zh: [/^未添加 · /, /^已添加 · /],
   "zh-TW": [/^未新增 · /, /^已新增 · /],
   ja: [/^未追加 · /, /^追加済み · /],
   de: [/^Nicht hinzugefügt · /, /^Hinzugefügt · /],
 };
-// Lody has no status magpie can read: its line asks to confirm in Lody, in
+// Lody has no status magpie-friday can read: its line asks to confirm in Lody, in
 // the reader's language, and never says added or not
 const UNKNOWN = {
-  en: "Opens Lody to add magpie as a provider — confirm it there",
-  zh: "打开 Lody 添加 magpie 供应商，在其中确认",
-  "zh-TW": "開啟 Lody 新增 magpie 供應商，在其中確認",
-  ja: "Lody を開いて magpie をプロバイダとして追加します。そちらで確認してください",
-  de: "Öffnet Lody, um magpie als Anbieter hinzuzufügen — dort bestätigen",
+  en: "Opens Lody to add magpie-friday as a provider — confirm it there",
+  zh: "打开 Lody 添加 magpie-friday 供应商，在其中确认",
+  "zh-TW": "開啟 Lody 新增 magpie-friday 供應商，在其中確認",
+  ja: "Lody を開いて magpie-friday をプロバイダとして追加します。そちらで確認してください",
+  de: "Öffnet Lody, um magpie-friday als Anbieter hinzuzufügen — dort bestätigen",
 };
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {

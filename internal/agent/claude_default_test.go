@@ -4,12 +4,12 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// Default picked for Claude Code on magpie takes out what magpie wrote, its
-// tiers and subagent model too: magpie's own doing, not a change from
+// Default picked for Claude Code on magpie-friday takes out what magpie-friday wrote, its
+// tiers and subagent model too: magpie-friday's own doing, not a change from
 // outside, so no drift is left behind to keep the row up among the
 // connected ones while it says Not connected (EZN7L2C3, #834).
 func TestClaudeDefaultLeavesNoDrift(t *testing.T) {
@@ -38,7 +38,7 @@ func TestClaudeDefaultLeavesNoDrift(t *testing.T) {
 		t.Fatalf("drift left: %+v", *d)
 	}
 
-	// a tier changed outside magpie before is still said to be
+	// a tier changed outside magpie-friday before is still said to be
 	home2, _ := codexHome(t, "", "")
 	if err := provider.Save(provider.Provider{ID: "aaa", Name: "AAA", Chat: "https://a.example/v1", Key: "k", Models: []string{"first", "claude-opus-5-5"}}); err != nil {
 		t.Fatal(err)

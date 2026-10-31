@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 func aliasHome(t *testing.T) {
@@ -19,7 +19,7 @@ func aliasHome(t *testing.T) {
 	t.Cleanup(func() { lastAliases.Store(nil) })
 }
 
-// magpie model alias: off by default, a model counted under another id,
+// magpie-friday model alias: off by default, a model counted under another id,
 // matched however the id is spelt, and --reset gives it its own id back.
 func TestUsageAliasSetAndReset(t *testing.T) {
 	aliasHome(t)

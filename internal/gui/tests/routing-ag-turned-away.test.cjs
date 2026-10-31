@@ -2,10 +2,10 @@
 // Antigravity's 429 "Resource has been exhausted" for Claude Desktop's chat
 // (Claude Code's and the Agent SDK's system prompt, #666), with quota to
 // spare (#1425): the Routing page told it as "429 · quota used up" and the
-// account's tally as quota used up, while magpie's own note said it isn't
+// account's tally as quota used up, while magpie-friday's own note said it isn't
 // one. It is told as the agent's prompt turned away, in the request's row,
 // its story and the account's tally, with the 400 the agent got; the
-// vendor's words are said apart from magpie's note, which is in the page's
+// vendor's words are said apart from magpie-friday's note, which is in the page's
 // language.
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
@@ -99,7 +99,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       await row.click();
       await page.waitForTimeout(400);
       const got = await page.locator(".rt-steps li").evaluateAll((ls) => ls.map((l) => [l.className, l.textContent]));
-      // the vendor's words as they were, without magpie's note in them
+      // the vendor's words as they were, without magpie-friday's note in them
       assert.deepEqual(got.filter(([c]) => c === "aside said").map(([, s]) => s), [w.said]);
       // and the note on its own line, in the page's language
       assert.deepEqual(got.filter(([, s]) => s === w.hint).map(([c]) => c), ["aside"]);

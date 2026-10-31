@@ -164,7 +164,7 @@ func reclaim(path string) {
 		return
 	}
 	if pool.dir == "" {
-		d, err := os.MkdirTemp("", "magpie-test-programs-")
+		d, err := os.MkdirTemp("", "magpie-friday-test-programs-")
 		if err != nil {
 			return
 		}

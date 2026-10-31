@@ -2,7 +2,7 @@
 // An agent's current model is listed first in its picker, out of its
 // provider's rows. With that provider picked in the rail it is still there,
 // ticked: under OpenAI, Codex on gpt-6.1-sol showed every OpenAI model but
-// gpt-6.1-sol, as if magpie had dropped it (#1229). A provider whose only
+// gpt-6.1-sol, as if magpie-friday had dropped it (#1229). A provider whose only
 // model is the current one keeps its rail icon, in catalog order. Codex
 // connected or not, in Chromium and WebKit, at a narrow window too.
 const assert = require("node:assert/strict");

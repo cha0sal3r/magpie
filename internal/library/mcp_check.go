@@ -19,11 +19,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/mcpauth"
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/wslrun"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/mcpauth"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/wslrun"
 )
 
 // The Library page says of each server whether it works, found the only
@@ -44,21 +44,21 @@ type ServerHealth struct {
 	ToolList []Tool `json:"toolList,omitempty"`
 	// Why is the kind of error, for the page to put in its own words:
 	// notfound, start, exited, timeout, http, refused, unreachable,
-	// protocol, novar (a ${NAME} magpie's environment hasn't: Detail names
+	// protocol, novar (a ${NAME} magpie-friday's environment hasn't: Detail names
 	// them), wsldown (a command only agents in WSL start, whose distros,
 	// Detail, aren't running: it wasn't checked)
 	Why    string `json:"why,omitempty"`
 	Code   int    `json:"code,omitempty"`   // the exit code, or the HTTP status
 	Detail string `json:"detail,omitempty"` // the last line it wrote to stderr, or the error's text
 	// OAuth is a refusal that named a sign-in (WWW-Authenticate), which
-	// magpie can do itself for a streamable HTTP server
+	// magpie-friday can do itself for a streamable HTTP server
 	OAuth bool `json:"oauth,omitempty"`
-	// SignIn is magpie's sign-in to a streamable HTTP server as the check
+	// SignIn is magpie-friday's sign-in to a streamable HTTP server as the check
 	// left it: one whose renewed token the server refused has run out
 	// since, and the page's tag says so (新v学员 on Discord)
 	SignIn *mcpauth.Status `json:"signIn,omitempty"`
 	// AgentSignIn are the agents signed in to a server that refused
-	// magpie's check on their own (Claude Code's /mcp, mcp_agent_signin.go),
+	// magpie-friday's check on their own (Claude Code's /mcp, mcp_agent_signin.go),
 	// by id: they use it, though the check, without their tokens, was asked
 	// to sign in (CyberCaius on Discord)
 	AgentSignIn []string `json:"agentSignIn,omitempty"`
@@ -224,7 +224,7 @@ func checkServer(ctx context.Context, s *Server, own ownSignIns) ServerHealth {
 	}
 	h.At = time.Now().UnixMilli()
 	if s.Transport == "http" {
-		// only a server magpie is signed in to has one to report
+		// only a server magpie-friday is signed in to has one to report
 		if st := mcpauth.StatusOf(s.Name, s.URL); st.SignedIn || st.Dead {
 			h.SignIn = &st
 		}
@@ -303,7 +303,7 @@ func initializeReq() []byte {
 	return request(1, "initialize", map[string]any{
 		"protocolVersion": mcpProtocol,
 		"capabilities":    map[string]any{},
-		"clientInfo":      map[string]any{"name": "magpie", "version": gateway.Version},
+		"clientInfo":      map[string]any{"name": "magpie-friday", "version": gateway.Version},
 	})
 }
 
@@ -493,7 +493,7 @@ func checkStdio(ctx context.Context, s *Server) ServerHealth {
 
 // checkStdioAt starts the command on this machine, or in WSL distro.
 func checkStdioAt(ctx context.Context, s *Server, distro string) ServerHealth {
-	// started as the agents start it: in the environment magpie has, with
+	// started as the agents start it: in the environment magpie-friday has, with
 	// the server's own variables over it
 	env, unset := expandAll(s.Env)
 	if len(unset) > 0 {
@@ -523,7 +523,7 @@ func checkStdioAt(ctx context.Context, s *Server, distro string) ServerHealth {
 		cmd = wslCommand(rctx, t, s.Args...)
 	}
 	defer stop()
-	// Agents start MCP servers from a project or home directory. A magpie
+	// Agents start MCP servers from a project or home directory. A magpie-friday
 	// launched from a shortcut (Windows Start menu) often has C:\Windows\system32
 	// as its own cwd, which is not writable; inherit that and a server that
 	// writes into "." dies as "exited (1)" with no log. Pin the check to HOME.
@@ -531,7 +531,7 @@ func checkStdioAt(ctx context.Context, s *Server, distro string) ServerHealth {
 	if d := home(); d != "" {
 		cmd.Dir = d
 		// and PWD with it, as exec does itself only when Env is nil: a
-		// shell-script server that reads $PWD would otherwise see magpie's
+		// shell-script server that reads $PWD would otherwise see magpie-friday's
 		// own folder while it runs in home (Windows doesn't use PWD)
 		if runtime.GOOS != "windows" && distro == "" {
 			cmd.Env = append(cmd.Env, "PWD="+d)
@@ -665,7 +665,7 @@ func exitHealth(err error, errs *tail) ServerHealth {
 
 // ---- a URL -------------------------------------------------------------------
 
-// remoteHeaders are the server's own headers, with magpie's token when it
+// remoteHeaders are the server's own headers, with magpie-friday's token when it
 // is signed in to it: the agents reach it with that too.
 func remoteHeaders(ctx context.Context, s *Server) (http.Header, *ServerHealth) {
 	h := http.Header{}
@@ -723,7 +723,7 @@ func checkHTTP(ctx context.Context, s *Server) ServerHealth {
 	if bad != nil {
 		return *bad
 	}
-	// magpie's own token, when it is signed in: one the server refuses is
+	// magpie-friday's own token, when it is signed in: one the server refuses is
 	// renewed once and asked again with, as the gateway's relay does, and
 	// one refused just after it was renewed is a sign-in that has run out
 	tok := ""

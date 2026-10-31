@@ -1,7 +1,7 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // char1eslu (#1217): skills from majiayu000/claude-arsenal,
 // anthropics/claude-plugins-community and typesafe-ai/skills were on no
-// agent, and magpie sent the skills a check found beside them with
+// agent, and magpie-friday sent the skills a check found beside them with
 // "agents": null. Drawing one threw ("null is not an object (evaluating
 // 'id of n.agents')"): on load the page said so in red and stayed empty,
 // and after "Check for updates" (技能库 → 检查更新) the page went blank
@@ -29,12 +29,12 @@ const skills = [
   sk("typesafe-ai", "typesafe-ai/skills", "skills/typesafe-ai", []),
   sk("pdf", "anthropics/skills", "skills/pdf", ["claude", "codex"]),
 ];
-// what a check found beside them, as magpie before the fix sent it; the
+// what a check found beside them, as magpie-friday before the fix sent it; the
 // reporter didn't name the skill, so this one stands in for it
 const REPO = "majiayu000/claude-arsenal";
 const found = { id: gh(REPO, "skills/codex-handoff"), name: "codex-handoff", description: "Hands off", repo: REPO, path: "skills/codex-handoff", from: gh(REPO, "skills"), agents: null };
 const lib = (st) => ({
-  dir: `${HOME}/.config/magpie/library`, backups: `${HOME}/.config/magpie/backups`, home: HOME,
+  dir: `${HOME}/.config/magpie-friday/library`, backups: `${HOME}/.config/magpie-friday/backups`, home: HOME,
   agents: [agent("claude", "Claude Code"), agent("codex", "Codex")],
   instructions: { agents: [] }, servers: [], skills, foundServers: [], projects: [], foundSkills: [], skillGroups: [],
   newSkills: st.checked || st.foundAtLoad ? [found] : [],

@@ -46,7 +46,7 @@ var (
 	factoryMu sync.Mutex
 )
 
-// factoryCreds is what magpie keeps of a Factory account.
+// factoryCreds is what magpie-friday keeps of a Factory account.
 type factoryCreds struct {
 	Access    string `json:"accessToken"`
 	Refresh   string `json:"refreshToken"`

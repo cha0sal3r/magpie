@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
-// ClineVersion is the Cline desktop release magpie says it is to the Cline
+// ClineVersion is the Cline desktop release magpie-friday says it is to the Cline
 // API.
 const ClineVersion = "3.5.54"
 
@@ -169,7 +169,7 @@ func (p Provider) clineFreeModel(model string) bool {
 // ClinePinnable reports whether p's requests reach Cline's API and can be
 // pinned to an upstream (PinUpstream): the ClinePass provider, one on
 // cline.bot, or the Cline plugin's (@magpie-community/opencode-cline-auth),
-// whose requests magpie writes before the plugin sends them on.
+// whose requests magpie-friday writes before the plugin sends them on.
 func (p Provider) ClinePinnable() bool {
 	return p.IsCline() || p.PluginProvider() == "cline"
 }
@@ -210,7 +210,7 @@ func (p Provider) ClinePin(model string) (upstream string, openRouter bool) {
 	// the Cline plugin pins ClinePass's DeepSeek models itself, by default,
 	// with ClinePassHas's filter and a way back when the pin can't be
 	// served (opencode-cline-auth 0.1.11). It keeps a body's own
-	// providerOptions, so magpie's only alone would stand in its place.
+	// providerOptions, so magpie-friday's only alone would stand in its place.
 	if p.PluginProvider() == "cline" && clinePassDeepSeek(model) {
 		return "", false
 	}

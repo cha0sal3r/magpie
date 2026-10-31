@@ -14,7 +14,7 @@ import (
 )
 
 // Antigravity CLI's (agy's) calls (#2097, parkavenue9639: a call agy made
-// without magpie was counted nowhere). Each conversation keeps a transcript
+// without magpie-friday was counted nowhere). Each conversation keeps a transcript
 // of its steps in
 // ~/.gemini/antigravity-cli/brain/<conversation id>/.system_generated/logs/transcript_full.jsonl,
 // one JSON object a line. A model's step, as agy 1.2.16 writes it (tried in
@@ -33,7 +33,7 @@ import (
 // The step names no model (a custom model's isn't anywhere in agy's files,
 // and settings.json's is only the one picked now), nor the account, so the
 // call is agy's with the model and provider unknown. A step agy sent through
-// magpie is the gateway's to count: usage's matcher pairs it with the
+// magpie-friday is the gateway's to count: usage's matcher pairs it with the
 // gateway's record by its tokens and time (agy sends no session header).
 
 // AgyDir is agy's data folder, ~/.gemini/antigravity-cli.

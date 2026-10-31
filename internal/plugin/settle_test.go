@@ -58,7 +58,7 @@ func TestSettleWaitsForTheHooksItTold(t *testing.T) {
 // returns (#1935, #1543): provider's OnSignIn hook writes the account's
 // lapse into logins.json, and run in the background with nothing waiting
 // for it, it wrote under a test's folder as the folder was removed
-// ("unlinkat .config/magpie: directory not empty").
+// ("unlinkat .config/magpie-friday: directory not empty").
 func TestSettleWaitsForTheSignInHook(t *testing.T) {
 	storeSandbox(t)
 	Settle()

@@ -1,4 +1,4 @@
-// Package agent describes every coding agent magpie can drive: where its config
+// Package agent describes every coding agent magpie-friday can drive: where its config
 // lives, which fields matter (model, effort, …) and which values to offer.
 package agent
 
@@ -16,9 +16,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Option is one value the picker offers for a field.
@@ -47,14 +47,14 @@ type Option struct {
 	// default_reasoning_level), shown beside "default"
 	Takes string `json:"takes,omitempty"`
 	// Direct names who the agent asks for this model itself, on its own
-	// sign-in or key, with magpie not in the way ("Anthropic"): its config
-	// then names no magpie endpoint, which is right, not a failed setup
+	// sign-in or key, with magpie-friday not in the way ("Anthropic"): its config
+	// then names no magpie-friday endpoint, which is right, not a failed setup
 	Direct string `json:"direct,omitempty"`
-	// Via is a model of the agent's own it asks through magpie's gateway,
+	// Via is a model of the agent's own it asks through magpie-friday's gateway,
 	// on its own sign-in all the same (Codex's while routed by its base
-	// URL): the picker says via magpie by it, as by a catalog model's
+	// URL): the picker says via magpie-friday by it, as by a catalog model's
 	Via bool `json:"via,omitempty"`
-	// Same is a model magpie serves on the very account the agent is
+	// Same is a model magpie-friday serves on the very account the agent is
 	// signed in to itself, so the agent reaches it on its own too: the
 	// picker folds these into one row a click opens (Claude Code, #496)
 	Same bool `json:"same,omitempty"`
@@ -80,13 +80,13 @@ type Option struct {
 
 	// own: served on the agent's own sign-in (viaMagpie), for Same
 	own bool
-	// sub: served on a subscription signed in in magpie, not a key; a
+	// sub: served on a subscription signed in in magpie-friday, not a key; a
 	// Claude account only for Claude Code, which alone may use it safely
 	sub bool
 }
 
 // Field is one tunable setting of an agent. Set with an empty value puts
-// the field back to the agent's own default: anything magpie wired in (the
+// the field back to the agent's own default: anything magpie-friday wired in (the
 // gateway as a provider, its model catalog) comes out and the key is removed.
 type Field struct {
 	Key     string
@@ -97,10 +97,10 @@ type Field struct {
 	// Quiet fields are left out of listings while empty: they follow
 	// another field until set (Claude Code's per-tier models).
 	Quiet bool
-	// Live fields are magpie's own settings, read by the gateway on each
+	// Live fields are magpie-friday's own settings, read by the gateway on each
 	// request (Claude Desktop's subagent model): a change to one needs no
 	// restart of the agent, so its Notice isn't shown after it, unless
-	// the pick connected the agent to magpie as well.
+	// the pick connected the agent to magpie-friday as well.
 	Live bool
 	// Follows is the key of the field a Quiet one takes after while empty
 	// ("model" for Claude Code's tiers and subagents): a profile's details
@@ -116,9 +116,9 @@ type Agent struct {
 	Aliases []string
 	Bin     string // executable name, used for detection
 	Dir     string // config directory, used for detection
-	Path    string // config file magpie edits
+	Path    string // config file magpie-friday edits
 	// Plugin is the spec of the plugin that adds this agent (plugged.go),
-	// "" for magpie's own
+	// "" for magpie-friday's own
 	Plugin string
 	Fields []Field
 	Native *NativeConnection
@@ -128,99 +128,99 @@ type Agent struct {
 	// UA is what the agent's User-Agent begins with, lower-case: how the
 	// gateway tells its requests from others'
 	UA []string
-	// ListsModels: the agent's own model menu is magpie's models as picked
+	// ListsModels: the agent's own model menu is magpie-friday's models as picked
 	// on the Agents page for it (settings.HiddenModels, PickedModels),
 	// though no field of its picks among the catalog: the gateway's
 	// /v1/models as asked with its key (Cursor Private Inference), or the
-	// list magpie writes into its files, magpieModels(id), where its only
-	// field puts magpie in its picker (ZCode, Pencil: #1508)
+	// list magpie-friday writes into its files, magpieModels(id), where its only
+	// field puts magpie-friday in its picker (ZCode, Pencil: #1508)
 	ListsModels bool
-	// NoNames: the agent's own list doesn't name magpie's models as
-	// Names in agents' lists says (provider.Labels): magpie hands it the
+	// NoNames: the agent's own list doesn't name magpie-friday's models as
+	// Names in agents' lists says (provider.Labels): magpie-friday hands it the
 	// models' ids alone, its format having no name for one (Goose, Hermes,
-	// jcode …), it lists no models of magpie's at all (Gemini CLI, Snow),
+	// jcode …), it lists no models of magpie-friday's at all (Gemini CLI, Snow),
 	// or it reads the gateway's /v1/models itself, whose display_name is
 	// the name alone (Empryo, Cursor Private Inference). The setting says
 	// so for each one connected, rather than seeming to do nothing.
 	NoNames bool
-	// Sync, for an agent that reads magpie's models from a file of its own
+	// Sync, for an agent that reads magpie-friday's models from a file of its own
 	// rather than asking the gateway, rewrites that list as the catalog is
-	// now — where magpie wrote one; nothing else changes (see SyncCatalog).
+	// now — where magpie-friday wrote one; nothing else changes (see SyncCatalog).
 	Sync func() error
 	// Unwire, for an agent whose fields' default is the agent as installed
-	// rather than what it had before magpie (Codex, Claude Code, Gemini
-	// CLI), takes magpie out of its config and puts back what the stash
+	// rather than what it had before magpie-friday (Codex, Claude Code, Gemini
+	// CLI), takes magpie-friday out of its config and puts back what the stash
 	// kept: the endpoint, provider and model the user had. Disconnect runs
 	// it before the fields' defaults.
 	Unwire func() error
-	// Restore, for an agent whose files magpie copied aside before its
+	// Restore, for an agent whose files magpie-friday copied aside before its
 	// first write (beforeMagpie), puts them back as they were where what
 	// Disconnect left says the same. Disconnect runs it last.
 	Restore func() error
-	// Join, for an agent that can have magpie's models in its own list
+	// Join, for an agent that can have magpie-friday's models in its own list
 	// while it stays on the model it was on (Codex signed in with ChatGPT),
 	// connects it so, its model left as its own last pick; false where it
-	// can't, and Connect then picks one of magpie's.
+	// can't, and Connect then picks one of magpie-friday's.
 	Join func() (bool, error)
-	// Joined reports an agent Join connected: magpie is in its config
-	// though no field is on one of magpie's models.
+	// Joined reports an agent Join connected: magpie-friday is in its config
+	// though no field is on one of magpie-friday's models.
 	Joined func() bool
-	// Beside reports an agent set on one of magpie's models beside its own
+	// Beside reports an agent set on one of magpie-friday's models beside its own
 	// (Codex by the base URL beside its ChatGPT sign-in), now on one of its
 	// own written in by the agent: still connected, as joined (#940), and
 	// a pick in the agent rather than drift (#2424).
 	Beside func() bool
-	// OwnVia is the catalog id magpie serves one of the agent's own models
+	// OwnVia is the catalog id magpie-friday serves one of the agent's own models
 	// by on a sign-in of the user's, which its model field lists as its
-	// own rather than as magpie's ("codex/gpt-5.5" for Codex's gpt-5.5),
-	// "" for none: Connect keeps the agent on that model through magpie
+	// own rather than as magpie-friday's ("codex/gpt-5.5" for Codex's gpt-5.5),
+	// "" for none: Connect keeps the agent on that model through magpie-friday
 	// where it can't Join (#940: Codex went to an unrelated model).
 	OwnVia func(model string) string
-	// AppOut reports magpie made Codex's provider for a ChatGPT sign-in
+	// AppOut reports magpie-friday made Codex's provider for a ChatGPT sign-in
 	// whose account is used up (codex.out): the Codex app, which reads
 	// its sign-in only as it opens, sends nothing on it till it is opened
 	// again (MasterYi on Discord).
 	AppOut func() bool
-	// SideModel is the model Codex is set to when it is one of magpie's,
-	// picked beside its ChatGPT sign-in (by the base URL, magpie not its
+	// SideModel is the model Codex is set to when it is one of magpie-friday's,
+	// picked beside its ChatGPT sign-in (by the base URL, magpie-friday not its
 	// provider), "" otherwise: the gateway answers the Codex app's hidden
 	// side turns (titles, descriptions, summaries), which it asks for on a
 	// model of its own, on it rather than on the ChatGPT account.
 	SideModel func() string
 	// Routed reports that the agent's config sends whatever model it
-	// names to magpie's gateway (Codex's openai_base_url or magpie as its
+	// names to magpie-friday's gateway (Codex's openai_base_url or magpie-friday as its
 	// provider), so a model's name the gateway takes as a routing group
 	// is that group's (#750).
 	Routed func() bool
 	// FailingOver reports an agent that isn't connected whose requests
-	// still go through magpie's gateway, for account failover alone (Codex
-	// signed in to ChatGPT with more of its accounts on in magpie, #1385):
+	// still go through magpie-friday's gateway, for account failover alone (Codex
+	// signed in to ChatGPT with more of its accounts on in magpie-friday, #1385):
 	// the Agents page says so and what turns it off, and the gateway lists
 	// it only its own models.
 	FailingOver func() bool
-	// EndFailover takes out what account failover wrote, for magpie
+	// EndFailover takes out what account failover wrote, for magpie-friday
 	// quitting: left there, the agent would be pointed at a gateway that
-	// no longer answers, and retry till magpie is open again (Leon920717
+	// no longer answers, and retry till magpie-friday is open again (Leon920717
 	// on X). The next start's Sync writes it again.
 	EndFailover func() error
 	// Follow, for an agent whose own picker moves its main model where
-	// magpie keeps other settings following it (Claude Code's /model and
+	// magpie-friday keeps other settings following it (Claude Code's /model and
 	// its tiers), brings those along to the model picked there. Run as the
 	// Agents page is drawn.
 	Follow func() error
-	// RenameRefs, for an agent whose config names magpie's models beyond
+	// RenameRefs, for an agent whose config names magpie-friday's models beyond
 	// its fields (omp's other roles and fallback chains), moves those names
 	// off provider from onto to, the rest of each kept; it answers whether
 	// any moved. The fields themselves are RenameProvider's.
 	RenameRefs func(from, to string) (bool, error)
-	// Check, for an agent magpie wires in beyond its model field, says what
-	// of that wiring is gone while the model is still one of magpie's —
+	// Check, for an agent magpie-friday wires in beyond its model field, says what
+	// of that wiring is gone while the model is still one of magpie-friday's —
 	// something else rewrote the config — or "" when it is all there
 	// (see Drift).
 	Check func() string
 	// LastUsed, for an agent that keeps a log of its own prompts, is when
 	// it was last used — each prompt a request the gateway should have
-	// seen, so one it didn't went round magpie (see Drift). Zero if unknown.
+	// seen, so one it didn't went round magpie-friday (see Drift). Zero if unknown.
 	LastUsed func() time.Time
 	// Reached, for an agent that logs where its model requests go, is its
 	// newest one since a time: when, the address it went to, and whether
@@ -229,7 +229,7 @@ type Agent struct {
 	// WSL is the distro an agent inside WSL lives in, "" for this
 	// machine's own (see wsl.go).
 	WSL string
-	// Home is a WSL agent's $HOME in its distro as magpie opens it
+	// Home is a WSL agent's $HOME in its distro as magpie-friday opens it
 	// (\\wsl.localhost\<distro>\home\me), where its other files are; ""
 	// for this machine's, and while the distro is stopped: opening it
 	// would start it.
@@ -237,17 +237,17 @@ type Agent struct {
 	// Gateway is the gateway's address as the agent reaches it, a WSL
 	// distro's own way to it; nil is gateway.URL.
 	Gateway func() string
-	// Import, for an app that takes magpie only through an import link of
+	// Import, for an app that takes magpie-friday only through an import link of
 	// its own, which the user confirms there (Cindy), is that link; the app
-	// has no fields magpie sets. Added says whether it has magpie already,
+	// has no fields magpie-friday sets. Added says whether it has magpie-friday already,
 	// known false when what it is read from couldn't be read: unknown,
 	// never "not added". nil means the app exposes no way to read that
 	// status.
 	Import func() string
 	Added  func() (added, known bool)
 	// Launch, for an agent that takes the gateway only from its
-	// environment (agy), is the command that starts it on magpie, while
-	// it is on one of magpie's models; "" otherwise.
+	// environment (agy), is the command that starts it on magpie-friday, while
+	// it is on one of magpie-friday's models; "" otherwise.
 	Launch func() string
 	// SplitSuffix, for an agent whose model values carry something of its
 	// own after the model that varies from value to value (omp's thinking
@@ -258,19 +258,19 @@ type Agent struct {
 	// the same for a model (Claude Code's [1m]) rides on the option instead.
 	// one is false for a value that is no one model but a list the agent
 	// falls back through (omp's "a,b"): that is the user's own whatever it
-	// names, never taken for one of magpie's models nor moved by what
+	// names, never taken for one of magpie-friday's models nor moved by what
 	// matches the picker (RenameRefs moves the names in it).
 	SplitSuffix func(v string) (model, suffix string, one bool)
 	// Spelled, when set, says whether a value of the agent's fields is
-	// spelled as one of magpie's there (prefixed: it starts with
-	// "magpie/", its provider in the agent): one that isn't is a model of
-	// one of the agent's own providers, never magpie's, even when magpie
+	// spelled as one of magpie-friday's there (prefixed: it starts with
+	// "magpie-friday/", its provider in the agent): one that isn't is a model of
+	// one of the agent's own providers, never magpie-friday's, even when magpie-friday
 	// has a provider of the same name (OpenHanako's own
-	// deepseek/deepseek-v4-pro read as magpie's deepseek, #835).
+	// deepseek/deepseek-v4-pro read as magpie-friday's deepseek, #835).
 	Spelled func(v string) bool
 	// ModelAliases are the names the agent's model takes besides ids
 	// (Claude Code's opus, best, opusplan). One that names a field as well
-	// is the model's on the command line: magpie claude opus sets the
+	// is the model's on the command line: magpie-friday claude opus sets the
 	// model, where another field's name alone shows that field.
 	ModelAliases []string
 	// detect, when set, says whether the agent is here in place of looking
@@ -315,12 +315,12 @@ type Agent struct {
 // Running reports whether a process whose command line matches any pattern
 // (an extended regexp, as for pgrep -f) is alive. Windows can't be asked
 // what runs, so anything may be: every caller is the advice an agent's own
-// lists need after magpie changed what it reads at start ("restart Codex",
+// lists need after magpie-friday changed what it reads at start ("restart Codex",
 // "open a new dsh session"), and a Windows that answered no here dropped
-// that advice silently — a model picked in magpie looked like it had done
+// that advice silently — a model picked in magpie-friday looked like it had done
 // nothing at all. claudeRunning and Pencil's own check already say they
 // can't be told, and say yes for the same reason. A var so tests can say
-// what runs, as claudeRunning is: magpie's own CLI tests printed "restart
+// what runs, as claudeRunning is: magpie-friday's own CLI tests printed "restart
 // the Codex app" on a Mac with Codex open, and on every Windows.
 var Running = func(patterns ...string) bool {
 	if runtime.GOOS == "windows" {
@@ -384,11 +384,11 @@ func (a *Agent) Detected() bool {
 	return false
 }
 
-// binAt is where the agent's command name is, as magpie runs it: on
-// magpie's own PATH, else, on Windows, where a terminal opened now finds it
+// binAt is where the agent's command name is, as magpie-friday runs it: on
+// magpie-friday's own PATH, else, on Windows, where a terminal opened now finds it
 // or a user's tools are installed (proc.FindTool: the registry's PATH now,
 // ~/.local/bin, npm's, bun's, Volta's, pnpm's). Windows has no login shell
-// to lend magpie its PATH (proc.UserPath does nothing there), so a magpie
+// to lend magpie-friday its PATH (proc.UserPath does nothing there), so a magpie-friday
 // started before Claude Code's installer put claude.exe in ~/.local/bin
 // and added that to the user's PATH, or a self-update restarting with the
 // PATH it had then, never listed it, while the sign-in, which asked
@@ -517,7 +517,7 @@ var goPrograms struct {
 }
 
 // Field looks a field up by key, in any case, as Find looks an agent up
-// (magpie codex Model was written as the model).
+// (magpie-friday codex Model was written as the model).
 func (a *Agent) Field(key string) *Field {
 	for i := range a.Fields {
 		if strings.EqualFold(a.Fields[i].Key, key) {
@@ -525,7 +525,7 @@ func (a *Agent) Field(key string) *Field {
 		}
 	}
 	for i := range a.Fields {
-		if strings.EqualFold(a.Fields[i].Label, key) { // `magpie gemini auth …`: the label as shown
+		if strings.EqualFold(a.Fields[i].Label, key) { // `magpie-friday gemini auth …`: the label as shown
 			return &a.Fields[i]
 		}
 	}
@@ -542,8 +542,8 @@ func (a *Agent) Values() map[string]string {
 }
 
 // Picks are the options f's picker offers: all of them, unless the user
-// asked a's pickers to offer magpie's models alone (#1642, MizuIro-H). Then
-// a field that picks among magpie's catalog leaves out the models the agent
+// asked a's pickers to offer magpie-friday's models alone (#1642, MizuIro-H). Then
+// a field that picks among magpie-friday's catalog leaves out the models the agent
 // reaches on its own (DeepSeek Harness's DeepSeek ones), but for its
 // default and the one it is set to.
 func (a *Agent) Picks(f Field, cur map[string]string) []Option {
@@ -555,10 +555,10 @@ func (a *Agent) Picks(f Field, cur map[string]string) []Option {
 }
 
 // Own reports whether o is a model the agent reaches on its own, not one of
-// magpie's catalog: what Picks leaves out on the user's word.
+// magpie-friday's catalog: what Picks leaves out on the user's word.
 func Own(o Option) bool { return o.Ref == "" && o.Value != "" }
 
-// OwnModels reports whether one of a's pickers that picks among magpie's
+// OwnModels reports whether one of a's pickers that picks among magpie-friday's
 // catalog offers models of the agent's own too, which Picks can leave out.
 func (a *Agent) OwnModels(cur map[string]string) bool {
 	for _, f := range a.Fields {
@@ -618,12 +618,12 @@ func ids(as []*Agent) []string {
 }
 
 // Spell puts a value typed for field key the way this agent spells it: a
-// catalog model is "copilot/gpt-6" in some agents and "magpie/copilot/gpt-6"
+// catalog model is "copilot/gpt-6" in some agents and "magpie-friday/copilot/gpt-6"
 // in others, and either is taken in both. A value the picker offers as is
 // stays, and so does one it doesn't know (a model the agent reaches on its
-// own that isn't listed); a "magpie/…" value the catalog doesn't have is an
+// own that isn't listed); a "magpie-friday/…" value the catalog doesn't have is an
 // error rather than a model the agent would ask its own vendor for, and so
-// is one of magpie's the agent isn't shown (notOffered). The
+// is one of magpie-friday's the agent isn't shown (notOffered). The
 // agent's suffix after the model (SplitSuffix) stays as typed, and so does
 // a list of models, the user's own.
 func (a *Agent) Spell(key, v string) (string, error) {
@@ -659,7 +659,7 @@ func (a *Agent) Spell(key, v string) (string, error) {
 		}
 	}
 	if prefixed {
-		return "", fmt.Errorf("%s isn't a model in magpie's catalog (magpie models lists them)", ref)
+		return "", fmt.Errorf("%s isn't a model in magpie-friday's catalog (magpie-friday models lists them)", ref)
 	}
 	if err := a.notOffered(ref, opts); err != nil {
 		return "", err
@@ -667,13 +667,13 @@ func (a *Agent) Spell(key, v string) (string, error) {
 	return v, nil
 }
 
-// notOffered refuses a value that names one of magpie's models, or one of
+// notOffered refuses a value that names one of magpie-friday's models, or one of
 // its providers or routing groups, that the agent isn't shown: kept from
-// the agent (magpie visible, a model not ticked for it) or not on its
-// provider's list yet (a remote magpie's group added there since the list
+// the agent (magpie-friday visible, a model not ticked for it) or not on its
+// provider's list yet (a remote magpie-friday's group added there since the list
 // was fetched). Taken as the agent's own, Pi read remote/group/smart as
 // its own provider "remote" and model "group/smart", and was taken out of
-// magpie for a provider it doesn't have (#2376). A provider id the agent's
+// magpie-friday for a provider it doesn't have (#2376). A provider id the agent's
 // own models go by too (openai/… in Pi) stays the agent's.
 func (a *Agent) notOffered(ref string, opts []Option) error {
 	pid, model, ok := strings.Cut(ref, "/")
@@ -690,14 +690,14 @@ func (a *Agent) notOffered(ref string, opts []Option) error {
 	}
 	for _, e := range provider.Catalog() {
 		if slices.Contains(ids, e.ID) {
-			return fmt.Errorf("%s is one of magpie's models, but %s isn't shown it: magpie models %s says why, and magpie visible %s all shows it every model", ref, a.Name, a.ID, a.ID)
+			return fmt.Errorf("%s is one of magpie-friday's models, but %s isn't shown it: magpie-friday models %s says why, and magpie-friday visible %s all shows it every model", ref, a.Name, a.ID, a.ID)
 		}
 	}
 	if pid+"/" == provider.GroupPrefix || provider.IsGroupRef(ref) {
-		return fmt.Errorf("magpie has no routing group %s (magpie models lists them)", ref)
+		return fmt.Errorf("magpie-friday has no routing group %s (magpie-friday models lists them)", ref)
 	}
 	if p, err := provider.Find(pid); err == nil && (p.ID == pid || slices.Contains(p.Was, pid)) {
-		return fmt.Errorf("%s's model list has no %s: magpie provider refresh %s fetches the list again (or add the model to it in its editor), and magpie models %s lists what %s is shown", p.ID, model, p.ID, a.ID, a.Name)
+		return fmt.Errorf("%s's model list has no %s: magpie-friday provider refresh %s fetches the list again (or add the model to it in its editor), and magpie-friday models %s lists what %s is shown", p.ID, model, p.ID, a.ID, a.Name)
 	}
 	return nil
 }
@@ -714,7 +714,7 @@ func (a *Agent) split(v string) (model, suffix string, one bool) {
 
 // atomic makes each of an agent's field sets, and its Sync, one edit of the
 // files at paths: one that fails part way puts them all back as they were,
-// rather than leaving, say, Codex's config.toml with magpie's provider table
+// rather than leaving, say, Codex's config.toml with magpie-friday's provider table
 // written but its model not (#253).
 func atomic(a *Agent, paths ...string) *Agent {
 	for i := range a.Fields {

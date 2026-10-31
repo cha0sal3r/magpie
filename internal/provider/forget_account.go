@@ -8,17 +8,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
 )
 
-// ForgetAccount signs a subscription's accounts out of magpie for good, the
+// ForgetAccount signs a subscription's accounts out of magpie-friday for good, the
 // way past a removal (#694: a removed Qoder came back with its old account
 // each time it was added back, and nothing took it away). A plugin's
 // sign-ins leave plugin-auth.json (the plugin host's signOut when one runs,
 // else under plugin-auth.json.lock) and logins.json, and a moved built-in's
 // backup of them goes too, so moving back doesn't bring them either; a
 // built-in's saved accounts go as each account's Remove takes them. An
-// agent's own sign-in, which magpie only reads, is hidden as Remove hides
+// agent's own sign-in, which magpie-friday only reads, is hidden as Remove hides
 // it. Signing in again starts afresh.
 func ForgetAccount(id string) error {
 	p, ok := find(Accounts(), strings.ToLower(strings.TrimSpace(id)))
@@ -59,7 +59,7 @@ func forgetLogins(agent string) error {
 }
 
 // forgetPluginAccounts signs every account of the plugin's provider out:
-// the ones magpie signed in to through it from plugin-auth.json, and the
+// the ones magpie-friday signed in to through it from plugin-auth.json, and the
 // agent's own (a CLI's sign-in the plugin reads) hidden.
 func forgetPluginAccounts(pp plugin.Provider) error {
 	agent := pluginAgent(pp)

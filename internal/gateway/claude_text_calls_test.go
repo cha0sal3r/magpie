@@ -8,7 +8,7 @@ import (
 )
 
 // The report's lines (Zhenzhen on Discord, Claude Desktop 3.1623.0 on
-// "Fable 5.1 High", magpie 0.1.1327): the model wrote its calls in the
+// "Fable 5.1 High", magpie-friday 0.1.1327): the model wrote its calls in the
 // form a conversation told as text gives past calls, ids made up.
 const (
 	reportedPlanCall = `[tool call mcp__magpie__mcp__ccd_turn__update_plan id=toolu_0Validate args={"advance":true}]`
@@ -124,10 +124,10 @@ func TestClaudeTextToolCallsAreMadeForReal(t *testing.T) {
 		len(ask.Message.Content) != 1 || ask.Message.Content[0].Text != textCallsAsk {
 		t.Fatalf("the run was told %s", asks[0])
 	}
-	// the ask names neither magpie nor the vendor
-	for _, w := range []string{"magpie", "Claude", "Anthropic"} {
+	// the ask names neither magpie-friday nor the vendor
+	for _, w := range []string{"magpie-friday", "Claude", "Anthropic"} {
 		if strings.Contains(textCallsAsk, w) || strings.Contains(pastCallsNote, w) {
-			t.Fatalf("the text magpie adds names %s", w)
+			t.Fatalf("the text magpie-friday adds names %s", w)
 		}
 	}
 }

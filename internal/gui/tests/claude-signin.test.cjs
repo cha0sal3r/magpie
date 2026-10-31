@@ -1,10 +1,10 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// Claude Code running through magpie signs in to it with magpie's key, or
+// Claude Code running through magpie-friday signs in to it with magpie-friday's key, or
 // keeps its own claude.ai sign-in, which a key signs it out of. The way is
 // a square in the row opened from its link, beside its subagents',
 // ultracode and the subagents' effort, all of them inside the row at
 // 440px. It opens the two ways, each said whole in the page's language;
-// claude.ai is posted as "claudeai" and lights the square, magpie's key
+// claude.ai is posted as "claudeai" and lights the square, magpie-friday's key
 // posts "" again. Claude Code on its own model has no other way to take,
 // and no square. At 1100px and 440px, English, Chinese (both), Japanese and
 // German, Chromium and WebKit; no backend, the API is faked here.
@@ -19,13 +19,13 @@ const models = [{ value: "deepseek/deepseek-v4-pro", label: "DeepSeek V4 Pro", r
 const levels = ["low", "medium", "high", "xhigh", "max"].map((value) => ({ value }));
 // as internal/agent/claude.go has them (claudeSignIns)
 const ways = [
-  { value: "", label: "magpie's key", note: "Claude Code sends magpie its key and is signed out of claude.ai while it runs through magpie: claude.ai's plan limits in /usage, its connectors, voice and /teleport are off" },
-  { value: "claudeai", label: "claude.ai", note: "Claude Code keeps its claude.ai sign-in (/login), so those work; it sends that sign-in to magpie, which never passes it on. Remote Control and ultrareview stay off: Claude Code has them only on Anthropic's own address" },
+  { value: "", label: "magpie-friday's key", note: "Claude Code sends magpie-friday its key and is signed out of claude.ai while it runs through magpie-friday: claude.ai's plan limits in /usage, its connectors, voice and /teleport are off" },
+  { value: "claudeai", label: "claude.ai", note: "Claude Code keeps its claude.ai sign-in (/login), so those work; it sends that sign-in to magpie-friday, which never passes it on. Remote Control and ultrareview stay off: Claude Code has them only on Anthropic's own address" },
 ];
 const tiers = ["opus", "sonnet", "haiku", "fable"];
 const fresh = () => ({
   agents: [{
-    // every field Claude Code has through magpie
+    // every field Claude Code has through magpie-friday
     id: "claude", name: "Claude Code", path: "/test/settings.json", icon: "claudecode-color", wired: true,
     fields: [
       { key: "model", label: "model", value: models[0].value, options: models },
@@ -78,7 +78,7 @@ const claude = '.row.agent[data-id="claude"]';
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
   for (const lang of ["en", "zh", "zh-TW", "ja", "de"]) {
-    test(`${engine} ${lang}: Claude Code through magpie can keep its claude.ai sign-in`, async (t) => {
+    test(`${engine} ${lang}: Claude Code through magpie-friday can keep its claude.ai sign-in`, async (t) => {
       const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: "chromium" }));
       const pages = [];
       t.after(async () => {
@@ -101,7 +101,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         await page.locator(claude).waitFor();
         const words = await page.evaluate(([ways, lang]) => ways.map((w) => lang === "en" ? [w.label, w.note] : [I18N[lang][w.label] || w.label, I18N[lang][w.note]]), [ways, lang]);
         assert(words.every(([, n]) => n), `every sentence has its ${lang}`);
-        assert.equal(words[0][0] === "magpie's key", lang === "en", `"magpie's key" has its ${lang}`);
+        assert.equal(words[0][0] === "magpie-friday's key", lang === "en", `"magpie-friday's key" has its ${lang}`);
         assert.equal(words[1][0], "claude.ai");
         assert.equal(await page.locator('.row.agent[data-id="cc-own"] .field[data-key="login"]').count(), 0, "a sign-in square with no other way to take");
 

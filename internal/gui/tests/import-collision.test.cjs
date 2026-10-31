@@ -1,4 +1,4 @@
-// A provider another app has, named as one magpie has (#1487, Dudung1018):
+// A provider another app has, named as one magpie-friday has (#1487, Dudung1018):
 // one named as a subscription (a relay called "claude", a proxy called
 // "workbuddy") is picked like a new one and is never offered to replace the
 // subscription; a name that collides can be changed right in the row, and
@@ -84,7 +84,7 @@ for (const engine of engines) {
           assert.deepEqual(await opts(row), [], "no choice: it can only come in beside the subscription");
           assert.equal(await row.locator("input.appname").isVisible(), true);
         }
-        assert.equal(await claude.locator(".sub", { hasText: await T("{name} is a subscription in magpie; this one comes in beside it as a provider of its own", { name: "Claude" }) }).count(), 1);
+        assert.equal(await claude.locator(".sub", { hasText: await T("{name} is a subscription in magpie-friday; this one comes in beside it as a provider of its own", { name: "Claude" }) }).count(), 1);
         // a name of the user's own provider: off until chosen, Replace offered
         assert.equal(await mine.locator('input[type="checkbox"]').isChecked(), false);
         assert.deepEqual(await opts(mine), [await T("Keep both"), await T("Replace it")]);

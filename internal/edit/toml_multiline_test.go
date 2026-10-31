@@ -28,7 +28,7 @@ func TestTOMLTopMultilineArray(t *testing.T) {
 	if v, ok := GetTOMLTop(p, "notify"); !ok || v != "[\n    \"/usr/local/bin/notifier\",\n    \"turn-ended\",\n]" {
 		t.Fatalf("notify = %q %v", v, ok)
 	}
-	if err := SetTOMLTop(p, KV{Path: "model", Value: "gpt-6-luna"}, KV{Path: "model_provider", Value: "magpie"}); err != nil {
+	if err := SetTOMLTop(p, KV{Path: "model", Value: "gpt-6-luna"}, KV{Path: "model_provider", Value: "magpie-friday"}); err != nil {
 		t.Fatal(err)
 	}
 	assertTOMLContent(t, p, `notify = [
@@ -36,7 +36,7 @@ func TestTOMLTopMultilineArray(t *testing.T) {
     "turn-ended",
 ]
 model = "gpt-6-luna"
-model_provider = "magpie"
+model_provider = "magpie-friday"
 
 [model_providers.example]
 base_url = "http://127.0.0.1:1/v1"
@@ -132,7 +132,7 @@ x = 1
 	if got, err := TOMLTables(p); err != nil || !reflect.DeepEqual(got, []string{"t"}) {
 		t.Fatalf("tables = %v, %v", got, err)
 	}
-	if err := SetTOMLTop(p, KV{Path: "model", Value: "m"}, KV{Path: "model_provider", Value: "magpie"}); err != nil {
+	if err := SetTOMLTop(p, KV{Path: "model", Value: "m"}, KV{Path: "model_provider", Value: "magpie-friday"}); err != nil {
 		t.Fatal(err)
 	}
 	assertTOMLContent(t, p, `instructions = """
@@ -144,7 +144,7 @@ raw = '''
 model_provider = x
 '''
 model = "m"
-model_provider = "magpie"
+model_provider = "magpie-friday"
 
 [t]
 x = 1
@@ -171,7 +171,7 @@ func TestAtomically(t *testing.T) {
 	os.WriteFile(cfg, []byte(issue253), 0o600)
 	fail := errors.New("step two")
 	err := Atomically(func() error {
-		if err := SetTOMLTable(cfg, "model_providers.magpie", KV{Path: "name", Value: "magpie"}); err != nil {
+		if err := SetTOMLTable(cfg, "model_providers.magpie-friday", KV{Path: "name", Value: "magpie-friday"}); err != nil {
 			return err
 		}
 		if err := WriteAtomic(extra, []byte("{}")); err != nil {

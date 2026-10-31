@@ -4,12 +4,12 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// TestClaude1MMarked: every name magpie hands Claude Code for a model of a
+// TestClaude1MMarked: every name magpie-friday hands Claude Code for a model of a
 // 1M window carries [1m], however it was set: Claude Code 2.1.284 and before
 // take "claude/claude-opus-5-5" unmarked for 200K, whatever
 // CLAUDE_CODE_MAX_CONTEXT_TOKENS says, and compact it again and again

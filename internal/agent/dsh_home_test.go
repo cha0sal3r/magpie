@@ -9,10 +9,10 @@ import (
 
 // #804 (liuweifeng): dsh applies its home patch layer, ~/.dsh/cordis.patch.yml,
 // over every profile's, so a llm-pi-ai or agent-default-model entry there
-// replaced what magpie wrote in the profiles, and dsh ran the home layer's
-// old snapshot while magpie read as connected. magpie now writes those two
+// replaced what magpie-friday wrote in the profiles, and dsh ran the home layer's
+// old snapshot while magpie-friday read as connected. magpie-friday now writes those two
 // entries there too when the home layer has them, the user's routes beside
-// magpie's kept, and adds nothing to a home layer without them.
+// magpie-friday's kept, and adds nothing to a home layer without them.
 func TestDshHomePatchLayer(t *testing.T) {
 	home, dir, web := dshRouteHome(t)
 	desktop := filepath.Join(dir, "profiles", "desktop", "cordis.patch.yml")
@@ -23,7 +23,7 @@ func TestDshHomePatchLayer(t *testing.T) {
 	userStart := "- id: agent-default-model\n  config:\n    provider: deepseek-official\n    model: deepseek-v4-pro\n"
 	os.WriteFile(hp, []byte("# shared by web and desktop\n"+
 		"- id: llm-pi-ai\n  name: \"@deepseek-ai/dsh-llm-pi-ai\"\n  config:\n    providers:\n      mine:\n        displayName: Mine\n        apiKeyEnv: MINE_API_KEY\n        api: openai-completions\n        baseURL: https://mine.example/v1\n        models:\n          - id: m1\n"+
-		"      magpie:\n        displayName: Magpie\n        apiKeyEnv: "+dshKeyRef+"\n        api: openai-completions\n        baseURL: "+gatewayV1()+"\n        models:\n          - id: old/gone\n"+
+		"      magpie-friday:\n        displayName: magpie-friday\n        apiKeyEnv: "+dshKeyRef+"\n        api: openai-completions\n        baseURL: "+gatewayV1()+"\n        models:\n          - id: old/gone\n"+
 		userStart), 0o644)
 	read := func(p string) string { b, _ := os.ReadFile(p); return string(b) }
 	a := dsh(home)
@@ -33,11 +33,11 @@ func TestDshHomePatchLayer(t *testing.T) {
 	if f.Get() != "deepseek-v4-pro" {
 		t.Fatalf("get %q", f.Get())
 	}
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	s := read(hp)
-	for _, want := range []string{"# shared by web and desktop\n", "      mine:\n", "- id: deepseek/pro", "- id: deepseek/flash", "provider: magpie", `model: "deepseek/pro"`} {
+	for _, want := range []string{"# shared by web and desktop\n", "      mine:\n", "- id: deepseek/pro", "- id: deepseek/flash", "provider: magpie-friday", `model: "deepseek/pro"`} {
 		if !strings.Contains(s, want) {
 			t.Fatalf("missing %q in the home layer:\n%s", want, s)
 		}
@@ -45,11 +45,11 @@ func TestDshHomePatchLayer(t *testing.T) {
 	if strings.Contains(s, "old/gone") || strings.Contains(s, "deepseek-official") {
 		t.Fatalf("the home layer kept its snapshot:\n%s", s)
 	}
-	if f.Get() != "magpie/deepseek/pro" || a.Check() != "" || !a.Joined() {
+	if f.Get() != "magpie-friday/deepseek/pro" || a.Check() != "" || !a.Joined() {
 		t.Fatalf("get %q, check %q, joined %v", f.Get(), a.Check(), a.Joined())
 	}
 
-	// a home llm-pi-ai written without magpie's route (dsh's Models page) is
+	// a home llm-pi-ai written without magpie-friday's route (dsh's Models page) is
 	// said, and a sync puts the route back beside the user's
 	os.WriteFile(hp, []byte("- id: llm-pi-ai\n  name: \"@deepseek-ai/dsh-llm-pi-ai\"\n  config:\n    providers:\n      mine:\n        displayName: Mine\n        apiKeyEnv: MINE_API_KEY\n        api: openai-completions\n        baseURL: https://mine.example/v1\n        models:\n          - id: m1\n"), 0o644)
 	if c := a.Check(); !strings.Contains(c, "home patch layer") {
@@ -58,31 +58,31 @@ func TestDshHomePatchLayer(t *testing.T) {
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	if s := read(hp); !strings.Contains(s, "      magpie:\n") || !strings.Contains(s, "      mine:\n") || a.Check() != "" {
+	if s := read(hp); !strings.Contains(s, "      magpie-friday:\n") || !strings.Contains(s, "      mine:\n") || a.Check() != "" {
 		t.Fatalf("check %q, home layer:\n%s", a.Check(), s)
 	}
 
-	// back to dsh's own model: magpie's route leaves the home layer, the
+	// back to dsh's own model: magpie-friday's route leaves the home layer, the
 	// user's stays
 	if err := f.Set("deepseek-flash"); err != nil {
 		t.Fatal(err)
 	}
-	if s := read(hp); strings.Contains(s, "      magpie:\n") || !strings.Contains(s, "      mine:\n") {
+	if s := read(hp); strings.Contains(s, "      magpie-friday:\n") || !strings.Contains(s, "      mine:\n") {
 		t.Fatalf("home layer:\n%s", s)
 	}
 
 	// a home layer without those entries is left as it is
 	other := "- id: tool-shell\n  config:\n    timeout: 30\n"
 	os.WriteFile(hp, []byte(other), 0o644)
-	if err := f.Set("magpie/deepseek/flash"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
-	if read(hp) != other || f.Get() != "magpie/deepseek/flash" {
+	if read(hp) != other || f.Get() != "magpie-friday/deepseek/flash" {
 		t.Fatalf("get %q, home layer:\n%s", f.Get(), read(hp))
 	}
 }
 
-// A model and effort picked in magpie reach the home layer, and setting none
+// A model and effort picked in magpie-friday reach the home layer, and setting none
 // gives it its own start back.
 func TestDshHomePatchLayerUnwire(t *testing.T) {
 	home, dir, web := dshRouteHome(t)
@@ -91,10 +91,10 @@ func TestDshHomePatchLayerUnwire(t *testing.T) {
 	userStart := "- id: agent-default-model\n  config:\n    provider: deepseek-official\n    model: deepseek-v4-pro\n"
 	os.WriteFile(hp, []byte(userStart), 0o644)
 	a := dsh(home)
-	if err := a.Field("model").Set("magpie/deepseek/pro"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
-	if a.Field("model").Get() != "magpie/deepseek/pro" {
+	if a.Field("model").Get() != "magpie-friday/deepseek/pro" {
 		t.Fatalf("get %q", a.Field("model").Get())
 	}
 	// one of dsh's own models, and its effort, go there too

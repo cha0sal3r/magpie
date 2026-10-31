@@ -65,7 +65,7 @@ func geminiPage(ctx context.Context, u, key string, headers map[string]string) (
 		return nil, "", err
 	}
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("User-Agent", "magpie")
+	req.Header.Set("User-Agent", "magpie-friday")
 	if key != "" {
 		req.Header.Set("x-goog-api-key", key)
 	}

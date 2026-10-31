@@ -8,14 +8,14 @@ import (
 	"testing"
 )
 
-// what magpie up to now wrote for Open at login
+// what magpie-friday up to now wrote for Open at login
 const olderPlist = `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>Label</key><string>com.yetone.magpie</string>
+	<key>Label</key><string>com.cha0sal3r.magpie-friday</string>
 	<key>ProgramArguments</key>
-	<array><string>/Applications/Tom &amp; Jerry/magpie.app/Contents/MacOS/magpie</string><string>tray</string></array>
+	<array><string>/Applications/Tom &amp; Jerry/magpie-friday.app/Contents/MacOS/magpie-friday</string><string>tray</string></array>
 	<key>RunAtLoad</key><true/>
 	<key>LimitLoadToSessionType</key><string>Aqua</string>
 	<key>ProcessType</key><string>Interactive</string>
@@ -24,7 +24,7 @@ const olderPlist = `<?xml version="1.0" encoding="UTF-8"?>
 `
 
 // launchd kills what a job started once the job exits, so the shell a
-// restart to update leaves to open the new version died with a magpie
+// restart to update leaves to open the new version died with a magpie-friday
 // opened at login: the launch agent lets them go.
 func TestLaunchAgentLetsTheRelaunchLive(t *testing.T) {
 	home := t.TempDir()
@@ -45,7 +45,7 @@ func TestLaunchAgentLetsTheRelaunchLive(t *testing.T) {
 	}
 }
 
-// An older magpie's launch agent is written again as this one writes it,
+// An older magpie-friday's launch agent is written again as this one writes it,
 // for the program it named; one that's off stays off.
 func TestRefreshOlderLaunchAgent(t *testing.T) {
 	home := t.TempDir()
@@ -69,27 +69,27 @@ func TestRefreshOlderLaunchAgent(t *testing.T) {
 		t.Fatal(err)
 	}
 	b, _ := os.ReadFile(p)
-	want := plist("/Applications/Tom & Jerry/magpie.app/Contents/MacOS/magpie")
+	want := plist("/Applications/Tom & Jerry/magpie-friday.app/Contents/MacOS/magpie-friday")
 	if string(b) != string(want) {
 		t.Fatalf("not rewritten as this version writes it:\n%s\nwant:\n%s", b, want)
 	}
 
-	// one magpie didn't write is left as it is
+	// one magpie-friday didn't write is left as it is
 	other := "<plist><dict><key>Label</key><string>x</string></dict></plist>"
 	os.WriteFile(p, []byte(other), 0o644)
 	if err := Refresh(); err != nil {
 		t.Fatal(err)
 	}
 	if b, _ := os.ReadFile(p); string(b) != other {
-		t.Fatalf("a launch agent magpie didn't write was changed:\n%s", b)
+		t.Fatalf("a launch agent magpie-friday didn't write was changed:\n%s", b)
 	}
 }
 
-// fakeApp lays out an app bundle as a release's: Contents/MacOS/magpie
+// fakeApp lays out an app bundle as a release's: Contents/MacOS/magpie-friday
 // beside Contents/Info.plist carrying the bundle id.
 func fakeApp(t *testing.T, dir, id string) string {
 	t.Helper()
-	app := filepath.Join(dir, "Tom & Jerry", "magpie.app", "Contents")
+	app := filepath.Join(dir, "Tom & Jerry", "magpie-friday.app", "Contents")
 	if err := os.MkdirAll(filepath.Join(app, "MacOS"), 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -97,16 +97,16 @@ func fakeApp(t *testing.T, dir, id string) string {
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleName</key><string>magpie</string>
+	<key>CFBundleName</key><string>magpie-friday</string>
 	<key>CFBundleIdentifier</key><string>` + id + `</string>
-	<key>CFBundleExecutable</key><string>magpie</string>
+	<key>CFBundleExecutable</key><string>magpie-friday</string>
 </dict>
 </plist>
 `
 	if err := os.WriteFile(filepath.Join(app, "Info.plist"), []byte(info), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	exe := filepath.Join(app, "MacOS", "magpie")
+	exe := filepath.Join(app, "MacOS", "magpie-friday")
 	if err := os.WriteFile(exe, []byte("#!/bin/sh\n"), 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -115,23 +115,23 @@ func fakeApp(t *testing.T, dir, id string) string {
 
 // Login Items lists a launch agent under the name its program is signed
 // with, the developer's own, unless the agent names the app it belongs to
-// (#1512, ysicing: "Xipeng Guan" instead of magpie). The launch agent for
-// a program inside an app names that app's bundle id, an older magpie's is
+// (#1512, ysicing: "Xipeng Guan" instead of magpie-friday). The launch agent for
+// a program inside an app names that app's bundle id, an older magpie-friday's is
 // rewritten with it, and a bare program names none.
 func TestLaunchAgentNamesItsApp(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
 	t.Setenv("USERPROFILE", home)
-	exe := fakeApp(t, home, "com.yetone.magpie")
+	exe := fakeApp(t, home, "com.cha0sal3r.magpie-friday")
 
-	key := "<key>AssociatedBundleIdentifiers</key>\n\t<array><string>com.yetone.magpie</string></array>"
+	key := "<key>AssociatedBundleIdentifiers</key>\n\t<array><string>com.cha0sal3r.magpie-friday</string></array>"
 	if b := string(plist(exe)); !strings.Contains(b, key) {
-		t.Fatalf("the launch agent doesn't name magpie's app:\n%s", b)
+		t.Fatalf("the launch agent doesn't name magpie-friday's app:\n%s", b)
 	}
 
 	p := record()
 	os.MkdirAll(filepath.Dir(p), 0o755)
-	older := strings.Replace(olderPlist, "/Applications/Tom &amp; Jerry/magpie.app/Contents/MacOS/magpie", strings.ReplaceAll(exe, "&", "&amp;"), 1)
+	older := strings.Replace(olderPlist, "/Applications/Tom &amp; Jerry/magpie-friday.app/Contents/MacOS/magpie-friday", strings.ReplaceAll(exe, "&", "&amp;"), 1)
 	if err := os.WriteFile(p, []byte(older), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -146,7 +146,7 @@ func TestLaunchAgentNamesItsApp(t *testing.T) {
 		t.Fatalf("not a valid plist: %s", out)
 	}
 	out, err := exec.Command("plutil", "-extract", "AssociatedBundleIdentifiers.0", "raw", p).CombinedOutput()
-	if err != nil || strings.TrimSpace(string(out)) != "com.yetone.magpie" {
+	if err != nil || strings.TrimSpace(string(out)) != "com.cha0sal3r.magpie-friday" {
 		t.Fatalf("plutil reads AssociatedBundleIdentifiers as %q (%v)", out, err)
 	}
 
@@ -160,12 +160,12 @@ func TestLaunchAgentNamesItsApp(t *testing.T) {
 	}
 
 	// a program outside any app has nothing to name
-	if b := string(plist(filepath.Join(home, "bin", "magpie"))); strings.Contains(b, "AssociatedBundleIdentifiers") {
+	if b := string(plist(filepath.Join(home, "bin", "magpie-friday"))); strings.Contains(b, "AssociatedBundleIdentifiers") {
 		t.Fatalf("a bare program's launch agent names an app:\n%s", b)
 	}
 }
 
-// A record a write cut short is not one that opens magpie at login: launchd
+// A record a write cut short is not one that opens magpie-friday at login: launchd
 // refuses a job with no program to run, and one with nothing in it at all,
 // so Open at login reads off rather than saying on for a record that never
 // starts anything.
@@ -253,7 +253,7 @@ func TestEnabledFollowsTheSystemsSwitch(t *testing.T) {
 }
 
 // The system's switch is kept by the launch agent's label, wherever its
-// plist is: a test's record under a sandbox home is com.yetone.magpie
+// plist is: a test's record under a sandbox home is com.cha0sal3r.magpie-friday
 // too, and the system would answer for the user's own. The tests ask a
 // stand-in that knows nothing; askSystem is the real question.
 var askSystem func(string) int
@@ -273,8 +273,8 @@ func TestLegacyStatusAsksTheSystem(t *testing.T) {
 		t.Skip("no sw_vers")
 	}
 	dir := t.TempDir()
-	p := filepath.Join(dir, "com.yetone.magpie-test.plist")
-	b := strings.Replace(string(plist("/usr/bin/true")), "<string>"+label+"</string>", "<string>com.yetone.magpie-test-"+filepath.Base(dir)+"</string>", 1)
+	p := filepath.Join(dir, "com.cha0sal3r.magpie-friday-test.plist")
+	b := strings.Replace(string(plist("/usr/bin/true")), "<string>"+label+"</string>", "<string>com.cha0sal3r.magpie-friday-test-"+filepath.Base(dir)+"</string>", 1)
 	if err := os.WriteFile(p, []byte(b), 0o644); err != nil {
 		t.Fatal(err)
 	}

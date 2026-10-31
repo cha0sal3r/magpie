@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// Pencil (pen.dev) is on the page once ~/.pencil is there, with magpie to
+// Pencil (pen.dev) is on the page once ~/.pencil is there, with magpie-friday to
 // put in its model picker, and not before (unless this Mac has the app).
 func TestStateListsPencil(t *testing.T) {
 	home := sandboxHome(t)
@@ -29,7 +29,7 @@ func TestStateListsPencil(t *testing.T) {
 		t.Fatal("Pencil not listed")
 	}
 	if a.Name != "Pencil" || a.Path != filepath.Join("~", ".pencil", "models.json") || len(a.Fields) != 1 || a.Fields[0].Key != "provider" ||
-		len(a.Fields[0].Options) != 1 || a.Fields[0].Options[0].Value != "magpie" {
+		len(a.Fields[0].Options) != 1 || a.Fields[0].Options[0].Value != "magpie-friday" {
 		t.Fatalf("Pencil: %+v", a)
 	}
 }

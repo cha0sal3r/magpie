@@ -24,7 +24,7 @@ const agent = (id, name) => ({ id, name, icon: "", skills: `${HOME}/.${id}/skill
 const gh = (name) => ({ name, description: name + " does a thing", kind: "github", repo: "old/pack", source: `https://github.com/old/pack/tree/main/skills/${name}`, agents: ["claude"] });
 const local = (name) => ({ name, description: name + " does a thing", kind: "local", agents: ["claude", "codex"] });
 const lib = (skills) => ({
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: [agent("claude", "Claude Code"), agent("codex", "Codex")],
   instructions: { agents: [] }, servers: [], skills, foundServers: [], projects: [], foundSkills: [], problems: [],
 });
@@ -174,7 +174,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         await settled(page);
         assert.equal((await sheet.locator(".ehead b").textContent()).trim(), w("Remove {n} skills?", { n: 3 }));
         await sheet.locator(".lib-confirm").filter({ hasText: w("They are taken out of the library and out of {agents}.", { agents: "Claude Code" }) }).waitFor();
-        await sheet.locator(".lib-confirm").filter({ hasText: w("{n} folders are moved to magpie's backups (Backups, at the top of the Library), not deleted.", { n: 3 }) }).waitFor();
+        await sheet.locator(".lib-confirm").filter({ hasText: w("{n} folders are moved to magpie-friday's backups (Backups, at the top of the Library), not deleted.", { n: 3 }) }).waitFor();
         assert.equal((await sheet.locator(".bar button.primary").textContent()).trim(), w("Remove {n}", { n: 3 }));
         assert.deepEqual(await sideways(page), [], "sideways with the sheet");
         await sheet.locator(".bar button", { hasText: w("Cancel") }).click();

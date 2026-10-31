@@ -7,12 +7,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // unknownEyed is eyed with the text model's list saying nothing of images,
-// as most vendors' /models lists don't: magpie counts it text-only (agents
+// as most vendors' /models lists don't: magpie-friday counts it text-only (agents
 // were told so before Vision told them every model takes images).
 func unknownEyed(t *testing.T) (*Server, *eyeUp) {
 	t.Helper()
@@ -113,7 +113,7 @@ func TestDescriptionIsInRouting(t *testing.T) {
 }
 
 // The description's row says why the model was counted as unable to see:
-// nothing magpie knows says it sees (Unknown), or its list says it takes
+// nothing magpie-friday knows says it sees (Unknown), or its list says it takes
 // text only — a DeepSeek model's images went to Codex's GPT with nothing
 // saying which, or where to change it (#1287). A group's text-only member
 // says it the same way, on every route an agent sends an image by.

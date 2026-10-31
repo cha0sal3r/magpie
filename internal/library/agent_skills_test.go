@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
 )
 
 // Every agent on the Agents page that reads skills has a place for them in
@@ -373,7 +373,7 @@ func TestSiblingInstructionsMore(t *testing.T) {
 		t.Fatalf("Qoder with context.fileName: %+v", tg)
 	}
 	// Reasonix Studio is found by its app alone, so its target is asked
-	// of the agent as magpie makes it
+	// of the agent as magpie-friday makes it
 	rx := filepath.Join(h, ".reasonix")
 	reasonix := &agent.Agent{ID: "reasonix", Dir: rx, Path: filepath.Join(rx, "config.toml")}
 	if tg := targetOf(reasonix); tg == nil || tg.Instructions != filepath.Join(rx, "REASONIX.md") {

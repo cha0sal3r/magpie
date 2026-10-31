@@ -3,7 +3,7 @@ const { test } = require("node:test");
 const { chromium, webkit } = require("playwright");
 const { fixture } = require("./fixtures/caller-keys.cjs");
 
-// Gateway keys are left out of Gateway while magpie isn't shared, and a
+// Gateway keys are left out of Gateway while magpie-friday isn't shared, and a
 // tunnel to loopback (Cloudflare Tunnel) is refused until it is. DD on
 // Discord looked for the keys to put a tunnel behind one and found none:
 // the page says where they come from, and its button opens Settings ›

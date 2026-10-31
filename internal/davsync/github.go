@@ -33,9 +33,9 @@ const githubPart = 16 << 20
 // is a short list of the parts, each a blob in a folder beside it, all in
 // the one commit; the list's own blob SHA is the version, and it names
 // every part by its blob SHA, so a version pins one whole set. The list
-// says it is format magpie-backup, version 2, with no key derivation, so a
-// magpie before parts opens it as a newer magpie's backup and stops
-// ("update magpie"), never as a damaged one (ErrCorrupt, ErrNotBackup) to
+// says it is format magpie-friday-backup, version 2, with no key derivation, so a
+// magpie-friday before parts opens it as a newer magpie-friday's backup and stops
+// ("update magpie-friday"), never as a damaged one (ErrCorrupt, ErrNotBackup) to
 // rebuild or offer for replacing.
 const githubSplit = "github-parts"
 
@@ -52,7 +52,7 @@ type githubPartRef struct {
 	Size int64  `json:"size"`
 }
 
-// partName is the backup's i-th part (from 0), beside it in magpie's folder.
+// partName is the backup's i-th part (from 0), beside it in magpie-friday's folder.
 func partName(i int) string { return file + ".parts/" + strconv.Itoa(i+1) }
 
 // parseParts reads b as a list of parts: nil for a file that isn't one (a
@@ -65,8 +65,8 @@ func parseParts(b []byte) (*githubParts, error) {
 	if json.Unmarshal(b, &m) != nil || m.Split == "" {
 		return nil, nil
 	}
-	if m.Format != "magpie-backup" || m.Version != 2 || m.Split != githubSplit {
-		return nil, errors.New("the GitHub backup was sent in parts by a newer magpie; update magpie to read it")
+	if m.Format != "magpie-friday-backup" || m.Version != 2 || m.Split != githubSplit {
+		return nil, errors.New("the GitHub backup was sent in parts by a newer magpie-friday; update magpie-friday to read it")
 	}
 	total := int64(0)
 	for _, p := range m.Parts {
@@ -155,7 +155,7 @@ func (g *github) send(ctx context.Context, method, apiPath string, body []byte, 
 	req.Header.Set("Authorization", "Bearer "+g.token)
 	req.Header.Set("Accept", accept)
 	req.Header.Set("X-GitHub-Api-Version", "2022-11-28")
-	req.Header.Set("User-Agent", "magpie-sync")
+	req.Header.Set("User-Agent", "magpie-friday-sync")
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
@@ -390,7 +390,7 @@ func (g *github) commit(ctx context.Context, name string, data []byte, sha strin
 	}
 	var writes []githubWrite
 	if !remove && name == file && len(data) > githubPart {
-		m := githubParts{Format: "magpie-backup", Version: 2, Split: githubSplit, Size: int64(len(data))}
+		m := githubParts{Format: "magpie-friday-backup", Version: 2, Split: githubSplit, Size: int64(len(data))}
 		for i, off := 0, 0; off < len(data); i, off = i+1, off+githubPart {
 			p := data[off:min(off+githubPart, len(data))]
 			writes = append(writes, githubWrite{g.at(partName(i)), gitBlobSHA(p), p})
@@ -547,10 +547,10 @@ func (g *github) gitCommit(ctx context.Context, name string, writes []githubWrit
 	for _, w := range writes {
 		entries = append(entries, entry{Path: w.path, Mode: "100644", Type: "blob", SHA: &w.sha})
 	}
-	message := "magpie: sync " + name
+	message := "magpie-friday: sync " + name
 	if len(writes) == 0 {
 		entries = append(entries, entry{Path: g.at(name), Mode: "100644", Type: "blob"})
-		message = "magpie: remove " + name
+		message = "magpie-friday: remove " + name
 	}
 	parts := max(len(writes)-1, 0)
 	for i := parts; i < had; i++ {
@@ -604,11 +604,11 @@ func gitBlobSHA(b []byte) string {
 }
 
 // initialize gives an empty repository its first commit, a short note in
-// magpie's folder, so a backup too large for the Contents API can be
+// magpie-friday's folder, so a backup too large for the Contents API can be
 // committed on top of it through the Git Data API. Another computer that
 // initialized it first is just as good.
 func (g *github) initialize(ctx context.Context) error {
-	note := []byte("This folder holds magpie's encrypted sync files.\n")
+	note := []byte("This folder holds magpie-friday's encrypted sync files.\n")
 	if _, err := g.contents(ctx, "README.md", note, "", false); err != nil && !errors.Is(err, errChanged) {
 		return err
 	}
@@ -619,7 +619,7 @@ func (g *github) initialize(ctx context.Context) error {
 // contents writes through the Contents API, which only an empty repository's
 // first write uses.
 func (g *github) contents(ctx context.Context, name string, data []byte, sha string, remove bool) (version, error) {
-	in := map[string]string{"message": "magpie: sync " + name, "content": base64.StdEncoding.EncodeToString(data)}
+	in := map[string]string{"message": "magpie-friday: sync " + name, "content": base64.StdEncoding.EncodeToString(data)}
 	// Omitting branch lets the first backup initialize an empty repository.
 	if !g.empty {
 		in["branch"] = g.branch
@@ -630,7 +630,7 @@ func (g *github) contents(ctx context.Context, name string, data []byte, sha str
 	method := http.MethodPut
 	if remove {
 		method = http.MethodDelete
-		in["message"] = "magpie: remove " + name
+		in["message"] = "magpie-friday: remove " + name
 		delete(in, "content")
 	}
 	body, err := json.Marshal(in)

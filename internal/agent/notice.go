@@ -37,7 +37,7 @@ func (n notice) say(kv ...string) string {
 // String is the notice as it reads with no slots to fill.
 func (n notice) String() string { return string(n) }
 
-// Notices are the templates of every notice magpie's own agents give.
+// Notices are the templates of every notice magpie-friday's own agents give.
 func Notices() []string {
 	out := make([]string, 0, len(notices))
 	for _, n := range notices {

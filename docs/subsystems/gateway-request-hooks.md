@@ -7,24 +7,24 @@ execution and subsequent inference rounds belong to the client.
 ```mermaid
 sequenceDiagram
     participant Client
-    participant Magpie
+    participant magpie-friday
     participant Hook as Bun gateway hook
     participant Model
-    Client->>Magpie: Request
+    Client->>magpie-friday: Request
     Magpie->>Hook: await onRequest(body, ctx with host-derived origin)
-    Hook-->>Magpie: Context-enriched body, or original on failure
+    Hook-->>magpie-friday: Context-enriched body, or original on failure
     Magpie->>Model: One inference request
-    Model-->>Client: Live response through Magpie
+    Model-->>Client: Live response through magpie-friday
     Magpie--)Hook: onResponse(completedReply, ctx)
     Note over Hook: Bounded best-effort notification
 ```
 
 ## Entry and request contract
 
-Declare `"magpie": {"hooks": "./context.hooks.ts"}` in package.json,
-or install a `*.hooks.js`, `.mjs`, `.ts` or `.mts` file using `magpie plugin add`.
-The names are apart from the JS gateway middleware's (`magpie.middleware`,
-its alias `magpie.gateway`, `*.gateway.js`), so a hook that imports `node:fs`
+Declare `"magpie-friday": {"hooks": "./context.hooks.ts"}` in package.json,
+or install a `*.hooks.js`, `.mjs`, `.ts` or `.mts` file using `magpie-friday plugin add`.
+The names are apart from the JS gateway middleware's (`magpie-friday.middleware`,
+its alias `magpie-friday.gateway`, `*.gateway.js`), so a hook that imports `node:fs`
 is never also loaded as middleware.
 Bun runs TypeScript directly. A gateway-only package does not need provider
 main/exports, a client MCP installation, or a client skill.

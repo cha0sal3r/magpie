@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
 )
 
 // #589: a Codex call through the gateway whose upstream told a cache write
@@ -36,7 +36,7 @@ func TestCodexCacheWriteMatchesGatewayCall(t *testing.T) {
 			path := filepath.Join(sessions.CodexDir(), "sessions", "rollout-2026-09-30T00-00-00-s589.jsonl")
 			os.MkdirAll(filepath.Dir(path), 0700)
 			var b strings.Builder
-			b.WriteString(`{"type":"session_meta","payload":{"id":"s589","model_provider":"magpie"}}` + "\n")
+			b.WriteString(`{"type":"session_meta","payload":{"id":"s589","model_provider":"magpie-friday"}}` + "\n")
 			b.WriteString(`{"type":"turn_context","payload":{"model":"maru-code/gpt-6.1-sol","effort":"high"}}` + "\n")
 			usageOf := func(in, cached, write, out int) string {
 				if !c.codexWrite {

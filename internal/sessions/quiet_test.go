@@ -88,7 +88,7 @@ func TestReadSlotOnlyWhileWarming(t *testing.T) {
 	}
 }
 
-// A long first read keeps what it has read on disk as it goes: a magpie
+// A long first read keeps what it has read on disk as it goes: a magpie-friday
 // quit before the end (its CPU full on a slow disk, #1665) kept nothing of
 // a minutes-long read, so the next start read it all again. The files after
 // the first three wait until a save is written with files still to read.

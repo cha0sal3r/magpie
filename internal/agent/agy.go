@@ -4,12 +4,12 @@ package agent
 // ~/.gemini/antigravity-cli/settings.json. With "modelProvider": "gemini" it
 // asks a Gemini API endpoint rather than Google's own backend, and lists the
 // models of customModelsConfig.customModels, each {apiProvider, modelName},
-// the one picked being "model". magpie's gateway speaks the Gemini API, so
-// magpie adds one custom model per catalog model, keyed
-// "magpie/<provider>/<model>", and sets modelProvider and model; the user's
-// own are stashed and put back when magpie steps out. The endpoint and key
+// the one picked being "model". magpie-friday's gateway speaks the Gemini API, so
+// magpie-friday adds one custom model per catalog model, keyed
+// "magpie-friday/<provider>/<model>", and sets modelProvider and model; the user's
+// own are stashed and put back when magpie-friday steps out. The endpoint and key
 // agy takes only from its environment (GOOGLE_GEMINI_BASE_URL and
-// GEMINI_API_KEY; no .env file), so magpie can't set them: the agent's row
+// GEMINI_API_KEY; no .env file), so magpie-friday can't set them: the agent's row
 // gives the command that starts agy with them (see Agent.Launch). That
 // names the model with --model too: agy 1.2 asks for a custom model picked
 // in settings.json or its /model picker with no model name ("model is
@@ -25,18 +25,18 @@ import (
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/jsonc"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 const agyModels = "customModelsConfig.customModels"
 
-// AgyLaunch is the command that starts agy on magpie's gateway and one of
+// AgyLaunch is the command that starts agy on magpie-friday's gateway and one of
 // its custom models, in the shell of this system. Its key names agy: its
 // requests go out as Google's Gemini SDK's (User-Agent google-genai-sdk/…),
 // with nothing of agy's own, so the gateway knows them by the key
 // (x-goog-api-key) alone. A command copied before, with the plain token,
-// still reaches magpie.
+// still reaches magpie-friday.
 func AgyLaunch(model string) string {
 	key := agentKey("agy")
 	if runtime.GOOS == "windows" {
@@ -66,7 +66,7 @@ func agy(home string) *Agent {
 	provider := jsonGet(path, "modelProvider")
 	stashModel, stashProvider := "agy:"+path+":model", "agy:"+path+":modelProvider"
 	// setModels writes customModels with the user's own and, when with,
-	// magpie's; none left takes the key out
+	// magpie-friday's; none left takes the key out
 	setModels := func(with bool) error {
 		ms := map[string]any{}
 		for k, v := range agyCustom(path) {
@@ -125,7 +125,7 @@ func agy(home string) *Agent {
 				return ""
 			}
 			if _, ok := agyCustom(path)[v]; !ok {
-				return "Antigravity CLI's custom model " + v + " (settings.json) is gone, so it no longer reaches magpie"
+				return "Antigravity CLI's custom model " + v + " (settings.json) is gone, so it no longer reaches magpie-friday"
 			}
 			if p := provider(); p != "gemini" {
 				return "Antigravity CLI's modelProvider (settings.json) is " + orDefault(p) + ", not gemini, so it asks Google directly"
@@ -164,7 +164,7 @@ func agy(home string) *Agent {
 			},
 			Options: func(cur map[string]string) []Option {
 				custom := agyCustom(path)
-				// its own say they go to their provider, not through magpie,
+				// its own say they go to their provider, not through magpie-friday,
 				// as every agent's own do (EZN7L2C3, #834)
 				var own []Option
 				for k := range custom {
@@ -189,4 +189,4 @@ func agy(home string) *Agent {
 }
 
 // what agy says after a change (notice.go)
-var noticeAgy = newNotice("agy takes magpie's gateway and model only from how it is started — start it with {command}")
+var noticeAgy = newNotice("agy takes magpie-friday's gateway and model only from how it is started — start it with {command}")

@@ -2,7 +2,7 @@ package sessions
 
 // A session's whole conversation, read from the agent's own file when it is
 // asked for: what was said, in order, by the user, the model and its tools.
-// The file is only read; magpie keeps no copy.
+// The file is only read; magpie-friday keeps no copy.
 
 import (
 	"bytes"
@@ -22,7 +22,7 @@ type Transcript struct {
 // transcriptMax is the characters of all of a transcript's parts.
 const transcriptMax = 400_000
 
-// ErrNoTranscript is a session whose conversation magpie can't read: an
+// ErrNoTranscript is a session whose conversation magpie-friday can't read: an
 // agent that keeps it in a database, or in a form not read here.
 var ErrNoTranscript = errors.New("this agent's conversations can't be shown")
 

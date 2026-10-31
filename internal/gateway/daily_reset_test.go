@@ -5,13 +5,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // #2008 (Gaudi-XIX): a free tier's daily allowance, refused as xkiro
 // refuses it with no word of when it is back, rests the key until the time
 // of day the user said it comes back, not 15 minutes, nor an hour when the
-// vendor's Retry-After asked for longer than magpie trusts. A Retry-After
+// vendor's Retry-After asked for longer than magpie-friday trusts. A Retry-After
 // shorter than that still stands over it.
 func TestQuotaRestsUntilTheTimeOfDaySet(t *testing.T) {
 	deadChain(t, "dead-a")
@@ -33,7 +33,7 @@ func TestQuotaRestsUntilTheTimeOfDaySet(t *testing.T) {
 		}
 	}
 	near(srv.restAfter(c, 429, http.Header{}, daily), at, "quota")
-	// a Retry-After of two hours, cut to the hour magpie trusts: the
+	// a Retry-After of two hours, cut to the hour magpie-friday trusts: the
 	// user's three hours stand
 	near(srv.restAfter(c, 429, http.Header{"Retry-After": {"7200"}}, daily), at, "quota")
 	// two minutes is the vendor's word, and stands

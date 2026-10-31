@@ -10,7 +10,7 @@ import (
 
 	"github.com/tidwall/jsonc"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // handEdit sets key in the server's entry of the agent's file as the user
@@ -73,7 +73,7 @@ func TestToolsOffInTheEntry(t *testing.T) {
 		if strings.Contains(read(t, tg.MCP.Path), keys[id]) {
 			t.Errorf("%s: %s written with none turned off:\n%s", id, keys[id], read(t, tg.MCP.Path))
 		}
-		// the user's own: one they turned off, one magpie will too, and
+		// the user's own: one they turned off, one magpie-friday will too, and
 		// for Hermes a setting of its own beside exclude
 		user := []any{"mine", "write_file"}
 		if id == "hermes" {
@@ -103,13 +103,13 @@ func TestToolsOffInTheEntry(t *testing.T) {
 		if e["command"] != "npx" {
 			t.Errorf("%s: the entry lost its command: %v", id, e)
 		}
-		// magpie's are only those it added: the user's write_file isn't
+		// magpie-friday's are only those it added: the user's write_file isn't
 		if mine := l.applied(id).ToolsOff["fs"]; !slices.Equal(mine, []string{"delete", "read_file"}) {
-			t.Errorf("%s: magpie's: %v", id, mine)
+			t.Errorf("%s: magpie-friday's: %v", id, mine)
 		}
 	}
 
-	// turned on again: magpie's go, the user's stay
+	// turned on again: magpie-friday's go, the user's stay
 	ok(t)(ServerTools("fs", nil))
 	for _, id := range agents {
 		tg := targetByID(id)
@@ -148,7 +148,7 @@ func TestToolsOffInTheEntry(t *testing.T) {
 		}
 	}
 
-	// taken from the agent: its entry goes, and what magpie had in it
+	// taken from the agent: its entry goes, and what magpie-friday had in it
 	ok(t)(ServerTools("fs", []string{"x"}))
 	ok(t)(ServerAgents("fs", nil))
 	l, _ = load()
@@ -184,7 +184,7 @@ func claudeDeny(t *testing.T, p string) ([]string, map[string]any) {
 // Claude Code leaves a server's tool out by a deny rule naming it,
 // mcp__<server>__<tool> with each character it doesn't keep an _, in its
 // settings.json (code.claude.com/docs/en/permissions); the user's own rules,
-// and their own one for a tool magpie turns off too, stay.
+// and their own one for a tool magpie-friday turns off too, stay.
 func TestToolsOffClaudeDeny(t *testing.T) {
 	h := sandbox(t)
 	settings := filepath.Join(h, ".claude", "settings.json")
@@ -214,7 +214,7 @@ func TestToolsOffClaudeDeny(t *testing.T) {
 	}
 	l, _ := load()
 	if r := l.applied("claude").ToolRules; !slices.Equal(r, []string{"mcp__web-1__read_page", "mcp__web-1__search"}) {
-		t.Errorf("magpie's: %v", r)
+		t.Errorf("magpie-friday's: %v", r)
 	}
 
 	ok(t)(ServerTools("web-1", []string{"search"}))
@@ -227,7 +227,7 @@ func TestToolsOffClaudeDeny(t *testing.T) {
 	}
 
 	// a settings.json with nothing of the user's in permissions: it goes
-	// with magpie's last rule, and a server taken from Claude takes its
+	// with magpie-friday's last rule, and a server taken from Claude takes its
 	// rules too
 	write(t, settings, `{"model": "opus"}`)
 	ok(t)(ServerTools("web-1", []string{"fetch"}))
@@ -286,7 +286,7 @@ func TestToolsOffOpenCode(t *testing.T) {
 		t.Errorf("on again: %v, want %v", got, want)
 	}
 
-	// a key magpie set that the user then turned on is theirs from then
+	// a key magpie-friday set that the user then turned on is theirs from then
 	ok(t)(ServerTools("gh", []string{"a"}))
 	if got := tools(); got["gh_a"] != false {
 		t.Fatalf("not off: %v", got)
@@ -299,7 +299,7 @@ func TestToolsOffOpenCode(t *testing.T) {
 		t.Errorf("the user's true taken: %v", got)
 	}
 
-	// with nothing of the user's left, tools goes with magpie's last
+	// with nothing of the user's left, tools goes with magpie-friday's last
 	write(t, p, `{}`)
 	ok(t)(ServerTools("gh", []string{"a"}))
 	ok(t)(ServerTools("gh", nil))

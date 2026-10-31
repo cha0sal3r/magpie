@@ -1,10 +1,10 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// A rule's agents may be one magpie doesn't know (raikyou on Discord:
+// A rule's agents may be one magpie-friday doesn't know (raikyou on Discord:
 // SillyTavern, one's own app with its own User-Agent). The gateway names
 // such a client by its User-Agent's product name (usage.AgentOf), and a
 // rule matches it in lower case. In the editor the agent picker offers the
-// agents magpie knows, then those usage heard from in the last 30 days that
-// it doesn't (not "other", nor magpie's own), and a name typed in the
+// agents magpie-friday knows, then those usage heard from in the last 30 days that
+// it doesn't (not "other", nor magpie-friday's own), and a name typed in the
 // filter, read as the gateway reads a User-Agent: "MyApp/2.0 (Linux)" is
 // myapp, and a name that is a known agent's is that agent. Saved as
 // agents:[…]. In every language, and at a phone's width the menu stays on
@@ -33,7 +33,7 @@ const usage = { agents: [
   { id: "claude", name: "Claude Code", icon: "claudecode-color", calls: 9 },
   { id: "SillyTavern", name: "SillyTavern", icon: "generic", calls: 4 },
   { id: "other", name: "other", icon: "generic", calls: 2 },
-  { id: "magpie", name: "magpie", icon: "generic", calls: 1 },
+  { id: "magpie-friday", name: "magpie-friday", icon: "generic", calls: 1 },
 ] };
 
 const words = {
@@ -111,7 +111,7 @@ const names = (page) => page.locator("#list li .v").evaluateAll((vs) => vs.map((
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
   for (const lang of Object.keys(words)) {
     const w = words[lang];
-    test(`${engine} ${lang}: a rule for an agent magpie knows only by its User-Agent`, async (t) => {
+    test(`${engine} ${lang}: a rule for an agent magpie-friday knows only by its User-Agent`, async (t) => {
       const { page, group, errors, posts, asked } = await open(t, engine, lang, 1100);
       await press(page, group.locator("button", { hasText: w.edit }));
       const ed = page.locator(".rt-gedit");

@@ -11,20 +11,20 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // corpProxy is a company's reverse proxy in front of the gateway, with a
-// path of its own before magpie's (#1985).
-const corpProxy = "https://ai.corp.example/magpie"
+// path of its own before magpie-friday's (#1985).
+const corpProxy = "https://ai.corp.example/magpie-friday"
 
 // localProxy is the reporter's: a company-mandated compliance proxy on this
-// machine, its route before magpie's paths.
+// machine, its route before magpie-friday's paths.
 const localProxy = "http://127.0.0.1:8788/claude-code-anthropic/cc-7f3a9e"
 
-// fakeMagpieAt answers magpieAt from answers (a base missing is no magpie),
+// fakeMagpieAt answers magpieAt from answers (a base missing is no magpie-friday),
 // as the probe would have, and says which bases were asked.
 func fakeMagpieAt(t *testing.T, answers map[string]bool) func() []string {
 	t.Helper()
@@ -41,16 +41,16 @@ func fakeMagpieAt(t *testing.T, answers map[string]bool) func() []string {
 	return func() []string { mu.Lock(); defer mu.Unlock(); return append([]string(nil), asked...) }
 }
 
-// davisjiahao (#1985): every agent connected to magpie, then pointed by the
-// user at a proxy that forwards to the gateway, magpie's key and model
-// kept: a company's nginx (https://ai.corp.example/magpie), or the
+// davisjiahao (#1985): every agent connected to magpie-friday, then pointed by the
+// user at a proxy that forwards to the gateway, magpie-friday's key and model
+// kept: a company's nginx (https://ai.corp.example/magpie-friday), or the
 // reporter's own, a compliance proxy on this machine every request must go
 // through (http://127.0.0.1:8788/claude-code-anthropic/<route>). That is
-// still magpie: no agent's Check calls it changed, and the sync every
+// still magpie-friday: no agent's Check calls it changed, and the sync every
 // start runs keeps the proxy's address, its path included. The same
 // address where something else answers (a relay CC Switch put there) is
 // still told, for every agent but Codex, which keeps an address with
-// magpie's key in its provider table as it did for #816 and tries it
+// magpie-friday's key in its provider table as it did for #816 and tries it
 // (unreachable).
 func TestReverseProxyIsStillMagpie(t *testing.T) {
 	// named so the test's folders, which carry the name, hold no address
@@ -86,7 +86,7 @@ func reverseProxyIsStillMagpie(t *testing.T, proxy string) {
 			}
 		}
 		if want == "" {
-			t.Fatalf("%s: no field takes magpie's models", a.ID)
+			t.Fatalf("%s: no field takes magpie-friday's models", a.ID)
 		}
 		if err := a.Apply(key, want); err != nil {
 			t.Fatalf("%s: %v", a.ID, err)
@@ -120,7 +120,7 @@ func reverseProxyIsStillMagpie(t *testing.T, proxy string) {
 		}
 	}
 
-	// a relay at that address, not magpie: told
+	// a relay at that address, not magpie-friday: told
 	fakeMagpieAt(t, map[string]bool{})
 	for _, a := range agents {
 		if c := a.Check(); (c == "") != (a.ID == "codex") {
@@ -128,7 +128,7 @@ func reverseProxyIsStillMagpie(t *testing.T, proxy string) {
 		}
 	}
 
-	// the sync keeps the proxy, its /magpie too
+	// the sync keeps the proxy, its /magpie-friday too
 	fakeMagpieAt(t, map[string]bool{proxy: true})
 	if err := provider.Save(provider.Provider{ID: "fake2", Name: "Fake2", Key: "k", Chat: "http://127.0.0.1:1/v1", Models: []string{"m2"}}); err != nil {
 		t.Fatal(err)
@@ -152,7 +152,7 @@ func reverseProxyIsStillMagpie(t *testing.T, proxy string) {
 }
 
 // Claude Code's managed settings pointing it at the company's proxy to
-// magpie win over the user's, and still reach magpie: not drift.
+// magpie-friday win over the user's, and still reach magpie-friday: not drift.
 func TestClaudeManagedProxyIsStillMagpie(t *testing.T) {
 	home, _ := codexHome(t, "", "")
 	managed := claudeManaged
@@ -165,14 +165,14 @@ func TestClaudeManagedProxyIsStillMagpie(t *testing.T) {
 	os.WriteFile(claudeManaged(), []byte(`{"env":{"ANTHROPIC_BASE_URL":"`+corpProxy+`"}}`), 0o644)
 	fakeMagpieAt(t, map[string]bool{corpProxy: true})
 	if d := cl.Drift(); d != nil {
-		t.Fatalf("managed proxy to magpie: %+v", d)
+		t.Fatalf("managed proxy to magpie-friday: %+v", d)
 	}
 }
 
-// Where it reaches magpie isn't known until the address has been tried,
+// Where it reaches magpie-friday isn't known until the address has been tried,
 // in the background: until then it isn't told as changed (Reconnect would
-// write the proxy away), once tried and not magpie it is; an address on
-// this machine's loopback is magpie's own on an older port, told at once,
+// write the proxy away), once tried and not magpie-friday it is; an address on
+// this machine's loopback is magpie-friday's own on an older port, told at once,
 // never tried.
 func TestReverseProxyTriedFirst(t *testing.T) {
 	home, path := claudeSettings(t, `{}`)
@@ -193,7 +193,7 @@ func TestReverseProxyTriedFirst(t *testing.T) {
 		return false
 	}
 	magpieAt = func(base string) (bool, bool) {
-		return probed("magpie "+base, func() bool { return magpieProbe(base) })
+		return probed("magpie-friday "+base, func() bool { return magpieProbe(base) })
 	}
 	reachAge = time.Hour
 	reachForget()
@@ -205,7 +205,7 @@ func TestReverseProxyTriedFirst(t *testing.T) {
 	}
 	close(release)
 	if d := driftSettled(t, cl); d == nil || d.Kind != "unwired" || !strings.Contains(d.Detail, corpProxy) {
-		t.Fatalf("not magpie there, yet %+v", d)
+		t.Fatalf("not magpie-friday there, yet %+v", d)
 	}
 	if len(tried) != 1 || tried[0] != corpProxy {
 		t.Fatalf("tried %v", tried)
@@ -220,19 +220,19 @@ func TestReverseProxyTriedFirst(t *testing.T) {
 	}
 }
 
-// The probe takes magpie's own answer at the proxy's path (the gateway's
-// GET /, forwarded), and nothing else: a relay's, an error page, magpie's
+// The probe takes magpie-friday's own answer at the proxy's path (the gateway's
+// GET /, forwarded), and nothing else: a relay's, an error page, magpie-friday's
 // name in a page that isn't 200.
 func TestMagpieProbe(t *testing.T) {
 	gw := gateway.New().Handler()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch {
-		case strings.HasPrefix(r.URL.Path, "/magpie/"):
-			r.URL.Path = strings.TrimPrefix(r.URL.Path, "/magpie")
+		case strings.HasPrefix(r.URL.Path, "/magpie-friday/"):
+			r.URL.Path = strings.TrimPrefix(r.URL.Path, "/magpie-friday")
 			gw.ServeHTTP(w, r)
 		case r.URL.Path == "/broken/":
 			w.WriteHeader(502)
-			w.Write([]byte(`{"name":"magpie"}`))
+			w.Write([]byte(`{"name":"magpie-friday"}`))
 		default:
 			w.WriteHeader(404)
 			w.Write([]byte(`{"error":{"message":"not found"}}`))
@@ -240,8 +240,8 @@ func TestMagpieProbe(t *testing.T) {
 	}))
 	t.Cleanup(srv.Close)
 	for base, want := range map[string]bool{
-		srv.URL + "/magpie":  true,
-		srv.URL + "/magpie/": true,
+		srv.URL + "/magpie-friday":  true,
+		srv.URL + "/magpie-friday/": true,
 		srv.URL + "/relay":   false,
 		srv.URL + "/broken":  false,
 		"http://127.0.0.1:1": false,
@@ -254,7 +254,7 @@ func TestMagpieProbe(t *testing.T) {
 
 // Codex at the proxy (https, no port, a path of its own): kept as its
 // gateway as #816's address on another host is, written again there, and
-// a request its log says went there reached magpie (bypassed was told
+// a request its log says went there reached magpie-friday (bypassed was told
 // from the host alone); one to chatgpt.com still didn't.
 func TestCodexBehindReverseProxy(t *testing.T) {
 	home, _ := codexAt(t, corpProxy)
@@ -284,9 +284,9 @@ func TestCodexBehindReverseProxy(t *testing.T) {
 		db.Exec(`INSERT INTO logs (ts, ts_nanos, level, target, feedback_log_body) VALUES (?, 0, 'INFO', 'codex_api::endpoint::responses_websocket', ?)`,
 			at, "responses_websocket.connect{}: "+body)
 	}
-	log("connecting to websocket: wss://ai.corp.example/magpie/backend-api/codex/responses")
+	log("connecting to websocket: wss://ai.corp.example/magpie-friday/backend-api/codex/responses")
 	if d := codex(home).Drift(); d != nil {
-		t.Fatalf("reached magpie through the proxy: %+v", d)
+		t.Fatalf("reached magpie-friday through the proxy: %+v", d)
 	}
 	log("connecting to websocket: wss://chatgpt.com/backend-api/codex/responses")
 	if d := codex(home).Drift(); d == nil || d.Kind != "bypassed" {
@@ -301,14 +301,14 @@ func TestCodexBehindReverseProxy(t *testing.T) {
 	}
 }
 
-// The sync keeps a path before magpie's only where every URL at the
+// The sync keeps a path before magpie-friday's only where every URL at the
 // address has it.
 func TestAwayPath(t *testing.T) {
 	g := "http://127.0.0.1:3591"
 	for _, c := range []struct{ was, data, want string }{
-		{`{"u":"https://x.example/magpie"}`, `{"u":"` + g + `"}`, "/magpie"},
-		{`{"u":"https://x.example/magpie/v1"}`, `{"u":"` + g + `/v1"}`, "/magpie"},
-		{`{"u":"https://x.example/magpie","v":"https://x.example/magpie/v1"}`, `{"u":"` + g + `","v":"` + g + `/v1"}`, "/magpie"},
+		{`{"u":"https://x.example/magpie-friday"}`, `{"u":"` + g + `"}`, "/magpie-friday"},
+		{`{"u":"https://x.example/magpie-friday/v1"}`, `{"u":"` + g + `/v1"}`, "/magpie-friday"},
+		{`{"u":"https://x.example/magpie-friday","v":"https://x.example/magpie-friday/v1"}`, `{"u":"` + g + `","v":"` + g + `/v1"}`, "/magpie-friday"},
 		{`{"u":"https://x.example","v":"https://x.example/v1"}`, `{"u":"` + g + `","v":"` + g + `/v1"}`, ""},
 		{`{"u":"https://x.example/v1"}`, `{"u":"` + g + `/v1"}`, ""},
 		{`{"u":"https://x.example/a/v1","v":"https://x.example/b/v1"}`, `{"u":"` + g + `/v1","v":"` + g + `/v1"}`, ""},
@@ -319,8 +319,8 @@ func TestAwayPath(t *testing.T) {
 	}
 }
 
-// Codex signed in to ChatGPT reaches magpie by openai_base_url alone,
-// magpie not its provider: at the proxy that is still magpie, though the
+// Codex signed in to ChatGPT reaches magpie-friday by openai_base_url alone,
+// magpie-friday not its provider: at the proxy that is still magpie-friday, though the
 // address's host isn't the one isCodexGatewayOn is asked about.
 func TestCodexSignedInBehindReverseProxy(t *testing.T) {
 	home, _ := codexHome(t, `{"tokens":{"access_token":"x","id_token":"x.e30.x"}}`, "")
@@ -329,7 +329,7 @@ func TestCodexSignedInBehindReverseProxy(t *testing.T) {
 		t.Fatal(err)
 	}
 	if p, _ := edit.GetTOMLTop(cx.Path, "model_provider"); p == magpieID {
-		t.Fatal("signed in, yet magpie is Codex's provider")
+		t.Fatal("signed in, yet magpie-friday is Codex's provider")
 	}
 	b, _ := os.ReadFile(cx.Path)
 	if !strings.Contains(string(b), gateway.URL()) {
@@ -346,10 +346,10 @@ func TestCodexSignedInBehindReverseProxy(t *testing.T) {
 
 // The reporter's case (#1985, davisjiahao): Claude Code must go through a
 // compliance proxy on this machine (http://127.0.0.1:8788/<route>, which
-// forwards to the gateway). Once magpie has answered there, picking a
-// model in magpie keeps the proxy (it wrote 127.0.0.1:3425 back, bypassing
+// forwards to the gateway). Once magpie-friday has answered there, picking a
+// model in magpie-friday keeps the proxy (it wrote 127.0.0.1:3425 back, bypassing
 // the proxy the company requires), as does Reconnect, which isn't offered,
-// and the sync. A relay there is magpie's to point away from on a pick.
+// and the sync. A relay there is magpie-friday's to point away from on a pick.
 func TestClaudeBehindLocalProxyKeepsIt(t *testing.T) {
 	home, path := claudeSettings(t, `{}`)
 	saveDeepseek(t)
@@ -393,7 +393,7 @@ func TestClaudeBehindLocalProxyKeepsIt(t *testing.T) {
 		t.Fatalf("the sync wrote %s", u)
 	}
 
-	// a relay there, not magpie: told, and a pick puts magpie back
+	// a relay there, not magpie-friday: told, and a pick puts magpie-friday back
 	fakeMagpieAt(t, map[string]bool{})
 	if d := cl.Drift(); d == nil || d.Kind != "unwired" {
 		t.Fatalf("a relay: %+v", d)

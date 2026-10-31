@@ -12,7 +12,7 @@ const { chromium, webkit } = require("playwright");
 const assets = path.resolve(__dirname, "../assets");
 
 // the reporter's: Codex, DeepSeek, Copilot shown; Gemini CLI and Kimi hidden
-// (#1510's screenshots), in the order magpie itself lists them
+// (#1510's screenshots), in the order magpie-friday itself lists them
 const reporter = {
   quotas: [
     { provider: "codex", name: "Codex", icon: "codex-color", user: "x@y.z", plan: "plus", windows: [{ name: "7d", used: 71 }] },

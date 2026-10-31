@@ -6,11 +6,11 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// ModelList is everything that decides which of magpie's models an agent's
+// ModelList is everything that decides which of magpie-friday's models an agent's
 // lists show, and in what order, as a profile keeps it (#1368): its
 // visibility (Visible), the models taken out one by one (HiddenModels) or,
 // for an agent shown only its picks, the ones picked (PickedModels), and the
@@ -27,7 +27,7 @@ type ModelList struct {
 }
 
 // Default reports whether l is what an agent never picked for is shown:
-// every model, in magpie's own order.
+// every model, in magpie-friday's own order.
 func (l ModelList) Default() bool {
 	return l.Visible == nil && len(l.Hidden) == 0 && !l.Only && len(l.Order) == 0
 }

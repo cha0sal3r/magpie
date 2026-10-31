@@ -5,14 +5,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A tier, or the subagents, given a model picked from the list keeps it
 // when the main model moves, though the pick is the main model itself or
-// the model the tier would follow on it, picked in magpie with the main
-// model moved in magpie or in Claude Code's /model (#2654, ypli0629: a
+// the model the tier would follow on it, picked in magpie-friday with the main
+// model moved in magpie-friday or in Claude Code's /model (#2654, ypli0629: a
 // sonnet tier given K2.8 Preview, the main model, read as "Same as main
 // model", and the move to GLM-6 took it along). "Same as main model"
 // picked afterwards has it follow again.
@@ -27,7 +27,7 @@ func TestClaudeTierPickedAsTheMainModelStays(t *testing.T) {
 	// haiku on a Claude main model follows its Haiku: that Haiku picked
 	picks = append(picks, pick{"anth/claude-opus-5-5", "haiku", "anth/claude-haiku-4-5"})
 	for _, p := range picks {
-		for _, via := range []string{"magpie", "/model"} {
+		for _, via := range []string{"magpie-friday", "/model"} {
 			t.Run(p.main+"/"+p.key+"="+p.model+"/"+via, func(t *testing.T) {
 				home, _ := codexHome(t, "", "")
 				a := claude(home)
@@ -48,7 +48,7 @@ func TestClaudeTierPickedAsTheMainModelStays(t *testing.T) {
 				written := func() string { m, _ := edit.GetJSON(path, "env."+envKey); return bare(m) }
 				main := func(m string) {
 					t.Helper()
-					if via == "magpie" {
+					if via == "magpie-friday" {
 						if err := a.Apply("model", m); err != nil {
 							t.Fatal(err)
 						}
@@ -98,7 +98,7 @@ func TestClaudeTierPickedAsTheMainModelStays(t *testing.T) {
 }
 
 // Claude Code's subagents left unset are Claude Code's pick (KorenKrita on
-// Discord): magpie writes no CLAUDE_CODE_SUBAGENT_MODEL, through a pick
+// Discord): magpie-friday writes no CLAUDE_CODE_SUBAGENT_MODEL, through a pick
 // taken back and a main model moved, so Claude Code takes the Agent call's
 // model, then the subagent's own, then the session's (2.1.306).
 func TestClaudeSubagentsUnsetWriteNothing(t *testing.T) {

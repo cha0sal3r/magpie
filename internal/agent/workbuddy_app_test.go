@@ -15,7 +15,7 @@ func notOnMac(t *testing.T) {
 
 // @jiahao_jayden on X: an uninstalled WorkBuddy was on every row of the
 // library. On a Mac WorkBuddy is there by its app: ~/.workbuddy stays
-// behind when WorkBuddy.app is dragged to the Trash, and magpie writes
+// behind when WorkBuddy.app is dragged to the Trash, and magpie-friday writes
 // there itself (models.json, mcp.json, skills/), so the folder, whatever
 // it holds, is no sign of it. Each build is known by its own bundle id.
 func TestWorkBuddyOnMacIsItsApp(t *testing.T) {
@@ -31,7 +31,7 @@ func TestWorkBuddyOnMacIsItsApp(t *testing.T) {
 	plist := func(id string) string {
 		return `<?xml version="1.0" encoding="UTF-8"?><plist version="1.0"><dict><key>CFBundleIdentifier</key><string>` + id + `</string><key>CFBundleShortVersionString</key><string>5.6.2</string></dict></plist>`
 	}
-	// what an uninstall leaves, and what magpie wrote there itself
+	// what an uninstall leaves, and what magpie-friday wrote there itself
 	for _, d := range []string{".workbuddy", ".workbuddy-ai"} {
 		for _, f := range []string{"models.json", "mcp.json", "argv.json"} {
 			p := filepath.Join(home, d, f)

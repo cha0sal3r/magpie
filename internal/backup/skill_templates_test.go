@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/library"
+	"github.com/cha0sal3r/magpie-friday/internal/library"
 )
 
 // Crispin on Discord: a skill's PowerPoint template didn't come with a

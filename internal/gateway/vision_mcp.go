@@ -12,11 +12,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// magpie's image recognition, the model that describes images to a model
+// magpie-friday's image recognition, the model that describes images to a model
 // that can't see them (seer: Settings › Models › Image recognition, else
 // AutoVision's), is also an MCP server of its own beside the web search's
 // (JonahFu on X), so an agent on a model that can't see, or any agent at
@@ -25,7 +25,7 @@ import (
 // gateway key's limit holding each look (reserveFor).
 
 // VisionMCPPath is where the image recognition MCP server is served.
-const VisionMCPPath = "/mcp/magpie/vision"
+const VisionMCPPath = "/mcp/magpie-friday/vision"
 
 const visionMCPTool = "analyze_image"
 
@@ -59,7 +59,7 @@ var visionMCPSchema = map[string]any{
 }
 
 func (s *Server) visionMCP(w http.ResponseWriter, r *http.Request) {
-	serveMCP(w, r, "magpie's image recognition", visionMCPBody, s.visionMCPCall)
+	serveMCP(w, r, "magpie-friday's image recognition", visionMCPBody, s.visionMCPCall)
 }
 
 // visionMCPCall answers one request: its result, or its JSON-RPC error.
@@ -69,8 +69,8 @@ func (s *Server) visionMCPCall(r *http.Request, m mcpMessage) (any, map[string]a
 		return map[string]any{
 			"protocolVersion": mcpVersion(m),
 			"capabilities":    map[string]any{"tools": map[string]any{}},
-			"serverInfo":      map[string]any{"name": "magpie-vision", "title": "Magpie Image Recognition", "version": Version},
-			"instructions":    "analyze_image looks at an image with the model magpie describes images with (Settings → Models → Image recognition) and answers in text: for a model or agent that can't see images, or to read a screenshot, chart or diagram.",
+			"serverInfo":      map[string]any{"name": "magpie-friday-vision", "title": "magpie-friday Image Recognition", "version": Version},
+			"instructions":    "analyze_image looks at an image with the model magpie-friday describes images with (Settings → Models → Image recognition) and answers in text: for a model or agent that can't see images, or to read a screenshot, chart or diagram.",
 		}, nil
 	case "ping":
 		return map[string]any{}, nil
@@ -119,9 +119,9 @@ func (s *Server) visionMCPRun(r *http.Request, image, prompt string) (string, er
 	model, ok := seer()
 	if !ok {
 		if provider.HeldSettings().Vision == "off" {
-			return "", searchMCPError("Image recognition is off in magpie: pick a model for it in Settings → Models → Image recognition")
+			return "", searchMCPError("Image recognition is off in magpie-friday: pick a model for it in Settings → Models → Image recognition")
 		}
-		return "", searchMCPError("magpie has no model that sees images: add a provider with one, or pick one in Settings → Models → Image recognition")
+		return "", searchMCPError("magpie-friday has no model that sees images: add a provider with one, or pick one in Settings → Models → Image recognition")
 	}
 	release, err := reserveFor(access.Caller(r.Context()), int64(len(src)+len(prompt)), "", limitClock())
 	if err != nil {
@@ -139,7 +139,7 @@ func (s *Server) visionMCPRun(r *http.Request, image, prompt string) (string, er
 		if r.Context().Err() == nil {
 			log.Printf("vision MCP: %v", err)
 		}
-		return "", searchMCPError(fmt.Sprintf("magpie couldn't look at the image with %s: %v%s", model, err, missingSeerNote()))
+		return "", searchMCPError(fmt.Sprintf("magpie-friday couldn't look at the image with %s: %v%s", model, err, missingSeerNote()))
 	}
 	return said, nil
 }
@@ -148,7 +148,7 @@ func (s *Server) visionMCPRun(r *http.Request, image, prompt string) (string, er
 // was given, as the gateway's own APIs take it: a URL or data URL as it
 // is, a file read into a data URL. A file is read only for an agent on
 // this computer: another machine's path names none of its own here, and a
-// shared magpie's files aren't its callers'. analyze_image and the image
+// shared magpie-friday's files aren't its callers'. analyze_image and the image
 // server's tools (image_mcp.go) read their images through it.
 func mcpImageSrc(r *http.Request, image, tool string) (string, error) {
 	low := strings.ToLower(image)
@@ -174,7 +174,7 @@ func mcpImageSrc(r *http.Request, image, tool string) (string, error) {
 		return "", searchMCPError(tool + " takes an absolute file path (the gateway doesn't know your agent's working folder), an http(s) URL or a data URL: " + image + " is none of them")
 	}
 	if !local(r) {
-		return "", searchMCPError(tool + " reads a file only for an agent on the computer magpie runs on: from another computer, send the image as a data URL (data:image/png;base64,...) or an http(s) URL")
+		return "", searchMCPError(tool + " reads a file only for an agent on the computer magpie-friday runs on: from another computer, send the image as a data URL (data:image/png;base64,...) or an http(s) URL")
 	}
 	f, err := os.Open(path)
 	if err != nil {

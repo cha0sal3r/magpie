@@ -10,11 +10,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/sessions"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
-// #2285: a Pi subagent's session file sits in a temp folder magpie never
+// #2285: a Pi subagent's session file sits in a temp folder magpie-friday never
 // reads, so the sessions that spent the most (Usage › Sessions) knew its
 // DeepSeek turns only from the gateway's records: no folder, no prompt,
 // shown like a native session whose prompt was empty. The overview marks
@@ -41,7 +41,7 @@ func TestTopSessionsMarkWhatOnlyTheGatewaySaw(t *testing.T) {
 	statsMemo.Lock()
 	statsMemo.m = nil
 	statsMemo.Unlock()
-	// what the gateway recorded of Pi asking for magpie/deepseek/deepseek-v4-pro
+	// what the gateway recorded of Pi asking for magpie-friday/deepseek/deepseek-v4-pro
 	usage.Append(usage.Record{Time: now.Add(-time.Minute), Agent: "pi", Session: "0199f1c2-subagent", Requested: "deepseek/deepseek-v4-pro", Provider: "deepseek", Model: "deepseek-v4-pro", Input: 2000, Output: 300, CacheRead: 60000, Status: 200})
 
 	mux := http.NewServeMux()

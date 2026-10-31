@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// A package that is only a command — magpie-x-search 1.2.0's own
+// A package that is only a command — magpie-friday-x-search 1.2.0's own
 // package.json, an MCP stdio server with a bin and no main, exports or
 // index file (#1327) — isn't added as a plugin: Add says what it is and
 // where it goes instead. One on the list already (added before) says so
@@ -18,16 +18,16 @@ func TestCommandOnlyPackageIsNoPlugin(t *testing.T) {
 	sandbox(t)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
-	abs, _ := filepath.Abs("testdata/notplugin/magpie-x-search")
+	abs, _ := filepath.Abs("testdata/notplugin/magpie-friday-x-search")
 	_, err := Add(ctx, abs)
-	if err == nil || !strings.Contains(err.Error(), "magpie-x-search isn't an OpenCode or magpie plugin") || !strings.Contains(err.Error(), "Library → MCP servers") {
+	if err == nil || !strings.Contains(err.Error(), "magpie-friday-x-search isn't an OpenCode or magpie-friday plugin") || !strings.Contains(err.Error(), "Library → MCP servers") {
 		t.Fatalf("Add = %v", err)
 	}
 	if l := Load().Plugins; len(l) != 0 {
 		t.Fatalf("listed: %+v", l)
 	}
 
-	// added by an older magpie: the host says the same, plainly
+	// added by an older magpie-friday: the host says the same, plainly
 	if err := save(List{Plugins: []Entry{{Spec: abs}}}); err != nil {
 		t.Fatal(err)
 	}
@@ -36,7 +36,7 @@ func TestCommandOnlyPackageIsNoPlugin(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(ps) != 1 || !strings.Contains(ps[0].Error, "magpie-x-search isn't an OpenCode or magpie plugin") || !strings.Contains(ps[0].Error, "MCP servers") || strings.Contains(ps[0].Error, "    at ") {
+	if len(ps) != 1 || !strings.Contains(ps[0].Error, "magpie-friday-x-search isn't an OpenCode or magpie-friday plugin") || !strings.Contains(ps[0].Error, "MCP servers") || strings.Contains(ps[0].Error, "    at ") {
 		t.Fatalf("loaded: %+v", ps)
 	}
 }

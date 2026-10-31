@@ -15,9 +15,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/codexcat"
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/codexcat"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // A ChatGPT account's requests are made the way Codex CLI makes them, as
@@ -134,7 +134,7 @@ func codexOS() string {
 }
 
 // codexPromptsPath is where the instructions of the account's models are
-// kept, next to its model list, for every magpie process to find.
+// kept, next to its model list, for every magpie-friday process to find.
 func codexPromptsPath() string {
 	return filepath.Join(filepath.Dir(catalog.LivePath("codex")), "codex-prompts.json")
 }
@@ -229,7 +229,7 @@ var savedPrompts, codexCLIPrompts promptFile
 
 // codexInstructions is what Codex CLI would send as a model's
 // instructions: the account's model list's, Codex CLI's own copy of it
-// when magpie hasn't asked yet, else Codex's generic prompt.
+// when magpie-friday hasn't asked yet, else Codex's generic prompt.
 func codexInstructions(model string) string {
 	if s, ok := savedPrompts.get(codexPromptsPath(), model, func(b []byte) map[string]string {
 		var m map[string]string
@@ -476,7 +476,7 @@ func orphanOutput(it map[string]any, id string) map[string]any {
 // 200, then only an error event, "response protection is unavailable"
 // (#1270). Codex's turns declare the tool when search is on, but not every
 // request carrying the conversation does: a compaction Codex makes on its
-// own for a custom provider (tools: []), magpie's summary request for a
+// own for a custom provider (tools: []), magpie-friday's summary request for a
 // compaction_trigger, a thread's description, a turn with function tools
 // alone. Each failed so on a real account, and each went through once the
 // tool was declared. The tool declared is the cached-only one, which

@@ -59,15 +59,15 @@ func TestTOMLTables(t *testing.T) {
 
 func TestTOMLTablesOnlyListsOrdinaryHeaders(t *testing.T) {
 	const input = `note = """
-[model."magpie/top-fake"]
+[model."magpie-friday/top-fake"]
 """
 
 [[skills.config]]
 path = "/skill"
 
-  [ model."magpie/a]b" ] # keep the quoted bracket
+  [ model."magpie-friday/a]b" ] # keep the quoted bracket
 note = '''
-[model."magpie/body-fake"]
+[model."magpie-friday/body-fake"]
 [[another.fake]]
 '''
 matrix = [
@@ -81,10 +81,10 @@ path = "/other-skill"
 enabled = true
 `
 	p := tmpFile(t, "config.toml", input)
-	if got := strings.Join(readTOMLTables(t, p), ","); got != `model."magpie/a]b",last` {
+	if got := strings.Join(readTOMLTables(t, p), ","); got != `model."magpie-friday/a]b",last` {
 		t.Fatalf("tables = %q", got)
 	}
-	if got := readTOMLTable(t, p, `model."magpie/a]b"`); got["note"] != "[model.\"magpie/body-fake\"]\n[[another.fake]]\n" {
+	if got := readTOMLTable(t, p, `model."magpie-friday/a]b"`); got["note"] != "[model.\"magpie-friday/body-fake\"]\n[[another.fake]]\n" {
 		t.Fatalf("table lookup disagrees with the header list: %v", got)
 	}
 }
@@ -95,7 +95,7 @@ enabled = true
 func TestTOMLTableWithSpacedDots(t *testing.T) {
 	const input = `top = 1
 
-[ model_providers . magpie ] # keep the spaces
+[ model_providers . magpie-friday ] # keep the spaces
 name = "old"
 wire_api = "responses"
 
@@ -106,10 +106,10 @@ path = "/skill"
 note = "spaces are the key"
 `
 	p := tmpFile(t, "config.toml", input)
-	if got := strings.Join(readTOMLTables(t, p), ","); got != `model_providers.magpie,"a . b"` {
+	if got := strings.Join(readTOMLTables(t, p), ","); got != `model_providers.magpie-friday,"a . b"` {
 		t.Fatalf("tables = %q", got)
 	}
-	if got := readTOMLTable(t, p, "model_providers.magpie"); !maps.Equal(got, map[string]string{"name": "old", "wire_api": "responses"}) {
+	if got := readTOMLTable(t, p, "model_providers.magpie-friday"); !maps.Equal(got, map[string]string{"name": "old", "wire_api": "responses"}) {
 		t.Fatalf("table = %v", got)
 	}
 	if got := readTOMLTable(t, p, `"a . b"`); !maps.Equal(got, map[string]string{"note": "spaces are the key"}) {
@@ -126,14 +126,14 @@ note = "spaces are the key"
 	}
 
 	// an edit finds the table it names instead of appending a second one
-	if err := SetTOMLKey(p, "model_providers.magpie", "name", "new"); err != nil {
+	if err := SetTOMLKey(p, "model_providers.magpie-friday", "name", "new"); err != nil {
 		t.Fatal(err)
 	}
 	assertTOMLContent(t, p, strings.Replace(input, `"old"`, `"new"`, 1))
-	if err := SetTOMLTable(p, "model_providers.magpie", KV{Path: "name", Value: "DeepSeek"}); err != nil {
+	if err := SetTOMLTable(p, "model_providers.magpie-friday", KV{Path: "name", Value: "DeepSeek"}); err != nil {
 		t.Fatal(err)
 	}
-	want := strings.Replace(input, "[ model_providers . magpie ] # keep the spaces\nname = \"old\"\nwire_api = \"responses\"\n", "[model_providers.magpie]\nname = \"DeepSeek\"\n", 1)
+	want := strings.Replace(input, "[ model_providers . magpie-friday ] # keep the spaces\nname = \"old\"\nwire_api = \"responses\"\n", "[model_providers.magpie-friday]\nname = \"DeepSeek\"\n", 1)
 	assertTOMLContent(t, p, want)
 	// and an array table under a spaced header is owned by its normalised name
 	if err := SetTOMLTables(p, []string{"skills."}, nil); err != nil {
@@ -197,7 +197,7 @@ func TestTOMLTablePreservesFollowingArrayTables(t *testing.T) {
 name = "before"
 
 `
-	const table = "[model_providers.magpie]\nname = \"old\"\n\n"
+	const table = "[model_providers.magpie-friday]\nname = \"old\"\n\n"
 	const arrays = `  [[skills.config]] # keep the first skill
 name = "skill-one"
 path = "/skills/one"
@@ -218,7 +218,7 @@ enabled = true
 			t.Run("read", func(t *testing.T) {
 				input := prefix + table + arrays + ending.text
 				p := tmpFile(t, "config.toml", input)
-				got := readTOMLTable(t, p, "model_providers.magpie")
+				got := readTOMLTable(t, p, "model_providers.magpie-friday")
 				if !maps.Equal(got, map[string]string{"name": "old"}) {
 					t.Fatalf("provider contains keys from following array tables: %v", got)
 				}
@@ -230,16 +230,16 @@ enabled = true
 				want string
 			}{
 				{"replace table", func(p string) error {
-					return SetTOMLTable(p, "model_providers.magpie", KV{Path: "name", Value: "new"})
-				}, "[model_providers.magpie]\nname = \"new\"\n\n"},
+					return SetTOMLTable(p, "model_providers.magpie-friday", KV{Path: "name", Value: "new"})
+				}, "[model_providers.magpie-friday]\nname = \"new\"\n\n"},
 				{"delete table", func(p string) error {
-					return DelTOMLTable(p, "model_providers.magpie")
+					return DelTOMLTable(p, "model_providers.magpie-friday")
 				}, ""},
 				{"set key shared with array", func(p string) error {
-					return SetTOMLKey(p, "model_providers.magpie", "path", "/provider")
-				}, "[model_providers.magpie]\nname = \"old\"\npath = \"/provider\"\n\n"},
+					return SetTOMLKey(p, "model_providers.magpie-friday", "path", "/provider")
+				}, "[model_providers.magpie-friday]\nname = \"old\"\npath = \"/provider\"\n\n"},
 				{"delete last key", func(p string) error {
-					return DelTOMLKey(p, "model_providers.magpie", "name")
+					return DelTOMLKey(p, "model_providers.magpie-friday", "name")
 				}, ""},
 			} {
 				t.Run(tc.name, func(t *testing.T) {
@@ -264,14 +264,14 @@ func TestTOMLTableIgnoresHeadersInsideValues(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			const tail = "[[skills.config]]\npath = \"/skills/one\"\n"
-			p := tmpFile(t, "config.toml", "[model_providers.magpie]\nvalue = "+tc.value+"\nwire_api = \"responses\"\n\n"+tail)
-			if got := readTOMLTable(t, p, "model_providers.magpie")["wire_api"]; got != "responses" {
+			p := tmpFile(t, "config.toml", "[model_providers.magpie-friday]\nvalue = "+tc.value+"\nwire_api = \"responses\"\n\n"+tail)
+			if got := readTOMLTable(t, p, "model_providers.magpie-friday")["wire_api"]; got != "responses" {
 				t.Errorf("stopped inside a multiline value: wire_api = %q", got)
 			}
-			if err := SetTOMLTable(p, "model_providers.magpie", KV{Path: "name", Value: "new"}); err != nil {
+			if err := SetTOMLTable(p, "model_providers.magpie-friday", KV{Path: "name", Value: "new"}); err != nil {
 				t.Fatal(err)
 			}
-			if got, want := read(t, p), "[model_providers.magpie]\nname = \"new\"\n\n"+tail; got != want {
+			if got, want := read(t, p), "[model_providers.magpie-friday]\nname = \"new\"\n\n"+tail; got != want {
 				t.Fatalf("got:\n%s\nwant:\n%s", got, want)
 			}
 		})
@@ -280,10 +280,10 @@ func TestTOMLTableIgnoresHeadersInsideValues(t *testing.T) {
 
 func TestTOMLTableParseErrorLeavesFileUntouched(t *testing.T) {
 	for _, input := range []string{
-		"invalid = [\n[model_providers.magpie]\nname = \"old\"\n",
-		"[model_providers.magpie]\ninvalid = [\n[[skills.config]]\n",
-		"[model_providers.magpie]\ninvalid = [\n",
-		"[model_providers.magpie]\nname = \"old\"\n\n[other]\ninvalid = [\n",
+		"invalid = [\n[model_providers.magpie-friday]\nname = \"old\"\n",
+		"[model_providers.magpie-friday]\ninvalid = [\n[[skills.config]]\n",
+		"[model_providers.magpie-friday]\ninvalid = [\n",
+		"[model_providers.magpie-friday]\nname = \"old\"\n\n[other]\ninvalid = [\n",
 	} {
 		for _, edit := range []func(string) error{
 			func(p string) error {
@@ -293,15 +293,15 @@ func TestTOMLTableParseErrorLeavesFileUntouched(t *testing.T) {
 				}
 				return err
 			},
-			func(p string) error { _, err := GetTOMLTable(p, "model_providers.magpie"); return err },
+			func(p string) error { _, err := GetTOMLTable(p, "model_providers.magpie-friday"); return err },
 			func(p string) error {
-				return SetTOMLTables(p, []string{"model_providers."}, []Table{{Name: "model_providers.magpie", KVs: []KV{{Path: "name", Value: "new"}}}})
+				return SetTOMLTables(p, []string{"model_providers."}, []Table{{Name: "model_providers.magpie-friday", KVs: []KV{{Path: "name", Value: "new"}}}})
 			},
 			func(p string) error { return SetTOMLTables(p, []string{"model_providers."}, nil) },
-			func(p string) error { return SetTOMLTable(p, "model_providers.magpie", KV{Path: "name", Value: "new"}) },
-			func(p string) error { return DelTOMLTable(p, "model_providers.magpie") },
-			func(p string) error { return SetTOMLKey(p, "model_providers.magpie", "name", "new") },
-			func(p string) error { return DelTOMLKey(p, "model_providers.magpie", "name") },
+			func(p string) error { return SetTOMLTable(p, "model_providers.magpie-friday", KV{Path: "name", Value: "new"}) },
+			func(p string) error { return DelTOMLTable(p, "model_providers.magpie-friday") },
+			func(p string) error { return SetTOMLKey(p, "model_providers.magpie-friday", "name", "new") },
+			func(p string) error { return DelTOMLKey(p, "model_providers.magpie-friday", "name") },
 		} {
 			p := tmpFile(t, "config.toml", input)
 			err := edit(p)
@@ -398,7 +398,7 @@ func TestGetTOMLTableAbsent(t *testing.T) {
 					t.Fatal(err)
 				}
 			}
-			if got, err := GetTOMLTable(p, "model_providers.magpie"); got != nil || err != nil {
+			if got, err := GetTOMLTable(p, "model_providers.magpie-friday"); got != nil || err != nil {
 				t.Fatalf("expected an absent table without error, got %v, %v", got, err)
 			}
 		})
@@ -651,34 +651,34 @@ func TestSetTOMLTables(t *testing.T) {
 
 func TestSetTOMLTablesUsesParsedBlocks(t *testing.T) {
 	const before = `note = """
-[model."magpie/top-fake"]
+[model."magpie-friday/top-fake"]
 """
 
 [user]
 note = '''
-[model."magpie/body-fake"]
+[model."magpie-friday/body-fake"]
 '''
 matrix = [
 [[1, 2], [3, 4]]
 ]
 
 `
-	const old = `[model."magpie/old"]
+	const old = `[model."magpie-friday/old"]
 note = '''
 [user.fake]
 '''
 
-[model."magpie/old".sub]
+[model."magpie-friday/old".sub]
 value = "old"
 
-[[model."magpie/array"]]
+[[model."magpie-friday/array"]]
 value = "owned array"
 
 `
 	const after = `  [[skills.config]] # keep this array table
 path = "/skill"
 note = '''
-[model."magpie/another-fake"]
+[model."magpie-friday/another-fake"]
 '''
 
 [last]
@@ -690,13 +690,13 @@ enabled = true
 		tables []Table
 		want   string
 	}{
-		{"replace", before + old + after, []Table{{Name: `model."magpie/new"`, KVs: []KV{{Path: "model", Value: "new"}}}}, before + after + "\n[model.\"magpie/new\"]\nmodel = \"new\"\n"},
+		{"replace", before + old + after, []Table{{Name: `model."magpie-friday/new"`, KVs: []KV{{Path: "model", Value: "new"}}}}, before + after + "\n[model.\"magpie-friday/new\"]\nmodel = \"new\"\n"},
 		{"remove", before + old + after, nil, before + after},
 		{"only fake headers", before + after, nil, before + after},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			p := tmpFile(t, "config.toml", tc.input)
-			if err := SetTOMLTables(p, []string{`model."magpie/`}, tc.tables); err != nil {
+			if err := SetTOMLTables(p, []string{`model."magpie-friday/`}, tc.tables); err != nil {
 				t.Fatal(err)
 			}
 			assertTOMLContent(t, p, tc.want)

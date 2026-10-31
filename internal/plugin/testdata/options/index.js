@@ -1,4 +1,4 @@
-// A plugin declaring switches for its provider (auth.options, magpie's own
+// A plugin declaring switches for its provider (auth.options, magpie-friday's own
 // field, #2038) and reading them as they stand: its key prompt's check
 // answers with what input.magpie.options says, read when it is asked.
 export const Optco = async (input) => ({

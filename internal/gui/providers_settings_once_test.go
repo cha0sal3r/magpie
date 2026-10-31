@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/filememo"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/filememo"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // lml on Discord (Windows, about ten providers): the Providers page took
@@ -35,7 +35,7 @@ func TestProviderListReadsSettingsOnce(t *testing.T) {
 		t.Fatal(err)
 	}
 	// image answers of other providers' models too, as a long-used
-	// magpie's settings hold
+	// magpie-friday's settings hold
 	images := map[string]bool{"relay/model-7": true}
 	for i := range 200 {
 		images[fmt.Sprintf("other-%d/some-model-%d", i%50, i)] = i%2 == 0

@@ -1,4 +1,4 @@
-// #1499 (fjrtdk): Aside keeps one folder per account, and magpie configures
+// #1499 (fjrtdk): Aside keeps one folder per account, and magpie-friday configures
 // the one Aside has active unless an account is picked on the row. The
 // account field shows only with more than one account, says in the page's
 // language which one Aside has active, and a pick is sent as the field.
@@ -36,7 +36,7 @@ for (const engine of ['chromium', 'webkit']) {
           id: 'aside', name: 'Aside', icon: 'aside', wired: true, path: '~/.aside/u/1/settings.json',
           native: { provider: 'connected', runtime: 'applied', fields: {} },
           fields: [
-            { key: 'model', label: 'model', value: 'magpie/group/spacebunny', options: [{ value: 'magpie/group/spacebunny', ref: 'group/spacebunny', label: 'spacebunny' }] },
+            { key: 'model', label: 'model', value: 'magpie-friday/group/spacebunny', options: [{ value: 'magpie-friday/group/spacebunny', ref: 'group/spacebunny', label: 'spacebunny' }] },
             { key: 'account', label: 'account', value: '', options: accounts },
           ],
         };

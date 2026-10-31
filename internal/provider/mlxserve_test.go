@@ -33,7 +33,7 @@ func TestMlxServePreset(t *testing.T) {
 }
 
 // MLX-Serve's /v1/models lists the loaded model and the ones it found on
-// disk, each with its own extra fields (src/server.zig's listing); magpie
+// disk, each with its own extra fields (src/server.zig's listing); magpie-friday
 // reads the ids of both.
 func TestMlxServeModels(t *testing.T) {
 	t.Setenv("XDG_CACHE_HOME", t.TempDir())

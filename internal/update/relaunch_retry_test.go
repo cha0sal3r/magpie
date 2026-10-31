@@ -13,7 +13,7 @@ import (
 )
 
 // fakeOpen puts an `open` first on PATH that fails its first fails tries
-// as LaunchServices does while it still holds the old magpie as running
+// as LaunchServices does while it still holds the old magpie-friday as running
 // ("-600 procNotFound"), then writes its arguments to dir/opened, -n
 // included. Each try is counted in dir/tries.
 func fakeOpen(t *testing.T, fails int) string {
@@ -38,7 +38,7 @@ printf '%s\n' "$*" > "$d/opened"
 	return dir
 }
 
-// gonePid is the pid of a process that has exited, as magpie has when the
+// gonePid is the pid of a process that has exited, as magpie-friday has when the
 // relaunch's open runs.
 func gonePid(t *testing.T) int {
 	t.Helper()
@@ -55,13 +55,13 @@ func tries(dir string) int {
 	return n
 }
 
-// The report: magpie updated itself and exited, and open of the new
+// The report: magpie-friday updated itself and exited, and open of the new
 // bundle 160ms later failed with -600, LaunchServices still sending to
-// the process that had exited. open ran once, so magpie stayed closed
+// the process that had exited. open ran once, so magpie-friday stayed closed
 // until the user started it nine hours later. It is tried again.
 func TestRelaunchOpenTriedAgain(t *testing.T) {
 	dir := fakeOpen(t, 2)
-	bundle := filepath.Join(t.TempDir(), "magpie.app")
+	bundle := filepath.Join(t.TempDir(), "magpie-friday.app")
 	if err := runAfterExit(gonePid(t), relaunchCommand(bundle, false, filepath.Join(t.TempDir(), relaunchLogName))); err != nil {
 		t.Fatal(err)
 	}

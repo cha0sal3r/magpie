@@ -6,8 +6,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // An agent on a routing group whose ref carries Claude Code's [1m] mark is
@@ -73,7 +73,7 @@ func TestProviderInfoShowsAnAgentOnItsGroupsProviders(t *testing.T) {
 	}
 
 	a := &agent.Agent{ID: "claude", Name: "Claude Code", Icon: "claude-color", Bin: "claude"}
-	a.Fields = []agent.Field{{Key: "model", Label: "model", Get: func() string { return "magpie/group/g[1m]" }}}
+	a.Fields = []agent.Field{{Key: "model", Label: "model", Get: func() string { return "magpie-friday/group/g[1m]" }}}
 	uses := agentUses([]*agent.Agent{a}, provider.GroupFinder())
 	if !uses[0].inGroup {
 		t.Fatalf("the agent is on a group: %+v", uses[0])

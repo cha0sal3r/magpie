@@ -13,7 +13,7 @@ import (
 )
 
 // CanRunElevated reports whether RunElevated can ask for an
-// administrator here: Windows' own prompt (UAC). magpie's self-update
+// administrator here: Windows' own prompt (UAC). magpie-friday's self-update
 // doesn't use it (CanElevate is false on Windows); an agent's npm, whose
 // global folder is Node.js's under Program Files, does.
 func CanRunElevated() bool { return true }
@@ -48,15 +48,15 @@ const (
 // RunElevated runs argv as administrator, after Windows asks the user
 // (UAC), in dir with env, and returns what it printed. ErrCanceled is the
 // prompt declined. A process started elevated gets the user's environment
-// afresh, not this one's, so env's values that differ from magpie's own
-// (the proxy magpie's requests take, a PATH put first) and PATH are set
+// afresh, not this one's, so env's values that differ from magpie-friday's own
+// (the proxy magpie-friday's requests take, a PATH put first) and PATH are set
 // by the script it runs; its output comes back through a file, as an
 // elevated process can't write into this one's pipes.
 func RunElevated(ctx context.Context, dir string, env []string, argv ...string) ([]byte, error) {
 	if len(argv) == 0 {
 		return nil, errors.New("nothing to run")
 	}
-	tmp, err := os.MkdirTemp("", "magpie-elevated-*")
+	tmp, err := os.MkdirTemp("", "magpie-friday-elevated-*")
 	if err != nil {
 		return nil, err
 	}

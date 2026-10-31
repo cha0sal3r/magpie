@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-// MinBun is the oldest Bun magpie runs plugins on: plugin.BunVersion,
+// MinBun is the oldest Bun magpie-friday runs plugins on: plugin.BunVersion,
 // which internal/plugin's TestMinBunIsBunVersion keeps it equal to (testenv
 // can't import internal/plugin, whose own tests use it).
 const MinBun = "1.4.2"
@@ -30,9 +30,9 @@ var bunsRun sync.Map
 // which can take tens of seconds on a busy machine: that check must not eat
 // the minute a test gives its plugin calls (ggbdpq, #1306).
 //
-// A bun older than MinBun skips the test too, saying so: magpie never runs
+// A bun older than MinBun skips the test too, saying so: magpie-friday never runs
 // plugins on one (it downloads MinBun or newer), and an older one fails
-// these tests for its own differences, not magpie's. Bun 1.3 names the
+// these tests for its own differences, not magpie-friday's. Bun 1.3 names the
 // default port in a proxy's request line (GET http://models.invalid:80/list)
 // and its node:http2 answers status 0, which failed the plugin proxy tests
 // on a developer's machine (#1600).
@@ -49,7 +49,7 @@ func Bun(t testing.TB) string {
 		run.version = strings.TrimSpace(string(out))
 	})
 	if older(run.version, MinBun) {
-		t.Skipf("bun %s on PATH (%s) is older than %s, the oldest magpie runs plugins on; install %s or newer to run this test", run.version, bun, MinBun, MinBun)
+		t.Skipf("bun %s on PATH (%s) is older than %s, the oldest magpie-friday runs plugins on; install %s or newer to run this test", run.version, bun, MinBun, MinBun)
 	}
 	return bun
 }

@@ -7,7 +7,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // The Cline plugin's provider has ClinePass's Upstream tick too (ARNO on
@@ -58,7 +58,7 @@ func TestClinePluginPinsDeepSeekAndGLM(t *testing.T) {
 			{"/v1/chat/completions", `{"model":"` + pid + `/fake-1","messages":[{"role":"user","content":"hi"}]}`},
 			{"/v1/chat/completions", `{"model":"` + pid + `/glm-5.3-flash","messages":[{"role":"user","content":"hi"}]}`},
 		} {
-			// each ask is one request, unless magpie tried it again: then
+			// each ask is one request, unless magpie-friday tried it again: then
 			// it says why, and a try the vendor answered is never sent twice
 			rt := postProto(t, New(), req.path, req.body)
 			tries += len(rt.Tries)
@@ -108,14 +108,14 @@ func TestClinePluginPinsDeepSeekAndGLM(t *testing.T) {
 	}
 	// ClinePass's own DeepSeek models the plugin pins itself, with the
 	// has filter that holds them on DeepSeek and a way back (0.1.11), and
-	// it keeps a body's own providerOptions: magpie's only alone would
+	// it keeps a body's own providerOptions: magpie-friday's only alone would
 	// take the plugin's place, so the tick leaves them to it
 	for _, m := range []string{"cline-pass/deepseek-v4-pro", "cline-pass/deepseek-v4.1-flash", "cline-pass/deepseek-v4.1-flash-1017"} {
 		if up, _ := p.ClinePin(m); up != "" {
-			t.Errorf("%s: magpie pinned it to %q ahead of the plugin", m, up)
+			t.Errorf("%s: magpie-friday pinned it to %q ahead of the plugin", m, up)
 		}
 		if has := p.ClinePassHas(m, true); has != nil {
-			t.Errorf("%s: magpie sent has %v ahead of the plugin", m, has)
+			t.Errorf("%s: magpie-friday sent has %v ahead of the plugin", m, has)
 		}
 	}
 	if up, _ := p.ClinePin("cline-pass/glm-5.3"); up != "zai" {

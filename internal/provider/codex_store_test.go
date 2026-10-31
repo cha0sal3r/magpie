@@ -115,7 +115,7 @@ func (k *fakeKeychain) item(account string) []byte {
 
 // codexInKeychain moves signIn's auth.json into a fake keychain item, as
 // Codex 0.162 does with cli_auth_credentials_store = store: the item on
-// one line, with a field magpie doesn't know, and auth.json gone.
+// one line, with a field magpie-friday doesn't know, and auth.json gone.
 func codexInKeychain(t *testing.T, home, store string) (*fakeKeychain, string) {
 	t.Helper()
 	dir := filepath.Join(home, ".codex")
@@ -295,7 +295,7 @@ func TestCodexKeychainSwitch(t *testing.T) {
 }
 
 // Codex's encrypted auth storage (features.secret_auth_storage) and a
-// system keychain magpie doesn't read are neither read nor written; one
+// system keychain magpie-friday doesn't read are neither read nor written; one
 // whose config.toml doesn't parse is read as auth.json, as before, and
 // nothing is saved over it.
 func TestCodexStoreNotReadIsLeftAlone(t *testing.T) {
@@ -427,7 +427,7 @@ func ageCodexKeychain(account string, ago time.Duration) {
 // The secret is read with room for the user at macOS' prompts (#2367,
 // Dony2050: an Allow at 11–16s failed under one 10s bound), and nobody
 // waits on the user meanwhile: no reader holds the lock its neighbours
-// need, one that comes while the prompt is up is told magpie is waiting,
+// need, one that comes while the prompt is up is told magpie-friday is waiting,
 // one read is in flight however many ask, and its answer is kept.
 func TestCodexKeychainPromptWaitedFor(t *testing.T) {
 	home := signIn(t)
@@ -556,7 +556,7 @@ func TestCodexKeychainSignOut(t *testing.T) {
 
 // A read of Codex's sign-in that fails, or finds auth.json caught while
 // Codex rewrites it in place (empty, cut off), is unknown; none there
-// (codex logout, keyring with no item) and a store magpie doesn't read
+// (codex logout, keyring with no item) and a store magpie-friday doesn't read
 // are known.
 func TestCodexSignInKnown(t *testing.T) {
 	home := signIn(t)

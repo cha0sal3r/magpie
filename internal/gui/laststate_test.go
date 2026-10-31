@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // forgetLastState is a new run: nothing kept in memory, the file read
@@ -70,7 +70,7 @@ func TestLastKnownState(t *testing.T) {
 		t.Error("the kept state holds the GitHub token")
 	}
 
-	// the user changes a setting, and magpie starts again
+	// the user changes a setting, and magpie-friday starts again
 	s = settings.Load()
 	s.Theme = "dark"
 	if err := settings.Save(s); err != nil {

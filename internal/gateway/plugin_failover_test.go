@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // A plugin's provider with several accounts fails over as a built-in's
@@ -88,7 +88,7 @@ func TestPluginFailover(t *testing.T) {
 	if _, err := plugin.Providers(ctx); err != nil {
 		t.Fatal(err)
 	}
-	// three accounts signed in in magpie, as a built-in's are added
+	// three accounts signed in in magpie-friday, as a built-in's are added
 	for _, team := range []string{"full", "a", "b"} {
 		st, err := provider.StartPluginSignIn("fakeco", 1, map[string]string{"where": "work", "team": team})
 		if err != nil {

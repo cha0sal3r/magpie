@@ -10,7 +10,7 @@ import (
 )
 
 // TestDockFlapFrames writes the Dock tile's frames, cut from the icon of
-// MAGPIE_DOCK_APP (an installed magpie.app), into MAGPIE_DOCK_FRAMES, to
+// MAGPIE_DOCK_APP (an installed magpie-friday.app), into MAGPIE_DOCK_FRAMES, to
 // look at by eye.
 func TestDockFlapFrames(t *testing.T) {
 	app, dir := os.Getenv("MAGPIE_DOCK_APP"), os.Getenv("MAGPIE_DOCK_FRAMES")

@@ -57,7 +57,7 @@ func noteEffortRefused(c candidate, e string, takes []string) {
 }
 
 // takesEffort says whether c's account may be asked for reasoning e on its
-// model, as far as magpie knows: not when it turned e away within the hour,
+// model, as far as magpie-friday knows: not when it turned e away within the hour,
 // or its own model list gives the model levels without e.
 func takesEffort(c candidate, e string) bool {
 	if e == "" || c.p.Account == nil {

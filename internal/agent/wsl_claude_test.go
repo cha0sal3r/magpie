@@ -10,15 +10,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // claudeDistroHome is a distro's / in a temp dir with a user whose
-// ~/.claude holds settings (none when ""); magpie's own HOME is another
+// ~/.claude holds settings (none when ""); magpie-friday's own HOME is another
 // temp dir, whose ~/.claude nothing may touch.
 func claudeDistroHome(t *testing.T, settings string) (root, home string) {
 	t.Helper()
@@ -120,7 +120,7 @@ func TestWSLClaudeDiscovered(t *testing.T) {
 	noOwnClaude(t)
 }
 
-// Picking one of magpie's models writes Claude Code's settings.json in
+// Picking one of magpie-friday's models writes Claude Code's settings.json in
 // the distro's home, the same as this machine's Claude Code gets but for
 // the gateway as the distro reaches it: Windows' address under NAT,
 // 127.0.0.1 when mirrored. Its check passes, and fails on a base URL the
@@ -221,7 +221,7 @@ func TestWSLClaudePick(t *testing.T) {
 }
 
 // A stopped distro's Claude Code is never asked anything nor opened: it
-// is listed as magpie last saw it, its options come from magpie alone
+// is listed as magpie-friday last saw it, its options come from magpie-friday alone
 // (not the base URL its file names, nor whether it is routed), and a pick
 // starts the distro, then writes its files.
 func TestWSLClaudeStopped(t *testing.T) {
@@ -253,7 +253,7 @@ func TestWSLClaudeStopped(t *testing.T) {
 	if v := a.Values(); v["model"] != "relay/glm-4.6" || v["effort"] != "low" {
 		t.Fatalf("values %v", v)
 	}
-	// magpie claude@wsl:Stopped opus is its model, as on a running distro,
+	// magpie-friday claude@wsl:Stopped opus is its model, as on a running distro,
 	// not its opus tier shown
 	if !slices.Equal(a.ModelAliases, claudeAliases) {
 		t.Fatalf("model aliases %v", a.ModelAliases)
@@ -267,7 +267,7 @@ func TestWSLClaudeStopped(t *testing.T) {
 			t.Fatalf("the stopped distro's file was read: %+v", o)
 		}
 	}
-	// its tiers offer magpie's models while the model last seen is one
+	// its tiers offer magpie-friday's models while the model last seen is one
 	if len(a.Field("haiku").Options(a.Values())) == 0 || len(a.Field("effort").Options(a.Values())) == 0 {
 		t.Fatal("tier / effort options")
 	}
@@ -299,7 +299,7 @@ func TestWSLClaudeStopped(t *testing.T) {
 	noOwnClaude(t)
 }
 
-// A Claude Code in a running distro, routed through magpie, has its tiers
+// A Claude Code in a running distro, routed through magpie-friday, has its tiers
 // stand in for a Claude model it names, as this machine's has; one whose
 // settings.json isn't routed has none.
 func TestWSLClaudeStandIn(t *testing.T) {
@@ -327,10 +327,10 @@ func TestWSLClaudeStandIn(t *testing.T) {
 	noOwnClaude(t)
 }
 
-// The models magpie serves on the Claude account this machine's Claude
+// The models magpie-friday serves on the Claude account this machine's Claude
 // Code is signed in to fold into one row of its picker (#496), the same
 // models a second time. A distro's Claude Code has a sign-in of its own,
-// which magpie doesn't read, so its picker leaves them as they are: it
+// which magpie-friday doesn't read, so its picker leaves them as they are: it
 // folded them all the same while the distro ran, only a stopped one's
 // options leaving them out.
 func TestWSLClaudeNotFolded(t *testing.T) {

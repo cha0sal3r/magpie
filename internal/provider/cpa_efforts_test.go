@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/codexcat"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/codexcat"
 )
 
 // nianshou5 on Discord: a CLIProxyAPI (CPA) the user hosts, added as a
@@ -21,7 +21,7 @@ import (
 // serve it at (gemini-3.8-flash-high, claude-opus-5-5-high,
 // grok-3-mini-fast), which models.dev lists by no such name. The model's
 // own levels are borrowed, as for any custom provider's model, and reach
-// every list Codex and the ChatGPT app are handed; one whose base magpie
+// every list Codex and the ChatGPT app are handed; one whose base magpie-friday
 // doesn't know still takes none, and a vendor's own word stays its own.
 func TestCPAVariantModelsBorrowLevels(t *testing.T) {
 	home := t.TempDir()

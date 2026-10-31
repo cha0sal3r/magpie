@@ -39,7 +39,7 @@ function server(lang, st) {
     }
     if (url.pathname === "/api/library") {
       return json({
-        dir: "/h/.magpie/library", backups: "/h/.magpie/backups", home: "/h",
+        dir: "/h/.magpie-friday/library", backups: "/h/.magpie-friday/backups", home: "/h",
         agents: [{ id: "codex", name: "Codex", icon: "", skills: "/h/.codex/skills", mcp: "/h/.codex/mcp.json" }],
         instructions: { agents: [], sets: [] }, foundServers: [], projects: [], foundSkills: [], skills: [],
         servers: [{ name: "cloudflare-api", transport: "http", url: "https://mcp.cloudflare.com/mcp", agents: ["codex"], signIn: { signedIn: false } }],
@@ -56,11 +56,11 @@ function server(lang, st) {
 }
 
 const W = {
-  en: { anyway: "Sign in anyway", again: "Open again", signIn: "Sign in", down: "magpie couldn't open your browser: " + DOWN + ". Open the sign-in link below in a browser yourself." },
-  zh: { anyway: "仍然登录", again: "重新打开", signIn: "登录", down: "magpie 没能打开浏览器：" + DOWN + "。请自己在浏览器中打开下面的登录链接。" },
-  "zh-TW": { anyway: "仍然登入", again: "重新開啟", signIn: "登入", down: "magpie 無法開啟瀏覽器：" + DOWN + "。請自行在瀏覽器中開啟下方的登入連結。" },
-  ja: { anyway: "それでもサインイン", again: "もう一度開く", signIn: "サインイン", down: "magpie はブラウザを開けませんでした：" + DOWN + "。下のサインインリンクをご自身でブラウザで開いてください。" },
-  de: { anyway: "Trotzdem anmelden", again: "Erneut öffnen", signIn: "Anmelden", down: "magpie konnte den Browser nicht öffnen: " + DOWN + ". Öffne den Anmeldelink unten selbst in einem Browser." },
+  en: { anyway: "Sign in anyway", again: "Open again", signIn: "Sign in", down: "magpie-friday couldn't open your browser: " + DOWN + ". Open the sign-in link below in a browser yourself." },
+  zh: { anyway: "仍然登录", again: "重新打开", signIn: "登录", down: "magpie-friday 没能打开浏览器：" + DOWN + "。请自己在浏览器中打开下面的登录链接。" },
+  "zh-TW": { anyway: "仍然登入", again: "重新開啟", signIn: "登入", down: "magpie-friday 無法開啟瀏覽器：" + DOWN + "。請自行在瀏覽器中開啟下方的登入連結。" },
+  ja: { anyway: "それでもサインイン", again: "もう一度開く", signIn: "サインイン", down: "magpie-friday はブラウザを開けませんでした：" + DOWN + "。下のサインインリンクをご自身でブラウザで開いてください。" },
+  de: { anyway: "Trotzdem anmelden", again: "Erneut öffnen", signIn: "Anmelden", down: "magpie-friday konnte den Browser nicht öffnen: " + DOWN + ". Öffne den Anmeldelink unten selbst in einem Browser." },
 };
 
 // nothing reaches past the window's right edge

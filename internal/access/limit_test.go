@@ -139,8 +139,8 @@ func TestLimitSetAndReset(t *testing.T) {
 	clock := time.Date(2026, 10, 10, 8, 0, 0, 0, time.UTC)
 	Now = func() time.Time { return clock }
 	t.Cleanup(func() { Now = time.Now })
-	// a key as an older magpie kept it
-	old := `[{"id":"k1","name":"Old","secret":"sk-magpie-key-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","limit":{"period":"week","tokens":5000}}]`
+	// a key as an older magpie-friday kept it
+	old := `[{"id":"k1","name":"Old","secret":"sk-magpie-friday-key-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","limit":{"period":"week","tokens":5000}}]`
 	if err := os.MkdirAll(strings.TrimSuffix(Path(), "caller-keys.json"), 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -197,7 +197,7 @@ func TestLimitSetAndReset(t *testing.T) {
 		t.Fatalf("reset: %+v", l)
 	}
 	// the store reloads as a restart would
-	if who, ok := Authenticate("sk-magpie-key-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"); !ok || !who.Limit.Since.Equal(clock) {
+	if who, ok := Authenticate("sk-magpie-friday-key-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"); !ok || !who.Limit.Since.Equal(clock) {
 		t.Fatalf("after a reload: %+v", who.Limit)
 	}
 	set(&Limit{Period: "month", Tokens: 10})
@@ -289,7 +289,7 @@ func TestLimitHoursSetAndReset(t *testing.T) {
 	Now = func() time.Time { return clock }
 	t.Cleanup(func() { Now = time.Now })
 	k := Key{ID: "k2"}
-	keys := `[{"id":"k2","name":"Family","secret":"sk-magpie-key-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}]`
+	keys := `[{"id":"k2","name":"Family","secret":"sk-magpie-friday-key-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}]`
 	if err := os.MkdirAll(strings.TrimSuffix(Path(), "caller-keys.json"), 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -346,7 +346,7 @@ func TestLimitHoursSetAndReset(t *testing.T) {
 }
 
 // A key holds several limits at once (#2227): the first stays where an
-// older magpie reads it, the rest go beside it, and each is added,
+// older magpie-friday reads it, the rest go beside it, and each is added,
 // changed, removed and reset on its own.
 func TestSeveralLimits(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
@@ -385,7 +385,7 @@ func TestSeveralLimits(t *testing.T) {
 	if len(ls) != 3 || ls[0].Hours != 5 || ls[1].Period != "week" || ls[2].Days != 30 || !ls[2].Since.Equal(clock) {
 		t.Fatalf("three limits kept as %+v %+v %+v", ls[0], ls[1], ls[2])
 	}
-	// the first is where an older magpie reads a key's limit
+	// the first is where an older magpie-friday reads a key's limit
 	b, _ := os.ReadFile(Path())
 	var saved []map[string]json.RawMessage
 	if err := json.Unmarshal(b, &saved); err != nil {

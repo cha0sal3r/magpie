@@ -16,7 +16,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/source"
+	"github.com/cha0sal3r/magpie-friday/internal/source"
 )
 
 // ---- fetching only a repository's skills ----------------------------------
@@ -249,7 +249,7 @@ func fetchBlob(c *http.Client, src Source, path, sha, dst string, exec bool) err
 	token := false
 	get := func(u, accept string) (*http.Response, error) {
 		req, _ := http.NewRequest("GET", u, nil)
-		req.Header.Set("User-Agent", "magpie")
+		req.Header.Set("User-Agent", "magpie-friday")
 		if accept != "" {
 			req.Header.Set("Accept", accept)
 		}

@@ -10,13 +10,13 @@ package gateway
 //     array for several), each a URL or a data:image/<fmt>;base64 URL; there
 //     is no edits endpoint and no multipart;
 //   - there is no n: a request draws one image (or a group the model sizes
-//     itself, which magpie doesn't ask for);
+//     itself, which magpie-friday doesn't ask for);
 //   - size is a tier ("1K", "2K", "4K"…) or WIDTHxHEIGHT, never a ratio:
 //     the doc says to give a ratio in the prompt, and lists the WxH each
 //     ratio maps to at 2K;
 //   - there is no quality and no mask.
 //
-// So magpie draws there as the doc says: watermark false, the images as
+// So magpie-friday draws there as the doc says: watermark false, the images as
 // JSON, one request per image asked for, and a ratio sent as the doc's 2K
 // size for it, or turned away with what to do instead (JL on Discord).
 
@@ -28,7 +28,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // isArk is a provider at Volcengine Ark (ark.<region>.volces.com): the
@@ -63,7 +63,7 @@ func arkSize(size string) (string, error) {
 		if s, ok := arkRatioSizes[strings.ReplaceAll(size, " ", "")]; ok {
 			return s, nil
 		}
-		return "", fmt.Errorf("Volcengine's images API takes no aspect ratio as size, and %q isn't one magpie can turn into a size (it can: 1:1, 4:3, 3:4, 16:9, 9:16, 3:2, 2:3, 21:9): describe the ratio in the prompt and leave size out, or give WIDTHxHEIGHT (e.g. 2048x2048)", size)
+		return "", fmt.Errorf("Volcengine's images API takes no aspect ratio as size, and %q isn't one magpie-friday can turn into a size (it can: 1:1, 4:3, 3:4, 16:9, 9:16, 3:2, 2:3, 21:9): describe the ratio in the prompt and leave size out, or give WIDTHxHEIGHT (e.g. 2048x2048)", size)
 	}
 	return size, nil
 }

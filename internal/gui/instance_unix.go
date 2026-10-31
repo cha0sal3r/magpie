@@ -13,16 +13,16 @@ import (
 	"time"
 )
 
-// heldInstance is the open lock file of the magpie that holds its
+// heldInstance is the open lock file of the magpie-friday that holds its
 // instance; it stays open, so locked, until this process ends.
 var heldInstance *os.File
 
 // heldPath is the lock heldInstance holds.
 var heldPath string
 
-// instanceLock is where the magpie running exe on the config in dir holds
-// its lock. A copy elsewhere (the owner's magpie-dev) has its own, but
-// every installed magpie — a magpie.app wherever it is, or Homebrew's,
+// instanceLock is where the magpie-friday running exe on the config in dir holds
+// its lock. A copy elsewhere (the owner's magpie-friday-dev) has its own, but
+// every installed magpie-friday — a magpie-friday.app wherever it is, or Homebrew's,
 // whose path has its version in it — shares one: the Mac reopening the
 // copy the user ran after a shutdown while Open at login starts the one
 // it was turned on for, or a copy run translocated from Downloads, put
@@ -38,16 +38,16 @@ func instanceLock(dir, exe string) string {
 	return filepath.Join(dir, "app-"+hex.EncodeToString(sum[:6])+".lock")
 }
 
-// installedCopy is whether exe is an installed magpie: the program of an
+// installedCopy is whether exe is an installed magpie-friday: the program of an
 // app bundle, or Homebrew's.
 func installedCopy(exe string) bool {
 	exe = filepath.ToSlash(exe)
-	return strings.Contains(exe, ".app/Contents/MacOS/") || strings.Contains(exe, "/Cellar/magpie/")
+	return strings.Contains(exe, ".app/Contents/MacOS/") || strings.Contains(exe, "/Cellar/magpie-friday/")
 }
 
 // holdInstance takes the lock at path for this process, or reports that
-// another magpie holds it. It is a flock, which the system lets go when
-// its holder ends however it ends, so a Mac shut down with magpie running
+// another magpie-friday holds it. It is a flock, which the system lets go when
+// its holder ends however it ends, so a Mac shut down with magpie-friday running
 // leaves nothing behind that looks held (Crispin on Discord).
 func holdInstance(path string) (bool, error) {
 	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {

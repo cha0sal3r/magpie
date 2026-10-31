@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Ollama's own chat routes, POST /api/chat and POST /api/generate, for a
@@ -333,7 +333,7 @@ func (o *ollamaWriter) WriteHeader(code int) {
 	}
 	o.status = code
 	o.sse = strings.HasPrefix(o.header.Get("Content-Type"), "text/event-stream")
-	// what says why it waits or failed (Retry-After, magpie's own marks)
+	// what says why it waits or failed (Retry-After, magpie-friday's own marks)
 	// reaches the client as it would on /v1
 	for k, vs := range o.header {
 		if k == "Retry-After" || strings.HasPrefix(k, "X-") {

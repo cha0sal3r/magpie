@@ -48,7 +48,7 @@ type compactAsk struct {
 var compactAsks = []compactAsk{
 	// Claude Code's /compact and auto-compact
 	{ask: "Your task is to create a detailed summary of the conversation so far"},
-	// Codex (and magpie's own for a Codex compaction_trigger)
+	// Codex (and magpie-friday's own for a Codex compaction_trigger)
 	{ask: "You are performing a CONTEXT CHECKPOINT COMPACTION."},
 	// Kimi Code (prompts/compact.md, a part of its own after the conversation)
 	{ask: "You are now given a task to compact this conversation context"},

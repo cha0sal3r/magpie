@@ -13,9 +13,9 @@ import (
 
 	"github.com/tidwall/jsonc"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // Pi 0.99 (2026-09-29) has MCP of its own, a built-in extension, builtin:mcp
@@ -33,7 +33,7 @@ import (
 //
 // Before 0.99 Pi had none; two extensions give it one, each with its own
 // file (the same entries: command/args/env, url/headers, and the
-// transport each names differently, which magpie writes both of):
+// transport each names differently, which magpie-friday writes both of):
 //
 //   - pi-mcp-adapter 3 (3.0.0, 2026-09-26; 3.1.0 now) reads
 //     <agent dir>/mcp-adapter.json after ~/.config/mcp/mcp.json and
@@ -237,7 +237,7 @@ func piDetect(d string) piPlugins {
 //     nothing loaded only Pi's own MCP reads servers, and every Pi since
 //     0.99 (1.1.0 now) reads mcp.json (extensions/mcp/config.js,
 //     loadMcpConfig); a Pi before it has no MCP to read either file. The
-//     servers mcp-adapter.json has, which no one reads now (magpie's for
+//     servers mcp-adapter.json has, which no one reads now (magpie-friday's for
 //     pi-mcp-adapter 3, or the user's), are moved into it, the file backed
 //     up; one mcp.json has differently, and the adapter's own settings,
 //     stay there, still found. An mcp.json written for pi-mcp-adapter
@@ -274,7 +274,7 @@ func piMCP(h, d, version string) (*mcpFile, string) {
 // saying the Pi may be 0.99 or later:
 //   - pi-mcp-adapter 3, or one whose version isn't known (a fresh install
 //     is 5), or mcp-adapter.json already there: mcp-adapter.json. The
-//     servers magpie or the user put in mcp.json are moved over, as
+//     servers magpie-friday or the user put in mcp.json are moved over, as
 //     adapter 3 and 4 ask, unless pi-mcp-extension reads that file, no
 //     adapter is loaded (mcp.json may then be Pi 0.99's own), or the
 //     adapter is 5 (or not known) on a Pi that may be 0.99: adapter 5

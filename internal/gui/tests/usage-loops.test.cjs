@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// Usage says, per model, how many of its replies magpie ended because the
+// Usage says, per model, how many of its replies magpie-friday ended because the
 // model was stuck in a loop (#1858, err_type "reply_loop"): beside "{n}
 // failed" in the Overview's model rows and in the Requests ranking, the
 // ranking's "Other" adding up those it holds. A model with none says

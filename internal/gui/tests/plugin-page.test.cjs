@@ -3,7 +3,7 @@
 // example plugin (testdata/page-plugin) gets a tab in the sidebar's
 // Plugins group and draws in a frame sandboxed to scripts, with the
 // window's theme, its own options and the read it declared. The frame
-// can't reach magpie's API: its policy stops the fetch, and with the
+// can't reach magpie-friday's API: its policy stops the fetch, and with the
 // policy gone the request it would send carries Origin: null, which
 // apiFramed turns away (TestPluginPageNoAPI). A read it didn't declare is
 // refused, and a message from another frame is nothing. A page that
@@ -60,7 +60,7 @@ const PROBE_JS = `(async () => {
   try { out.top = String(parent.document.title); } catch (e) { out.top = "refused"; }
   try { await magpie.read("usage:summary"); out.read = "given"; } catch (e) { out.read = e.message; }
   try { await magpie.read("providers:list"); out.read2 = "given"; } catch (e) { out.read2 = e.message; }
-  // what the page left unstyled is magpie's; what it styled is its own
+  // what the page left unstyled is magpie-friday's; what it styled is its own
   const cs = (q) => getComputedStyle(document.querySelector(q));
   out.look = { bg: cs("html").backgroundColor, fg: cs("body").color, font: cs("body").fontFamily, h1: cs("h1").fontSize, button: cs("#b").borderRadius, own: cs(".own").borderRadius };
   parent.postMessage({ probe: out }, "*");
@@ -122,7 +122,7 @@ function server(lang, seen, plugins) {
 }
 
 const plugins = { bun: true, bunVersion: "1.3.0", plugins: [
-  { spec: "/x/magpie-usage-glance", providers: [], moved: [], inMagpieOnly: true, page: { title: "Usage glance", reads: ["usage:summary", "providers:list"] } },
+  { spec: "/x/magpie-friday-usage-glance", providers: [], moved: [], inMagpieOnly: true, page: { title: "Usage glance", reads: ["usage:summary", "providers:list"] } },
   { spec: "/x/quiet-page", off: true, providers: [], moved: [], inMagpieOnly: true, page: { title: "Quiet", reads: [] } },
 ] };
 
@@ -214,8 +214,8 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
           assert.equal(probe.look.bg, win.bg, `${where}: the window's background`);
           assert.equal(probe.look.fg, win.fg, `${where}: the window's text colour`);
           assert.match(probe.look.font, /apple-system|SF Pro|system-ui/, `${where}: the window's font, not a serif`);
-          assert.equal(probe.look.h1, "20px", `${where}: magpie's heading`);
-          assert.equal(probe.look.button, "6px", `${where}: magpie's button`);
+          assert.equal(probe.look.h1, "20px", `${where}: magpie-friday's heading`);
+          assert.equal(probe.look.button, "6px", `${where}: magpie-friday's button`);
           assert.equal(probe.look.own, "2px", `${where}: the page's own rule wins`);
 
           // with the policy gone, what the frame's fetch would send is what
@@ -317,7 +317,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         const installed = await page.evaluate(() => t("Installed"));
         await page.locator(":is(.lib-tabs .opt, .nav-s):visible", { hasText: installed }).first().click();
         const row = (name) => view.locator(".pm-row").filter({ has: page.locator(".name", { hasText: name }) });
-        const glance = row("magpie-usage-glance");
+        const glance = row("magpie-friday-usage-glance");
         await glance.waitFor();
         const tr = (k, v) => page.evaluate(([k, v]) => t(k, v), [k, v]);
         assert.deepEqual((await glance.locator(".pm-chip.kind").allInnerTexts()).map((x) => x.trim()), [await tr("Page")], where);
@@ -326,7 +326,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         if (lang !== "en") assert.ok(!(await glance.locator(".pm-page").innerText()).includes("Adds a page"), `${where}: translated`);
         // one switched off still says it
         const quiet = row("quiet-page");
-        assert.equal((await quiet.locator(".pm-page").innerText()).trim(), await tr("Adds a page to the sidebar, which reads nothing of magpie's"), where);
+        assert.equal((await quiet.locator(".pm-page").innerText()).trim(), await tr("Adds a page to the sidebar, which reads nothing of magpie-friday's"), where);
         assert.ok(await view.evaluate((v) => v.scrollWidth <= v.clientWidth + 1), `${where}: fits`);
         // nothing drawn with a coloured left border
         const borders = await view.locator(".pm-row *").evaluateAll((els) => els.filter((e) => { const s = getComputedStyle(e); return parseFloat(s.borderLeftWidth) > 0 && s.borderLeftStyle !== "none" && parseFloat(s.borderRightWidth) === 0; }).length);

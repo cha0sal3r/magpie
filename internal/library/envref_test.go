@@ -22,7 +22,7 @@ func TestEnvRefsPerAgent(t *testing.T) {
 		name   string
 		f      mcpFile
 		file   string
-		web    []string // in the entry magpie writes, as JSON
+		web    []string // in the entry magpie-friday writes, as JSON
 		fs     []string
 		absent []string // in neither
 	}{
@@ -208,7 +208,7 @@ func TestEnvRefsLibrary(t *testing.T) {
 // bearer_token_env_var reads as the one written; a variable the user
 // passes on (env_vars, Goose's env_keys) of a server whose library entry
 // has none stays, and isn't rewritten; the user's env_vars tables naming
-// the variables magpie would are kept as they wrote them.
+// the variables magpie-friday would are kept as they wrote them.
 func TestEnvRefsKeepTheUsers(t *testing.T) {
 	codex := &mcpFile{Format: fmtCodex, Path: filepath.Join(t.TempDir(), "config.toml")}
 	if s, _ := codex.decode("x", map[string]any{"url": "u", "http_headers": map[string]any{"Authorization": "Bearer mine"}, "bearer_token_env_var": "T"}); s.Headers["Authorization"] != "Bearer mine" {
@@ -257,7 +257,7 @@ func TestEnvRefsKeepTheUsers(t *testing.T) {
 	}
 }
 
-// The health check reaches a server with magpie's own value of the
+// The health check reaches a server with magpie-friday's own value of the
 // variable, and says which is unset rather than sending ${NAME}.
 func TestEnvRefsExpand(t *testing.T) {
 	t.Setenv("MAGPIE_T_SET", "v1")

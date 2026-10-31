@@ -27,7 +27,7 @@ func dshCalls(t *testing.T) []Call {
 
 // The Sessions page has read dsh's session files all along; the usage ledger
 // had not, so dsh's tokens never reached the Usage page — which showed only
-// what magpie's own gateway served. Every assistant/message is one call, with
+// what magpie-friday's own gateway served. Every assistant/message is one call, with
 // the model and the usage of the request that answered with it.
 func TestDshCalls(t *testing.T) {
 	setupAgents(t)
@@ -42,7 +42,7 @@ func TestDshCalls(t *testing.T) {
 	if len(cs) != 6 {
 		t.Fatalf("want 6 dsh calls, got %d: %+v", len(cs), cs)
 	}
-	// a call dsh sent through magpie's own gateway is the gateway's record
+	// a call dsh sent through magpie-friday's own gateway is the gateway's record
 	// to keep, as OpenCode's and ZCode's are: dsh sends the gateway no
 	// session header, so the two records cannot be paired afterwards (the
 	// token counts differ call to call) and the call would be counted
@@ -54,8 +54,8 @@ func TestDshCalls(t *testing.T) {
 		t.Fatalf("dsh-gw's own call: %+v", gw)
 	}
 	for _, c := range cs {
-		if c.Upstream == "magpie" || c.Upstream == "dial" {
-			t.Fatalf("a call through magpie's gateway was counted here: %+v", c)
+		if c.Upstream == "magpie-friday" || c.Upstream == "dial" {
+			t.Fatalf("a call through magpie-friday's gateway was counted here: %+v", c)
 		}
 		if c.Tokens == (Tokens{700, 90, 5000, 0, 0}) {
 			t.Fatalf("the gateway's own call was counted here: %+v", c)
@@ -124,13 +124,13 @@ func TestDshCallsKept(t *testing.T) {
 	}
 }
 
-// magpie writes a route per protocol into dsh (agent.dshKinds): a call on
+// magpie-friday writes a route per protocol into dsh (agent.dshKinds): a call on
 // any of them went through the gateway and is the gateway's to count, while
 // a route of the user's named like one is not taken for it.
 func TestDshGatewayProviderTakesEveryRouteOfMagpies(t *testing.T) {
 	for p, want := range map[string]bool{
-		"magpie": true, "magpie-responses": true, "magpie-anthropic": true, "dial": true,
-		"magpie-mine": false, "jieyue": false, "": false,
+		"magpie-friday": true, "magpie-friday-responses": true, "magpie-friday-anthropic": true, "dial": true,
+		"magpie-friday-mine": false, "jieyue": false, "": false,
 	} {
 		if got := dshGatewayProvider(dshSource{Provider: p}); got != want {
 			t.Errorf("%q: %v, want %v", p, got, want)

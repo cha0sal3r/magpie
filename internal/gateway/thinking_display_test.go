@@ -10,7 +10,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // displayVendor answers as Claude Opus 4.7 and later, Sonnet 5, Haiku 5.5,
@@ -68,7 +68,7 @@ func (v *displayVendor) last() map[string]any {
 
 // A Chat or Responses client that asks a Claude to reason sees its
 // reasoning, as it does from OpenAI's (asked summary "auto") and from the
-// Claude subscription (--thinking-display summarized): the request magpie
+// Claude subscription (--thinking-display summarized): the request magpie-friday
 // builds asks thinking.display "summarized", which Claude Opus 4.7 and
 // later otherwise leave out.
 func TestTranslatedClaudeReasoningIsShown(t *testing.T) {
@@ -153,7 +153,7 @@ func TestTranslatedDisplayLeftOutWhereRefused(t *testing.T) {
 }
 
 // A budget turned into adaptive thinking for Opus 4.7 and later (an
-// Anthropic client's own, or one magpie built for a model it knows by
+// Anthropic client's own, or one magpie-friday built for a model it knows by
 // another name) still shows the thinking, as enabled thinking does by
 // default; a provider that refuses display is asked again without it and
 // from then on sent none (#1485).
@@ -166,7 +166,7 @@ func TestBudgetTurnedAdaptiveIsShown(t *testing.T) {
 		Models: []string{"claude-opus-5-5", "opus"}}); err != nil {
 		t.Fatal(err)
 	}
-	// magpie's "opus" is the vendor's claude-opus-4-7
+	// magpie-friday's "opus" is the vendor's claude-opus-4-7
 	if err := provider.SetUpstreamName("anth/opus", "claude-opus-4-7"); err != nil {
 		t.Fatal(err)
 	}

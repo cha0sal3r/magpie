@@ -1,13 +1,13 @@
 package library
 
-// magpie's own image server for an agent in WSL (#900). The library names
+// magpie-friday's own image server for an agent in WSL (#900). The library names
 // it by this machine's binary, a Windows program, which the agent starts
 // through WSL's interop all the same: by the binary's path inside the
-// distro (/mnt/d/…/magpie-windows-amd64.exe), with --wsl telling it the
+// distro (/mnt/d/…/magpie-friday-windows-amd64.exe), with --wsl telling it the
 // distro, so the paths the agent gives (its roots, a reference image, where
 // to save) are opened through \\wsl.localhost and the paths it answers are
 // the distro's. The Windows program reaches the gateway at 127.0.0.1 and
-// reads this machine's settings, as the app does; a Linux magpie in the
+// reads this machine's settings, as the app does; a Linux magpie-friday in the
 // distro would need neither the gateway's address from inside WSL nor to be
 // the same version, and isn't looked for. A user's own Windows program is
 // still refused: its paths and variables wouldn't cross over.
@@ -20,15 +20,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/wslrun"
+	"github.com/cha0sal3r/magpie-friday/internal/wslrun"
 )
 
-// isSelf is whether s is magpie's own image server, whatever its binary.
+// isSelf is whether s is magpie-friday's own image server, whatever its binary.
 func isSelf(s *Server) bool {
 	return !s.Remote() && len(s.Args) >= 2 && s.Args[0] == "mcp" && s.Args[1] == "image"
 }
 
-// side is s as the file's agent is given it: magpie's own server, for an
+// side is s as the file's agent is given it: magpie-friday's own server, for an
 // agent in WSL, by the binary's path there; an error says why the agent
 // can't start s.
 func (f *mcpFile) side(s *Server) (*Server, error) {
@@ -65,9 +65,9 @@ func (f *mcpFile) side(s *Server) (*Server, error) {
 	return &c, nil
 }
 
-// errNoInterop is why a distro whose interop is off can't start magpie's
+// errNoInterop is why a distro whose interop is off can't start magpie-friday's
 // own server.
-var errNoInterop = errors.New("WSL's interop is off in this distro, so an agent there can't start magpie (a Windows program): turn it on in /etc/wsl.conf ([interop] enabled=true) and restart WSL")
+var errNoInterop = errors.New("WSL's interop is off in this distro, so an agent there can't start magpie-friday (a Windows program): turn it on in /etc/wsl.conf ([interop] enabled=true) and restart WSL")
 
 // wslProbe runs script in the distro and gives what it printed; a var for
 // tests. A distro that isn't running isn't asked, which would start it.
@@ -132,7 +132,7 @@ func wslExe(distro, win string) (exe, mount string, err error) {
 }
 
 // linuxHome is a WSL agent's $HOME as the distro spells it, from where
-// magpie opens it: \\wsl.localhost\Ubuntu\home\me is /home/me.
+// magpie-friday opens it: \\wsl.localhost\Ubuntu\home\me is /home/me.
 func linuxHome(local string) string {
 	for _, pre := range []string{`\\wsl.localhost\`, `\\wsl$\`} {
 		if len(local) > len(pre) && strings.EqualFold(local[:len(pre)], pre) {

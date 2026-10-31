@@ -9,12 +9,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/update"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/update"
 )
 
 // Settings › About › Download source (#893): the mirror is set and taken
-// away on its own, the same setting `magpie update mirror` writes, a full
+// away on its own, the same setting `magpie-friday update mirror` writes, a full
 // https:// address only, and the Settings page's save keeps it. A download
 // that fails through it says so (the page's mirror), which a check clears.
 func TestUpdateMirrorSetting(t *testing.T) {
@@ -55,7 +55,7 @@ func TestUpdateMirrorSetting(t *testing.T) {
 	defer mirror.Close()
 	feed := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(update.Release{Version: "0.1.11", Assets: map[string]update.Asset{
-			update.BinaryAsset(): {URL: "https://github.com/yetone/magpie-releases/releases/download/v0.1.11/x", SHA256: strings.Repeat("0", 64)},
+			update.BinaryAsset(): {URL: "https://github.com/cha0sal3r/magpie-friday-releases/releases/download/v0.1.11/x", SHA256: strings.Repeat("0", 64)},
 		}})
 	}))
 	defer feed.Close()

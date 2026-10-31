@@ -16,7 +16,7 @@ import (
 // compaction at every step of a turn whose history has changed since the
 // last one it started, and drops one that fails without a word. So a
 // conversation over the line whose summaries never come — Antigravity
-// cutting each reply short, then its 429s — asked magpie for a summary
+// cutting each reply short, then its 429s — asked magpie-friday for a summary
 // at every step: 1169 compactions in 6 hours, each paying for the whole
 // conversation as input, none of them installed, the conversation never
 // shorter. A foreground one is asked again twice more by Codex itself on
@@ -74,7 +74,7 @@ func (f *compactFails) held(key, model string) (string, bool) {
 		return "", false
 	}
 	left := (compactHeldFor - time.Since(c.last)).Round(time.Second)
-	return fmt.Sprintf("compaction: %s failed to summarise this conversation %d times in a row (last: %s); magpie doesn't ask it again for %s, so a compaction that can't succeed isn't paid for over and over. Pick another model for this conversation, or a group whose compaction rule sends it to one that answers",
+	return fmt.Sprintf("compaction: %s failed to summarise this conversation %d times in a row (last: %s); magpie-friday doesn't ask it again for %s, so a compaction that can't succeed isn't paid for over and over. Pick another model for this conversation, or a group whose compaction rule sends it to one that answers",
 		model, c.n, c.why, left), true
 }
 

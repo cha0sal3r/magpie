@@ -79,7 +79,7 @@ func TestWorkBuddy(t *testing.T) {
 	inZone(t, 0)
 	home := setupAgents(t)
 	ss := List(0)
-	// the launch session, the one whose calls went through magpie's gateway,
+	// the launch session, the one whose calls went through magpie-friday's gateway,
 	// and the one brought over from the older history
 	if n := count(ss, "workbuddy"); n != 3 {
 		t.Fatalf("want 3 WorkBuddy sessions, got %d", n)

@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Zhipu's 1308 and 1310, in the words its error code pages give (docs.z.ai
@@ -42,8 +42,8 @@ func TestResetsZhipu(t *testing.T) {
 		{"1310", `{"error":{"code":"1310","message":"` + zai1310 + `"}}`, time.Date(2026, 10, 9, 11, 32, 34, 0, time.UTC), 25*time.Hour + 27*time.Minute + 32*time.Second},
 		{"bigmodel.cn", `{"error":{"code":"1308","message":"` + bigmodel + `"}}`, player, 3*time.Hour + 47*time.Minute + 13*time.Second},
 		{"bigmodel.cn escaped", escaped(bigmodel, "1308"), player, 3*time.Hour + 47*time.Minute + 13*time.Second},
-		// a Remote magpie's held refusal, read by the magpie asking it
-		{"held by a Remote magpie", "Z.ai: " + zai1308 + " (out of its allowance: not asked again before 20:12 UTC+8)", player, 3*time.Hour + 47*time.Minute + 13*time.Second},
+		// a Remote magpie-friday's held refusal, read by the magpie-friday asking it
+		{"held by a Remote magpie-friday", "Z.ai: " + zai1308 + " (out of its allowance: not asked again before 20:12 UTC+8)", player, 3*time.Hour + 47*time.Minute + 13*time.Second},
 		// cut short
 		{"cut in the seconds", zai1308[:len(zai1308)-1], player, 0},
 		{"cut after the minute's colon", zai1308[:len(zai1308)-2], player, 0},

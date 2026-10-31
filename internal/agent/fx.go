@@ -3,10 +3,10 @@ package agent
 // fx (fx.sh, Vercel Labs) keeps its settings in ~/.fx/settings.json: the
 // provider it talks to under "provider" (gateway, codex, grok or one of
 // the user's own), each provider's model under "models", and providers of
-// the user's own under "providers". magpie adds itself there as the
-// provider "magpie", keyless (auth none), speaking chat completions, with
-// the catalog as its model_metadata; a model through magpie is
-// "magpie/<provider>/<model>" here, provider "magpie" and models.magpie
+// the user's own under "providers". magpie-friday adds itself there as the
+// provider "magpie-friday", keyless (auth none), speaking chat completions, with
+// the catalog as its model_metadata; a model through magpie-friday is
+// "magpie-friday/<provider>/<model>" here, provider "magpie-friday" and models.magpie-friday
 // "<provider>/<model>" in fx's settings. fx sends no effort to a provider
 // of the user's own, so there is no effort to pick.
 
@@ -17,8 +17,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // fxMaxModels is how many models fx takes in a provider's model_metadata;
@@ -32,7 +32,7 @@ func fx(home string) *Agent { return fxIn(here(home)) }
 func fxIn(at place) *Agent {
 	dir := filepath.Join(at.home, ".fx")
 	path := filepath.Join(dir, "settings.json")
-	// magpie's provider, with what the user set on it in fx kept
+	// magpie-friday's provider, with what the user set on it in fx kept
 	fxProvider := func(cur string) any { return fxKept(path, fxProviderAt(cur, at.v1())) }
 	get := func(k string) string { v, _ := edit.GetJSON(path, k); return v }
 	// the provider fx talks to; unset, it is Vercel's AI Gateway
@@ -97,7 +97,7 @@ func fxIn(at place) *Agent {
 						edit.KV{Path: "provider", Value: magpieID},
 						edit.KV{Path: "models." + magpieID, Value: ref})
 				}
-				// fx's own: magpie steps out, back to the provider fx
+				// fx's own: magpie-friday steps out, back to the provider fx
 				// talks to without it
 				if err := dropMagpie(); err != nil {
 					return err
@@ -144,7 +144,7 @@ func fxModels(path string) map[string]string {
 	return out
 }
 
-// fxProviderAt is magpie's entry in settings.json's providers, for an fx
+// fxProviderAt is magpie-friday's entry in settings.json's providers, for an fx
 // reaching the gateway's /v1 at v1. Its model_metadata is what fx's model
 // picker lists: the catalog, the model in use first so it is never the one
 // cut at fx's limit.
@@ -180,13 +180,13 @@ func fxProviderAt(cur, v1 string) map[string]any {
 	}
 }
 
-// fxKept is want, magpie's provider in fx's settings.json at path, with
+// fxKept is want, magpie-friday's provider in fx's settings.json at path, with
 // what the user set on the one there kept: fx takes a reviewer_model on a
-// provider (the model its auto permission mode asks), which magpie doesn't
-// write, and a tool_choice_mode, which magpie writes "send" and the user
+// provider (the model its auto permission mode asks), which magpie-friday doesn't
+// write, and a tool_choice_mode, which magpie-friday writes "send" and the user
 // may turn to "omit" (src/core/config/configured_provider.zig); a sync wrote
 // both away on every start, as T3 Code's did (#2030). Its protocol,
-// address, auth and model_metadata are magpie's; auth is written whole, as
+// address, auth and model_metadata are magpie-friday's; auth is written whole, as
 // fx refuses an env beside type none.
 func fxKept(path string, want map[string]any) any {
 	key := "providers." + magpieID

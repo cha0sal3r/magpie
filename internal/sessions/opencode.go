@@ -11,8 +11,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // OpenCode keeps a session as rows, not a file of lines: since 1.2 in its
@@ -84,7 +84,7 @@ type ocMessage struct {
 	// ZCode's newer messages say modelId, which the key matches too (the
 	// decoder takes a key in any case when none is spelt as it is)
 	ModelID string `json:"modelID"`
-	// the provider the reply came from: magpie's gateway is "magpie"
+	// the provider the reply came from: magpie-friday's gateway is "magpie-friday"
 	ProviderID string `json:"providerID,omitempty"`
 	// a reply's variant: the reasoning effort picked in OpenCode's model
 	// menu for its prompt (high, max, low …; "default" or none when none

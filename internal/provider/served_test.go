@@ -64,7 +64,7 @@ func ptr(t time.Time) *time.Time { return &t }
 
 // The Usage page's cards are told it too (okingkee on X): the page and the
 // tray panel show the account that answered last in full, and the menu
-// bar's "account in use" follows it. A remote magpie's card is that one's,
+// bar's "account in use" follows it. A remote magpie-friday's card is that one's,
 // and the cache the cards are read from keeps none of it.
 func TestCardsLastServed(t *testing.T) {
 	home := t.TempDir()

@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/sessions"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 func TestUsageRequestAPIsReturnCodexCompactionStates(t *testing.T) {
@@ -42,7 +42,7 @@ func TestUsageRequestAPIsReturnCodexCompactionStates(t *testing.T) {
 		"gateway": httptest.NewRecorder(),
 	}
 	guiMux.ServeHTTP(responses["GUI"], httptest.NewRequest("GET", "/api/usage/requests?period=all", nil))
-	gatewayRequest := httptest.NewRequest("GET", "/v1/magpie/usage/requests?period=all", nil)
+	gatewayRequest := httptest.NewRequest("GET", "/v1/magpie-friday/usage/requests?period=all", nil)
 	gatewayRequest.RemoteAddr = "127.0.0.1:5000"
 	gateway.New().Handler().ServeHTTP(responses["gateway"], gatewayRequest)
 	for name, response := range responses {

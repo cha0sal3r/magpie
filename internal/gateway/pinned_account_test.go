@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // twoAccounts stands in for the ChatGPT backend with Codex signed in to
@@ -33,13 +33,13 @@ func twoAccounts(t *testing.T) *[]http.Header {
 	return &heads
 }
 
-// pinnedPost asks for model at path, magpie's /v1/responses or Codex's
+// pinnedPost asks for model at path, magpie-friday's /v1/responses or Codex's
 // own endpoint, pinned to account.
 func pinnedPost(t *testing.T, s *Server, path, model, account string) (int, string) {
 	t.Helper()
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest("POST", path, strings.NewReader(`{"model":"`+model+`","stream":true,"input":"ping"}`))
-	req.Header.Set("Authorization", "Bearer magpie")
+	req.Header.Set("Authorization", "Bearer magpie-friday")
 	if path != "/v1/responses" {
 		req.Header.Set("Authorization", "Bearer chatgpt-token")
 		req.Header.Set("chatgpt-account-id", "acct-1")
@@ -52,7 +52,7 @@ func pinnedPost(t *testing.T, s *Server, path, model, account string) (int, stri
 var pinPaths = map[string]string{"/v1/responses": "codex/gpt-5.5", CodexPath + "/responses": "gpt-5.5"}
 
 // X-Magpie-Account names the account that answers, over the one routing
-// would pick first (acct-1, Codex's own), on magpie's endpoint and on
+// would pick first (acct-1, Codex's own), on magpie-friday's endpoint and on
 // Codex's; the header isn't sent on, and the trace says it was pinned.
 func TestAccountPinned(t *testing.T) {
 	heads := twoAccounts(t)
@@ -81,7 +81,7 @@ func TestAccountPinned(t *testing.T) {
 	}
 }
 
-// An account magpie doesn't have is an error, not another account's reply.
+// An account magpie-friday doesn't have is an error, not another account's reply.
 func TestAccountPinnedUnknown(t *testing.T) {
 	heads := twoAccounts(t)
 	s := New()
@@ -123,7 +123,7 @@ func TestAccountPinnedResting(t *testing.T) {
 	// unpinned, the other one answers
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest("POST", "/v1/responses", strings.NewReader(`{"model":"codex/gpt-5.5","stream":true,"input":"ping"}`))
-	req.Header.Set("Authorization", "Bearer magpie")
+	req.Header.Set("Authorization", "Bearer magpie-friday")
 	s.Handler().ServeHTTP(rec, req)
 	if rec.Code != 200 || !strings.Contains(rec.Body.String(), "from acct-2") {
 		t.Fatalf("unpinned: %d %s", rec.Code, rec.Body.String())

@@ -6,13 +6,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // With an auto-review model picked (#938), every entry of the list a
-// signed-in Codex is handed — the ChatGPT backend's and magpie's — names it
+// signed-in Codex is handed — the ChatGPT backend's and magpie-friday's — names it
 // as auto_review_model_override, under another ETag; unset, the backend's
-// entries are as it gave them, an override of its own kept, and magpie's
+// entries are as it gave them, an override of its own kept, and magpie-friday's
 // have none.
 func TestCodexModelsAutoReview(t *testing.T) {
 	setup(t, provider.Chat, &fake{t: t})

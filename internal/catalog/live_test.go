@@ -47,7 +47,7 @@ func TestFetchContextLength(t *testing.T) {
 	}
 }
 
-// Another magpie's list tells each model's native APIs, over the ones it
+// Another magpie-friday's list tells each model's native APIs, over the ones it
 // serves it on, its longest reply and its reasoning levels; a vendor's odd
 // values are only left out, never the whole list.
 func TestFetchMagpieFields(t *testing.T) {
@@ -130,7 +130,7 @@ func TestFetchAtVersionedBase(t *testing.T) {
 	}
 }
 
-// Another magpie's list tells each model's price (magpie_price), tiers
+// Another magpie-friday's list tells each model's price (magpie_price), tiers
 // and all; one no vendor could charge is not taken, and a list without
 // one leaves the model unpriced.
 func TestLiveMagpiePrice(t *testing.T) {

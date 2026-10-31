@@ -37,7 +37,7 @@ func PublicDrawers(ctx context.Context, base string) []Model {
 		return nil
 	}
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("User-Agent", "magpie")
+	req.Header.Set("User-Agent", "magpie-friday")
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil
@@ -66,7 +66,7 @@ func PublicDrawers(ctx context.Context, base string) []Model {
 		if json.Unmarshal(raw, &m) != nil || m.ID == "" {
 			continue
 		}
-		// what makes images and is asked the way magpie draws: Ideogram's
+		// what makes images and is asked the way magpie-friday draws: Ideogram's
 		// V_2, DESCRIBE and UPSCALE are the vendor's own tasks
 		if !strings.Contains(m.Types, "image_generation") && !strings.Contains(m.Out, "image") || !DrawsID(m.ID) {
 			continue

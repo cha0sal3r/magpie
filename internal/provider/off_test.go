@@ -48,7 +48,7 @@ func TestProviderOffKept(t *testing.T) {
 		t.Fatal("relay/m not listed once on again")
 	}
 
-	// Kiro with a key is an account whose settings are all magpie keeps
+	// Kiro with a key is an account whose settings are all magpie-friday keeps
 	if err := Save(Provider{ID: "kiro", Key: "ksk_1", Off: true}); err != nil {
 		t.Fatal(err)
 	}

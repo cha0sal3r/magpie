@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// A group magpie found stays while a provider of it is switched off for a
+// A group magpie-friday found stays while a provider of it is switched off for a
 // while: agents set to it, rules and groups naming it keep working on the
 // providers still on, and the one switched off is back in its place once
 // it is on again. Only removing a provider takes it out for good.

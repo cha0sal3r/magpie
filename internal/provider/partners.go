@@ -18,9 +18,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/lastgood"
-	"github.com/yetone/magpie/internal/source"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/lastgood"
+	"github.com/cha0sal3r/magpie-friday/internal/source"
 )
 
 // Partners are services that pay to be listed first in the add sheet,
@@ -168,7 +168,7 @@ func PartnersNow(wait time.Duration) []Partner {
 	return Partners()
 }
 
-// KeepPartnersFresh fetches the partner list when the magpie serving the
+// KeepPartnersFresh fetches the partner list when the magpie-friday serving the
 // gateway starts, and again whenever it is due (every hour, ten minutes
 // after a failed fetch), whether or not a page asks for it, so a partner
 // added reaches an app left running within the hour, and the list kept on
@@ -348,7 +348,7 @@ func fetchPartners(ctx context.Context, src string) ([]Partner, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("User-Agent", "magpie")
+	req.Header.Set("User-Agent", "magpie-friday")
 	req.Header.Set("Accept", "application/json")
 	res, err := source.Do(http.DefaultClient, req)
 	if err != nil {
@@ -365,7 +365,7 @@ func fetchPartners(ctx context.Context, src string) ([]Partner, error) {
 	return validPartners(f.Partners), nil
 }
 
-// validPartners keeps the entries magpie can list safely, at most
+// validPartners keeps the entries magpie-friday can list safely, at most
 // MaxPartners: an id of its own that no built-in preset has, a name, and
 // https addresses only. What a partner may not set (a decision API, no
 // key, an endpoint of the user's own) is cleared.

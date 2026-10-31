@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-// The Docker image runs /magpie as nonroot, in a folder it may not write
+// The Docker image runs /magpie-friday as nonroot, in a folder it may not write
 // to and with no password prompt, so the page said "move it to a folder you
 // can write to" (/), which a container can't act on. In a container it says
 // to pull the new image; outside one the folder is still named (#1277).
@@ -16,8 +16,8 @@ func TestUpdateInContainerSaysPullTheImage(t *testing.T) {
 		t.Skip("needs a folder this user may not write to")
 	}
 	dir := t.TempDir()
-	exe := filepath.Join(dir, "magpie")
-	if err := os.WriteFile(exe, []byte("magpie"), 0o755); err != nil {
+	exe := filepath.Join(dir, "magpie-friday")
+	if err := os.WriteFile(exe, []byte("magpie-friday"), 0o755); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.Chmod(dir, 0o555); err != nil {

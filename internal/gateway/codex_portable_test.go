@@ -5,12 +5,12 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/yetone/magpie/internal/codexsummary"
+	"github.com/cha0sal3r/magpie-friday/internal/codexsummary"
 )
 
 // A rollout written portable (sessions.PortCodexRollouts) holds, in place
-// of magpie's compaction item, the message the gateway sends for it: what
-// reaches the model through magpie is the same either way, for a magpie
+// of magpie-friday's compaction item, the message the gateway sends for it: what
+// reaches the model through magpie-friday is the same either way, for a magpie-friday
 // model and for Codex's own, natively compacted or not.
 func TestPortedCompactionReadsTheSame(t *testing.T) {
 	enc := codexsummary.Encrypted("Progress: done.\nNext: tests.")
@@ -29,7 +29,7 @@ func TestPortedCompactionReadsTheSame(t *testing.T) {
 		json.Unmarshal(a, &x)
 		json.Unmarshal(b, &y)
 		if !reflect.DeepEqual(x, y) {
-			t.Errorf("%+v: magpie's item sent as\n%s\nthe ported message as\n%s", c, a, b)
+			t.Errorf("%+v: magpie-friday's item sent as\n%s\nthe ported message as\n%s", c, a, b)
 		}
 	}
 }

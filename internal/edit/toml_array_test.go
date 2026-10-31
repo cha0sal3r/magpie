@@ -20,7 +20,7 @@ models = [
 [providers.headers]
 x = "keep"
 [[ 'providers' ]]
-name = 'magpie'
+name = 'magpie-friday'
 models = ["old"]
 [providers.model_overrides."old"]
 context_window = 10
@@ -38,8 +38,8 @@ theme = "dark"
 	if err := os.WriteFile(path, []byte(before), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	block := "[[providers]]\nname = \"magpie\"\nmodels = [\"new\"]\n[providers.model_overrides.\"new\"]\ncontext_window = 100\n"
-	if err := SetTOMLArrayTable(path, "providers", "name", "magpie", block); err != nil {
+	block := "[[providers]]\nname = \"magpie-friday\"\nmodels = [\"new\"]\n[providers.model_overrides.\"new\"]\ncontext_window = 100\n"
+	if err := SetTOMLArrayTable(path, "providers", "name", "magpie-friday", block); err != nil {
 		t.Fatal(err)
 	}
 	got, _ := os.ReadFile(path)
@@ -48,18 +48,18 @@ theme = "dark"
 	if !strings.HasPrefix(string(got), keep) || !strings.HasSuffix(string(got), tail) || strings.Contains(string(got), "context_window = 10\n") {
 		t.Fatalf("neighboring data or the owned subtree was edited incorrectly:\n%s", got)
 	}
-	if err := DelTOMLArrayTable(path, "providers", "name", "magpie"); err != nil {
+	if err := DelTOMLArrayTable(path, "providers", "name", "magpie-friday"); err != nil {
 		t.Fatal(err)
 	}
 	got, _ = os.ReadFile(path)
-	if !strings.HasPrefix(string(got), keep) || !strings.HasSuffix(string(got), tail) || strings.Contains(string(got), `name = "magpie"`) {
+	if !strings.HasPrefix(string(got), keep) || !strings.HasSuffix(string(got), tail) || strings.Contains(string(got), `name = "magpie-friday"`) {
 		t.Fatalf("delete changed another entry:\n%s", got)
 	}
 }
 
 func TestTOMLArrayTableRejectsAmbiguityAndInvalidInput(t *testing.T) {
 	for _, input := range []string{
-		"[[providers]]\nname = \"magpie\"\n[[providers]]\nname = \"magpie\"\n",
+		"[[providers]]\nname = \"magpie-friday\"\n[[providers]]\nname = \"magpie-friday\"\n",
 		"[[providers]]\nname = \"other\"\nname = \"duplicate\"\n",
 		"[[providers]]\nname = [\n",
 		"providers = [{ name = \"native\" }]\n",
@@ -67,7 +67,7 @@ func TestTOMLArrayTableRejectsAmbiguityAndInvalidInput(t *testing.T) {
 		t.Run(input, func(t *testing.T) {
 			path := filepath.Join(t.TempDir(), "config.toml")
 			os.WriteFile(path, []byte(input), 0o600)
-			if err := SetTOMLArrayTable(path, "providers", "name", "magpie", "[[providers]]\nname = \"magpie\"\n"); err == nil {
+			if err := SetTOMLArrayTable(path, "providers", "name", "magpie-friday", "[[providers]]\nname = \"magpie-friday\"\n"); err == nil {
 				t.Fatal("accepted unsafe input")
 			}
 			got, _ := os.ReadFile(path)
@@ -77,7 +77,7 @@ func TestTOMLArrayTableRejectsAmbiguityAndInvalidInput(t *testing.T) {
 		})
 	}
 	path := filepath.Join(t.TempDir(), "config.toml")
-	if err := SetTOMLArrayTable(path, "providers", "name", "magpie", "[[providers]]\nname = \"foreign\"\n"); err == nil {
+	if err := SetTOMLArrayTable(path, "providers", "name", "magpie-friday", "[[providers]]\nname = \"foreign\"\n"); err == nil {
 		t.Fatal("accepted a mismatching replacement")
 	}
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
@@ -88,20 +88,20 @@ func TestTOMLArrayTableRejectsAmbiguityAndInvalidInput(t *testing.T) {
 func TestTOMLTopKeepsCommentAndSpacing(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "config.toml")
 	os.WriteFile(path, []byte("default_model  =  'native/a'  # chosen by me\n[ui]\ntheme = 'dark'\n"), 0o600)
-	if err := SetTOMLTopPreserving(path, KV{Path: "default_model", Value: "magpie/group/code"}); err != nil {
+	if err := SetTOMLTopPreserving(path, KV{Path: "default_model", Value: "magpie-friday/group/code"}); err != nil {
 		t.Fatal(err)
 	}
 	got, _ := os.ReadFile(path)
-	if string(got) != "default_model  =  \"magpie/group/code\"  # chosen by me\n[ui]\ntheme = 'dark'\n" {
+	if string(got) != "default_model  =  \"magpie-friday/group/code\"  # chosen by me\n[ui]\ntheme = 'dark'\n" {
 		t.Fatalf("lost formatting: %s", got)
 	}
 }
 
 func TestTOMLArrayTableInterleavedChildren(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "config.toml")
-	input := "[[providers]]\nname = \"magpie\"\n[ui]\ntheme = \"dark\"\n[providers.model_overrides.\"old\"]\ncontext_window = 10\n[[providers]]\nname = \"native\"\n"
+	input := "[[providers]]\nname = \"magpie-friday\"\n[ui]\ntheme = \"dark\"\n[providers.model_overrides.\"old\"]\ncontext_window = 10\n[[providers]]\nname = \"native\"\n"
 	os.WriteFile(path, []byte(input), 0o600)
-	if err := SetTOMLArrayTable(path, "providers", "name", "magpie", "[[providers]]\nname = \"magpie\"\nmodels = [\"new\"]\n"); err != nil {
+	if err := SetTOMLArrayTable(path, "providers", "name", "magpie-friday", "[[providers]]\nname = \"magpie-friday\"\nmodels = [\"new\"]\n"); err != nil {
 		t.Fatal(err)
 	}
 	got, _ := os.ReadFile(path)

@@ -17,7 +17,7 @@ const words = { en: { version: "Version", latest: "Up to date", check: "Check" }
 function server(lang, ctl) {
   const settings = {
     theme: "light", lang, tray: "panel", quotaLeft: false, currency: "usd", proxy: "", redact: false, redactWords: [],
-    version: "0.1.400", dir: "~/.config/magpie", gateway: "http://127.0.0.1:3425", proxyNow: "none", proxySource: "none",
+    version: "0.1.400", dir: "~/.config/magpie-friday", gateway: "http://127.0.0.1:3425", proxyNow: "none", proxySource: "none",
     visionModels: [], imageGenModels: [], workbuddyCheckins: [], lanURLs: [], fx: { rate: 7.2, at: new Date().toISOString(), stale: false },
   };
   return async (route) => {

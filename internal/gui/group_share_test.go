@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // laincatx on X: the Routing view's Copy to share answers the group as
@@ -47,7 +47,7 @@ func TestGroupShareAndImport(t *testing.T) {
 		t.Fatalf("the shared text has the provider's key: %s", st.Shared)
 	}
 
-	// the same text with a member this magpie has no provider of
+	// the same text with a member this magpie-friday has no provider of
 	shared := strings.Replace(st.Shared, `"members":["a/m1","a/m2"]`, `"members":["a/m1","a/m2","gone/m9"]`, 1)
 	if shared == st.Shared {
 		t.Fatalf("the members aren't spelt as expected: %s", st.Shared)
@@ -65,7 +65,7 @@ func TestGroupShareAndImport(t *testing.T) {
 	}
 
 	// why, for the page to say in the reader's language
-	if code, _, body = post("import", map[string]string{"text": "a group, honest"}); code == 200 || !strings.Contains(body, "not a routing group shared from magpie") ||
+	if code, _, body = post("import", map[string]string{"text": "a group, honest"}); code == 200 || !strings.Contains(body, "not a routing group shared from magpie-friday") ||
 		!strings.Contains(body, `"share":"not_shared"`) {
 		t.Fatalf("bad text: %d %s", code, body)
 	}

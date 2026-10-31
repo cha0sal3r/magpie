@@ -8,10 +8,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 func TestGrok(t *testing.T) {
@@ -45,33 +45,33 @@ func TestGrok(t *testing.T) {
 		t.Fatalf("get: %q", f.Get())
 	}
 
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	raw := read()
-	m := table(`model."magpie/deepseek/pro"`)
-	if m["model"] != "deepseek/pro" || m["api_key"] != "magpie" || !strings.HasSuffix(m["base_url"], "/v1") ||
-		m["api_backend"] != "chat_completions" || table(`model."magpie/deepseek/flash"`) == nil {
+	m := table(`model."magpie-friday/deepseek/pro"`)
+	if m["model"] != "deepseek/pro" || m["api_key"] != "magpie-friday" || !strings.HasSuffix(m["base_url"], "/v1") ||
+		m["api_backend"] != "chat_completions" || table(`model."magpie-friday/deepseek/flash"`) == nil {
 		t.Fatalf("tables:\n%s", raw)
 	}
 	// a campaign of xAI's would set the default over it
 	if table("features")["campaigns"] != "false" {
 		t.Fatalf("campaigns:\n%s", raw)
 	}
-	if f.Get() != "magpie/deepseek/pro" || !strings.Contains(raw, "# mine") || !strings.Contains(raw, "[model.my-own]") ||
+	if f.Get() != "magpie-friday/deepseek/pro" || !strings.Contains(raw, "# mine") || !strings.Contains(raw, "[model.my-own]") ||
 		table("ui")["theme"] != "dark" {
 		t.Fatalf("config:\n%s", raw)
 	}
 
 	// picked again, and synced: the tables are replaced, never repeated
-	if err := f.Set("magpie/deepseek/flash"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
 	raw = read()
-	if n := strings.Count(raw, `[model."magpie/deepseek/pro"]`); n != 1 {
+	if n := strings.Count(raw, `[model."magpie-friday/deepseek/pro"]`); n != 1 {
 		t.Fatalf("%d tables:\n%s", n, raw)
 	}
 
@@ -80,25 +80,25 @@ func TestGrok(t *testing.T) {
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	if strings.Contains(read(), `"magpie/deepseek/pro"]`) {
+	if strings.Contains(read(), `"magpie-friday/deepseek/pro"]`) {
 		t.Fatalf("stale:\n%s", read())
 	}
 
-	// its own model: magpie steps out, the user's own model stays
+	// its own model: magpie-friday steps out, the user's own model stays
 	if err := f.Set("grok-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	raw = read()
-	if f.Get() != "grok-4.6" || strings.Contains(raw, "magpie") || !strings.Contains(raw, "[model.my-own]") {
+	if f.Get() != "grok-4.6" || strings.Contains(raw, "magpie-friday") || !strings.Contains(raw, "[model.my-own]") {
 		t.Fatalf("own:\n%s", raw)
 	}
-	// nothing through magpie: sync leaves the file alone
+	// nothing through magpie-friday: sync leaves the file alone
 	if err := a.Sync(); err != nil || read() != raw {
 		t.Fatalf("sync touched it:\n%s", read())
 	}
 
 	e := a.Field("effort")
-	f.Set("magpie/deepseek/flash")
+	f.Set("magpie-friday/deepseek/flash")
 	if err := e.Set("high"); err != nil || e.Get() != "high" {
 		t.Fatalf("effort: %v %q", err, e.Get())
 	}
@@ -106,18 +106,18 @@ func TestGrok(t *testing.T) {
 		t.Fatal(err)
 	}
 	raw = read()
-	if f.Get() != "" || strings.Contains(raw, "magpie") || strings.Contains(raw, "campaigns") || e.Get() != "high" {
+	if f.Get() != "" || strings.Contains(raw, "magpie-friday") || strings.Contains(raw, "campaigns") || e.Get() != "high" {
 		t.Fatalf("reset:\n%s", raw)
 	}
 }
 
 func TestGrokReadErrorStopsChanges(t *testing.T) {
-	const wired = "[model.\"magpie/keep\"]\nmodel = \"keep\"\n\n"
+	const wired = "[model.\"magpie-friday/keep\"]\nmodel = \"keep\"\n\n"
 	for _, tc := range []struct {
 		name, input string
 	}{
 		{"models", wired + "[models]\ndefault = [\n"},
-		{"features", "[models]\ndefault = \"magpie/keep\"\n\n" + wired + "[features]\ncampaigns = [\n"},
+		{"features", "[models]\ndefault = \"magpie-friday/keep\"\n\n" + wired + "[features]\ncampaigns = [\n"},
 	} {
 		for _, action := range []string{"set", "clear", "sync"} {
 			t.Run(tc.name+"/"+action, func(t *testing.T) {
@@ -154,8 +154,8 @@ func TestGrokReadErrorStopsChanges(t *testing.T) {
 
 func TestGrokSyncRequiresOrdinaryModelTable(t *testing.T) {
 	for _, body := range []string{
-		"note = '''\n[model.\"magpie/fake\"]\n'''\n",
-		"[[model.\"magpie/array\"]]\nmodel = \"array\"\n",
+		"note = '''\n[model.\"magpie-friday/fake\"]\n'''\n",
+		"[[model.\"magpie-friday/array\"]]\nmodel = \"array\"\n",
 	} {
 		t.Run(body, func(t *testing.T) {
 			home := t.TempDir()
@@ -173,7 +173,7 @@ func TestGrokSyncRequiresOrdinaryModelTable(t *testing.T) {
 				t.Fatal(err)
 			}
 			if string(got) != input {
-				t.Fatalf("synced a config without a magpie model table:\n%s", got)
+				t.Fatalf("synced a config without a magpie-friday model table:\n%s", got)
 			}
 		})
 	}
@@ -183,7 +183,7 @@ func TestGrokCheckReportsTOMLParseErrors(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("GROK_HOME", home)
 	path := filepath.Join(home, "config.toml")
-	input := "[models]\ndefault = \"magpie/fake\"\n\n[model.\"magpie/fake\"]\ninvalid = [\n"
+	input := "[models]\ndefault = \"magpie-friday/fake\"\n\n[model.\"magpie-friday/fake\"]\ninvalid = [\n"
 	if err := os.WriteFile(path, []byte(input), 0o600); err != nil {
 		t.Fatal(err)
 	}
@@ -193,7 +193,7 @@ func TestGrokCheckReportsTOMLParseErrors(t *testing.T) {
 	}
 }
 
-// The models magpie serves on the account Grok Build is signed in to are
+// The models magpie-friday serves on the account Grok Build is signed in to are
 // Grok's own a second time, beside its own: they fold into one row of the
 // picker (Fate on Discord: grokbuild 在登录态下会加载重复的模型), the
 // other providers' rows left as they are.
@@ -236,24 +236,24 @@ func TestGrokFoldsItsOwnAccount(t *testing.T) {
 	for _, o := range a.Field("model").Options(a.Values()) {
 		if o.Same {
 			same = append(same, o.Value)
-		} else if strings.HasPrefix(o.Value, "magpie/") {
+		} else if strings.HasPrefix(o.Value, "magpie-friday/") {
 			others = append(others, o.Value)
 		}
 	}
 	if len(same) == 0 {
-		t.Fatalf("nothing folded; magpie's rows: %v", others)
+		t.Fatalf("nothing folded; magpie-friday's rows: %v", others)
 	}
 	for _, v := range same {
-		if !strings.HasPrefix(v, "magpie/grok/") {
+		if !strings.HasPrefix(v, "magpie-friday/grok/") {
 			t.Errorf("folded %s, not on the Grok account", v)
 		}
 	}
 	for _, v := range others {
-		if strings.HasPrefix(v, "magpie/grok/") {
+		if strings.HasPrefix(v, "magpie-friday/grok/") {
 			t.Errorf("%s on the Grok account not folded", v)
 		}
 	}
-	if !slices.Contains(others, "magpie/deepseek/pro") {
+	if !slices.Contains(others, "magpie-friday/deepseek/pro") {
 		t.Errorf("DeepSeek's row: %v", others)
 	}
 }

@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // autoRefHome is a sandbox HOME with two providers serving Claude Opus 5.5,
@@ -39,7 +39,7 @@ func autoRefHome(t *testing.T) {
 	}
 }
 
-// A group magpie found is listed as auto/<model>, the model's id as a
+// A group magpie-friday found is listed as auto/<model>, the model's id as a
 // vendor spells it (ZeroClover on X), so a client looking the part after
 // the slash up on models.dev finds the model; its old group/auto-<slug> is
 // the same group, and a group the user made stays group/<id>.

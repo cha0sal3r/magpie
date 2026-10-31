@@ -85,7 +85,7 @@ func TestDAVStorageRoot(t *testing.T) {
 }
 
 // A Synology answers 403 for anything under a folder that isn't there yet,
-// PROPFIND too: magpie's own folder, before the first sync, is made rather
+// PROPFIND too: magpie-friday's own folder, before the first sync, is made rather
 // than taken for a folder the account can't write in.
 func TestDAVForbiddenUntilMade(t *testing.T) {
 	made, stored := false, ""
@@ -94,10 +94,10 @@ func TestDAVForbiddenUntilMade(t *testing.T) {
 		switch {
 		case path == "/data" && r.Method == "PROPFIND":
 			w.WriteHeader(http.StatusMultiStatus)
-		case path == "/data/magpie" && r.Method == "MKCOL":
+		case path == "/data/magpie-friday" && r.Method == "MKCOL":
 			made = true
 			w.WriteHeader(http.StatusCreated)
-		case strings.HasPrefix(path, "/data/magpie") && made:
+		case strings.HasPrefix(path, "/data/magpie-friday") && made:
 			switch r.Method {
 			case "PROPFIND":
 				w.WriteHeader(http.StatusMultiStatus)
@@ -135,7 +135,7 @@ func TestDAVForbiddenUntilMade(t *testing.T) {
 
 // A relay or tunnel can cut a long write short: the server keeps half the
 // file and answers 2xx anyway, and every later read trips over the half as
-// "not a magpie backup". A write that kept less than was sent is read back,
+// "not a magpie-friday backup". A write that kept less than was sent is read back,
 // tried again over the version the short one made, and told as itself in
 // the end. A HEAD that can't be done leaves the write unchecked: it landed.
 func TestDAVShortWrite(t *testing.T) {

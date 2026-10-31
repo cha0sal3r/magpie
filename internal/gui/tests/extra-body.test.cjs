@@ -2,7 +2,7 @@
 // A provider's Extra body (#1604, Luc-xz: a relay that turns Responses
 // requests away without a prompt_cache_key): the editor shows the saved
 // JSON, says live why what is typed can't be saved — not JSON, not an
-// object, a field magpie sets itself (model, stream, the conversation) —
+// object, a field magpie-friday sets itself (model, stream, the conversation) —
 // and a Save is held until it can; a good one is saved as an object, sent
 // with Test before a Save, and an emptied box clears it ({}). It fits a
 // narrow window. In English, Chinese, Japanese and German, Chromium and
@@ -47,10 +47,10 @@ function serve(lang, calls) {
 }
 
 const words = {
-  en: { label: "Extra body", save: "Save", test: "Test models", model: "magpie sets model itself", object: "write a JSON object", json: "not valid JSON" },
-  zh: { label: "额外请求体", save: "保存", test: "测试模型", model: "model 由 magpie 自己设置", object: "请写一个 JSON 对象", json: "不是有效的 JSON" },
-  ja: { label: "追加ボディ", save: "保存", test: "モデルをテスト", model: "model は magpie が自分で設定", object: "JSON オブジェクトを書いてください", json: "有効な JSON ではありません" },
-  de: { label: "Zusätzlicher Body", save: "Speichern", test: "Modelle testen", model: "model setzt magpie selbst", object: "schreib ein JSON-Objekt", json: "kein gültiges JSON" },
+  en: { label: "Extra body", save: "Save", test: "Test models", model: "magpie-friday sets model itself", object: "write a JSON object", json: "not valid JSON" },
+  zh: { label: "额外请求体", save: "保存", test: "测试模型", model: "model 由 magpie-friday 自己设置", object: "请写一个 JSON 对象", json: "不是有效的 JSON" },
+  ja: { label: "追加ボディ", save: "保存", test: "モデルをテスト", model: "model は magpie-friday が自分で設定", object: "JSON オブジェクトを書いてください", json: "有効な JSON ではありません" },
+  de: { label: "Zusätzlicher Body", save: "Speichern", test: "Modelle testen", model: "model setzt magpie-friday selbst", object: "schreib ein JSON-Objekt", json: "kein gültiges JSON" },
 };
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
@@ -101,7 +101,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       assert.ok(await box.evaluate((e) => e === document.activeElement), "the box is focused");
 
       // a good one: no mark, Test asks with it before a Save
-      const good = { prompt_cache_key: "${sessionId}", "!service_tier": "flex", metadata: { app: "magpie" } };
+      const good = { prompt_cache_key: "${sessionId}", "!service_tier": "flex", metadata: { app: "magpie-friday" } };
       await box.fill(JSON.stringify(good, null, 2));
       assert.ok(!(await box.evaluate((e) => e.classList.contains("bad"))));
       assert.equal(await box.getAttribute("aria-invalid"), "false");

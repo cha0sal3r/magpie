@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // kiroCrewUser is config.json as Kiro Crew's dashboard saves it: the
@@ -28,7 +28,7 @@ const kiroCrewUser = `{
 `
 
 // kiroCrewSandbox is a sandbox HOME with Kiro Crew's home in it, the
-// harnesses connected to magpie as wired says and the adapters as found.
+// harnesses connected to magpie-friday as wired says and the adapters as found.
 func kiroCrewSandbox(t *testing.T, wired []string, found []string) (home string, a *Agent) {
 	t.Helper()
 	home = syncHome(t)
@@ -70,7 +70,7 @@ func kiroCrewKey(t *testing.T, path, key string) (any, bool) {
 	return cur, true
 }
 
-// Connecting Kiro Crew runs it on Codex, connected to magpie, and its crew
+// Connecting Kiro Crew runs it on Codex, connected to magpie-friday, and its crew
 // members too; Disconnect puts back what the user had, byte for byte, and
 // every other setting stays.
 func TestKiroCrewConnect(t *testing.T) {
@@ -92,7 +92,7 @@ func TestKiroCrewConnect(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if c.How != "magpie" || !a.Wired() {
+	if c.How != "magpie-friday" || !a.Wired() {
 		t.Fatalf("connect: %+v, wired %v", c, a.Wired())
 	}
 	if v, _ := kiroCrewKey(t, a.Path, kiroCrewBackend); v != "codex" {
@@ -139,7 +139,7 @@ func TestKiroCrewConnect(t *testing.T) {
 	}
 }
 
-// With no harness connected to magpie, connecting says to connect one and
+// With no harness connected to magpie-friday, connecting says to connect one and
 // writes nothing; the harness picked by itself is Codex, then Claude Code,
 // one whose adapter is here before one whose isn't, and a harness with no
 // adapter's install says how to install it.
@@ -168,8 +168,8 @@ func TestKiroCrewPicksAHarness(t *testing.T) {
 		// Pi can't run crew members: theirs stays the user's
 		{wired: []string{"pi"}, found: []string{"pi"}, want: "pi", member: "kas"},
 		{wired: []string{"codex"}, want: "codex", member: "codex",
-			notice: "Kiro Crew runs Codex through codex-acp, which magpie didn't find here: install it with npm i -g @agentclientprotocol/codex-acp, then start a new session."},
-		// deepseek is no harness of magpie's
+			notice: "Kiro Crew runs Codex through codex-acp, which magpie-friday didn't find here: install it with npm i -g @agentclientprotocol/codex-acp, then start a new session."},
+		// deepseek is no harness of magpie-friday's
 		{wired: []string{"dsh", "deepseek"}},
 	} {
 		_, a := kiroCrewSandbox(t, c.wired, c.found)
@@ -217,7 +217,7 @@ func TestKiroCrewPicksAHarness(t *testing.T) {
 }
 
 // The harness picked on the row is written, its crew members' with it;
-// one not connected to magpie is refused. Disconnect after a pick puts
+// one not connected to magpie-friday is refused. Disconnect after a pick puts
 // back the user's, and the pick comes back on connecting again.
 func TestKiroCrewHarnessPick(t *testing.T) {
 	_, a := kiroCrewSandbox(t, []string{"codex", "claude", "pi"}, []string{"codex", "claude", "pi"})
@@ -237,7 +237,7 @@ func TestKiroCrewHarnessPick(t *testing.T) {
 	if v, _ := kiroCrewKey(t, a.Path, kiroCrewMember); v != "claude" {
 		t.Errorf("member %v", v)
 	}
-	// Pi runs no crew members: theirs stays magpie's Claude Code
+	// Pi runs no crew members: theirs stays magpie-friday's Claude Code
 	if err := a.Pick("harness", "pi"); err != nil {
 		t.Fatal(err)
 	}
@@ -265,7 +265,7 @@ func TestKiroCrewHarnessPick(t *testing.T) {
 	}
 }
 
-// A harness set in config.local.json wins over config.json, so magpie
+// A harness set in config.local.json wins over config.json, so magpie-friday
 // writes none: connecting is refused and says so, nothing is written, and
 // the row's note and notice say why.
 func TestKiroCrewLocalPin(t *testing.T) {
@@ -291,8 +291,8 @@ func TestKiroCrewLocalPin(t *testing.T) {
 	if o := a.Field("provider").Options(nil); o[0].Note != kiroCrewPinnedNote {
 		t.Errorf("note %q", o[0].Note)
 	}
-	// set there after magpie connected it: what Kiro Crew runs is the
-	// user's, and magpie isn't said to be its provider
+	// set there after magpie-friday connected it: what Kiro Crew runs is the
+	// user's, and magpie-friday isn't said to be its provider
 	os.Remove(local)
 	if _, err := a.ConnectHow(); err != nil {
 		t.Fatal(err)
@@ -301,14 +301,14 @@ func TestKiroCrewLocalPin(t *testing.T) {
 	if a.Wired() {
 		t.Error("wired with the local pin on kas")
 	}
-	// on a harness of magpie's: connected
+	// on a harness of magpie-friday's: connected
 	os.WriteFile(local, []byte(`{"agent":{"acp_backend":"codex"}}`), 0o600)
 	if !a.Wired() {
 		t.Error("not wired with the local pin on Codex")
 	}
 }
 
-// A harness no longer connected to magpie leaves Kiro Crew not connected,
+// A harness no longer connected to magpie-friday leaves Kiro Crew not connected,
 // and a harness the user set in Kiro Crew since is kept by Disconnect.
 func TestKiroCrewFollowsItsHarness(t *testing.T) {
 	_, a := kiroCrewSandbox(t, []string{"codex"}, []string{"codex"})
@@ -318,7 +318,7 @@ func TestKiroCrewFollowsItsHarness(t *testing.T) {
 	}
 	kiroCrewWired = func(string) bool { return false }
 	if a.Wired() {
-		t.Error("wired with Codex off magpie")
+		t.Error("wired with Codex off magpie-friday")
 	}
 	kiroCrewWired = func(id string) bool { return id == "codex" }
 	// the user moves it to kiro-cli and its members to Claude in Kiro Crew
@@ -339,7 +339,7 @@ func TestKiroCrewFollowsItsHarness(t *testing.T) {
 	}
 }
 
-// config.json not there yet (the app installed, never started): magpie
+// config.json not there yet (the app installed, never started): magpie-friday
 // makes it with the one key, and takes it out again on Disconnect.
 func TestKiroCrewMakesItsFile(t *testing.T) {
 	_, a := kiroCrewSandbox(t, []string{"opencode"}, []string{"opencode"})
@@ -354,7 +354,7 @@ func TestKiroCrewMakesItsFile(t *testing.T) {
 	}
 	if _, err := os.Stat(a.Path); !os.IsNotExist(err) {
 		b, _ := os.ReadFile(a.Path)
-		t.Errorf("config.json magpie made is still there: %s", b)
+		t.Errorf("config.json magpie-friday made is still there: %s", b)
 	}
 }
 
@@ -448,8 +448,8 @@ func TestKiroCrewFindsAdapters(t *testing.T) {
 	}
 }
 
-// End to end, with magpie's own Codex wiring in the sandbox: Kiro Crew is
-// offered Codex only once Codex is connected to magpie.
+// End to end, with magpie-friday's own Codex wiring in the sandbox: Kiro Crew is
+// offered Codex only once Codex is connected to magpie-friday.
 func TestKiroCrewOnRealCodexWiring(t *testing.T) {
 	home := syncHome(t)
 	t.Setenv("KIROCREW_HOME", "")
@@ -483,7 +483,7 @@ func TestKiroCrewOnRealCodexWiring(t *testing.T) {
 		t.Fatal(err)
 	}
 	if a.Wired() {
-		t.Error("Kiro Crew still connected with Codex off magpie")
+		t.Error("Kiro Crew still connected with Codex off magpie-friday")
 	}
 }
 

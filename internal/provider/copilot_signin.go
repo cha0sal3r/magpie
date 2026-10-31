@@ -1,9 +1,9 @@
 package provider
 
-// Signing in to a Copilot account from magpie: GitHub's device flow, with
-// the OAuth app Copilot's editors sign in with. magpie shows the code, the
+// Signing in to a Copilot account from magpie-friday: GitHub's device flow, with
+// the OAuth app Copilot's editors sign in with. magpie-friday shows the code, the
 // user types it at github.com/login/device, and the token GitHub then
-// hands over is kept for magpie alone (see copilot_accounts.go).
+// hands over is kept for magpie-friday alone (see copilot_accounts.go).
 
 import (
 	"context"

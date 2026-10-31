@@ -17,16 +17,16 @@ import (
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/charset"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/budget"
-	"github.com/yetone/magpie/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/budget"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
 )
 
 // The web search MCP server's second tool, web_fetch (#2286, blackrion):
 // an agent that found a page with web_search, and has no fetch tool of its
 // own, reads it. The URL is the agent's, so the page is downloaded the way
 // a caller's image is (publicClient): from public addresses only, through
-// every redirect, so a gateway key's holder can't have magpie read a
+// every redirect, so a gateway key's holder can't have magpie-friday read a
 // service only this computer, or the user's network, reaches. A page is
 // read for at most webFetchTimeout and webFetchRead bytes; an HTML page is
 // given as Markdown-like text, other text as it is, anything else refused.

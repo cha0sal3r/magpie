@@ -31,7 +31,7 @@ func TestPluginTextWrittenCall(t *testing.T) {
 
 	t.Run("chat", func(t *testing.T) {
 		req := httptest.NewRequest("POST", "/v1/chat/completions", strings.NewReader(`{"model":"`+model+`","stream":true,"tools":[`+tool+`],"messages":[{"role":"user","content":"go on"}]}`))
-		req.Header.Set("Authorization", "Bearer magpie")
+		req.Header.Set("Authorization", "Bearer magpie-friday")
 		rec := httptest.NewRecorder()
 		h.ServeHTTP(rec, req)
 		body := rec.Body.String()
@@ -65,7 +65,7 @@ func TestPluginTextWrittenCall(t *testing.T) {
 		// asked for one body (#1845): a plugin is asked streamed and the
 		// reply given whole, its text read the same way
 		req := httptest.NewRequest("POST", "/v1/chat/completions", strings.NewReader(`{"model":"`+model+`","stream":false,"tools":[`+tool+`],"messages":[{"role":"user","content":"go on"}]}`))
-		req.Header.Set("Authorization", "Bearer magpie")
+		req.Header.Set("Authorization", "Bearer magpie-friday")
 		rec := httptest.NewRecorder()
 		h.ServeHTTP(rec, req)
 		body := rec.Body.String()
@@ -90,7 +90,7 @@ func TestPluginTextWrittenCall(t *testing.T) {
 	})
 	t.Run("messages", func(t *testing.T) {
 		req := httptest.NewRequest("POST", "/v1/messages", bytes.NewReader([]byte(`{"model":"`+model+`","stream":true,"max_tokens":100,"tools":[{"name":"bash","input_schema":{"type":"object"}}],"messages":[{"role":"user","content":"go on"}]}`)))
-		req.Header.Set("x-api-key", "magpie")
+		req.Header.Set("x-api-key", "magpie-friday")
 		rec := httptest.NewRecorder()
 		h.ServeHTTP(rec, req)
 		body := rec.Body.String()

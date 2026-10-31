@@ -6,12 +6,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/mcpauth/mcpauthtest"
+	"github.com/cha0sal3r/magpie-friday/internal/mcpauth/mcpauthtest"
 )
 
-// #1478 (xiaozhu1337): a project magpie doesn't keep gets the library's
+// #1478 (xiaozhu1337): a project magpie-friday doesn't keep gets the library's
 // servers by pasting them. What is copied for an agent is, byte for byte,
-// the file magpie writes into a fresh project of its own for that agent,
+// the file magpie-friday writes into a fresh project of its own for that agent,
 // and a server the agent can't reach that way is said, not left in.
 func TestConfigOfServersIsTheProjectFile(t *testing.T) {
 	sandbox(t)
@@ -37,7 +37,7 @@ func TestConfigOfServersIsTheProjectFile(t *testing.T) {
 			t.Errorf("%s: file %q, want %q", id, c.File, ProjectMCPFile(id))
 		}
 		want := read(t, filepath.Join(proj, filepath.FromSlash(c.File)))
-		// left out where a project of magpie's leaves it out: SSE for
+		// left out where a project of magpie-friday's leaves it out: SSE for
 		// Codex and Pi, a reference to a variable where it can't be one
 		var skip []string
 		f := &mcpFile{Format: projectMCPFiles[id].format}
@@ -53,14 +53,14 @@ func TestConfigOfServersIsTheProjectFile(t *testing.T) {
 			t.Errorf("codex took an SSE server")
 		}
 		if c.Text != want {
-			t.Errorf("%s: copied\n%s\nbut a project of magpie's has in %s\n%s", id, c.Text, c.File, want)
+			t.Errorf("%s: copied\n%s\nbut a project of magpie-friday's has in %s\n%s", id, c.Text, c.File, want)
 		}
 		if !slices.Contains(skip, "docs") && !strings.Contains(c.Text, "docs.example") {
 			t.Errorf("%s: no docs server in\n%s", id, c.Text)
 		}
 	}
-	// one magpie is signed in to is reached through the gateway, as a
-	// project of magpie's is given it (#615)
+	// one magpie-friday is signed in to is reached through the gateway, as a
+	// project of magpie-friday's is given it (#615)
 	fk := mcpauthtest.New(t)
 	if _, err := SaveServer("", Server{Name: "neon", Transport: "http", URL: fk.URL}); err != nil {
 		t.Fatal(err)

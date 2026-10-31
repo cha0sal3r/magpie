@@ -9,15 +9,15 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 	"gopkg.in/yaml.v3"
 )
 
-// Most agents can't ask the gateway which models it has: magpie writes the
+// Most agents can't ask the gateway which models it has: magpie-friday writes the
 // catalog into a file of the agent's own (Pi's models.json, OpenCode's
 // provider block, Codex's model catalog …) when a model is picked through
-// magpie. That list was the catalog as it was then, so a provider added
+// magpie-friday. That list was the catalog as it was then, so a provider added
 // later never reached the agent, and one removed stayed listed. SyncCatalog
 // rewrites each such list whenever the catalog may have changed.
 
@@ -26,11 +26,11 @@ var syncing struct {
 	running, again bool
 }
 
-// SyncCatalog brings every model list magpie wrote into an agent's files up
+// SyncCatalog brings every model list magpie-friday wrote into an agent's files up
 // to the catalog as it is now. It is what catalog.Changed is set to, so a
 // provider saved or removed, or a vendor's list fetched anew, reaches the
 // agents; one already running asks for another round rather than waiting.
-// Errors are left for the picker: a file magpie can't write now is one the
+// Errors are left for the picker: a file magpie-friday can't write now is one the
 // next change, or a pick, writes.
 func SyncCatalog() {
 	syncing.Lock()
@@ -43,14 +43,14 @@ func SyncCatalog() {
 	syncing.Unlock()
 	for {
 		// the catalog built once for every agent's lists, not for each
-		// look-up of each (thousands at magpie's start, with 30 providers)
+		// look-up of each (thousands at magpie-friday's start, with 30 providers)
 		release := provider.Hold()
 		renaming := setToFoundGroups()
 		for _, a := range All() {
 			if a.Sync != nil {
 				_ = synced(a.Sync)
 			}
-			// a field magpie set to a found group's id before (autoref.go)
+			// a field magpie-friday set to a found group's id before (autoref.go)
 			if renaming[a.ID] {
 				a.renameFoundGroups()
 			}
@@ -128,12 +128,12 @@ func syncJSON(path, key string, value func() any) error {
 	return edit.SetJSON(path, edit.KV{Path: key, Value: v})
 }
 
-// theirsKept is value, magpie's provider block for the agent, with what
-// else the block at key of the JSON file holds kept: a key magpie doesn't
+// theirsKept is value, magpie-friday's provider block for the agent, with what
+// else the block at key of the JSON file holds kept: a key magpie-friday doesn't
 // write there, at any depth, is the user's or another tool's (Pi's
-// providers.magpie.compat.sendSessionAffinityHeaders, which
+// providers.magpie-friday.compat.sendSessionAffinityHeaders, which
 // pi-cache-optimizer adds, #1103) and stays. The keys named in whole (the
-// model list) are magpie's alone, so a model gone from the catalog leaves
+// model list) are magpie-friday's alone, so a model gone from the catalog leaves
 // the agent's list.
 func theirsKept(path, key string, value func() any, whole ...string) func() any {
 	return func() any {
@@ -180,7 +180,7 @@ func mergeTheirs(have, want map[string]json.RawMessage, whole []string) map[stri
 
 // syncJSONInOrder is syncJSON for a block whose keys' order the agent reads
 // (OpenCode lists a model's variants in theirs): one that says the same in
-// another order is rewritten too, as an older magpie wrote the variants
+// another order is rewritten too, as an older magpie-friday wrote the variants
 // alphabetically (#713).
 func syncJSONInOrder(path, key string, value func() any) error {
 	cur, ok := edit.GetJSON(path, key)
@@ -230,10 +230,10 @@ func sameJSON(raw string, v any) bool {
 }
 
 // yamlKept is value laid over the mapping at key in a YAML file, as
-// theirsKept does for JSON: a key magpie doesn't write stays as the user, or
+// theirsKept does for JSON: a key magpie-friday doesn't write stays as the user, or
 // the app itself, left it, and mappings in both are merged alike. The keys
-// named in own are magpie's: its value, or none when it writes none (#2030's
-// siblings: Hermes writes default_model into magpie's entry itself, and a
+// named in own are magpie-friday's: its value, or none when it writes none (#2030's
+// siblings: Hermes writes default_model into magpie-friday's entry itself, and a
 // whole rewrite dropped it).
 func yamlKept(path, key string, value any, own ...string) any {
 	raw, err := edit.Read(path)
@@ -272,7 +272,7 @@ func mergeKept(have, want map[string]any, own []string) map[string]any {
 	}
 	for k, h := range have {
 		if slices.Contains(own, k) {
-			// magpie's key for the gateway, where the user put a key of
+			// magpie-friday's key for the gateway, where the user put a key of
 			// the gateway's own instead: theirs stays (keyHolds)
 			if hs, ok := h.(string); ok {
 				if ws, ok := want[k].(string); ok && hs != ws && keyHolds(hs, ws) {

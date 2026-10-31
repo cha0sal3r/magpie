@@ -18,7 +18,7 @@ const assets = path.resolve(__dirname, "../assets");
 const HOME = "/Users/aimer";
 const agent = (id, name) => ({ id, name, icon: "", skills: `${HOME}/.${id}/skills`, mcp: `${HOME}/.${id}/mcp.json` });
 const lib = {
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: [agent("codex", "Codex"), agent("pi", "Pi")],
   instructions: { agents: [], sets: [] }, foundServers: [], projects: [], foundSkills: [], skills: [],
   servers: Array.from({ length: 30 }, (_, i) => ({ name: `server-${i + 1}`, transport: "stdio", command: "npx", args: ["fs-mcp"], agents: ["codex"] })),
@@ -28,7 +28,7 @@ const settings = (lang) => ({
   dock: false, dockWindow: false, proxy: "", redact: false, redactPersonal: false, redactWords: [],
   codexWarmup: "", claudeWarmup: "", codexWarmAt: "", claudeWarmAt: "", workbuddyCheckin: false, noStats: false,
   trayUsage: "", trayUsageEvery: 3, vision: "", imageGen: "",
-  version: "0.1.400", dir: "~/.config/magpie", gateway: "http://127.0.0.1:3425",
+  version: "0.1.400", dir: "~/.config/magpie-friday", gateway: "http://127.0.0.1:3425",
   proxyNow: "none", proxySource: "none", login: false,
   visionModels: [], imageGenModels: [], workbuddyCheckins: [], lanURLs: [],
   fx: { rate: 7.2, at: new Date().toISOString(), stale: false },

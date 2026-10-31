@@ -34,12 +34,12 @@ func callNames(l Listing) []string {
 
 // resolve is the npm spec a user's name for a plugin stands for: a short
 // or shown name (workbuddy, WorkBuddy, think-tags, "Qoder", qoder-cn)
-// that names one of magpie's community plugins, case aside, is that
+// that names one of magpie-friday's community plugins, case aside, is that
 // package, at the version given. A scoped package, a path or a git spec is
 // kept as it is, and so is a name no community plugin goes by, which is
 // npm's own (opencode-gemini-auth) once the list was read just now: a
 // short name never reaches npm's unscoped package of that name while a
-// community plugin is called by it, or may be, as far as magpie knows.
+// community plugin is called by it, or may be, as far as magpie-friday knows.
 // npm:name is npm's name, as written.
 func resolve(ctx context.Context, spec string) (string, error) {
 	if after, ok := strings.CutPrefix(spec, npmPrefix); ok {
@@ -75,7 +75,7 @@ func resolve(ctx context.Context, spec string) (string, error) {
 		return found[0] + version, nil
 	case len(found) > 1:
 		sort.Strings(found)
-		return "", fmt.Errorf("%q names more than one of magpie's community plugins: %s; give the one you mean", name, strings.Join(found, ", "))
+		return "", fmt.Errorf("%q names more than one of magpie-friday's community plugins: %s; give the one you mean", name, strings.Join(found, ", "))
 	}
 	valid := pkgName.MatchString(name)
 	if valid && lerr == nil {
@@ -91,7 +91,7 @@ func resolve(ctx context.Context, spec string) (string, error) {
 	if names := listNames(list); names != "" {
 		b.WriteString(". The community plugins")
 		if lerr != nil {
-			b.WriteString(" magpie knows of")
+			b.WriteString(" magpie-friday knows of")
 		}
 		b.WriteString(": " + names)
 	}

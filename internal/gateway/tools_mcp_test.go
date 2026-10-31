@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/gwtool"
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/gwtool"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
 )
 
 // fakePluginTools has the gateway's plugin tools be pts and record the
@@ -62,7 +62,7 @@ func TestToolsMCPServesPluginTools(t *testing.T) {
 		{Spec: "/Users/me/weather-tools", Tools: []plugin.Tool{{Name: "now", Description: "Mine."}}},
 	})
 	h := lanGuard(New().Handler())
-	if m := readMCP(t, toolsPost(h, `{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26"}}`)); m.Result.ServerInfo.Name != "magpie-tools" || m.Result.ProtocolVersion != "2025-03-26" {
+	if m := readMCP(t, toolsPost(h, `{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26"}}`)); m.Result.ServerInfo.Name != "magpie-friday-tools" || m.Result.ProtocolVersion != "2025-03-26" {
 		t.Fatalf("initialize = %+v", m)
 	}
 	m := readMCP(t, toolsPost(h, toolsList))

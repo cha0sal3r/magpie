@@ -1,7 +1,7 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // plugins#304 (ReneXiong): Qoder's plugin read this machine's own device
 // identity, sent it, and was offered no daily credits; it said why in its
-// message, and magpie showed a bare "No check-in event now". An inactive or
+// message, and magpie-friday showed a bare "No check-in event now". An inactive or
 // ineligible check-in now shows the plugin's (or vendor's) message beside
 // the label, on the account's Usage card, wrapped rather than cut off, and
 // in Settings' check-in line; one without a message reads as before.

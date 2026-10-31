@@ -1,8 +1,8 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// #1385 (shenghsi): Codex isn't connected, yet magpie set openai_base_url for
+// #1385 (shenghsi): Codex isn't connected, yet magpie-friday set openai_base_url for
 // it so a request its ChatGPT account has no allowance for goes on to the
-// user's other ChatGPT accounts on in magpie. The row says it goes through
-// magpie for that alone, its title says what turns it off, and a button
+// user's other ChatGPT accounts on in magpie-friday. The row says it goes through
+// magpie-friday for that alone, its title says what turns it off, and a button
 // opens Providers › Codex, where those accounts are switched off. A Codex
 // not failing over says what it said before. In every language, at a narrow
 // width too, in Chromium and WebKit; no click moves the page.
@@ -13,7 +13,7 @@ const { test } = require("node:test");
 const { chromium, webkit } = require("playwright");
 
 const assets = path.resolve(__dirname, "../assets");
-const options = [{ value: "gpt-5.5", label: "GPT-5.5" }, { value: "relay/m1", label: "m1", ref: "relay/m1", note: "Relay · via magpie" }];
+const options = [{ value: "gpt-5.5", label: "GPT-5.5" }, { value: "relay/m1", label: "m1", ref: "relay/m1", note: "Relay · via magpie-friday" }];
 const state = () => ({
   agents: [
     { id: "codex", name: "Codex", icon: "generic", path: "/fixture/codex", failover: true, fields: [{ key: "model", label: "model", value: "gpt-5.5", options }] },
@@ -55,8 +55,8 @@ const codexProvider = {
   },
 };
 
-const said = "Not connected · goes through magpie only to fail over to your other ChatGPT accounts";
-const title = "magpie set openai_base_url in {agent}'s config.toml, so a request the ChatGPT account {agent} is signed in to has no allowance for goes on to your other ChatGPT accounts on in magpie. {agent} keeps to its own models. To stop it, tick Only switch {agent}'s sign-in under Providers › Codex, or switch those accounts off; connecting {agent} adds magpie's models.";
+const said = "Not connected · goes through magpie-friday only to fail over to your other ChatGPT accounts";
+const title = "magpie-friday set openai_base_url in {agent}'s config.toml, so a request the ChatGPT account {agent} is signed in to has no allowance for goes on to your other ChatGPT accounts on in magpie-friday. {agent} keeps to its own models. To stop it, tick Only switch {agent}'s sign-in under Providers › Codex, or switch those accounts off; connecting {agent} adds magpie-friday's models.";
 const button = "ChatGPT accounts";
 const plain = "Not connected · {agent} uses its own settings";
 const row = (id) => `.row.agent[data-id="${id}"]`;

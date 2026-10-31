@@ -11,7 +11,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // strictRelay checks the request as CHCP and Keenc's Vertex relay do
@@ -58,10 +58,10 @@ func (v *strictRelay) all() []map[string]any {
 	return slices.Clone(v.bodies)
 }
 
-// Keenc on Discord: Claude Code 2.1.288 through magpie to a relay got
+// Keenc on Discord: Claude Code 2.1.288 through magpie-friday to a relay got
 // "thinking.adaptive.display: Input should be 'summarized', 'omitted'" (its
 // display "updates") and "messages.1.output_config: Extra inputs are not
-// permitted" (a turn's effort on a system message). magpie asks the relay
+// permitted" (a turn's effort on a system message). magpie-friday asks the relay
 // again without them, and from then on sends it none; the request's own
 // effort and a system message's text stay.
 func TestRelayRefusingClaudeCodesNewShapes(t *testing.T) {
@@ -205,7 +205,7 @@ func (v *commandCodeAPI) all() []map[string]any {
 }
 
 // #1407: Command Code answered Claude Code's system message inside messages
-// with 400 "Invalid input at messages.1.role". magpie asks again with its
+// with 400 "Invalid input at messages.1.role". magpie-friday asks again with its
 // text at the end of the top-level system and an empty one (a turn's effort
 // alone) left out, and sends it that way from then on.
 func TestSystemMessageRefusedGoesOnTop(t *testing.T) {

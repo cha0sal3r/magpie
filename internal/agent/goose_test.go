@@ -12,11 +12,11 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // Unexpanded folder variables must not send a config write into ./~/….
@@ -88,7 +88,7 @@ func TestGooseDetectSkipsGoGoose(t *testing.T) {
 	}
 }
 
-// Goose is offered magpie's models, and picking one makes magpie a custom
+// Goose is offered magpie-friday's models, and picking one makes magpie-friday a custom
 // provider of Goose's that hands it each model's window and says which
 // models Goose can send a thinking level (wani on Discord: Goose's GUI
 // offered no thinking level and had the context wrong). A model Goose sends
@@ -105,13 +105,13 @@ func TestGooseRunsOnMagpie(t *testing.T) {
 	for _, o := range f.Options(map[string]string{}) {
 		vals = append(vals, o.Value)
 	}
-	if !slices.Contains(vals, "magpie/relay/glm-4.6") || !slices.Contains(vals, "magpie/oa/gpt-5.5") {
-		t.Fatalf("magpie's models not offered: %v", vals)
+	if !slices.Contains(vals, "magpie-friday/relay/glm-4.6") || !slices.Contains(vals, "magpie-friday/oa/gpt-5.5") {
+		t.Fatalf("magpie-friday's models not offered: %v", vals)
 	}
-	if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
-	if got := f.Get(); got != "magpie/relay/glm-4.6" {
+	if got := f.Get(); got != "magpie-friday/relay/glm-4.6" {
 		t.Fatalf("model = %q", got)
 	}
 	file := gooseProviderPath(a.Path)
@@ -136,7 +136,7 @@ func TestGooseRunsOnMagpie(t *testing.T) {
 	if err := json.Unmarshal([]byte(readFile(file)), &p); err != nil {
 		t.Fatalf("%v: %s", err, readFile(file))
 	}
-	if p.Name != "magpie" || p.Engine != "openai" || p.BaseURL != gatewayV1() ||
+	if p.Name != "magpie-friday" || p.Engine != "openai" || p.BaseURL != gatewayV1() ||
 		p.Headers["Authorization"] != "Bearer "+gateway.TokenFor("goose") || p.APIKeyEnv == nil || *p.APIKeyEnv != "" ||
 		p.RequiresAuth == nil || *p.RequiresAuth || p.DynamicModels == nil || *p.DynamicModels || !p.Skip {
 		t.Fatalf("provider: %s", readFile(file))
@@ -183,15 +183,15 @@ func TestGooseRunsOnMagpie(t *testing.T) {
 	}
 }
 
-// goose sends no User-Agent, so the key magpie hands it is the one that
+// goose sends no User-Agent, so the key magpie-friday hands it is the one that
 // names it (#1083, EZN7L2C3: Goose's requests showed as "your agent" on
-// Routing and "other" in Usage). A custom provider an older magpie wrote
+// Routing and "other" in Usage). A custom provider an older magpie-friday wrote
 // with the plain key counts as drift, and a sync puts the named key in.
 func TestGooseKeyNamesGoose(t *testing.T) {
 	home := syncHome(t)
 	t.Setenv("APPDATA", filepath.Join(home, "AppData", "Roaming"))
 	a := goose(home, filepath.Join(home, ".config"))
-	if err := a.Fields[0].Set("magpie/relay/glm-4.6"); err != nil {
+	if err := a.Fields[0].Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	file := gooseProviderPath(a.Path)
@@ -203,7 +203,7 @@ func TestGooseKeyNamesGoose(t *testing.T) {
 		t.Fatalf("check: %s", c)
 	}
 
-	// the file an older magpie wrote
+	// the file an older magpie-friday wrote
 	if err := edit.SetJSON(file, edit.KV{Path: "headers.Authorization", Value: "Bearer " + gateway.Token}); err != nil {
 		t.Fatal(err)
 	}
@@ -219,8 +219,8 @@ func TestGooseKeyNamesGoose(t *testing.T) {
 }
 
 // Goose's own providers are offered only when this goose is set up with
-// them (#987, EZN7L2C3: a Goose with only magpie listed OpenRouter and its
-// hundreds of models, which magpie's show/hide list can't hide): one its
+// them (#987, EZN7L2C3: a Goose with only magpie-friday listed OpenRouter and its
+// hundreds of models, which magpie-friday's show/hide list can't hide): one its
 // providers map marks configured, one a legacy <name>_configured marker
 // names, the one it uses, and one whose key is in the environment.
 func TestGooseOffersOnlyItsConfiguredProviders(t *testing.T) {
@@ -250,13 +250,13 @@ func TestGooseOffersOnlyItsConfiguredProviders(t *testing.T) {
 		t.Fatal("the test catalog lists no OpenRouter or Anthropic models")
 	}
 
-	// the reporter's: magpie alone
-	os.WriteFile(a.Path, []byte("active_provider: magpie\nGOOSE_PROVIDER: magpie\nGOOSE_MODEL: zhipu/glm-5.3\nproviders:\n  magpie:\n    enabled: true\n    model: zhipu/glm-5.3\n    configured: true\n"), 0o644)
+	// the reporter's: magpie-friday alone
+	os.WriteFile(a.Path, []byte("active_provider: magpie-friday\nGOOSE_PROVIDER: magpie-friday\nGOOSE_MODEL: zhipu/glm-5.3\nproviders:\n  magpie-friday:\n    enabled: true\n    model: zhipu/glm-5.3\n    configured: true\n"), 0o644)
 	if got := natives(); len(got) != 0 {
-		t.Fatalf("a goose on magpie alone is offered %v", got)
+		t.Fatalf("a goose on magpie-friday alone is offered %v", got)
 	}
 
-	os.WriteFile(a.Path, []byte("active_provider: magpie\nproviders:\n  magpie:\n    configured: true\n  anthropic:\n    enabled: true\n    model: claude-sonnet-4-5\n    configured: true\n  openai:\n    enabled: true\n    configured: false\ngoogle_configured: true\n"), 0o644)
+	os.WriteFile(a.Path, []byte("active_provider: magpie-friday\nproviders:\n  magpie-friday:\n    configured: true\n  anthropic:\n    enabled: true\n    model: claude-sonnet-4-5\n    configured: true\n  openai:\n    enabled: true\n    configured: false\ngoogle_configured: true\n"), 0o644)
 	got := natives()
 	if !got["anthropic"] || !got["google"] || got["openai"] || got["openrouter"] {
 		t.Fatalf("configured anthropic (map) and google (marker), not openai or openrouter; got %v", got)
@@ -302,8 +302,8 @@ func gooseUses(t *testing.T, path string) string {
 // Goose's model is read and written in the layout its config is in (#987's
 // Goose 1.53: active_provider and the providers map, where an older goose
 // had GOOSE_PROVIDER and GOOSE_MODEL). On a migrated config the flat keys
-// alone are read by no goose and deleted at its next write, so magpie showed
-// no model and a model picked in magpie was never used.
+// alone are read by no goose and deleted at its next write, so magpie-friday showed
+// no model and a model picked in magpie-friday was never used.
 func TestGooseModelInEitherLayout(t *testing.T) {
 	home := syncHome(t)
 	t.Setenv("APPDATA", filepath.Join(home, "AppData", "Roaming"))
@@ -311,10 +311,10 @@ func TestGooseModelInEitherLayout(t *testing.T) {
 	f := a.Field("model")
 	os.MkdirAll(filepath.Dir(a.Path), 0o755)
 
-	// the reporter's: migrated, magpie in use, and another provider set up
-	writeFile(t, a.Path, "# mine\nGOOSE_MODE: auto\nactive_provider: magpie\nproviders:\n  magpie:\n    enabled: true\n    model: zhipu/glm-5.3\n    configured: true\n  anthropic:\n    enabled: true\n    model: claude-sonnet-4-5\n    configured: true\n")
-	if got := f.Get(); got != "magpie/zhipu/glm-5.3" {
-		t.Fatalf("model = %q, want magpie/zhipu/glm-5.3", got)
+	// the reporter's: migrated, magpie-friday in use, and another provider set up
+	writeFile(t, a.Path, "# mine\nGOOSE_MODE: auto\nactive_provider: magpie-friday\nproviders:\n  magpie-friday:\n    enabled: true\n    model: zhipu/glm-5.3\n    configured: true\n  anthropic:\n    enabled: true\n    model: claude-sonnet-4-5\n    configured: true\n")
+	if got := f.Get(); got != "magpie-friday/zhipu/glm-5.3" {
+		t.Fatalf("model = %q, want magpie-friday/zhipu/glm-5.3", got)
 	}
 	if err := f.Set("anthropic/claude-opus-5-5"); err != nil {
 		t.Fatal(err)
@@ -325,8 +325,8 @@ func TestGooseModelInEitherLayout(t *testing.T) {
 	if got := f.Get(); got != "anthropic/claude-opus-5-5" {
 		t.Fatalf("model = %q", got)
 	}
-	if m, _ := edit.GetYAML(a.Path, "providers.magpie.model"); m != "zhipu/glm-5.3" {
-		t.Fatalf("magpie's entry changed: %s", readFile(a.Path))
+	if m, _ := edit.GetYAML(a.Path, "providers.magpie-friday.model"); m != "zhipu/glm-5.3" {
+		t.Fatalf("magpie-friday's entry changed: %s", readFile(a.Path))
 	}
 	if _, ok := edit.GetYAMLTop(a.Path, "GOOSE_PROVIDER"); ok {
 		t.Fatalf("flat keys written beside the map: %s", readFile(a.Path))
@@ -335,10 +335,10 @@ func TestGooseModelInEitherLayout(t *testing.T) {
 		t.Fatalf("the user's own lost: %s", readFile(a.Path))
 	}
 
-	if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
-	if got := gooseUses(t, a.Path); got != "magpie/relay/glm-4.6" {
+	if got := gooseUses(t, a.Path); got != "magpie-friday/relay/glm-4.6" {
 		t.Fatalf("goose uses %q:\n%s", got, readFile(a.Path))
 	}
 	if c := a.Check(); c != "" {
@@ -348,7 +348,7 @@ func TestGooseModelInEitherLayout(t *testing.T) {
 		t.Fatal(err)
 	}
 	if a.Check() == "" {
-		t.Fatal("magpie in use through active_provider, a rewritten base_url not noticed")
+		t.Fatal("magpie-friday in use through active_provider, a rewritten base_url not noticed")
 	}
 
 	if err := f.Set(""); err != nil {
@@ -360,16 +360,16 @@ func TestGooseModelInEitherLayout(t *testing.T) {
 	if _, ok := edit.GetYAMLTop(a.Path, "active_provider"); ok {
 		t.Fatalf("active_provider left: %s", readFile(a.Path))
 	}
-	if _, ok := edit.GetYAML(a.Path, "providers.magpie.model"); ok {
-		t.Fatalf("magpie's entry left: %s", readFile(a.Path))
+	if _, ok := edit.GetYAML(a.Path, "providers.magpie-friday.model"); ok {
+		t.Fatalf("magpie-friday's entry left: %s", readFile(a.Path))
 	}
 	if m, _ := edit.GetYAML(a.Path, "providers.anthropic.model"); m != "claude-opus-5-5" {
 		t.Fatalf("anthropic's entry lost: %s", readFile(a.Path))
 	}
 
 	// a stale flat key beside the map: goose takes active_provider's
-	writeFile(t, a.Path, "GOOSE_PROVIDER: openai\nGOOSE_MODEL: gpt-5.5\nactive_provider: magpie\nproviders:\n  magpie:\n    model: relay/glm-4.6\n")
-	if got := f.Get(); got != "magpie/relay/glm-4.6" {
+	writeFile(t, a.Path, "GOOSE_PROVIDER: openai\nGOOSE_MODEL: gpt-5.5\nactive_provider: magpie-friday\nproviders:\n  magpie-friday:\n    model: relay/glm-4.6\n")
+	if got := f.Get(); got != "magpie-friday/relay/glm-4.6" {
 		t.Fatalf("model = %q, want active_provider's", got)
 	}
 
@@ -378,27 +378,27 @@ func TestGooseModelInEitherLayout(t *testing.T) {
 	if got := f.Get(); got != "anthropic/claude-opus-5-5" {
 		t.Fatalf("model = %q", got)
 	}
-	if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
-	if got := readFile(a.Path); got != "GOOSE_PROVIDER: magpie\nGOOSE_MODEL: relay/glm-4.6\n" {
+	if got := readFile(a.Path); got != "GOOSE_PROVIDER: magpie-friday\nGOOSE_MODEL: relay/glm-4.6\n" {
 		t.Fatalf("old layout rewritten:\n%s", got)
 	}
-	if got := gooseUses(t, a.Path); got != "magpie/relay/glm-4.6" {
+	if got := gooseUses(t, a.Path); got != "magpie-friday/relay/glm-4.6" {
 		t.Fatalf("goose uses %q", got)
 	}
 }
 
-// What the user set on magpie's custom provider in Goose stays through every
+// What the user set on magpie-friday's custom provider in Goose stays through every
 // sync and pick (#2030's siblings): a name, a timeout, the tool shim, a
-// header beside magpie's key. The engine, address, key and model list stay
-// magpie's.
+// header beside magpie-friday's key. The engine, address, key and model list stay
+// magpie-friday's.
 func TestGooseKeepsTheUsersSettings(t *testing.T) {
 	home := syncHome(t)
 	t.Setenv("APPDATA", filepath.Join(home, "AppData", "Roaming"))
 	a := goose(home, filepath.Join(home, ".config"))
 	f := a.Fields[0]
-	if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	file := gooseProviderPath(a.Path)
@@ -448,11 +448,11 @@ func TestGooseKeepsTheUsersSettings(t *testing.T) {
 		}
 		if got.BaseURL != gatewayV1() || got.Engine != "openai" || got.Headers["Authorization"] != "Bearer "+gateway.TokenFor("goose") ||
 			slices.Contains(ids, "gone/old") || !slices.Contains(ids, "deepseek/pro") {
-			t.Errorf("%s: magpie's own parts not written:\n%s", when, raw)
+			t.Errorf("%s: magpie-friday's own parts not written:\n%s", when, raw)
 		}
 	}
 	check("sync")
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	check("pick")

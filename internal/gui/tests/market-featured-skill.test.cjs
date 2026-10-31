@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// magpie's own skill (magpie-quota, ttmouse on X) is first in the market's
+// magpie-friday's own skill (magpie-friday-quota, ttmouse on X) is first in the market's
 // skills: until skills.sh lists it there is no count of installs to show and
 // no skills.sh page to link, so its card and sheet show neither, where a
 // skills.sh skill keeps both. Every language, a narrow window, both engines.
@@ -13,7 +13,7 @@ const { chromium, webkit } = require("playwright");
 const assets = path.resolve(__dirname, "../assets");
 const HOME = "/Users/tester";
 const items = [
-  { id: "magpie-community/plugins/magpie-quota", name: "magpie-quota", source: "magpie-community/plugins", skillId: "magpie-quota", installs: 0, official: true, featured: true, icon: "https://github.com/magpie-community.png?size=96", description: "Check what is left of every subscription." },
+  { id: "magpie-community/plugins/magpie-friday-quota", name: "magpie-friday-quota", source: "magpie-community/plugins", skillId: "magpie-friday-quota", installs: 0, official: true, featured: true, icon: "https://github.com/magpie-community.png?size=96", description: "Check what is left of every subscription." },
   { id: "acme/skills/pdf", name: "pdf", source: "acme/skills", skillId: "pdf", installs: 1200, icon: "https://github.com/acme.png?size=96", description: "PDFs" },
 ];
 
@@ -29,7 +29,7 @@ function serve(lang, asked) {
     if (url.pathname === "/api/plugins") return json({ plugins: [] });
     if (url.pathname === "/api/library") {
       return json({
-        dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+        dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
         agents: [{ id: "claude", name: "Claude Code", icon: "claudecode-color", skills: `${HOME}/.claude/skills`, mcp: `${HOME}/.claude.json` }],
         instructions: { agents: [], sets: [] }, servers: [], foundServers: [], projects: [], foundSkills: [], skills: [], problems: [],
       });
@@ -56,7 +56,7 @@ function serve(lang, asked) {
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
   for (const lang of ["en", "zh", "ja", "de"]) {
-    test(`${engine} ${lang}: magpie's own skill shows no installs and no skills.sh link`, async (t) => {
+    test(`${engine} ${lang}: magpie-friday's own skill shows no installs and no skills.sh link`, async (t) => {
       const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: "chromium" }));
       const context = await browser.newContext({ viewport: { width: 520, height: 760 }, reducedMotion: "reduce" });
       const page = await context.newPage();
@@ -70,12 +70,12 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       await page.goto("http://magpie.test/?view=library");
       const view = page.locator("#view-library");
       const card = (id) => view.locator(`.mk[data-market="skills"] .mk-card[data-id="${id}"]`);
-      const own = card("magpie-community/plugins/magpie-quota"), pdf = card("acme/skills/pdf");
+      const own = card("magpie-community/plugins/magpie-friday-quota"), pdf = card("acme/skills/pdf");
       await own.waitFor();
       await pdf.waitFor();
 
       // first, marked official, nothing where a count would be
-      assert.equal(await view.locator('.mk[data-market="skills"] .mk-card').first().getAttribute("data-id"), "magpie-community/plugins/magpie-quota");
+      assert.equal(await view.locator('.mk[data-market="skills"] .mk-card').first().getAttribute("data-id"), "magpie-community/plugins/magpie-friday-quota");
       assert.equal(await own.locator(".mk-official").count(), 1);
       assert.equal(await own.locator(".mk-installs").count(), 0);
       assert.equal(await own.locator(".mk-add").count(), 1);

@@ -17,8 +17,8 @@ const assets = path.resolve(__dirname, "../assets");
 const options = [
   { value: "glm-5-2", label: "glm-5-2", note: "routing group", group: "Routing groups" },
   { value: "seed-evolving", label: "Seed Evolving", note: "routing group", group: "Routing groups" },
-  { value: "volc/doubao-seed", label: "doubao-seed", note: "Volcengine · via magpie", icon: "volcengine-color", group: "Volcengine", ref: "volc/doubao-seed" },
-  { value: "zhipu/glm-5-2", label: "GLM-5.2", note: "Zhipu · via magpie", icon: "zhipu-color", group: "Zhipu", ref: "zhipu/glm-5-2" },
+  { value: "volc/doubao-seed", label: "doubao-seed", note: "Volcengine · via magpie-friday", icon: "volcengine-color", group: "Volcengine", ref: "volc/doubao-seed" },
+  { value: "zhipu/glm-5-2", label: "GLM-5.2", note: "Zhipu · via magpie-friday", icon: "zhipu-color", group: "Zhipu", ref: "zhipu/glm-5-2" },
 ];
 const state = (value) => ({
   agents: [{ id: "claude", name: "Claude Code", icon: "claudecode-color", path: "/test/settings.json", wired: true,

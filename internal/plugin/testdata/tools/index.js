@@ -1,4 +1,4 @@
-// A plugin giving tools (OpenCode's tool hook), which magpie offers every
+// A plugin giving tools (OpenCode's tool hook), which magpie-friday offers every
 // agent through its plugin tools MCP server. A real plugin writes
 //
 //   import { tool } from "@opencode-ai/plugin"

@@ -25,9 +25,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/routes"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/routes"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // usageHalfLife is how fast the tokens a key served stop counting against
@@ -191,7 +191,7 @@ const (
 	// someone does, or lifts its rest in the app
 	verifyRest = 30 * time.Minute
 	// verifyHold is how long the last one left, refused for verification,
-	// is answered that way by magpie without asking again: an agent's
+	// is answered that way by magpie-friday without asking again: an agent's
 	// reconnects don't all land on the account Google has stopped
 	verifyHold = time.Minute
 	// restrictedRest: an account its vendor restricted (WorkBuddy's 403
@@ -223,7 +223,7 @@ var (
 	usedUpWords = regexp.MustCompile(`(?i)quota|usage.?limit|out of budget|budget (exceeded|exhausted)|limit.?reached|hit your .*limit|limit.{0,24}resets|exceeded.*(plan|limit)|额度|用量|套餐|上限`)
 	// rateWords: a 429 that is a short rate limit — requests or tokens per
 	// minute — which usedUpWords took for a used-up plan ("Rate limit
-	// exceeded", "reached"): as magpie words an upstream error, with
+	// exceeded", "reached"): as magpie-friday words an upstream error, with
 	// "rate_limit_error" for its type, every such 429 was, and rested a
 	// quarter of an hour rather than a minute (#153).
 	rateWords = regexp.MustCompile(`(?i)rate.?limit|too many requests|per.?(second|sec|minute|min)\b|\b[rt]pm\b|频率|太频繁`)
@@ -311,7 +311,7 @@ const (
 	// failEffort: the account's plan doesn't take the reasoning level
 	// asked for (#520) — another account is asked, and nobody rests
 	failEffort = "effort"
-	// failProxy: the proxy magpie sends through (its own setting, the
+	// failProxy: the proxy magpie-friday sends through (its own setting, the
 	// *_PROXY variables, the system's) didn't take the connection (#381) —
 	// nothing reached the vendor, so the next one is asked, and nobody rests
 	failProxy = "proxy"
@@ -442,17 +442,17 @@ func failureOf(c candidate, status int, body []byte) string {
 	return failure(status, body)
 }
 
-// restrictedSaid says an error is one magpie already put in words as an
+// restrictedSaid says an error is one magpie-friday already put in words as an
 // account its vendor restricted: WorkBuddy's 11140 as the built-in
 // translates it, or as the plugin does, both ending in
 // provider.WBRestrictedHint, and ZCode's Start Plan 3012 as the ZCode
-// plugin puts it (provider.ZCodeRestrictedHint, plugins#348). magpie's own
+// plugin puts it (provider.ZCodeRestrictedHint, plugins#348). magpie-friday's own
 // words, which no vendor says, so they are read whoever answered.
 func restrictedSaid(status int, body []byte) bool {
 	return status >= 400 && (bytes.Contains(body, []byte(provider.WBRestrictedHint)) || bytes.Contains(body, []byte(provider.ZCodeRestrictedHint)))
 }
 
-// restrictedRefused says p's vendor restricted the account: magpie's words
+// restrictedRefused says p's vendor restricted the account: magpie-friday's words
 // for it (restrictedSaid), or WorkBuddy's own answer as it came — its code
 // 11140 or its displayMsg's words — from a WorkBuddy account, the
 // built-in's or the plugin's. Another vendor's code 11140 is its own, and
@@ -521,7 +521,7 @@ type Rest struct {
 	agent, user string
 	said        string    // the error it gave, for a failVerify held
 	hold        time.Time // until when a failVerify is answered without asking
-	// a key out of its allowance or credit for as long as magpie guessed,
+	// a key out of its allowance or credit for as long as magpie-friday guessed,
 	// the vendor and the user naming no time, is held (quotaHeld) once it
 	// was refused so twice in a row, not on the first refusal (first),
 	// and asked again from askAt, a minute on: zoecats on Discord, a local
@@ -532,7 +532,7 @@ type Rest struct {
 }
 
 // asksAt is when r, a key's rest out of its allowance or credit, has it
-// asked again: at once after its first refusal, a minute on when magpie
+// asked again: at once after its first refusal, a minute on when magpie-friday
 // guessed how long it is out, else when it is back. Any other rest asks
 // when it ends.
 func (r Rest) asksAt(now time.Time) time.Time {
@@ -667,7 +667,7 @@ func (s *Server) UnrestAll(key string) int {
 
 // verifyHeld is the error to give again, without asking, for a candidate
 // its vendor refused a moment ago until the account is verified: rested
-// whole, or only its model where that is how it rests (a Remote magpie's
+// whole, or only its model where that is how it rests (a Remote magpie-friday's
 // model, remoteModelRest).
 func verifyHeld(c candidate) (string, bool) {
 	r, ok := restOf(c.restKey())
@@ -736,9 +736,9 @@ var zhipuResets = regexp.MustCompile(`(?:\bYour limit will reset at|您的限额
 
 // heldClock is when a key or model held out of its allowance is asked
 // again, as an error put in words says it. The agent reading it, or a
-// Remote magpie's user, may be on another clock than this magpie's, so the
+// Remote magpie-friday's user, may be on another clock than this magpie-friday's, so the
 // offset goes with it: "20:12 UTC+8" today, else "Oct 16 09:00 UTC+8".
-// Without it a magpie on UTC+8 said "not asked again before 17:12" to a
+// Without it a magpie-friday on UTC+8 said "not asked again before 17:12" to a
 // user who couldn't tell whose 17:12 it was (Player on Discord).
 func heldClock(t, now time.Time) string { return heldClockIn(t, now, time.Local) }
 
@@ -959,7 +959,7 @@ func (s *Server) restAfterMarked(c candidate, status int, header http.Header, bo
 	// (#1235): the key's other models are still served
 	unserved := why == failOther && (modelRefused(status, body) || codeAssistModelMissing(c.p, status, body))
 	r := Rest{Why: why, Status: status, By: "cooldown"}
-	// out of allowance or credit for as long as magpie guessed: the vendor
+	// out of allowance or credit for as long as magpie-friday guessed: the vendor
 	// named no time, nor did the user (asksAt)
 	guessed := false
 	// a failure counted past the account's, for its model alone (below)
@@ -1109,7 +1109,7 @@ func (s *Server) restAfterMarked(c candidate, status int, header http.Header, bo
 		staleAllowance(a.UsageAgent(), a.User) // ask again what it has left
 		if why == failQuota && a.UsageAgent() == "codex" {
 			// the account Codex is signed in to may be out: the Codex app
-			// greys its Send till it knows magpie is its provider
+			// greys its Send till it knows magpie-friday is its provider
 			codexMayBeUsedUp(a.User)
 		}
 	} else if a == nil && why != failOther && why != failVerify && why != failRestricted {
@@ -1165,7 +1165,7 @@ func (s *Server) restAfterMarked(c candidate, status int, header http.Header, bo
 	}
 	restingUntil.Lock()
 	if why == failQuota || why == failCredit {
-		// out for as long as magpie guessed: refused so the time before
+		// out for as long as magpie-friday guessed: refused so the time before
 		// too, it is held from now on, and asked again a minute on; a
 		// refusal on its own is asked once more. A time the vendor named,
 		// or the user set, holds it from the first
@@ -1186,22 +1186,22 @@ func (s *Server) restAfterMarked(c candidate, status int, header http.Header, bo
 }
 
 // remoteModelRest says a refusal for want of quota, credit or rate rests
-// only the model it was about, when it came from another computer's magpie
-// (a Remote magpie provider, LAN share): that magpie serves each of its
+// only the model it was about, when it came from another computer's magpie-friday
+// (a Remote magpie-friday provider, LAN share): that magpie-friday serves each of its
 // models from its own providers and rests them itself, so one of them out
 // of quota there says nothing of the others (bigsteven on Discord: the
 // remote's 429 for one model rested every model on it for the 3 hours it
 // named). A restricted account, or one its vendor wants verified first, is
 // that computer's account too, on the model it serves there (#1849: the
-// restricted one says so in magpie's own words, which no vendor uses, so
+// restricted one says so in magpie-friday's own words, which no vendor uses, so
 // the refusal is read whoever answered). Its key refused, or the computer
 // unreachable, still rests it whole, and so does the key's own limit there
 // (keyLimited's 429, with remoteKeyLimitHeader), which refuses every model
-// alike (#2077). A magpie added by hand, as an OpenAI-compatible provider
+// alike (#2077). A magpie-friday added by hand, as an OpenAI-compatible provider
 // of its own name, is one all the same: its reply names the provider that
 // answered there (providerHeader, which keepRetry notes as
 // answeredThereHeader), as no vendor's does (lagrangepoint1813
-// on Discord: "Remote Magpie: Claude Code: You've hit your session
+// on Discord: "Remote magpie-friday: Claude Code: You've hit your session
 // limit" answered every model of it for the five hours it named).
 func remoteModelRest(c candidate, why string, header http.Header) bool {
 	if !c.p.IsRemoteMagpie() && header.Get(answeredThereHeader) == "" || header.Get(remoteKeyLimitHeader) != "" {
@@ -1352,7 +1352,7 @@ func spendsCredits(p provider.Provider, a provider.Allowance) bool {
 }
 
 // allowance is the candidate's allowance as last known: a subscription
-// account's, or a key's own windows when magpie reads them (a sub2api
+// account's, or a key's own windows when magpie-friday reads them (a sub2api
 // key's limits, provider.KeyAllowance). ok is false when it isn't known.
 func (c candidate) allowance() (provider.Allowance, bool) {
 	if a := c.p.Account; a != nil {
@@ -1383,8 +1383,8 @@ func keepRetry(dst, src http.Header, body []byte) {
 		}
 	}
 	if who := src.Get(providerHeader); who != "" {
-		// another magpie refused it, naming its provider that did: this
-		// magpie's own name for the provider goes in the same header
+		// another magpie-friday refused it, naming its provider that did: this
+		// magpie-friday's own name for the provider goes in the same header
 		// (noteMember), so it is noted beside it, for restAfter
 		dst.Set(answeredThereHeader, who)
 	}
@@ -1402,8 +1402,8 @@ func keepRetry(dst, src http.Header, body []byte) {
 }
 
 // answeredThereHeader carries, from keepRetry to restAfter, the provider
-// another magpie named on its refusal (providerHeader): the refusal is
-// that magpie's model's (remoteModelRest).
+// another magpie-friday named on its refusal (providerHeader): the refusal is
+// that magpie-friday's model's (remoteModelRest).
 const answeredThereHeader = "X-Magpie-Answered-There"
 
 // refusedHeader carries, from keepRetry to settle, that an error status

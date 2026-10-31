@@ -71,7 +71,7 @@ func TestDshDesktopAppIsNoMissingCLI(t *testing.T) {
 	}
 	a := dsh(home)
 	// a name no machine has: proc.FindTool also looks where users' tools go
-	a.Bin = "magpie-test-gone-dsh"
+	a.Bin = "magpie-friday-test-gone-dsh"
 	offered := func() bool {
 		for _, x := range installsOf([]*Agent{a}, "darwin", true) {
 			if x.ID == "dsh" {
@@ -120,9 +120,9 @@ func TestDshDesktopAppIsNoMissingCLI(t *testing.T) {
 	}
 }
 
-// The desktop app alone, its profile as its first start leaves it: magpie's
+// The desktop app alone, its profile as its first start leaves it: magpie-friday's
 // model set goes into that profile and dsh's key store, and nothing reads it
-// as no longer going through magpie.
+// as no longer going through magpie-friday.
 func TestDshDesktopOnlyWired(t *testing.T) {
 	home, dir, _ := dshRouteHome(t)
 	t.Setenv("PATH", t.TempDir())
@@ -137,7 +137,7 @@ func TestDshDesktopOnlyWired(t *testing.T) {
 	if a.Path != desktop {
 		t.Fatalf("edits %s, not the desktop app's profile", a.Path)
 	}
-	if err := a.Field("model").Set("magpie/deepseek/flash"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
 	b, _ := os.ReadFile(desktop)
@@ -147,7 +147,7 @@ func TestDshDesktopOnlyWired(t *testing.T) {
 	if v, _ := os.ReadFile(filepath.Join(dir, ".credentials.yaml")); !strings.Contains(string(v), dshKeyRef+": ") {
 		t.Fatalf("no key in dsh's store:\n%s", v)
 	}
-	if got := a.Field("model").Get(); got != "magpie/deepseek/flash" {
+	if got := a.Field("model").Get(); got != "magpie-friday/deepseek/flash" {
 		t.Fatalf("model reads %q", got)
 	}
 	if d := a.Check(); d != "" {
@@ -158,10 +158,10 @@ func TestDshDesktopOnlyWired(t *testing.T) {
 	}
 }
 
-// The desktop app first opened while magpie runs, after the CLI's web
+// The desktop app first opened while magpie-friday runs, after the CLI's web
 // profile was wired: its new profile, dsh's empty template, listed none of
-// magpie's models, and the Agents page said DeepSeek Harness no longer goes
-// through magpie until Reapply or magpie's next start (only the catalog sync
+// magpie-friday's models, and the Agents page said DeepSeek Harness no longer goes
+// through magpie-friday until Reapply or magpie-friday's next start (only the catalog sync
 // filled new profiles). The serving round now fills a profile dsh has just
 // made; one with entries of its own, the user's, is still left to Reapply.
 func TestDshDesktopProfileMadeWhileServing(t *testing.T) {
@@ -170,7 +170,7 @@ func TestDshDesktopProfileMadeWhileServing(t *testing.T) {
 		t.Fatal(err)
 	}
 	a := dsh(home)
-	if err := a.Field("model").Set("magpie/deepseek/flash"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
 	if d := a.Check(); d != "" {
@@ -198,7 +198,7 @@ func TestDshDesktopProfileMadeWhileServing(t *testing.T) {
 	}
 
 	// a profile with the user's own entries and no route is theirs: the
-	// round doesn't put magpie in it
+	// round doesn't put magpie-friday in it
 	own := "- id: agent-default-model\n  config:\n    provider: deepseek-official\n    model: deepseek-v4-pro\n"
 	if err := os.WriteFile(desktop, []byte(own), 0o644); err != nil {
 		t.Fatal(err)
@@ -213,10 +213,10 @@ func TestDshDesktopProfileMadeWhileServing(t *testing.T) {
 
 // #2279 (liangjinyuan-sihan): DeepSeek Harness Desktop installed and not yet
 // opened has no ~/.dsh, so the Agents page had no DeepSeek Harness row and
-// magpie nowhere to write: with no profile, a model picked went to
+// magpie-friday nowhere to write: with no profile, a model picked went to
 // config.yaml, which no dsh since 0.1.5 reads. The app now counts as dsh
 // here, and its profile is made as the app's first start makes it — dsh's
-// template — with magpie's route in it. The app keeps a patch list it
+// template — with magpie-friday's route in it. The app keeps a patch list it
 // finds (initProfile writes only missing files), so its first start adds
 // its package.json beside it. Disconnect before then takes it out again;
 // the user's own key in dsh's store survives both.
@@ -245,10 +245,10 @@ func TestDshDesktopNeverOpened(t *testing.T) {
 		t.Fatalf("names %s, not the desktop app's profile", a.Path)
 	}
 	if dshProfileTemplate != dshDesktopPatch {
-		t.Fatal("the template magpie writes isn't dsh's")
+		t.Fatal("the template magpie-friday writes isn't dsh's")
 	}
 
-	// the user's own key in dsh's store, set before magpie came
+	// the user's own key in dsh's store, set before magpie-friday came
 	creds := filepath.Join(dir, ".credentials.yaml")
 	if err := os.MkdirAll(dir, 0o700); err != nil {
 		t.Fatal(err)
@@ -257,12 +257,12 @@ func TestDshDesktopNeverOpened(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err := a.Pick("model", "magpie/deepseek/flash"); err != nil {
+	if err := a.Pick("model", "magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
 	s := read(desktop)
 	if !strings.HasPrefix(s, strings.TrimSuffix(dshDesktopPatch, "[]\n")) || !strings.Contains(s, "apiKeyEnv: "+dshKeyRef) || !strings.Contains(s, "provider: "+dshRoute) {
-		t.Fatalf("the desktop profile magpie made:\n%s", s)
+		t.Fatalf("the desktop profile magpie-friday made:\n%s", s)
 	}
 	if _, err := os.Stat(filepath.Join(dir, "config.yaml")); err == nil {
 		t.Fatal("wrote config.yaml, which dsh 0.2 doesn't read")
@@ -278,22 +278,22 @@ func TestDshDesktopNeverOpened(t *testing.T) {
 		t.Fatalf("notice: %q", n)
 	}
 
-	// Disconnect before the app ever opened: what magpie made goes, the
+	// Disconnect before the app ever opened: what magpie-friday made goes, the
 	// user's key stays
 	if err := a.Disconnect(); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := os.Stat(filepath.Join(dir, "profiles")); !os.IsNotExist(err) {
-		t.Fatalf("the profile magpie made outlived Disconnect: %v\n%s", err, read(desktop))
+		t.Fatalf("the profile magpie-friday made outlived Disconnect: %v\n%s", err, read(desktop))
 	}
 	if c := read(creds); !strings.Contains(c, "MINE_API_KEY: sk-mine") || strings.Contains(c, dshKeyRef) {
 		t.Fatalf("dsh's key store after Disconnect:\n%s", c)
 	}
 
 	// connected again, and the app's first start: its files beside
-	// magpie's patch list, which it keeps
+	// magpie-friday's patch list, which it keeps
 	a = dsh(home)
-	if err := a.Pick("model", "magpie/deepseek/flash"); err != nil {
+	if err := a.Pick("model", "magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
 	for name, body := range map[string]string{"package.json": "{\n  \"name\": \"dsh-profile-desktop\"\n}\n", "pnpm-workspace.yaml": "packages:\n  - .\n"} {
@@ -381,7 +381,7 @@ func TestDshDesktopRegisteredAnyHive(t *testing.T) {
 	}
 }
 
-// sungoku (#2325, macOS 15.8.1, magpie 0.1.1253): DeepSeek Harness.app in
+// sungoku (#2325, macOS 15.8.1, magpie-friday 0.1.1253): DeepSeek Harness.app in
 // /Applications/AI, a folder of the user's own, and no dsh CLI; the Agents
 // page said 未找到 CLI. The app is found one folder down in an app folder,
 // and wherever Spotlight has its bundle id; a bundle of another id there
@@ -413,7 +413,7 @@ func TestDshDesktopAppInASubfolder(t *testing.T) {
 		t.Fatal(err)
 	}
 	a := dsh(home)
-	a.Bin = "magpie-test-gone-dsh"
+	a.Bin = "magpie-friday-test-gone-dsh"
 	if !a.CLIMissing() {
 		t.Fatal("no app, no CLI: not missing")
 	}

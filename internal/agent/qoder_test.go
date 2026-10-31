@@ -10,10 +10,10 @@ import (
 
 	"github.com/tidwall/jsonc"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 func TestQoder(t *testing.T) {
@@ -65,14 +65,14 @@ func testQoder(t *testing.T, mk func(string) *Agent, rel string) {
 	if f.Get() != "performance" || e.Get() != "high" {
 		t.Fatalf("get: %q %q", f.Get(), e.Get())
 	}
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	c, raw := read()
 	p := c.Providers[magpieID]
-	if !strings.Contains(raw, "// the user's") || c.Model["name"] != "magpie/deepseek/pro" || p["baseUrl"] != gatewayV1() || p["apiKey"] != gateway.TokenFor(a.ID) ||
+	if !strings.Contains(raw, "// the user's") || c.Model["name"] != "magpie-friday/deepseek/pro" || p["baseUrl"] != gatewayV1() || p["apiKey"] != gateway.TokenFor(a.ID) ||
 		p["protocol"] != "openai" || p["model"] != "deepseek/pro" || c.Providers["mine"]["apiKey"] != "sk-m" || c.Theme != "dark" {
-		t.Fatalf("magpie:\n%s", raw)
+		t.Fatalf("magpie-friday:\n%s", raw)
 	}
 	var ids []string
 	for _, m := range p["models"].([]any) {
@@ -81,8 +81,8 @@ func testQoder(t *testing.T, mk func(string) *Agent, rel string) {
 	if len(ids) < 2 || a.Check() != "" {
 		t.Fatalf("models %v, check %q", ids, a.Check())
 	}
-	// another magpie model keeps the model stashed first
-	if err := f.Set("magpie/deepseek/flash"); err != nil {
+	// another magpie-friday model keeps the model stashed first
+	if err := f.Set("magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
 	if err := e.Set("low"); err != nil {
@@ -101,14 +101,14 @@ func testQoder(t *testing.T, mk func(string) *Agent, rel string) {
 		r, _ := p["reasoning"].(map[string]any)
 		return r["effort"]
 	}
-	if pref("magpie/deepseek/flash") != "low" {
+	if pref("magpie-friday/deepseek/flash") != "low" {
 		t.Fatalf("flash preference:\n%s", raw)
 	}
 	// Qoder moved reasoningEffort into a preference of the model's own, and
 	// it was turned off: that is the effort shown, and the one set
 	edit.DelJSON(path, "model.reasoningEffort")
 	edit.SetJSON(path, edit.KV{Path: "model.preferences", Value: map[string]any{
-		"magpie/deepseek/flash": map[string]any{"reasoning": map[string]any{"effort": "high", "enabled": false}, "contextWindow": 1000},
+		"magpie-friday/deepseek/flash": map[string]any{"reasoning": map[string]any{"effort": "high", "enabled": false}, "contextWindow": 1000},
 		"performance":           map[string]any{"reasoning": map[string]any{"effort": "max"}}}})
 	if e.Get() != "high" {
 		t.Fatalf("preference get: %q", e.Get())
@@ -117,21 +117,21 @@ func testQoder(t *testing.T, mk func(string) *Agent, rel string) {
 		t.Fatal(err)
 	}
 	c, raw = read()
-	if p := c.Model["preferences"].(map[string]any)["magpie/deepseek/flash"].(map[string]any); pref("magpie/deepseek/flash") != "medium" ||
+	if p := c.Model["preferences"].(map[string]any)["magpie-friday/deepseek/flash"].(map[string]any); pref("magpie-friday/deepseek/flash") != "medium" ||
 		p["reasoning"].(map[string]any)["enabled"] != nil || p["contextWindow"] != 1000.0 || pref("performance") != "max" || c.Model["reasoningEffort"] != "medium" {
 		t.Fatalf("preference set:\n%s", raw)
 	}
 	// a model with no effort of its own (a dot in its id) takes the one in use
-	if err := f.Set("magpie/deepseek/v4.1-flash"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/v4.1-flash"); err != nil {
 		t.Fatal(err)
 	}
-	if pref("magpie/deepseek/v4.1-flash") != "medium" || e.Get() != "medium" {
+	if pref("magpie-friday/deepseek/v4.1-flash") != "medium" || e.Get() != "medium" {
 		_, raw = read()
 		t.Fatalf("carried effort:\n%s", raw)
 	}
-	f.Set("magpie/deepseek/flash")
+	f.Set("magpie-friday/deepseek/flash")
 
-	// reset: magpie's provider goes and the user's model comes back
+	// reset: magpie-friday's provider goes and the user's model comes back
 	if err := f.Set(""); err != nil {
 		t.Fatal(err)
 	}
@@ -140,8 +140,8 @@ func testQoder(t *testing.T, mk func(string) *Agent, rel string) {
 		t.Fatalf("reset:\n%s", raw)
 	}
 
-	// a model of Qoder's own, from magpie, takes magpie's provider out too
-	f.Set("magpie/deepseek/pro")
+	// a model of Qoder's own, from magpie-friday, takes magpie-friday's provider out too
+	f.Set("magpie-friday/deepseek/pro")
 	if err := f.Set("ultimate"); err != nil {
 		t.Fatal(err)
 	}
@@ -150,9 +150,9 @@ func testQoder(t *testing.T, mk func(string) *Agent, rel string) {
 		t.Fatalf("own:\n%s", raw)
 	}
 
-	// wired before Qoder had a key of its own: still magpie's, and a sync
+	// wired before Qoder had a key of its own: still magpie-friday's, and a sync
 	// gives it Qoder's key, which the gateway knows it by (not Bun's UA)
-	f.Set("magpie/deepseek/pro")
+	f.Set("magpie-friday/deepseek/pro")
 	edit.SetJSON(path, edit.KV{Path: "providers." + magpieID + ".apiKey", Value: gateway.Token})
 	if a.Check() != "" {
 		t.Fatalf("old key: %q", a.Check())
@@ -164,20 +164,20 @@ func testQoder(t *testing.T, mk func(string) *Agent, rel string) {
 		t.Fatalf("synced key:\n%s", raw)
 	}
 
-	// no settings before: a new file with magpie's provider
+	// no settings before: a new file with magpie-friday's provider
 	os.Remove(path)
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
-	if c, raw = read(); c.Model["name"] != "magpie/deepseek/pro" {
+	if c, raw = read(); c.Model["name"] != "magpie-friday/deepseek/pro" {
 		t.Fatalf("new file:\n%s", raw)
 	}
 }
 
-// What the user set on magpie's provider in Qoder's settings stays through
+// What the user set on magpie-friday's provider in Qoder's settings stays through
 // every sync and pick, as T3 Code's did after #2030: its name, the model
 // routing that picks compact's and subagents' models, its timeouts and auth
-// type. The address, key, model and model list stay magpie's.
+// type. The address, key, model and model list stay magpie-friday's.
 func TestQoderKeepsTheUsersSettings(t *testing.T) {
 	for _, b := range []struct {
 		mk  func(string) *Agent
@@ -192,18 +192,18 @@ func TestQoderKeepsTheUsersSettings(t *testing.T) {
 			os.WriteFile(path, []byte(`{"providers":{"mine":{"baseUrl":"https://x/v1","apiKey":"sk-m","model":"m1"}},"model":{"name":"m1"}}`), 0o600)
 			a := b.mk(home)
 			f := a.Field("model")
-			if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+			if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 				t.Fatal(err)
 			}
-			// the user edits magpie's provider, as they would Qoder's settings
+			// the user edits magpie-friday's provider, as they would Qoder's settings
 			if err := edit.SetJSON(path,
-				edit.KV{Path: "providers.magpie.displayName", Value: "Magpie GW"},
-				edit.KV{Path: "providers.magpie.routing", Value: map[string]any{"compact": "relay/glm-4.6", "subagent": "relay/glm-4.6"}},
-				edit.KV{Path: "providers.magpie.streamIdleTimeoutMs", Value: 600000},
-				edit.KV{Path: "providers.magpie.firstPayloadTimeoutMs", Value: 120000},
-				edit.KV{Path: "providers.magpie.authType", Value: "bearer"},
-				edit.KV{Path: "providers.magpie.baseUrl", Value: "http://127.0.0.1:1/v1"},
-				edit.KV{Path: "providers.magpie.models", Value: []any{map[string]any{"model": "gone/old"}}},
+				edit.KV{Path: "providers.magpie-friday.displayName", Value: "magpie-friday GW"},
+				edit.KV{Path: "providers.magpie-friday.routing", Value: map[string]any{"compact": "relay/glm-4.6", "subagent": "relay/glm-4.6"}},
+				edit.KV{Path: "providers.magpie-friday.streamIdleTimeoutMs", Value: 600000},
+				edit.KV{Path: "providers.magpie-friday.firstPayloadTimeoutMs", Value: 120000},
+				edit.KV{Path: "providers.magpie-friday.authType", Value: "bearer"},
+				edit.KV{Path: "providers.magpie-friday.baseUrl", Value: "http://127.0.0.1:1/v1"},
+				edit.KV{Path: "providers.magpie-friday.models", Value: []any{map[string]any{"model": "gone/old"}}},
 			); err != nil {
 				t.Fatal(err)
 			}
@@ -237,7 +237,7 @@ func TestQoderKeepsTheUsersSettings(t *testing.T) {
 					t.Fatalf("%v\n%s", err, raw)
 				}
 				p := c.Providers[magpieID]
-				if p.DisplayName != "Magpie GW" || p.Routing["compact"] != "relay/glm-4.6" || p.Routing["subagent"] != "relay/glm-4.6" ||
+				if p.DisplayName != "magpie-friday GW" || p.Routing["compact"] != "relay/glm-4.6" || p.Routing["subagent"] != "relay/glm-4.6" ||
 					p.StreamIdleTimeoutMs != 600000 || p.FirstPayloadTimeoutMs != 120000 || p.AuthType != "bearer" {
 					t.Errorf("%s: the user's settings not kept:\n%s", when, raw)
 				}
@@ -246,14 +246,14 @@ func TestQoderKeepsTheUsersSettings(t *testing.T) {
 					ids = append(ids, m.Model)
 				}
 				if p.BaseURL == "http://127.0.0.1:1/v1" || p.BaseURL == "" || p.APIKey == "" || slices.Contains(ids, "gone/old") || !slices.Contains(ids, "deepseek/pro") {
-					t.Errorf("%s: magpie's own parts not written: %s %s %v", when, p.BaseURL, p.APIKey, ids)
+					t.Errorf("%s: magpie-friday's own parts not written: %s %s %v", when, p.BaseURL, p.APIKey, ids)
 				}
 				if c.Providers["mine"].APIKey != "sk-m" {
 					t.Errorf("%s: the user's own provider changed:\n%s", when, raw)
 				}
 			}
 			check("sync")
-			if err := f.Set("magpie/deepseek/pro"); err != nil {
+			if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 				t.Fatal(err)
 			}
 			check("pick")

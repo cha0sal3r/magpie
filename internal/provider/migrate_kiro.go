@@ -12,7 +12,7 @@ import (
 // Kiro's accounts on @magpie-community/opencode-kiro-auth:
 //   - kiro-cli's or the IDE's own sign-in goes as a marker ({source:
 //     "kiro"}): the plugin reads it where they keep it, as the built-in did;
-//   - an account magpie signed in (a home holding kiro-auth-token.json)
+//   - an account magpie-friday signed in (a home holding kiro-auth-token.json)
 //     goes whole, its tokens the plugin's to refresh from then on; the
 //     home stays, and moving back writes the plugin's tokens into it;
 //   - a key saved on the provider goes as an API key account, first (with
@@ -121,7 +121,7 @@ func init() {
 	}
 }
 
-// kiroOut is the account magpie signed in in home, as the plugin keeps one.
+// kiroOut is the account magpie-friday signed in in home, as the plugin keeps one.
 func kiroOut(home, user, plan string) (map[string]any, error) {
 	b, err := os.ReadFile(filepath.Join(home, kiroTokenFile))
 	if err != nil {

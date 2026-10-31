@@ -1,4 +1,4 @@
-// The page's side of a plugin page's messages to magpie's window
+// The page's side of a plugin page's messages to magpie-friday's window
 // (docs/subsystems/plugin-runtime.md, P4). A plugin's page loads it with
 // <script src="_magpie/bridge.js"></script>; it is served beside every
 // page's own files.
@@ -21,12 +21,12 @@
 // A panel (magpie.panels) is as tall as what it draws: the window is told
 // its height as it changes.
 //
-// What the page leaves unstyled takes magpie's look: the bridge adds a
+// What the page leaves unstyled takes magpie-friday's look: the bridge adds a
 // stylesheet of no weight (:where()) for the font, colours, headings,
 // buttons, fields and tables, and the theme's colours are the page's
 // --magpie-<token> variables.
 //
-// The page can't reach the network or magpie's API itself: everything goes
+// The page can't reach the network or magpie-friday's API itself: everything goes
 // through the window, which answers only what the package declared. An
 // error the page doesn't catch shows the window's "This page stopped
 // working" in its place.
@@ -128,7 +128,7 @@
     size();
   };
   if (document.readyState === "loading") addEventListener("DOMContentLoaded", watch); else watch();
-  // magpie's look for what the page leaves unstyled: its font, colours,
+  // magpie-friday's look for what the page leaves unstyled: its font, colours,
   // headings, buttons, fields and tables, so a page with no stylesheet of
   // its own reads as part of the window, not a browser's default sheet.
   // Every rule is :where(), of no weight: any rule of the page's wins.

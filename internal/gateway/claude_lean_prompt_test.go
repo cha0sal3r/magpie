@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/wslrun"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/wslrun"
 )
 
 // leanRun is what a run of a leanHarness was started with and told (its
@@ -149,7 +149,7 @@ func TestClaudeLeanPromptRunNotResumedAcrossTheSetting(t *testing.T) {
 // mount of the drive.
 func TestClaudeLeanPromptFileInWSL(t *testing.T) {
 	c := claudeCLI{wsl: &wslrun.Tool{Path: "/usr/bin/claude"}}
-	if got := c.file(`C:\Users\me\AppData\Local\Temp\magpie-claude-1\system.md`); got != "/mnt/c/Users/me/AppData/Local/Temp/magpie-claude-1/system.md" {
+	if got := c.file(`C:\Users\me\AppData\Local\Temp\magpie-friday-claude-1\system.md`); got != "/mnt/c/Users/me/AppData/Local/Temp/magpie-friday-claude-1/system.md" {
 		t.Fatalf("%q", got)
 	}
 	if got := (claudeCLI{}).file("/tmp/x/system.md"); got != "/tmp/x/system.md" {

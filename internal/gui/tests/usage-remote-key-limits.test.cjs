@@ -1,11 +1,11 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// A remote magpie's gateway keys (#1547, PennyVibe): a computer whose
-// provider is another's magpie, through gateway keys that magpie gave it,
+// A remote magpie-friday's gateway keys (#1547, PennyVibe): a computer whose
+// provider is another's magpie-friday, through gateway keys that magpie-friday gave it,
 // shows each key's own limit on one card named for the keys ("Gateway
 // keys · Office"), a section per key: its tokens and spend against its
 // caps, named for the period, when they reset, a cycle of days, its calls
 // and that it is used up; a key with no limit says "Unlimited", and a
-// magpie too old to tell says so, in the reader's language. English,
+// magpie-friday too old to tell says so, in the reader's language. English,
 // Chinese (both), Japanese and German, wide and at a phone's width; no
 // backend, the API is faked here.
 const assert = require("node:assert/strict");
@@ -19,7 +19,7 @@ const H = 3600e3, M = 60e3;
 const iso = (ms) => new Date(ms).toISOString();
 
 function fixtures(now) {
-  const card = { provider: "office/~keys", name: "Office", icon: "magpie", from: "Office", kind: "plan" };
+  const card = { provider: "office/~keys", name: "Office", icon: "magpie-friday", from: "Office", kind: "plan" };
   return [
     { ...card, user: "laptop", readAt: iso(now - 2 * M), lastServedAt: iso(now - M),
       gatewayKey: { limited: true, period: "day", start: iso(now - 10 * H), reset: iso(now + 5 * H), calls: 3, tokensLeft: 8950, costLeft: 1.54 },
@@ -31,7 +31,7 @@ function fixtures(now) {
     { ...card, user: "build-box-with-a-rather-long-key-name", readAt: iso(now - 2 * M),
       gatewayKey: { limited: true, period: "days", days: 7, reset: iso(now + 50 * H), calls: 2, tokensLeft: 0, spent: true },
       windows: [{ name: "Tokens this cycle", used: 100, amount: 5000, limit: 5000, unit: "tokens", resetsAt: iso(now + 50 * H) }] },
-    { ...card, user: "spare", windows: [], error: "remote magpie is too old to tell this key's limit; update magpie on that computer" },
+    { ...card, user: "spare", windows: [], error: "remote magpie-friday is too old to tell this key's limit; update magpie-friday on that computer" },
   ];
 }
 
@@ -63,22 +63,22 @@ function serve(lang, state) {
 
 const words = {
   en: { head: "Gateway keys · Office", tokens: "Tokens today", spend: "Spend today", count: "1,050 / 10,000 tokens", cycle: "Tokens this cycle", unlimited: "Unlimited",
-    line: "7-day cycle · 2 calls · Used up: that computer refuses this key until it resets", calls: "3 calls", old: "That computer's magpie is too old to tell this key's limit — update magpie there" },
+    line: "7-day cycle · 2 calls · Used up: that computer refuses this key until it resets", calls: "3 calls", old: "That computer's magpie-friday is too old to tell this key's limit — update magpie-friday there" },
   zh: { head: "网关密钥 · Office", tokens: "今日 Token", spend: "今日花费", count: "1,050 / 10,000 token", cycle: "本周期 Token", unlimited: "无限",
-    line: "7 天周期 · 2 次调用 · 已用完：那台电脑在重置前会拒绝这个密钥", calls: "3 次调用", old: "那台电脑的 magpie 版本太旧，无法告知这个密钥的限额 — 请在那边更新 magpie" },
+    line: "7 天周期 · 2 次调用 · 已用完：那台电脑在重置前会拒绝这个密钥", calls: "3 次调用", old: "那台电脑的 magpie-friday 版本太旧，无法告知这个密钥的限额 — 请在那边更新 magpie-friday" },
   "zh-TW": { head: "閘道金鑰 · Office", tokens: "今日 Token", spend: "今日花費", count: "1,050 / 10,000 token", cycle: "本週期 Token", unlimited: "無限",
-    line: "7 天週期 · 2 次呼叫 · 已用完：那臺電腦在重設前會拒絕這個金鑰", calls: "3 次呼叫", old: "那臺電腦的 magpie 版本太舊，無法告知這個金鑰的限額 — 請在那邊更新 magpie" },
+    line: "7 天週期 · 2 次呼叫 · 已用完：那臺電腦在重設前會拒絕這個金鑰", calls: "3 次呼叫", old: "那臺電腦的 magpie-friday 版本太舊，無法告知這個金鑰的限額 — 請在那邊更新 magpie-friday" },
   ja: { head: "ゲートウェイキー · Office", tokens: "今日のトークン", spend: "今日の費用", count: "1,050 / 10,000 トークン", cycle: "この周期のトークン", unlimited: "無制限",
-    line: "7 日の周期 · 2 回の呼び出し · 使い切りました：リセットまでそのコンピューターはこのキーを拒否します", calls: "3 回の呼び出し", old: "そのコンピューターの magpie は古く、このキーの上限を伝えられません — そちらで magpie を更新してください" },
+    line: "7 日の周期 · 2 回の呼び出し · 使い切りました：リセットまでそのコンピューターはこのキーを拒否します", calls: "3 回の呼び出し", old: "そのコンピューターの magpie-friday は古く、このキーの上限を伝えられません — そちらで magpie-friday を更新してください" },
   de: { head: "Zugangsschlüssel · Office", tokens: "Token heute", spend: "Ausgaben heute", count: "1,050 / 10,000 Token", cycle: "Token in diesem Zyklus", unlimited: "Unbegrenzt",
-    line: "7-Tage-Zyklus · 2 Aufrufe · Aufgebraucht: Dieser Computer lehnt den Schlüssel bis zum Zurücksetzen ab", calls: "3 Aufrufe", old: "Das magpie auf diesem Computer ist zu alt, um das Limit dieses Schlüssels zu nennen — aktualisiere magpie dort" },
+    line: "7-Tage-Zyklus · 2 Aufrufe · Aufgebraucht: Dieser Computer lehnt den Schlüssel bis zum Zurücksetzen ab", calls: "3 Aufrufe", old: "Das magpie-friday auf diesem Computer ist zu alt, um das Limit dieses Schlüssels zu nennen — aktualisiere magpie-friday dort" },
 };
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
   for (const lang of ["en", "zh", "zh-TW", "ja", "de"]) {
     for (const width of [900, 400]) {
       const w = words[lang];
-      test(`${engine} ${lang} ${width}px: a remote magpie's gateway keys`, async (t) => {
+      test(`${engine} ${lang} ${width}px: a remote magpie-friday's gateway keys`, async (t) => {
         const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: "chromium" }));
         t.after(() => browser.close());
         const errors = [];
@@ -116,7 +116,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         assert.equal((await card.locator(".quota-windows").nth(2).locator(".quota-labels span").first().textContent()).trim(), w.cycle);
         assert.equal((await lines.nth(1).textContent()).trim(), w.line);
         assert.match(await lines.nth(1).getAttribute("class"), /spent/);
-        // a magpie too old to tell
+        // a magpie-friday too old to tell
         assert.equal((await card.locator(".subscription-error").textContent()).trim(), w.old);
 
         // Used / Left turns the key's count to what is left

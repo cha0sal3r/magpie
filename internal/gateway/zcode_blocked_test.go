@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // countAsked is an upstream that counts tokens, noting each time it's asked.
@@ -155,7 +155,7 @@ func TestZCodeStartPlanBlockRestsRestricted(t *testing.T) {
 	if !s.Unrest(rest.Key) {
 		t.Fatal("its rest can't be lifted")
 	}
-	old := []byte(`{"type":"error","error":{"type":"permission_error","message":"405 Method Not Allowed — ZCode's Start Plan still turned this request away, though magpie sends it as the ZCode app does; it can be a network block of this IP, or ZCode checking for something new. Use an account with a GLM Coding Plan, or add another provider to this group"}}`)
+	old := []byte(`{"type":"error","error":{"type":"permission_error","message":"405 Method Not Allowed — ZCode's Start Plan still turned this request away, though magpie-friday sends it as the ZCode app does; it can be a network block of this IP, or ZCode checking for something new. Use an account with a GLM Coding Plan, or add another provider to this group"}}`)
 	if f := failureOf(c, 405, old); f == failRestricted {
 		t.Fatal("0.1.26's words read as restricted")
 	}

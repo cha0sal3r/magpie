@@ -1,28 +1,28 @@
 // usemagpie.ai on Omarchy (omarchy.org), the Hyprland desktop: the pages draw
 // themselves in Omarchy's own look (its theme's palette, its monospace font,
-// square flat surfaces framed in the accent) and, where magpie runs on the
+// square flat surfaces framed in the accent) and, where magpie-friday runs on the
 // same computer, in the very theme Omarchy has on, followed as it changes.
 // Each page loads this only in a Linux desktop browser, or once a reader
 // turned it on (?omarchy=1); elsewhere nothing here runs.
 //
 // Omarchy is told by its font: it installs "omarchy" (its logo, U+E900)
 // system-wide, and a page may load a local font by name. The theme comes from
-// magpie's gateway, GET http://127.0.0.1:3425/v1/magpie/omarchy, which only
+// magpie-friday's gateway, GET http://127.0.0.1:3425/v1/magpie-friday/omarchy, which only
 // usemagpie.ai may read. Chrome asks the reader before a site reaches this
-// computer, so the page asks magpie by itself only once that was allowed;
+// computer, so the page asks magpie-friday by itself only once that was allowed;
 // until then it takes Omarchy's default theme for light or dark, and the chip
 // in the corner offers to follow the computer, or any built-in theme.
 //
 // localStorage "omarchy": {on: true|false (unset: when Omarchy is found),
 // seen: Omarchy was found here, pick: a built-in theme's name ("" follows the
-// computer), live: what magpie last told, painted at once next time}.
+// computer), live: what magpie-friday last told, painted at once next time}.
 // ?omarchy=1|0|<theme> sets it.
 (() => {
   const root = document.documentElement;
   const lang = (root.lang || "en").slice(0, 2);
   const T = (en, zh, ja, de) => ({ zh, ja, de })[lang] ?? en;
   const KEY = "omarchy";
-  const GATEWAY = "http://127.0.0.1:3425/v1/magpie/omarchy";
+  const GATEWAY = "http://127.0.0.1:3425/v1/magpie-friday/omarchy";
   // Omarchy 4's themes (/usr/share/omarchy/themes/*/colors.toml): mode,
   // background, foreground, bright foreground, dim text, accent, green, red,
   // yellow
@@ -82,7 +82,7 @@
     };
   }
 
-  // what magpie's windows draw with (internal/omarchy Vars), as the page's
+  // what magpie-friday's windows draw with (internal/omarchy Vars), as the page's
   // palette; a value that isn't a plain colour, length or font list is refused
   const plain = /^[\w\s#%.,()"'-]{1,200}$/;
   function fromMagpie(th) {
@@ -127,7 +127,7 @@
     shots();
   }
 
-  // magpie's screenshots as magpie draws itself on Omarchy: its own windows
+  // magpie-friday's screenshots as magpie-friday draws itself on Omarchy: its own windows
   // shot in each of Omarchy's themes (/img/omarchy/<theme>/), in place of the
   // page's, as wide as before, and shot again as the theme turns; a theme of
   // the reader's own takes Omarchy's default for its light or dark; shots not
@@ -182,8 +182,8 @@
   const light = matchMedia("(prefers-color-scheme: light)");
   function scheme() { return light.matches ? "light" : "dark"; }
 
-  // magpie on this computer: "live" (it answered), "ask" (the browser will
-  // ask the reader first), "denied" (the reader said no), "absent" (no magpie
+  // magpie-friday on this computer: "live" (it answered), "ask" (the browser will
+  // ask the reader first), "denied" (the reader said no), "absent" (no magpie-friday
   // answered), "" (not asked yet)
   let status = "", timer = 0, reached = false, missed = 0, asks = 0;
   async function allowed() {
@@ -219,7 +219,7 @@
       if (!st.pick && (changed || !cur || cur.name !== p.name)) paint(p); else render();
     } catch {
       // once reached, one slow answer (Omarchy setting a theme reloads
-      // Hyprland meanwhile) isn't magpie gone: asked again as often
+      // Hyprland meanwhile) isn't magpie-friday gone: asked again as often
       if (byReader || !reached || ++missed > 1) {
         status = byReader && (await allowed()) === "denied" ? "denied" : "absent";
         render();
@@ -235,7 +235,7 @@
     if (document.visibilityState === "visible" && cur && !st.pick && status !== "ask" && status !== "denied") ask(false);
   });
 
-  // until magpie answers, Omarchy's default for light or dark follows the
+  // until magpie-friday answers, Omarchy's default for light or dark follows the
   // desktop as it turns (a theme set in Omarchy's menu turns it), and a page
   // the browser lets through later (its prompt, its site settings) starts
   // following then, both without a reload
@@ -246,7 +246,7 @@
     light.addEventListener("change", () => {
       if (!cur || st.pick || status === "live") return;
       const live = st.live && st.live.mode === scheme() && fromMagpie(st.live);
-      // the theme magpie last told is off the desktop now: a reload shows
+      // the theme magpie-friday last told is off the desktop now: a reload shows
       // what this shows, not that one
       if (!live && st.live) { delete st.live; save(); }
       paint(live || builtin(GUESS[scheme()]));
@@ -289,11 +289,11 @@
     }
     const following = !st.pick;
     const note = {
-      live: T(`Following ${cur.name} via magpie`, `正在跟随 ${cur.name}（来自 magpie）`, `magpie 経由で ${cur.name} に追従中`, `Folgt ${cur.name} über magpie`),
-      ask: T("Ask magpie on this computer for the theme", "向本机的 magpie 询问当前主题", "このコンピュータの magpie にテーマを尋ねる", "magpie auf diesem Rechner nach dem Theme fragen"),
-      denied: T("The browser blocks this page from reaching magpie", "浏览器禁止了本页访问本机的 magpie", "ブラウザがこのページから magpie への接続をブロックしています", "Der Browser verhindert, dass diese Seite magpie erreicht"),
-      absent: T("magpie isn't running on this computer", "本机没有运行 magpie", "このコンピュータで magpie が動いていません", "magpie läuft auf diesem Rechner nicht"),
-      "": T("Asking magpie…", "正在询问 magpie…", "magpie に問い合わせ中…", "Frage magpie …"),
+      live: T(`Following ${cur.name} via magpie-friday`, `正在跟随 ${cur.name}（来自 magpie-friday）`, `magpie-friday 経由で ${cur.name} に追従中`, `Folgt ${cur.name} über magpie-friday`),
+      ask: T("Ask magpie-friday on this computer for the theme", "向本机的 magpie-friday 询问当前主题", "このコンピュータの magpie-friday にテーマを尋ねる", "magpie-friday auf diesem Rechner nach dem Theme fragen"),
+      denied: T("The browser blocks this page from reaching magpie-friday", "浏览器禁止了本页访问本机的 magpie-friday", "ブラウザがこのページから magpie-friday への接続をブロックしています", "Der Browser verhindert, dass diese Seite magpie-friday erreicht"),
+      absent: T("magpie-friday isn't running on this computer", "本机没有运行 magpie-friday", "このコンピュータで magpie-friday が動いていません", "magpie-friday läuft auf diesem Rechner nicht"),
+      "": T("Asking magpie-friday…", "正在询问 magpie-friday…", "magpie-friday に問い合わせ中…", "Frage magpie-friday …"),
     }[status];
     const rows = Object.keys(THEMES).map((n) => {
       const [mode, bg, fg, , , accent] = THEMES[n].split(" ");
@@ -302,13 +302,13 @@
     }).join("");
     // not let through yet: the chip says what one click does
     const cta = status === "ask" && following && !open
-      ? `<button class="om-cta" type="button" data-ask title="${esc(T("Your browser will ask to let this page reach magpie on this computer", "浏览器会询问是否允许本页访问本机的 magpie", "このページがこのコンピュータの magpie に接続してよいか、ブラウザが尋ねます", "Ihr Browser fragt, ob diese Seite magpie auf diesem Rechner erreichen darf"))}">${esc(T("Follow my Omarchy theme", "跟随 Omarchy 主题", "Omarchy のテーマに合わせる", "Meinem Omarchy-Theme folgen"))}</button>`
+      ? `<button class="om-cta" type="button" data-ask title="${esc(T("Your browser will ask to let this page reach magpie-friday on this computer", "浏览器会询问是否允许本页访问本机的 magpie-friday", "このページがこのコンピュータの magpie-friday に接続してよいか、ブラウザが尋ねます", "Ihr Browser fragt, ob diese Seite magpie-friday auf diesem Rechner erreichen darf"))}">${esc(T("Follow my Omarchy theme", "跟随 Omarchy 主题", "Omarchy のテーマに合わせる", "Meinem Omarchy-Theme folgen"))}</button>`
       : "";
     bar.innerHTML = cta + `<button class="om-chip${status === "live" && following ? " live" : ""}" type="button" aria-haspopup="menu" aria-expanded="${open}"><span class="om-logo" aria-hidden="true"></span><span class="om-name">${esc(cur.name || "omarchy")}</span></button>`
       + (open ? `<div class="om-menu" role="menu">
         <div class="om-h">Omarchy</div>
         <button class="om-row${following ? " on" : ""}" type="button" role="menuitemradio" aria-checked="${following}" data-pick=""><span class="om-sw om-follow"></span>${esc(T("Follow this computer", "跟随这台电脑", "このコンピュータに合わせる", "Diesem Rechner folgen"))}</button>
-        <div class="om-note">${status === "ask" ? `<button class="om-ask" type="button" data-ask>${esc(note)} →</button>` : esc(note)}${status === "absent" ? ` · <a href="/#download">${esc(T("Get magpie", "下载 magpie", "magpie を入手", "magpie holen"))}</a>` : ""}</div>
+        <div class="om-note">${status === "ask" ? `<button class="om-ask" type="button" data-ask>${esc(note)} →</button>` : esc(note)}${status === "absent" ? ` · <a href="/#download">${esc(T("Get magpie-friday", "下载 magpie-friday", "magpie-friday を入手", "magpie-friday holen"))}</a>` : ""}</div>
         <div class="om-h">${esc(T("Themes", "主题", "テーマ", "Themes"))}</div>
         <div class="om-list">${rows}</div>
         <button class="om-row om-quit" type="button" data-off>${esc(T("Turn off Omarchy look", "关闭 Omarchy 风格", "Omarchy スタイルをオフ", "Omarchy-Look ausschalten"))}</button>

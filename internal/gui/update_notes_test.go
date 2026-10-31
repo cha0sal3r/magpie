@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/update"
+	"github.com/cha0sal3r/magpie-friday/internal/update"
 )
 
 // Before an update is put in, the page asks what changed (Hu9956, #844):

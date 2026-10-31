@@ -13,7 +13,7 @@ package provider
 
 // Several Devin subscriptions. The devin CLI keeps one account, in its
 // credentials.toml. Each further account the built-in signed in got a home
-// of magpie's own, laid out as the
+// of magpie-friday's own, laid out as the
 // CLI's data folder, so the CLI itself answers for it (`devin auth status`
 // and `devin models list` run with that home as their data folder) and the
 // CLI's own sign-in is never touched. logins.json names those homes; the
@@ -27,15 +27,15 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
-// devinAccountsDir holds the homes of the Devin accounts magpie signed in.
+// devinAccountsDir holds the homes of the Devin accounts magpie-friday signed in.
 func devinAccountsDir() string { return filepath.Join(filepath.Dir(Path()), "devin") }
 
 // devinCredentialsAt is where an account's credentials.toml is: the CLI's
-// own for home "", else the one in magpie's home.
+// own for home "", else the one in magpie-friday's home.
 func devinCredentialsAt(home string) string {
 	if home == "" {
 		return DevinCredentialsPath()
@@ -44,7 +44,7 @@ func devinCredentialsAt(home string) string {
 }
 
 // devinCommand runs the devin CLI for an account: the CLI's own for home
-// "", else with magpie's home as its data folder. It goes through the
+// "", else with magpie-friday's home as its data folder. It goes through the
 // proxy ctx names (a sign-in's), else the account's own (devinProxy), as
 // the account's requests do, never always the global one (#1663).
 func devinCommand(ctx context.Context, home, path string, args ...string) *exec.Cmd {

@@ -10,11 +10,11 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// A Remote magpie's list has the image models the other magpie draws with,
+// A Remote magpie-friday's list has the image models the other magpie-friday draws with,
 // which draw there through it, and names each model with its provider
 // there, so the same model of two of its relays isn't two of one name here
 // (Jorben, 莫 on Discord). What it lists is still what its agents are
@@ -22,7 +22,7 @@ import (
 // groups, isn't in it.
 func TestRemoteMagpieModels(t *testing.T) {
 	var mu sync.Mutex
-	var vendor, hops []string // paths the vendor, and the remote magpie, were asked on
+	var vendor, hops []string // paths the vendor, and the remote magpie-friday, were asked on
 	up := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		b, _ := io.ReadAll(r.Body)
 		mu.Lock()
@@ -126,7 +126,7 @@ func TestRemoteMagpieModels(t *testing.T) {
 		mu.Lock()
 		vendor, hops = nil, nil
 		mu.Unlock()
-		code, body := post(t, "/v1/images/generations", `{"model":"office/`+c.model+`","prompt":"a magpie"}`)
+		code, body := post(t, "/v1/images/generations", `{"model":"office/`+c.model+`","prompt":"a magpie-friday"}`)
 		mu.Lock()
 		gotHops, gotVendor := slices.Clone(hops), slices.Clone(vendor)
 		mu.Unlock()
@@ -139,7 +139,7 @@ func TestRemoteMagpieModels(t *testing.T) {
 	}
 }
 
-// A magpie from before the list said more takes the list as it was: the
+// A magpie-friday from before the list said more takes the list as it was: the
 // model's own name, no image models.
 func TestRemoteMagpieOldList(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())

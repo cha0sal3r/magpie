@@ -1,6 +1,6 @@
 package provider
 
-// Adding a subscription from magpie itself. magpie runs the vendor's own
+// Adding a subscription from magpie-friday itself. magpie-friday runs the vendor's own
 // browser sign-in — the one `codex login` runs, with its OAuth client —
 // takes the tokens at a callback on this machine, and keeps the account
 // with the others in logins.json. A Claude account is signed in by Claude
@@ -30,8 +30,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // The vendors' sign-in pages; vars so tests can point them elsewhere.
@@ -108,7 +108,7 @@ type signInFlow struct {
 	stop     func()           // ends an agent's own login command, when that is the sign-in
 	site     string           // where to sign in, for an agent with more than one (ZCode: "zai" or "bigmodel")
 	plugin   string           // a plugin's sign-in session, finished with the code pasted back
-	claude   *claudeCLISignIn // Claude Code's own sign-in, run by magpie
+	claude   *claudeCLISignIn // Claude Code's own sign-in, run by magpie-friday
 	// pluginPorts are where a plugin's browser sign-in comes back to on
 	// this machine, for its address pasted (pluginsignin_paste.go)
 	pluginPorts []string
@@ -118,7 +118,7 @@ type signInFlow struct {
 	pluginKey *pluginKeyWay
 
 	// nonce and hostID are a ChatGPT API sign-in's: what its ID token must
-	// carry, and this machine's id it registers magpie for (chatgpt_api.go)
+	// carry, and this machine's id it registers magpie-friday for (chatgpt_api.go)
 	nonce, hostID string
 	// claimed is a callback being traded for the account: the browser's own
 	// or a pasted address, whichever came first
@@ -248,7 +248,7 @@ func StartSignInWith(agent string, o SignInOptions) (SignInState, error) {
 	// one moved onto its plugin signs in there: an account signed in to
 	// here would be the built-in's, which nothing serves now
 	if PluginServes(agent) {
-		return SignInState{}, fmt.Errorf("%s runs on its plugin: sign in through the plugin (magpie plugin login %s)", agent, agent)
+		return SignInState{}, fmt.Errorf("%s runs on its plugin: sign in through the plugin (magpie-friday plugin login %s)", agent, agent)
 	}
 	s := &signInFlow{verifier: randomToken(48), state: randomToken(24), done: make(chan struct{}), site: site}
 	if err := s.pickProxy(agent, o); err != nil {
@@ -338,7 +338,7 @@ func (s *signInFlow) begin() error {
 	q := url.Values{}
 	switch agent {
 	case "claude":
-		// Claude Code's own `claude auth login`: magpie makes no part of it
+		// Claude Code's own `claude auth login`: magpie-friday makes no part of it
 		if err := startClaudeSignIn(s); err != nil {
 			return err
 		}
@@ -364,7 +364,7 @@ func (s *signInFlow) begin() error {
 		q.Set("originator", "codex_cli_rs")
 		s.st.URL = codexAuthorizeURL + "?" + q.Encode()
 	case ChatGPTAPIID:
-		// OpenAI's Sign in with ChatGPT, which registers magpie on the way
+		// OpenAI's Sign in with ChatGPT, which registers magpie-friday on the way
 		if s.hostID, err = siwcHostID(); err != nil {
 			return err
 		}
@@ -389,7 +389,7 @@ func (s *signInFlow) begin() error {
 		}
 		startGoogleSignIn(s, app, ln.Addr().(*net.TCPAddr).Port, challenge)
 	default:
-		return fmt.Errorf("magpie can't sign in to %s accounts", agent)
+		return fmt.Errorf("magpie-friday can't sign in to %s accounts", agent)
 	}
 
 	if ln != nil || blocked != "" {
@@ -398,7 +398,7 @@ func (s *signInFlow) begin() error {
 		srv := &http.Server{Handler: mux, ReadHeaderTimeout: 10 * time.Second}
 		s.mu.Lock()
 		s.srv = srv
-		// a browser that can't reach this port (magpie on a server, in
+		// a browser that can't reach this port (magpie-friday on a server, in
 		// Docker) ends on a page that won't load: its address finishes it
 		s.st.PasteCallback = true
 		if blocked != "" {
@@ -496,7 +496,7 @@ func SubmitSignInCallback(id, raw string) error {
 }
 
 // pastedCallback takes the address a sign-in's browser was sent back to,
-// for a magpie that browser can't reach. Only this sign-in's own address is
+// for a magpie-friday that browser can't reach. Only this sign-in's own address is
 // taken: its port and path, and its state. It goes through the handler the
 // callback port serves, so it is checked and traded for the account just as
 // the browser's own would be, and only once: whichever of the two comes
@@ -539,7 +539,7 @@ func (s *signInFlow) pastedCallback(raw string) error {
 	select {
 	case <-s.done:
 	case <-ctx.Done():
-		return errors.New("the sign-in is still finishing; magpie shows the account when it's done")
+		return errors.New("the sign-in is still finishing; magpie-friday shows the account when it's done")
 	}
 	switch st := s.status(); st.State {
 	case "done":
@@ -632,7 +632,7 @@ func (s *signInFlow) finish(out SignInState) bool {
 	if out.State == "done" {
 		agent, proxy, chosen := s.st.Agent, s.proxy, s.chosen
 		s.mu.Unlock()
-		// signing in again brings back an account removed from magpie
+		// signing in again brings back an account removed from magpie-friday
 		_ = ShowAccount(agent)
 		if chosen {
 			// the proxy picked for it is the account's from now on
@@ -676,7 +676,7 @@ func (s *signInFlow) callback(w http.ResponseWriter, r *http.Request) {
 	}
 	q := r.URL.Query()
 	if s.status().State != "waiting" {
-		signInPage(w, false, "This sign-in is over", "Start it again from magpie.")
+		signInPage(w, false, "This sign-in is over", "Start it again from magpie-friday.")
 		return
 	}
 	if e := q.Get("error"); e != "" {
@@ -690,12 +690,12 @@ func (s *signInFlow) callback(w http.ResponseWriter, r *http.Request) {
 	}
 	if q.Get("state") != s.state || q.Get("code") == "" {
 		// not ours: someone else's page, or a stale tab
-		signInPage(w, false, "This link isn't from magpie's sign-in", "Start it again from magpie.")
+		signInPage(w, false, "This link isn't from magpie-friday's sign-in", "Start it again from magpie-friday.")
 		return
 	}
 	if !s.claim() {
 		// its address was pasted too, and that one is being finished
-		signInPage(w, false, "This sign-in is already finishing", "magpie shows the account when it's done.")
+		signInPage(w, false, "This sign-in is already finishing", "magpie-friday shows the account when it's done.")
 		return
 	}
 	ctx, cancel := context.WithTimeout(s.via(r.Context()), 30*time.Second)
@@ -713,7 +713,7 @@ func (s *signInFlow) callback(w http.ResponseWriter, r *http.Request) {
 		var using bool
 		if err = keepLogin(ctx, func() (err error) { using, err = addLogin(l); return err }); err == nil {
 			s.finish(SignInState{State: "done", User: l.User, Plan: l.Plan, Using: using})
-			signInPage(w, true, "You're signed in", fmt.Sprintf("%s is added to magpie. You can close this tab.", l.User))
+			signInPage(w, true, "You're signed in", fmt.Sprintf("%s is added to magpie-friday. You can close this tab.", l.User))
 			return
 		}
 	}
@@ -738,7 +738,7 @@ func (s *signInFlow) googleDone(ctx context.Context, w http.ResponseWriter, app 
 		using = true
 	}
 	s.finish(SignInState{State: "done", User: g.user, Plan: plan, Using: using})
-	signInPage(w, true, "You're signed in", fmt.Sprintf("%s is added to magpie. You can close this tab.", g.user))
+	signInPage(w, true, "You're signed in", fmt.Sprintf("%s is added to magpie-friday. You can close this tab.", g.user))
 }
 
 // exchange trades the code for tokens and makes them into a login.
@@ -808,7 +808,7 @@ func (e *tokenRefused) Error() string {
 	return fmt.Sprintf("the sign-in was refused (%d): %s", e.status, e.msg)
 }
 
-// claudeLogin is a Claude sign-in as magpie keeps it.
+// claudeLogin is a Claude sign-in as magpie-friday keeps it.
 func claudeLogin(c claudeCredentials, acct map[string]any) (savedLogin, error) {
 	email, _ := acct["emailAddress"].(string)
 	if email == "" {
@@ -839,7 +839,7 @@ func codexExchange(ctx context.Context, code, verifier, redirect string) (savedL
 	return codexLogin(tok.IDToken, tok.AccessToken, tok.RefreshToken, "")
 }
 
-// codexLogin is a ChatGPT sign-in as magpie keeps it: auth.json as `codex
+// codexLogin is a ChatGPT sign-in as magpie-friday keeps it: auth.json as `codex
 // login` writes it. accountID is used when the ID token doesn't name one.
 func codexLogin(idToken, accessToken, refreshToken, accountID string) (savedLogin, error) {
 	id := jwtClaims(idToken)
@@ -882,9 +882,9 @@ func addLogin(l savedLogin) (using bool, err error) {
 	l.User = codexName(ls, l)
 	using = !signedIn || sameLogin(live, l)
 	if first := claudeStandIn(ls); !signedIn && l.Agent == "claude" && first != "" {
-		// logged out of Claude Code with accounts in magpie: it stays so,
-		// as the user left it (a claude.ai sign-in beside magpie's token
-		// has Claude Code warn), and the account is magpie's alone. The
+		// logged out of Claude Code with accounts in magpie-friday: it stays so,
+		// as the user left it (a claude.ai sign-in beside magpie-friday's token
+		// has Claude Code warn), and the account is magpie-friday's alone. The
 		// one served first till now, seen last, stays on behind it.
 		using = false
 		for i := range ls {
@@ -926,12 +926,12 @@ func addLogin(l savedLogin) (using bool, err error) {
 	return using, nil
 }
 
-// signInPage is what the browser shows at the end: magpie's, in its own
+// signInPage is what the browser shows at the end: magpie-friday's, in its own
 // quiet black and white, never the vendor's "return to the CLI".
-// magpieLogo is magpie's mark (build/icon/magpie-small.svg), signing the
+// magpieLogo is magpie-friday's mark (build/icon/magpie-friday-small.svg), signing the
 // page the browser lands on after a sign-in.
 //
-//go:embed magpie.svg
+//go:embed magpie-friday.svg
 var magpieLogo string
 
 func signInPage(w http.ResponseWriter, ok bool, title, msg string) {
@@ -945,7 +945,7 @@ func signInPage(w http.ResponseWriter, ok bool, title, msg string) {
 		mark = `<path d="M7 7l10 10M17 7L7 17"/>`
 	}
 	fmt.Fprintf(w, `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>magpie · %[1]s</title><style>
+<title>magpie-friday · %[1]s</title><style>
 :root{--bg:#fafafa;--fg:#111;--muted:#6b6b6b;--line:#e4e4e4;--card:#fff}
 @media (prefers-color-scheme:dark){:root{--bg:#0e0e0e;--fg:#f2f2f2;--muted:#9a9a9a;--line:#262626;--card:#161616}}
 *{box-sizing:border-box}html,body{height:100%%;margin:0}

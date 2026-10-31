@@ -1,7 +1,7 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// Allowed addresses (lc on Discord: magpie in Docker on a public host):
+// Allowed addresses (lc on Discord: magpie-friday in Docker on a public host):
 // Settings › Network, under Share on local network, lists the IPs and CIDR
-// ranges other computers may reach magpie from at all. Shown while magpie
+// ranges other computers may reach magpie-friday from at all. Shown while magpie-friday
 // is shared or listens on the network, not otherwise. One is added from a
 // field and its Add button (or Enter), saved as the gateway cleaned it,
 // and taken away with its Remove; one that isn't an address, and a list
@@ -25,7 +25,7 @@ function settingsPayload(over) {
     dock: false, dockWindow: false, proxy: "", redact: false, redactPersonal: false, redactWords: [],
     codexWarmup: "", claudeWarmup: "", codexWarmAt: "", claudeWarmAt: "", workbuddyCheckin: false, noStats: false,
     trayUsage: "", trayUsageEvery: 3, vision: "", imageGen: "",
-    version: "0.1.400", dir: "/config/magpie", gateway: "http://127.0.0.1:3425",
+    version: "0.1.400", dir: "/config/magpie-friday", gateway: "http://127.0.0.1:3425",
     proxyNow: "none", proxySource: "none", login: false,
     visionModels: [], imageGenModels: [], workbuddyCheckins: [],
     lan: true, lanURLs: ["http://192.168.1.20:3425"],
@@ -78,10 +78,10 @@ function server(lang, posts, over) {
 
 const en = {
   name: "Allowed addresses", add: "Add", remove: "Remove", field: "IP address or range",
-  sub: "Other computers reach magpie only from these addresses or ranges (CIDR), even with a gateway key; this computer always can. None listed lets every address in",
-  envSub: "Set by MAGPIE_ALLOW_IPS. Other computers reach magpie only from these addresses, even with a gateway key; this computer always can",
+  sub: "Other computers reach magpie-friday only from these addresses or ranges (CIDR), even with a gateway key; this computer always can. None listed lets every address in",
+  envSub: "Set by MAGPIE_ALLOW_IPS. Other computers reach magpie-friday only from these addresses, even with a gateway key; this computer always can",
   notIP: "Write an address as 203.0.113.7, or a range as 10.0.0.0/8 or 2001:db8::/32",
-  shutOut: "That list leaves out {addr}, the address magpie sees this page open from: add it first, or this page can’t reach magpie",
+  shutOut: "That list leaves out {addr}, the address magpie-friday sees this page open from: add it first, or this page can’t reach magpie-friday",
   fix: "Add {addr}",
   fixTip: "Behind Docker or a reverse proxy, this is the proxy’s address, not your computer’s: adding it lets in everyone who comes through that proxy",
   envSet: "MAGPIE_ALLOW_IPS sets this list; change it there",
@@ -134,7 +134,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       await page.context().close();
     });
 
-    await t.test("hidden while magpie answers only this computer", async () => {
+    await t.test("hidden while magpie-friday answers only this computer", async () => {
       const { page, errors } = await open(browser, "en", [], { lan: false, lanURLs: [] });
       await page.locator("#lanList .row").first().waitFor();
       assert.equal(await page.locator("#allowList .row").count(), 0);
@@ -243,7 +243,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         await page.waitForTimeout(30);
       }
       await box.locator(".allow-ip-row").filter({ hasText: "203.0.113.50" }).locator("button").click();
-      // the refusal names the address magpie sees the page from
+      // the refusal names the address magpie-friday sees the page from
       // (Mathresearcher on Discord: which one?), in the page's language
       const says = await page.evaluate((s) => t(s, { addr: "203.0.113.50" }), en.shutOut);
       assert.match(says, /203\.0\.113\.50/);

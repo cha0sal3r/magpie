@@ -8,8 +8,8 @@ import (
 // Codex writes its memories with models of its own, gpt-5.6-luna for a
 // thread's summary and gpt-5.6-terra to consolidate them, whatever its
 // model (Yc on Discord). The memories square sets both [memories] keys to
-// one pick, Default removes them, a magpie model needs Codex on magpie,
-// and stepping out of magpie drops one of magpie's while keeping the
+// one pick, Default removes them, a magpie-friday model needs Codex on magpie-friday,
+// and stepping out of magpie-friday drops one of magpie-friday's while keeping the
 // user's other [memories] settings.
 func TestCodexMemoriesModel(t *testing.T) {
 	home, read := codexHome(t, `{"tokens":{"access_token":"x","id_token":"x.e30.x"}}`,
@@ -26,11 +26,11 @@ func TestCodexMemoriesModel(t *testing.T) {
 		t.Fatalf("unset memories model = %q", got)
 	}
 	if err := mem.Set("fake/m1"); err == nil {
-		t.Error("a magpie model was taken before Codex runs through magpie")
+		t.Error("a magpie-friday model was taken before Codex runs through magpie-friday")
 	}
 	for _, o := range mem.Options(nil) {
 		if isMagpie(o.Value) {
-			t.Errorf("magpie model offered before Codex runs through magpie: %s", o.Value)
+			t.Errorf("magpie-friday model offered before Codex runs through magpie-friday: %s", o.Value)
 		}
 	}
 	if err := mem.Set("gpt-5.4-mini"); err != nil {
@@ -52,15 +52,15 @@ func TestCodexMemoriesModel(t *testing.T) {
 		t.Fatal(err)
 	}
 	if cfg := read(); !strings.Contains(cfg, `extract_model = "fake/m1"`) || !strings.Contains(cfg, `consolidation_model = "fake/m1"`) {
-		t.Fatalf("magpie model:\n%s", cfg)
+		t.Fatalf("magpie-friday model:\n%s", cfg)
 	}
-	// one of Codex's own again: Codex can't find magpie's model any more
+	// one of Codex's own again: Codex can't find magpie-friday's model any more
 	if err := cx.Fields[0].Set("gpt-5.4"); err != nil {
 		t.Fatal(err)
 	}
 	if cfg := read(); strings.Contains(cfg, "extract_model") || strings.Contains(cfg, "consolidation_model") ||
 		!strings.Contains(cfg, "max_raw_memories_for_consolidation = 64") {
-		t.Fatalf("stepping out of magpie:\n%s", cfg)
+		t.Fatalf("stepping out of magpie-friday:\n%s", cfg)
 	}
 
 	// Default: the keys go, and a table left empty with them
@@ -87,7 +87,7 @@ func TestCodexMemoriesModel(t *testing.T) {
 	}
 }
 
-// A magpie memories model goes when Codex is disconnected from magpie too.
+// A magpie-friday memories model goes when Codex is disconnected from magpie-friday too.
 func TestCodexMemoriesUnwire(t *testing.T) {
 	home, read := codexHome(t, `{"tokens":{"access_token":"x","id_token":"x.e30.x"}}`, "model = \"gpt-5.5\"\n")
 	cx := codex(home)
@@ -101,6 +101,6 @@ func TestCodexMemoriesUnwire(t *testing.T) {
 		t.Fatal(err)
 	}
 	if cfg := read(); strings.Contains(cfg, "fake/m1") {
-		t.Fatalf("magpie model kept after disconnecting:\n%s", cfg)
+		t.Fatalf("magpie-friday model kept after disconnecting:\n%s", cfg)
 	}
 }

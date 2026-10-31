@@ -61,7 +61,7 @@ func TestClaudeRelocationPreviewAndCommit(t *testing.T) {
 	if err != nil || out.Sessions != 1 || out.Files != 4 || out.Backup != "" || out.Token == "" {
 		t.Fatalf("preview %+v: %v", out, err)
 	}
-	if _, err := os.Stat(filepath.Join(root, "magpie-relocations")); !os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(root, "magpie-friday-relocations")); !os.IsNotExist(err) {
 		t.Fatal("preview wrote to disk")
 	}
 	in.Token = out.Token

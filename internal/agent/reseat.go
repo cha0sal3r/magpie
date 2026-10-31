@@ -5,7 +5,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A provider switched off or removed, or the last account of a sign-in
@@ -15,14 +15,14 @@ import (
 // agents along with the change: to the same model from a provider still on,
 // else back to the agent's own default.
 
-// Move is one of an agent's fields moved off a model magpie no longer serves.
+// Move is one of an agent's fields moved off a model magpie-friday no longer serves.
 type Move struct {
 	Agent string `json:"agent"` // the agent's name
 	Field string `json:"field"` // model, or a tier (Claude Code's haiku …)
 	From  string `json:"from"`  // the catalog model it was on
 	To    string `json:"to"`    // the one it is on now; "" its own default
 	// Error is why the agent couldn't be moved (its file unwritable, say):
-	// it stays on From, which magpie no longer serves
+	// it stays on From, which magpie-friday no longer serves
 	Error string `json:"error,omitempty"`
 }
 
@@ -38,14 +38,14 @@ func (m Move) String() string {
 	return m.Agent + " " + m.Field + ": " + m.From + " → " + to
 }
 
-// pick is a field on one of magpie's models.
+// pick is a field on one of magpie-friday's models.
 type pick struct {
 	a        *Agent
 	key, val string
 	ref      string // the catalog model
 }
 
-// picks reads every detected agent's fields that are on a model magpie serves.
+// picks reads every detected agent's fields that are on a model magpie-friday serves.
 func picks() []pick {
 	var out []pick
 	for _, a := range Detected() {
@@ -137,7 +137,7 @@ func (a *Agent) samePick(now, before string) bool {
 		provider.CanonicalRef(m1) == provider.CanonicalRef(m2)
 }
 
-// served: magpie takes requests for the catalog model.
+// served: magpie-friday takes requests for the catalog model.
 func served(ref string) bool {
 	_, _, ok := provider.Resolve(ref)
 	return ok
@@ -145,9 +145,9 @@ func served(ref string) bool {
 
 // sameModel is the option for ref's model from another provider still
 // serving it: the same id, else one that differs only in how it is spelt
-// (claude-sonnet-4.5 and claude-sonnet-4-5-20250929). For a group magpie
+// (claude-sonnet-4.5 and claude-sonnet-4-5-20250929). For a group magpie-friday
 // found (group/auto-…), gone as found groups are turned off or its model
-// is down to one provider magpie has, it is that model from the first
+// is down to one provider magpie-friday has, it is that model from the first
 // provider still serving it; none for any other routing group, which is
 // nobody else's.
 func sameModel(opts []Option, ref string) Option {

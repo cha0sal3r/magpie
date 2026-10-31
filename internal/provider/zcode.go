@@ -15,7 +15,7 @@ package provider
 // ~/.zcode/v2/credentials.json: each value is "enc:v1:" + iv.tag.ciphertext
 // (base64url), AES-256-GCM under sha256 of $ZCODE_CREDENTIAL_SECRET, or
 // else of "zcode-credential-fallback:<platform>:<home>:<user>". The
-// accounts magpie signed in to keep their key in logins.json.
+// accounts magpie-friday signed in to keep their key in logins.json.
 
 import (
 	"bytes"
@@ -38,7 +38,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
 )
 
 // Where ZCode's coding plan and its sign-in are; vars so tests can point
@@ -51,7 +51,7 @@ var (
 	zcodeBigModelAPI  = "https://bigmodel.cn" // BigModel's business API, where ZCode asks it
 )
 
-// zcodeAppVersion is the ZCode whose sign-in magpie makes.
+// zcodeAppVersion is the ZCode whose sign-in magpie-friday makes.
 const zcodeAppVersion = "3.14.3"
 
 // zcodeKey is a coding plan's key and where it is served.

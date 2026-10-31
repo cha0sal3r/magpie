@@ -5,13 +5,13 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // #656: Codex's Ultra on Copilot's gpt-6.1-sol. Codex offers it on a model
 // whose entry lists "ultra", and OpenAI's catalog lists it for GPT-6.1 Sol
-// (and the other Sols, Astra, Terra), not GPT-6 Luna: magpie's entry for a
+// (and the other Sols, Astra, Terra), not GPT-6 Luna: magpie-friday's entry for a
 // model OpenAI offers it on, served by another vendor up to max, lists it
 // too and says multi-agent V2, so Codex hands work to its agents; Luna's
 // stops at max. A ChatGPT account's entry is the backend's, and a group with

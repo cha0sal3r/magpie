@@ -6,7 +6,7 @@ import (
 
 // A group's own id keeps the dots of a model's name (#968): saved from its
 // name or given, renamed to one, and an agent sending the bare name reaches
-// it. The ids magpie finds keep Slug's dashes, so none saved before change.
+// it. The ids magpie-friday finds keep Slug's dashes, so none saved before change.
 func TestGroupIDKeepsDots(t *testing.T) {
 	for in, want := range map[string]string{
 		"gpt-6.1-sol":   "gpt-6.1-sol",

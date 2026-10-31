@@ -5,13 +5,13 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // CyberCaius on Discord: after a switch in /model, the first auto mode
 // classifier request went to the model before it. Claude Code names its
-// sonnet tier for the classifier, and magpie's sonnet tier follows the
+// sonnet tier for the classifier, and magpie-friday's sonnet tier follows the
 // main model only once Follow has run. Until then the classifier's model
 // is the tier the new main model would give it; a tier, or an auto mode
 // model, of the user's own is theirs as it is.

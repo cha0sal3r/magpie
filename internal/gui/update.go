@@ -13,9 +13,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/update"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/update"
 )
 
 // updater keeps the app current. It asks the feed at start-up and every six
@@ -70,7 +70,7 @@ type updater struct {
 	onWait   func()
 	loops    sync.WaitGroup // the waits going on
 	// With Settings' AutoRestart, the clock has autoRestart run (the app's
-	// or magpie web's restart) once a downloaded update is ready and the
+	// or magpie-friday web's restart) once a downloaded update is ready and the
 	// gateway idle (#2096); autoSkip is the version whose wait the user
 	// called off, which isn't restarted into by itself again.
 	autoRestart func() bool
@@ -84,7 +84,7 @@ type updateJSON struct {
 	Notes   string `json:"notes,omitempty"`
 	URL     string `json:"url,omitempty"`
 	Stuck   string `json:"stuck,omitempty"` // available: why it can't update itself
-	// available, stuck "not-writable": the folder magpie may not write to
+	// available, stuck "not-writable": the folder magpie-friday may not write to
 	StuckDir string `json:"stuckDir,omitempty"`
 	Retry    bool   `json:"retry,omitempty"` // error: a click downloads it again
 	// error: the download failed through this mirror (Settings' UpdateMirror),
@@ -147,8 +147,8 @@ var (
 
 // place takes what an update replaces on goos: the .app the binary is in,
 // else the binary itself. On a Mac that is the terminal build too (gui
-// false: magpie-cli-darwin, or `magpie web` from it), which has no .app to
-// be in and which `magpie update` replaces the same way; before, its page
+// false: magpie-cli-darwin, or `magpie-friday web` from it), which has no .app to
+// be in and which `magpie-friday update` replaces the same way; before, its page
 // only ever offered the release page. The app's own binary copied out of
 // its .app isn't replaced by the terminal build.
 func (u *updater) place(goos string, gui bool) {
@@ -173,15 +173,15 @@ func (u *updater) placeExe(exe string) {
 	u.exe = exe
 	u.self, _ = os.Stat(exe)
 	update.RemoveOld(exe)      // what the last updates on Windows moved aside
-	update.RemoveStaleNew(exe) // what a magpie left running downloaded again
+	update.RemoveStaleNew(exe) // what a magpie-friday left running downloaded again
 	u.blocked = update.ReadBlocked(Version)
 }
 
 // exeStuck says why the binary in dir can't be replaced, or "" when it
-// can: "not-writable" when magpie may not write to dir and this system
-// can't ask for the administrator's password. On Windows a magpie.exe kept
+// can: "not-writable" when magpie-friday may not write to dir and this system
+// can't ask for the administrator's password. On Windows a magpie-friday.exe kept
 // at C:\ updated only by opening the release page, with nothing saying why
-// (#1277). "container" is that in a container (the Docker image's /magpie,
+// (#1277). "container" is that in a container (the Docker image's /magpie-friday,
 // run as nonroot): there the new image is pulled, and "move it to a folder
 // you can write to" was the wrong advice.
 func exeStuck(dir string) string {
@@ -267,7 +267,7 @@ func (u *updater) freshen() {
 	}
 }
 
-// An answer of "latest" is about the moment the feed was asked, and magpie
+// An answer of "latest" is about the moment the feed was asked, and magpie-friday
 // releases many times a day: Settings' Version row said 已是最新 on
 // v0.1.1402 with v0.1.1517 out (RickyWei on Discord, Windows), the answer
 // of a check made while 1402 was the newest and never made again (automatic
@@ -362,7 +362,7 @@ func (u *updater) run() {
 		u.state = "blocked"
 		return
 	case u.replaced():
-		// another magpie put the update in already: a restart is all
+		// another magpie-friday put the update in already: a restart is all
 		u.state = "ready"
 		if u.onReady != nil {
 			go u.onReady(rel.Version)
@@ -409,7 +409,7 @@ func (u *updater) install(ask bool) bool {
 	u.mu.Lock()
 	defer u.mu.Unlock()
 	if u.replaced() {
-		// another magpie updated the binary after this one started: it is
+		// another magpie-friday updated the binary after this one started: it is
 		// in, and swapping this one's download in would move it aside (the
 		// download is left: it may be the other's, staged at the same name)
 		u.staged = ""
@@ -470,7 +470,7 @@ func (u *updater) assetSize(rel *update.Release) int64 {
 	return rel.Assets[update.BinaryAsset()].Size
 }
 
-// replaced is whether the binary was updated by another magpie since this
+// replaced is whether the binary was updated by another magpie-friday since this
 // one started, which runs on from where it was moved aside.
 func (u *updater) replaced() bool {
 	return u.exe != "" && update.Replaced(u.exe, u.self)
@@ -525,7 +525,7 @@ func (u *updater) jsonIn(lang string) updateJSON {
 		}
 	}
 	if u.latest != nil {
-		// the notes without their download links: magpie downloads it itself
+		// the notes without their download links: magpie-friday downloads it itself
 		j.Latest, j.Notes, j.URL = u.latest.Version, update.StripInstall(u.latest.Notes), u.latest.URL
 	}
 	return j
@@ -658,7 +658,7 @@ func updateRoutes(mux *http.ServeMux, w Windows) {
 var relaunchBinary = update.RelaunchBinary
 
 // restartToUpdate installs the staged version and arranges for it to open
-// once this process is gone; the caller then quits. magpie web runs on as
+// once this process is gone; the caller then quits. magpie-friday web runs on as
 // the new version in its own place (Web.Wait) instead of opening the app.
 // Off the Mac, the new one opens its window on view when window is set, and
 // only the tray icon when not; the Mac's always opens its window.

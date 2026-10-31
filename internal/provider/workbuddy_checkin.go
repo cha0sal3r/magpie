@@ -10,7 +10,7 @@ package provider
 
 // WorkBuddy's daily check-in (签到): while its event runs, a WorkBuddy
 // (China) account is given a few credits a day for pressing 签到 in the
-// app, more on a streak. While the setting is on, whichever magpie runs the
+// app, more on a streak. While the setting is on, whichever magpie-friday runs the
 // gateway presses it for each signed-in account once a Beijing day, as
 // WorkBuddy does: it asks the event's status, and claims when the event is
 // on and today's isn't in yet.
@@ -46,8 +46,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 const (
@@ -67,13 +67,13 @@ const (
 
 // What came of a day's check-in, WorkBuddyCheckin.Outcome.
 const (
-	CheckinClaimed    = "claimed"    // claimed by magpie
+	CheckinClaimed    = "claimed"    // claimed by magpie-friday
 	CheckinDone       = "done"       // in already, pressed in WorkBuddy or before
 	CheckinIneligible = "ineligible" // the account can't take part
 	CheckinInactive   = "inactive"   // no event running, or it has ended
 	CheckinFailed     = "failed"     // no answer; tried again later that day
 	// CheckinCaptcha is a plugin's check-in the vendor asked a captcha
-	// of: the user checks in in its own app, magpie never solves one
+	// of: the user checks in in its own app, magpie-friday never solves one
 	CheckinCaptcha = "captcha"
 	// CheckinOwnApp is a check-in the user is to do in the vendor's own
 	// app: an answer for the day. WorkBuddy's check-in answered 401 while
@@ -124,12 +124,12 @@ type WorkBuddyCheckin struct {
 	// sent so a press can tell a claim now from one earlier today.
 	// Never kept: the file is written before it is set.
 	Asked bool `json:"asked,omitempty"`
-	// Claimed is when magpie last saw the account's credits claimed,
+	// Claimed is when magpie-friday last saw the account's credits claimed,
 	// carried over while later answers that day say done: a done after
-	// magpie's own claim is the day's, one before it may be yesterday's
+	// magpie-friday's own claim is the day's, one before it may be yesterday's
 	// (#3326).
 	Claimed time.Time `json:"claimed,omitzero"`
-	// Again says the answer is provisional (provisional): magpie asks
+	// Again says the answer is provisional (provisional): magpie-friday asks
 	// the vendor again later that day. Worked out when shown, never
 	// kept.
 	Again bool `json:"again,omitempty"`
@@ -145,23 +145,23 @@ type WorkBuddyCheckin struct {
 // noon; a vendor counting a US day isn't covered.
 const checkinSureHour = 12
 
-// claimedOn says whether magpie saw the account's credits claimed on day.
+// claimedOn says whether magpie-friday saw the account's credits claimed on day.
 func (r WorkBuddyCheckin) claimedOn(day string) bool {
 	return r.Outcome == CheckinClaimed && r.Day == day || !r.Claimed.IsZero() && wbCheckinDay(r.Claimed) == day
 }
 
 // provisional says whether r is an answer that may describe the vendor's
 // day before (#3326): a done, inactive or ineligible one given before
-// checkinSureHour, on a day magpie saw no claim. The loop asks such an
+// checkinSureHour, on a day magpie-friday saw no claim. The loop asks such an
 // account again every wbCheckinEvery until a claim, or one of these
 // answers from checkinSureHour on, settles the day: at most 24 more
-// asks a day for an account that was in early, none once magpie claims.
+// asks a day for an account that was in early, none once magpie-friday claims.
 func (r WorkBuddyCheckin) provisional() bool {
 	return r.unclaimedAnswer() && r.At.In(beijing).Hour() < checkinSureHour
 }
 
 // unclaimedAnswer says whether r is the vendor's word on how its day
-// stands (done, inactive or ineligible) on a day magpie saw no claim:
+// stands (done, inactive or ineligible) on a day magpie-friday saw no claim:
 // one a press asks the vendor again for, as it may have changed.
 func (r WorkBuddyCheckin) unclaimedAnswer() bool {
 	switch r.Outcome {
@@ -243,10 +243,10 @@ func readCheckins(path string) (map[string]WorkBuddyCheckin, error) {
 			if err == nil {
 				err = errors.New("it holds null")
 			}
-			err = fmt.Errorf("%s doesn't parse (%v): magpie leaves it as it is and checks in no account of it until it does", path, err)
+			err = fmt.Errorf("%s doesn't parse (%v): magpie-friday leaves it as it is and checks in no account of it until it does", path, err)
 		}
 	default:
-		err = fmt.Errorf("%s can't be read (%v): magpie leaves it as it is and checks in no account of it until it can", path, err)
+		err = fmt.Errorf("%s can't be read (%v): magpie-friday leaves it as it is and checks in no account of it until it can", path, err)
 	}
 	checkinsReadMu.Lock()
 	defer checkinsReadMu.Unlock()
@@ -294,7 +294,7 @@ func shownCheckins(path string) map[string]WorkBuddyCheckin {
 	return st
 }
 
-// wbCheckinMu keeps two check-ins in one magpie (the loop and a press of
+// wbCheckinMu keeps two check-ins in one magpie-friday (the loop and a press of
 // the CLI's) from asking for one account at once.
 var wbCheckinMu sync.Mutex
 
@@ -358,13 +358,13 @@ func wbCheckin(ctx context.Context, a wbAccount) WorkBuddyCheckin {
 
 // wbCheckinUnauthorized is wbCheckinRefused, told apart on a 401: WorkBuddy's
 // gateway answers a token it refuses with a bare 401 (an HTML page, so the
-// card said only "Unauthorized" and "magpie tries again later", every 30
+// card said only "Unauthorized" and "magpie-friday tries again later", every 30
 // minutes, all day; モモコ on Discord, a Free account, signing in again
 // didn't help). The account's credits are read with the same headers at
 // once: when they read, the sign-in is good and it is the check-in alone
-// that refuses magpie — WorkBuddy's own app sends its check-in, and only
+// that refuses magpie-friday — WorkBuddy's own app sends its check-in, and only
 // its check-in, with a device token from its security SDK (X-Device-Token,
-// buildHeadersWithTuringToken in WorkBuddy 5.5.6), which magpie can't make
+// buildHeadersWithTuringToken in WorkBuddy 5.5.6), which magpie-friday can't make
 // — so it is an answer for the day, to check in in the WorkBuddy app. When
 // they don't read either, the sign-in itself is refused: sign in again.
 func wbCheckinUnauthorized(ctx context.Context, do func(*http.Request) (*http.Response, error), a wbAccount, h map[string]string, err error) WorkBuddyCheckin {
@@ -447,7 +447,7 @@ func WorkBuddyCheckins() []WorkBuddyCheckin {
 // WithCheckins is qs with each WorkBuddy (China) account's card told it
 // is checked in each day and how its last check-in went, for the Usage
 // page to say on the card (#694: having to look in Settings to know whether
-// it checked in is wrong). It holds for a moved account too: magpie checks
+// it checked in is wrong). It holds for a moved account too: magpie-friday checks
 // those in through the plugin's fetch. qs, which may be the usage cache,
 // is left as it is; nothing is asked.
 func WithCheckins(qs []SubscriptionQuota) []SubscriptionQuota {

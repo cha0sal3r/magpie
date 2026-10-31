@@ -1,6 +1,6 @@
 // Routing says a conversation stays on the account that compacted it
 // natively (#1099), not that the account is the only one on for the model,
-// which read as magpie not moving to the others (#2639).
+// which read as magpie-friday not moving to the others (#2639).
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");

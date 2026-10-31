@@ -10,7 +10,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
 )
 
 func azureHome(t *testing.T) {
@@ -30,7 +30,7 @@ func azureHome(t *testing.T) {
 
 // Whatever the portal or another app gave — the resource's endpoint, its
 // /openai, the v1 base, a classic deployment's URL, a newer resource's
-// host, or only its name — magpie asks the resource's v1 API.
+// host, or only its name — magpie-friday asks the resource's v1 API.
 func TestAzureBase(t *testing.T) {
 	for in, want := range map[string]string{
 		"https://contoso.openai.azure.com":              "https://contoso.openai.azure.com/openai/v1",
@@ -172,7 +172,7 @@ func TestAzureModels(t *testing.T) {
 }
 
 // Another app's Azure OpenAI entry is brought in as the preset, at its
-// resource's v1 API, where magpie used to leave it out.
+// resource's v1 API, where magpie-friday used to leave it out.
 func TestImportAzure(t *testing.T) {
 	azureHome(t)
 	cfg, _ := os.UserConfigDir()

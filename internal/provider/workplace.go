@@ -29,7 +29,7 @@ func GitSaid(text string) string {
 
 // GitOnDisk says whether dir, a folder on this computer, is in a git
 // repository: a .git in it or in a folder above it. "" when dir isn't a
-// folder here (an agent on another computer, through a shared magpie):
+// folder here (an agent on another computer, through a shared magpie-friday):
 // unknown, never "no".
 func GitOnDisk(dir string) string {
 	if !filepath.IsAbs(dir) {

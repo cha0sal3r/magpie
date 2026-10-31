@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // keyedSlow is slow to start on one key's one model while slow is set,
@@ -61,7 +61,7 @@ func (k *keyedSlow) reset() {
 
 // A model that keeps failing to start on one account rests there (小八 on
 // Discord: a WorkBuddy account's kimi-k3-1 stalled 58 times, past the
-// group's first-token time, and magpie asked it first again each time, 15
+// group's first-token time, and magpie-friday asked it first again each time, 15
 // times in 17 minutes). Once nobody rests; twice in a row, that model on
 // that account rests, and a success in between starts the count again.
 // The same model on another key and another model on the same key are

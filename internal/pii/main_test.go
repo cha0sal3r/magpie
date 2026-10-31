@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // The tests run in a home of their own; the test binary started again
@@ -79,7 +79,7 @@ func fakeServe(mode string) {
 	for {
 		n, err := u32()
 		if err != nil {
-			os.Exit(0) // stdin ended: magpie let it go
+			os.Exit(0) // stdin ended: magpie-friday let it go
 		}
 		texts := make([]string, n)
 		for i := range texts {

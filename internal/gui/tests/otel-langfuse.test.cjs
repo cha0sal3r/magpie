@@ -1,5 +1,5 @@
 // Settings › Observability's Langfuse setup: the user picks Langfuse and
-// gives its host and the project's two keys, and magpie makes the endpoint,
+// gives its host and the project's two keys, and magpie-friday makes the endpoint,
 // the Basic sign-in and the ingestion header from them. A Langfuse set up by
 // hand keeps every value the user set; another collector's headers never go
 // to Langfuse. Chromium and WebKit, every language, down to 360px.
@@ -15,7 +15,7 @@ const basic = (pk, sk) => "Basic " + Buffer.from(pk + ":" + sk).toString("base64
 
 function server(lang, otel, posts) {
   const fixed = {
-    theme: "light", lang, tray: "panel", currency: "usd", redactWords: [], version: "0.1.400", dir: "~/.config/magpie",
+    theme: "light", lang, tray: "panel", currency: "usd", redactWords: [], version: "0.1.400", dir: "~/.config/magpie-friday",
     gateway: "http://127.0.0.1:3425", proxyNow: "none", proxySource: "none", visionModels: [], imageGenModels: [],
     workbuddyCheckins: [], lanURLs: [], fx: { rate: 7.2, at: new Date().toISOString(), stale: false }, otel,
   };

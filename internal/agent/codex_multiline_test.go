@@ -9,7 +9,7 @@ import (
 )
 
 // #253: a config.toml with a top-level array over several lines. Picking a
-// model through magpie put the new top-level keys inside the array, and the
+// model through magpie-friday put the new top-level keys inside the array, and the
 // failed write left the provider table appended but no model.
 const codexNotify = `notify = [
     "/usr/local/bin/notifier",
@@ -42,7 +42,7 @@ func TestCodexMultilineArray(t *testing.T) {
 				t.Fatalf("%v\n%s", err, read())
 			}
 			if want := []string{"/usr/local/bin/notifier", "turn-ended"}; cfg.Model != "fake/m1" || !reflect.DeepEqual(cfg.Notify, want) ||
-				cfg.ModelProviders["magpie"] == nil || cfg.ModelProviders["example"] == nil {
+				cfg.ModelProviders["magpie-friday"] == nil || cfg.ModelProviders["example"] == nil {
 				t.Fatalf("after the pick:\n%s", read())
 			}
 			if !strings.Contains(read(), "notify = [\n    \"/usr/local/bin/notifier\",\n    \"turn-ended\",\n]\n") {
@@ -63,7 +63,7 @@ func TestCodexMultilineArray(t *testing.T) {
 }
 
 // A pick whose last step can't be written leaves config.toml byte for byte
-// as it was, rather than with magpie's provider table added and no model:
+// as it was, rather than with magpie-friday's provider table added and no model:
 // here a table named openai_base_url makes the key of that name a
 // conflicting definition, found only once the earlier steps are written.
 func TestCodexFailedPickLeavesConfig(t *testing.T) {

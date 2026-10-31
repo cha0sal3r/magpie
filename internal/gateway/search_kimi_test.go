@@ -11,8 +11,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // A Kimi Code plan is known by its hosts' /coding endpoints, or by its
@@ -35,7 +35,7 @@ func TestKimiCodeSearchAddress(t *testing.T) {
 	}
 }
 
-// kimiPlan is a fake Kimi Code plan: its model calls magpie's web_search
+// kimiPlan is a fake Kimi Code plan: its model calls magpie-friday's web_search
 // once, then answers; its search service answers as kimi-cli reads it,
 // or 500 while broken is set.
 type kimiPlan struct {
@@ -110,7 +110,7 @@ func newKimiPlan(t *testing.T) *kimiPlan {
 func must(b []byte, _ error) []byte { return b }
 
 // A model of a Kimi Code plan has its searches done by the plan's search
-// service, as kimi-cli asks it, before the searcher magpie picks (here an
+// service, as kimi-cli asks it, before the searcher magpie-friday picks (here an
 // API that searches by itself, which a Codex account outranks the same
 // way) and the search APIs; with the service down, they come next. Before,
 // a Kimi user's searches went to the Codex account, and with nothing else
@@ -181,14 +181,14 @@ func TestKimiCodePlanSearchesForItsModels(t *testing.T) {
 		t.Fatal(err)
 	}
 	if p, _, ok := autoSearcher(); !ok || p.ID != "oai" {
-		t.Fatalf("magpie's pick %q %v", p.ID, ok)
+		t.Fatalf("magpie-friday's pick %q %v", p.ID, ok)
 	}
 	kimi.searched, kimi.results = nil, nil
 	if out := ask(); !strings.Contains(out, "Go 1.27.1 is out.") || len(kimi.searched) != 1 || len(other) != 0 || len(apis.asked) != 0 {
 		t.Fatalf("kimi %q, the other searcher %q, the APIs %q", kimi.searched, other, apis.asked)
 	}
 
-	// the service down: magpie's pick, then the search API
+	// the service down: magpie-friday's pick, then the search API
 	kimi.broken, kimi.searched, kimi.results = true, nil, nil
 	ask()
 	if len(kimi.searched) != 1 || len(other) == 0 || strings.Join(apis.asked, "|") != "tavily: latest go" {
@@ -199,7 +199,7 @@ func TestKimiCodePlanSearchesForItsModels(t *testing.T) {
 	}
 }
 
-// A Kimi Code plan isn't magpie's pick for other providers' models, which
+// A Kimi Code plan isn't magpie-friday's pick for other providers' models, which
 // keeps the searcher users have; Settings may name it, by itself, with no
 // model, and then it searches for every model.
 func TestKimiCodePlanNamedToSearch(t *testing.T) {

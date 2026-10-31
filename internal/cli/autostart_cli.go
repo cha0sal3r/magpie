@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/yetone/magpie/internal/autostart"
+	"github.com/cha0sal3r/magpie-friday/internal/autostart"
 )
 
-// magpie autostart [on|off]: whether magpie opens at login, in the tray.
+// magpie-friday autostart [on|off]: whether magpie-friday opens at login, in the tray.
 func autostartCmd(args []string) error {
 	if len(args) > 1 {
-		return fmt.Errorf("usage: magpie autostart [on|off]")
+		return fmt.Errorf("usage: magpie-friday autostart [on|off]")
 	}
 	if len(args) == 1 {
 		switch args[0] {
@@ -19,21 +19,21 @@ func autostartCmd(args []string) error {
 				return err
 			}
 		default:
-			return fmt.Errorf("usage: magpie autostart [on|off]")
+			return fmt.Errorf("usage: magpie-friday autostart [on|off]")
 		}
 	}
 	switch autostart.Enabled() {
 	case autostart.NeedsAllowing:
 		// the record is there, and Set(true) can't undo the user's switch
-		fmt.Println("magpie is set to open at login, but it is switched off in System Settings › General › Login Items › Allow in the Background: switch it on there")
+		fmt.Println("magpie-friday is set to open at login, but it is switched off in System Settings › General › Login Items › Allow in the Background: switch it on there")
 	case autostart.On:
 		if runtime.GOOS == "android" {
-			fmt.Println(green.Render("✓"), "magpie starts the gateway at boot (requires Termux:Boot)")
+			fmt.Println(green.Render("✓"), "magpie-friday starts the gateway at boot (requires Termux:Boot)")
 		} else {
-			fmt.Println(green.Render("✓"), "magpie opens at login, in the tray")
+			fmt.Println(green.Render("✓"), "magpie-friday opens at login, in the tray")
 		}
 	default:
-		fmt.Println("magpie doesn't open at login")
+		fmt.Println("magpie-friday doesn't open at login")
 	}
 	return nil
 }

@@ -9,11 +9,11 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Aloha on Discord: a relay answering 401 "鉴权 header， x-api-key 和
-// Authorization 不可以同时存在" to the two key headers magpie sends a
+// Authorization 不可以同时存在" to the two key headers magpie-friday sends a
 // third-party Anthropic API. The agent's turn goes through: asked again with
 // x-api-key alone, the same body, and the provider keeps x-api-key, so the
 // next turn is sent one header from the first (Anthropic's own API is

@@ -55,7 +55,7 @@ const words = {
 };
 const keys = [
   "Turn on routing groups", "Routing groups are on",
-  "Routing groups are off in Plugins › Built-in: the groups magpie finds, one model several providers serve, still route, but your own can't be made or changed here.",
+  "Routing groups are off in Plugins › Built-in: the groups magpie-friday finds, one model several providers serve, still route, but your own can't be made or changed here.",
 ];
 
 async function open(engine, width, t, name) {

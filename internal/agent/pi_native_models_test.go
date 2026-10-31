@@ -7,8 +7,8 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // piNativeHome is a home with Pi signed in to both openai and openai-codex
@@ -113,7 +113,7 @@ func TestPiOffersItsOwnOpenAICodexModels(t *testing.T) {
 	}
 }
 
-// Without Pi's registry in reach (Pi installed where magpie doesn't look),
+// Without Pi's registry in reach (Pi installed where magpie-friday doesn't look),
 // openai-codex still lists what the ChatGPT backend serves a Codex client,
 // from Codex CLI's models cache.
 func TestPiOpenAICodexWithoutItsRegistry(t *testing.T) {

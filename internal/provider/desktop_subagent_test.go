@@ -4,10 +4,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// desktopSubagentHome is a fresh home for magpie's files.
+// desktopSubagentHome is a fresh home for magpie-friday's files.
 func desktopSubagentHome(t *testing.T) {
 	t.Helper()
 	isolate(t)
@@ -59,14 +59,14 @@ func TestDesktopSubagentModelRenamed(t *testing.T) {
 	}
 }
 
-// Only a model or group magpie serves by that exact id is served: another
+// Only a model or group magpie-friday serves by that exact id is served: another
 // model name under a provider that is on is not.
 func TestDesktopSubagentUnserved(t *testing.T) {
 	desktopSubagentHome(t)
 	if err := SaveGroup(Group{ID: "workers", Name: "Workers", Members: []string{"fake/m1"}}); err != nil {
 		t.Fatal(err)
 	}
-	for id, want := range map[string]string{"fake/m1": "", "group/workers": "", "fake/missing": "magpie doesn't serve it now", "missing/m": "magpie doesn't serve it now"} {
+	for id, want := range map[string]string{"fake/m1": "", "group/workers": "", "fake/missing": "magpie-friday doesn't serve it now", "missing/m": "magpie-friday doesn't serve it now"} {
 		if got := DesktopSubagentUnserved(id); got != want {
 			t.Errorf("%s: %q, want %q", id, got, want)
 		}

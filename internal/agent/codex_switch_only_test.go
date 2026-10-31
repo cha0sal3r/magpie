@@ -9,14 +9,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// #1907 (foobra): two ChatGPT accounts, both on in magpie, for Codex
+// #1907 (foobra): two ChatGPT accounts, both on in magpie-friday, for Codex
 // Desktop and the CLI alone, not for the gateway. With more accounts on,
-// magpie points Codex at the gateway to fail over between them (#1385);
+// magpie-friday points Codex at the gateway to fail over between them (#1385);
 // switch-only takes that base URL out, so Codex goes straight to OpenAI and
-// magpie only switches its sign-in, and nothing puts it back while it is
+// magpie-friday only switches its sign-in, and nothing puts it back while it is
 // on. Off again, failover writes it back. A base URL the user wrote by hand
 // is theirs, and stays either way (#856).
 func TestCodexSwitchOnlyKeepsCodexOffTheGateway(t *testing.T) {

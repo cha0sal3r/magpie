@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // spawnDescription is the description of the spawn_agent tool in a
@@ -58,7 +58,7 @@ func codexSpawnRequest(t *testing.T, model string) string {
 
 // Codex's spawn_agent names only the first five models of its catalog
 // to the lead (codex-rs MAX_SPAWN_AGENT_MODEL_OVERRIDES), though it takes
-// any model of it: with 40 of magpie's in the catalog, the lead saw none
+// any model of it: with 40 of magpie-friday's in the catalog, the lead saw none
 // of them (Gearclickist on Discord: "Codex subagents on any model" on,
 // and only a few models could be picked). The tool now names every model
 // a subagent of that lead can work on, at CodexPath and at /v1; for a
@@ -93,10 +93,10 @@ func TestSpawnAgentNamesEveryModel(t *testing.T) {
 		// Codex's own five kept, and its text after the list
 		head, tail, _ := strings.Cut(desc, spawnMore)
 		list, rest, ok := strings.Cut(tail, "\n        Spawn a sub-agent")
-		// what magpie adds goes upstream in the prompt, to OpenAI too:
-		// it names neither magpie nor Codex and its limit
+		// what magpie-friday adds goes upstream in the prompt, to OpenAI too:
+		// it names neither magpie-friday nor Codex and its limit
 		added := desc[len(head) : len(desc)-len(rest)]
-		for _, w := range []string{"magpie", "Magpie", "Codex", "five"} {
+		for _, w := range []string{"magpie-friday", "magpie-friday", "Codex", "five"} {
 			if strings.Contains(added, w) {
 				t.Fatalf("the added text names %q:\n%s", w, added)
 			}
@@ -112,14 +112,14 @@ func TestSpawnAgentNamesEveryModel(t *testing.T) {
 		}
 	}
 
-	t.Run("CodexPath, a lead on magpie's model", func(t *testing.T) {
+	t.Run("CodexPath, a lead on magpie-friday's model", func(t *testing.T) {
 		code, body := codexPost(t, codexSpawnRequest(t, "fake/m1"))
 		if code != 200 {
 			t.Fatalf("%d %s", code, body)
 		}
 		namesAll(t, spawnDescription(t, f.got))
 	})
-	t.Run("/v1, Codex with magpie as its provider", func(t *testing.T) {
+	t.Run("/v1, Codex with magpie-friday as its provider", func(t *testing.T) {
 		rec := httptest.NewRecorder()
 		req := httptest.NewRequest("POST", "/v1/responses", strings.NewReader(codexSpawnRequest(t, "fake/m2")))
 		req.Header.Set("User-Agent", "codex_cli_rs/0.162.0")
@@ -135,7 +135,7 @@ func TestSpawnAgentNamesEveryModel(t *testing.T) {
 			t.Fatalf("%d %s", code, body)
 		}
 		if d := spawnDescription(t, upstream); d == "" || strings.Contains(d, "fake/") || strings.Contains(d, spawnMore) {
-			t.Fatalf("a sealed lead's subagents offered magpie's models:\n%s", d)
+			t.Fatalf("a sealed lead's subagents offered magpie-friday's models:\n%s", d)
 		}
 	})
 	t.Run("a lead on Codex's own model, V1", func(t *testing.T) {
@@ -229,7 +229,7 @@ func TestSpawnAgentNamesEveryModelAfterToolSearch(t *testing.T) {
 		}
 	}
 
-	t.Run("/v1, Codex with magpie as its provider", func(t *testing.T) {
+	t.Run("/v1, Codex with magpie-friday as its provider", func(t *testing.T) {
 		rec := httptest.NewRecorder()
 		req := httptest.NewRequest("POST", "/v1/responses", strings.NewReader(request(t, "fake/m1")))
 		req.Header.Set("User-Agent", "codex_cli_rs/0.162.1")
@@ -239,7 +239,7 @@ func TestSpawnAgentNamesEveryModelAfterToolSearch(t *testing.T) {
 		}
 		namesAll(t, searchedSpawnDescription(t, f.got))
 	})
-	t.Run("CodexPath, a lead on magpie's model", func(t *testing.T) {
+	t.Run("CodexPath, a lead on magpie-friday's model", func(t *testing.T) {
 		code, body := codexPost(t, request(t, "fake/m1"))
 		if code != 200 {
 			t.Fatalf("%d %s", code, body)

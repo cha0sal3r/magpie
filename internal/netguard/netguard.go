@@ -1,4 +1,4 @@
-// Package netguard is the one rule for where a download of a URL magpie
+// Package netguard is the one rule for where a download of a URL magpie-friday
 // didn't choose may connect: the gateway's (a caller's image, web_fetch, a
 // vendor's image or video, generate_image's download) and a provider's
 // icon. It judges addresses only; each caller decides what to do with a
@@ -74,7 +74,7 @@ func Public(a netip.Addr) bool {
 // the name stands for (#252, #2593). No machine on the user's network
 // sits there, so a connection to a fake-IP answer reaches the internet
 // host the name stands for, or nothing; but which host that is, the
-// fake-IP resolver decides where magpie can't see.
+// fake-IP resolver decides where magpie-friday can't see.
 func FakeIP(a netip.Addr) bool { return fakeNet.Contains(a.Unmap()) }
 
 // LoonPaired says a is the AAAA record Loon synthesizes for an A answer

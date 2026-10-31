@@ -11,36 +11,36 @@ import (
 
 	"golang.org/x/term"
 
-	"github.com/yetone/magpie/internal/library"
+	"github.com/cha0sal3r/magpie-friday/internal/library"
 )
 
-const libraryUsage = `magpie library                     what the library gives each agent: instructions, MCP servers, skills
-  magpie library sync                write it into the agents again (after one is installed, or edited by hand)
-  magpie library instructions        print the shared instructions
-  magpie library instructions set <file|->   replace them with a file's text (- for stdin)
-  magpie library instructions agents <a,b…|none>   the agents that get them
-  magpie library mcp add <name> <url | command args…> [agents=a,b…]
-  magpie library mcp agents <name> <a,b…|none>
-  magpie library mcp rm <name>
-  magpie library skill agents <name> <a,b…|none>
-  magpie library skill rm <name>     (skills are installed from the app's Library page)
-  magpie library skill rm --all [--yes]   every skill out of the library and the agents (asks first; --yes doesn't)
-  magpie library skill rm --gone [--yes]  every skill an update found removed from its source (asks first; --yes doesn't)
-  magpie library skill update [name] fetch a skill from GitHub again; with no name, every one from there
+const libraryUsage = `magpie-friday library                     what the library gives each agent: instructions, MCP servers, skills
+  magpie-friday library sync                write it into the agents again (after one is installed, or edited by hand)
+  magpie-friday library instructions        print the shared instructions
+  magpie-friday library instructions set <file|->   replace them with a file's text (- for stdin)
+  magpie-friday library instructions agents <a,b…|none>   the agents that get them
+  magpie-friday library mcp add <name> <url | command args…> [agents=a,b…]
+  magpie-friday library mcp agents <name> <a,b…|none>
+  magpie-friday library mcp rm <name>
+  magpie-friday library skill agents <name> <a,b…|none>
+  magpie-friday library skill rm <name>     (skills are installed from the app's Library page)
+  magpie-friday library skill rm --all [--yes]   every skill out of the library and the agents (asks first; --yes doesn't)
+  magpie-friday library skill rm --gone [--yes]  every skill an update found removed from its source (asks first; --yes doesn't)
+  magpie-friday library skill update [name] fetch a skill from GitHub again; with no name, every one from there
                                      (one changed here is left as it is; update it by name with --replace-edits)
-  magpie library skill how link|copy [agent]   give skills as links to the library's or as copies: every agent's way, or one agent's
-  magpie library skill how default <agent>     the agent goes the library's way again
-  magpie library skill use-library <name> <agent>   an agent's own skill by that name is in the way: set it aside, link the library's
-  magpie library skill keep-own <name> <agent>      …or keep the agent's, and take the agent off the library's
-  magpie library rtk                 which agents run their shell commands through RTK (rtk-ai.app), to save tokens
-  magpie library rtk on|off <agent>  switch it (on with RTK's own installer; off works with RTK gone)
-  magpie library rtk install         install RTK (Homebrew, winget, or RTK's own script)
-  magpie library rtk upgrade         bring RTK up to its latest release, the way it was installed
-  magpie library rtk path            put RTK on the PATH the agents get, when it isn't (their hooks run it by name)
+  magpie-friday library skill how link|copy [agent]   give skills as links to the library's or as copies: every agent's way, or one agent's
+  magpie-friday library skill how default <agent>     the agent goes the library's way again
+  magpie-friday library skill use-library <name> <agent>   an agent's own skill by that name is in the way: set it aside, link the library's
+  magpie-friday library skill keep-own <name> <agent>      …or keep the agent's, and take the agent off the library's
+  magpie-friday library rtk                 which agents run their shell commands through RTK (rtk-ai.app), to save tokens
+  magpie-friday library rtk on|off <agent>  switch it (on with RTK's own installer; off works with RTK gone)
+  magpie-friday library rtk install         install RTK (Homebrew, winget, or RTK's own script)
+  magpie-friday library rtk upgrade         bring RTK up to its latest release, the way it was installed
+  magpie-friday library rtk path            put RTK on the PATH the agents get, when it isn't (their hooks run it by name)
 `
 
-// libraryCmd is magpie library …: the instructions, MCP servers and skills
-// magpie keeps once and writes into every agent.
+// libraryCmd is magpie-friday library …: the instructions, MCP servers and skills
+// magpie-friday keeps once and writes into every agent.
 func libraryCmd(args []string) error {
 	if len(args) < 2 {
 		return libraryStatus()
@@ -149,11 +149,11 @@ func libraryCmd(args []string) error {
 			if res, err = library.UpdateSkill(rest[1], len(rest) == 3); err == nil {
 				fmt.Println(green.Render("✓"), rest[1], "is up to date")
 			} else if errors.As(err, &edited) {
-				err = fmt.Errorf("%w\n  magpie library skill update %s --replace-edits  takes the fetched one in its place, keeping yours with the backups", err, rest[1])
+				err = fmt.Errorf("%w\n  magpie-friday library skill update %s --replace-edits  takes the fetched one in its place, keeping yours with the backups", err, rest[1])
 			} else if errors.As(err, &gone) {
 				// removed there: said, with how to take it out; it's kept till then
 				fmt.Println(amber.Render("!"), err)
-				fmt.Println(muted.Render("  magpie library skill rm " + rest[1] + "  takes it out (its folder goes to the backups)"))
+				fmt.Println(muted.Render("  magpie-friday library skill rm " + rest[1] + "  takes it out (its folder goes to the backups)"))
 				return nil
 			}
 		case len(rest) == 1 && rest[0] == "update":
@@ -188,14 +188,14 @@ func libraryCmd(args []string) error {
 		// a server added with no agents= is given to none, which isn't
 		// every agent having it already
 		fmt.Println(green.Render("✓"), unused, "is in the library, given to no agent yet")
-		fmt.Println(muted.Render("  magpie library mcp agents " + unused + " <a,b…> gives it to them"))
+		fmt.Println(muted.Render("  magpie-friday library mcp agents " + unused + " <a,b…> gives it to them"))
 		return nil
 	}
 	printLibraryResult(res)
 	return nil
 }
 
-// removeEverySkill is magpie library skill rm --all [--yes] (#449): every
+// removeEverySkill is magpie-friday library skill rm --all [--yes] (#449): every
 // skill out of the library, each as rm takes one. It asks first on a
 // terminal; with no terminal to ask on, only --yes takes them. A library
 // with no skills is said, and answers a nil result.
@@ -226,7 +226,7 @@ func removeEverySkill(args []string) (*library.Result, error) {
 		if !term.IsTerminal(int(os.Stdin.Fd())) {
 			return nil, fmt.Errorf("this removes all %s; run it with --yes to do so without being asked", plural(len(names), "skill"))
 		}
-		fmt.Printf("Remove all %s (%s) from the library and every agent? Folders magpie keeps go to its backups; folders of your own are only unlinked. [y/N] ",
+		fmt.Printf("Remove all %s (%s) from the library and every agent? Folders magpie-friday keeps go to its backups; folders of your own are only unlinked. [y/N] ",
 			plural(len(names), "skill"), strings.Join(names, ", "))
 		line, _ := stdin.ReadString('\n')
 		if a := strings.ToLower(strings.TrimSpace(line)); a != "y" && a != "yes" {
@@ -247,7 +247,7 @@ func removeEverySkill(args []string) (*library.Result, error) {
 	return res, nil
 }
 
-// removeGoneSkills is magpie library skill rm --gone: every skill an
+// removeGoneSkills is magpie-friday library skill rm --gone: every skill an
 // update or a check found its source without, asked about first, naming
 // the ones changed here.
 func removeGoneSkills(args []string) (*library.Result, error) {
@@ -278,14 +278,14 @@ func removeGoneSkills(args []string) (*library.Result, error) {
 		}
 	}
 	if len(names) == 0 {
-		fmt.Println(green.Render("✓"), "no skill is removed from its source", muted.Render("(magpie library skill update finds them)"))
+		fmt.Println(green.Render("✓"), "no skill is removed from its source", muted.Render("(magpie-friday library skill update finds them)"))
 		return nil, nil
 	}
 	if !yes {
 		if !term.IsTerminal(int(os.Stdin.Fd())) {
 			return nil, fmt.Errorf("this removes %s removed from their source; run it with --yes to do so without being asked", plural(len(names), "skill"))
 		}
-		fmt.Printf("Remove %s removed from their source (%s) from the library and every agent? The library's folders go to magpie's backups. [y/N] ",
+		fmt.Printf("Remove %s removed from their source (%s) from the library and every agent? The library's folders go to magpie-friday's backups. [y/N] ",
 			plural(len(names), "skill"), strings.Join(shown, ", "))
 		line, _ := stdin.ReadString('\n')
 		if a := strings.ToLower(strings.TrimSpace(line)); a != "y" && a != "yes" {
@@ -340,8 +340,8 @@ func printLibraryResult(res *library.Result) {
 	for _, p := range res.Problems {
 		fmt.Println(amber.Render("!"), p.Agent, muted.Render(p.What+":"), p.Error)
 		if n, ok := strings.CutPrefix(p.What, "skill:"); ok && p.Own {
-			fmt.Println(muted.Render("  use the library's (the agent's kept aside): magpie library skill use-library " + n + " " + p.Agent))
-			fmt.Println(muted.Render("  or keep the agent's:                       magpie library skill keep-own " + n + " " + p.Agent))
+			fmt.Println(muted.Render("  use the library's (the agent's kept aside): magpie-friday library skill use-library " + n + " " + p.Agent))
+			fmt.Println(muted.Render("  or keep the agent's:                       magpie-friday library skill keep-own " + n + " " + p.Agent))
 		}
 	}
 	if len(res.Updated) > 0 {
@@ -352,7 +352,7 @@ func printLibraryResult(res *library.Result) {
 	}
 	if len(res.Gone) > 0 {
 		fmt.Println(amber.Render("!"), "removed from their source:", strings.Join(res.Gone, ", "))
-		fmt.Println(muted.Render("  kept here till you take them out: magpie library skill rm --gone"))
+		fmt.Println(muted.Render("  kept here till you take them out: magpie-friday library skill rm --gone"))
 	}
 	for _, p := range res.Unremoved {
 		fmt.Println(amber.Render("!"), strings.TrimPrefix(p.What, "skill:"), muted.Render("not removed:"), p.Error)
@@ -384,13 +384,13 @@ func libraryStatus() error {
 		}
 	}
 	if strings.TrimSpace(v.Instructions.Shared) == "" {
-		fmt.Println(" ", muted.Render("none yet · magpie library instructions set <file>"))
+		fmt.Println(" ", muted.Render("none yet · magpie-friday library instructions set <file>"))
 	} else {
 		fmt.Printf("  %d lines → %s\n", strings.Count(strings.TrimRight(v.Instructions.Shared, "\n"), "\n")+1, on(to))
 	}
 	for _, a := range v.Instructions.Agents {
 		if a.Edited {
-			fmt.Println(" ", amber.Render("!"), a.Agent, muted.Render("magpie's part was edited in "+a.Path))
+			fmt.Println(" ", amber.Render("!"), a.Agent, muted.Render("magpie-friday's part was edited in "+a.Path))
 		}
 	}
 	fmt.Println(bold.Render("MCP servers"))
@@ -431,14 +431,14 @@ func libraryStatus() error {
 			fmt.Println("   ", amber.Render("!"), muted.Render("its folder is gone"))
 		}
 		if s.Gone != "" {
-			fmt.Println("   ", amber.Render("!"), muted.Render("removed from "+s.Source+" · magpie library skill rm --gone"))
+			fmt.Println("   ", amber.Render("!"), muted.Render("removed from "+s.Source+" · magpie-friday library skill rm --gone"))
 		}
 	}
-	fmt.Println(muted.Render("  kept in " + v.Dir + " · magpie library help"))
+	fmt.Println(muted.Render("  kept in " + v.Dir + " · magpie-friday library help"))
 	return nil
 }
 
-// rtkCmd is magpie library rtk …: RTK's hook in each agent.
+// rtkCmd is magpie-friday library rtk …: RTK's hook in each agent.
 func rtkCmd(args []string) error {
 	var v *library.RTKView
 	switch {
@@ -475,7 +475,7 @@ func rtkCmd(args []string) error {
 	if v.Path == "" {
 		fmt.Println(amber.Render("!"), "rtk isn't installed —", v.URL)
 		if v.Install != "" {
-			fmt.Println(muted.Render("  magpie library rtk install runs: " + v.Install))
+			fmt.Println(muted.Render("  magpie-friday library rtk install runs: " + v.Install))
 		}
 	} else {
 		fmt.Println(bold.Render("RTK"), muted.Render(v.Version+" · "+v.Path))
@@ -488,7 +488,7 @@ func rtkCmd(args []string) error {
 		case v.Latest != "" && v.Version != "" && library.RTKNewer(v.Latest, v.Version):
 			up := "update it the way it was installed"
 			if v.Upgrade != "" {
-				up = "magpie library rtk upgrade runs: " + v.Upgrade
+				up = "magpie-friday library rtk upgrade runs: " + v.Upgrade
 			}
 			fmt.Println(amber.Render("  RTK "+v.Latest+" is out"), muted.Render("— "+up))
 		case len(args) == 1 && args[0] == "upgrade":
@@ -500,9 +500,9 @@ func rtkCmd(args []string) error {
 			case v.PathDir == "":
 				fmt.Println(muted.Render("  add " + filepath.Dir(v.Path) + " to PATH in your shell profile"))
 			case v.PathLink:
-				fmt.Println(muted.Render("  magpie library rtk path links it into " + v.PathDir))
+				fmt.Println(muted.Render("  magpie-friday library rtk path links it into " + v.PathDir))
 			default:
-				fmt.Println(muted.Render("  magpie library rtk path adds " + v.PathDir + " to your user PATH"))
+				fmt.Println(muted.Render("  magpie-friday library rtk path adds " + v.PathDir + " to your user PATH"))
 			}
 		}
 		switch g := v.Gain; {

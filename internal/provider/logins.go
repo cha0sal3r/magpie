@@ -1,6 +1,6 @@
 package provider
 
-// Several subscriptions per agent. magpie keeps following each agent's own
+// Several subscriptions per agent. magpie-friday keeps following each agent's own
 // sign-in; it also remembers every Codex and Claude Code account it has
 // seen signed in, so the user can switch back to one without signing in
 // again. A switch moves the saved credentials into the agent's own store
@@ -26,15 +26,15 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/filelock"
-	"github.com/yetone/magpie/internal/filememo"
-	"github.com/yetone/magpie/internal/lastgood"
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/steady"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/filelock"
+	"github.com/cha0sal3r/magpie-friday/internal/filememo"
+	"github.com/cha0sal3r/magpie-friday/internal/lastgood"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/steady"
 )
 
 // Login is a remembered subscription account, without its secrets.
@@ -48,13 +48,13 @@ type Login struct {
 	// Lapsed says the vendor refused to refresh a saved account's sign-in:
 	// it has to be signed in again before it can be used.
 	Lapsed string `json:"lapsed,omitempty"`
-	// Own is the agent's own sign-in, which magpie only reads: removed, it
+	// Own is the agent's own sign-in, which magpie-friday only reads: removed, it
 	// is hidden rather than deleted (side_logins.go).
 	Own bool `json:"own,omitempty"`
 	// Paused is the account the agent is signed in to, passed over by the
 	// gateway while another is on (savedLogin.Paused).
 	Paused bool `json:"paused,omitempty"`
-	// Returns is the account magpie signed the agent out of when it was
+	// Returns is the account magpie-friday signed the agent out of when it was
 	// spent, and signs it back in to once it has room again (#408).
 	Returns bool `json:"returns,omitempty"`
 
@@ -90,7 +90,7 @@ type savedLogin struct {
 	// Profile is Claude Code's oauthAccount from .claude.json, which says
 	// whose credentials those are.
 	Profile json.RawMessage `json:"profile,omitempty"`
-	// Home is where a Grok account magpie signed in keeps its sign-in; the
+	// Home is where a Grok account magpie-friday signed in keeps its sign-in; the
 	// Grok CLI's own account has none (see grok_accounts.go). First puts a
 	// Grok or Copilot account ahead of the agent's own (side_logins.go).
 	Home  string `json:"home,omitempty"`
@@ -98,7 +98,7 @@ type savedLogin struct {
 	// Project is the Google Cloud project a Gemini CLI or Antigravity
 	// account's requests go to, when the user named one (google.go).
 	Project string `json:"project,omitempty"`
-	// Renewed is when magpie last refreshed a saved account's sign-in, and
+	// Renewed is when magpie-friday last refreshed a saved account's sign-in, and
 	// Lapsed why the vendor last refused to (logins_on.go, keepalive.go).
 	Renewed time.Time `json:"renewed,omitzero"`
 	Lapsed  string    `json:"lapsed,omitempty"`
@@ -106,16 +106,16 @@ type savedLogin struct {
 	// claude_auth.go): Lapsed holds while the account has that one, and
 	// says nothing of the one it is refreshed or signed in to next.
 	Refused string `json:"refused,omitempty"`
-	// Hidden is the agent's own sign-in removed in magpie, with the mark
+	// Hidden is the agent's own sign-in removed in magpie-friday, with the mark
 	// of the sign-in it was (side_logins.go): it is listed and tried no
 	// more until the agent signs in anew. The agent's files stay as they are.
 	Hidden string `json:"hidden,omitempty"`
 	// Paused is set on the account the agent is signed in to when the user
-	// paused it in magpie (#263): the gateway passes over it while another
+	// paused it in magpie-friday (#263): the gateway passes over it while another
 	// of the agent's accounts is on, the agent staying signed in to it.
 	Paused bool `json:"paused,omitempty"`
 	// Held is the Claude account Claude Code itself was signed in to when
-	// magpie last looked: its saved copy is that very sign-in, which
+	// magpie-friday last looked: its saved copy is that very sign-in, which
 	// Claude Code's /logout revokes (claudeLoggedOut).
 	Held bool `json:"held,omitempty"`
 	// was is the name a Copilot account read under a new one had in the
@@ -126,16 +126,16 @@ type savedLogin struct {
 
 var (
 	// loginsMu is held for every read of logins.json a change is made
-	// from, and the write: in this magpie, and across magpies (#1674), so
+	// from, and the write: in this magpie-friday, and across magpies (#1674), so
 	// a refresh the gateway writes is never written back over with what a
-	// magpie run from a terminal read before it. Taken, it has logins.json
+	// magpie-friday run from a terminal read before it. Taken, it has logins.json
 	// read afresh.
 	loginsMu = filelock.Mutex{
 		Path:   func() string { return loginsPath() + ".lock" },
 		Locked: func() { filememo.Look(loginsPath()) },
 	}
 	// loginsSeenAt is when rememberLogins last looked at the agents'
-	// sign-ins (UnixNano), 0 for not since this magpie started or since
+	// sign-ins (UnixNano), 0 for not since this magpie-friday started or since
 	// a change made the next look due at once. It is read without
 	// loginsMu, so a look not yet due takes no lock (#1665).
 	loginsSeenAt atomic.Int64
@@ -147,7 +147,7 @@ func loginsLookDue() bool {
 	return at == 0 || time.Since(time.Unix(0, at)) >= 30*time.Second
 }
 
-// switchable agents: those whose sign-in magpie can save and put back.
+// switchable agents: those whose sign-in magpie-friday can save and put back.
 var loginAgents = []string{"claude", "codex"}
 
 // loginID is the account's stable id (#905): the one saved with it, or a
@@ -157,7 +157,7 @@ func loginID(l savedLogin) string {
 	if l.ID != "" {
 		return l.ID
 	}
-	sum := sha256.Sum256([]byte("magpie login\n" + l.Agent + "\n" + accountKey(l.User)))
+	sum := sha256.Sum256([]byte("magpie-friday login\n" + l.Agent + "\n" + accountKey(l.User)))
 	return hex.EncodeToString(sum[:8])
 }
 
@@ -177,10 +177,10 @@ func LoginID(agent, user string) string {
 func loginsPath() string { return filepath.Join(filepath.Dir(Path()), "logins.json") }
 
 // lastLogins is the accounts last read from logins.json: a read that fails
-// (a file half there, one magpie can't open for a moment) is them, not no
+// (a file half there, one magpie-friday can't open for a moment) is them, not no
 // accounts, which the next change of an account would write back over
 // every account. loginsKnown is whether there are any such, read or
-// written by this magpie.
+// written by this magpie-friday.
 var (
 	lastLoginsMu sync.Mutex
 	lastLogins   []savedLogin
@@ -193,7 +193,7 @@ func parseLogins(b []byte) ([]savedLogin, error) {
 	if err := json.Unmarshal(b, &out); err != nil {
 		return nil, err
 	}
-	// DimAgent's accounts: magpie no longer signs in to it (DimAgent
+	// DimAgent's accounts: magpie-friday no longer signs in to it (DimAgent
 	// doesn't allow its subscription used outside its client), so one
 	// signed in before is left out, and gone from the file at its next write
 	out = slices.DeleteFunc(out, func(l savedLogin) bool { return l.Agent == "dimagent" })
@@ -227,7 +227,7 @@ func readLogins() []savedLogin {
 		log.Printf("logins.json: %v; the accounts read before are kept", err)
 		ls = lastLogins
 	default:
-		// magpie just started on a file that doesn't read (all zero after
+		// magpie-friday just started on a file that doesn't read (all zero after
 		// a crash, #1505): the accounts are its last good generation's
 		ls = nil
 		if b, ferr := lastgood.Fallback(loginsPath(), unreadBytes(loginsPath()), validLogins); ferr == nil {
@@ -281,7 +281,7 @@ func writeLogins(ls []savedLogin) error {
 }
 
 // beforeLoginsWrite is called as logins.json is about to be written: for a
-// test to have another magpie write it then.
+// test to have another magpie-friday write it then.
 var beforeLoginsWrite = func() {}
 
 // sortLogins puts accounts in the order logins.json keeps them: by agent,
@@ -349,7 +349,7 @@ func upsertLogin(ls []savedLogin, l savedLogin) []savedLogin {
 
 // dedupeLogins keeps one record per Claude or Codex account, which
 // sameLogin tells by email and organization or workspace. Other agents'
-// accounts are told by name alone: a Grok account magpie signed in and the
+// accounts are told by name alone: a Grok account magpie-friday signed in and the
 // CLI's own sign-in to the same one are two records (side_logins.go), and
 // folding them would lose the first's sign-in at the next write.
 func dedupeLogins(ls []savedLogin) []savedLogin {
@@ -609,8 +609,8 @@ func claudeSignedInUser(plan, statusPlan, status string) (user string, acct map[
 	return status, nil
 }
 
-// savedButSignedOut is, for each agent with accounts saved in magpie that
-// isn't signed in where magpie looks, why none of them is offered: they
+// savedButSignedOut is, for each agent with accounts saved in magpie-friday that
+// isn't signed in where magpie-friday looks, why none of them is offered: they
 // are served beside the account the agent is signed in to, and there is
 // none.
 func savedButSignedOut() []Exclusion {
@@ -636,13 +636,13 @@ func savedButSignedOut() []Exclusion {
 		}
 		_, _, err := readCodexLogin(codexHome(), false)
 		out = append(out, Exclusion{Agent: a, SignedOut: true, Users: users[a], Retry: codexKeychainUnread(err),
-			Why: fmt.Sprintf("%s saved in magpie, and they are only offered beside the account Codex is signed in to. %s", n, codexSignedOutWhy())})
+			Why: fmt.Sprintf("%s saved in magpie-friday, and they are only offered beside the account Codex is signed in to. %s", n, codexSignedOutWhy())})
 	}
 	return out
 }
 
-// codexSignedOutWhy says why magpie sees no Codex sign-in: none where
-// Codex's config.toml keeps it, or one kept where magpie couldn't read it
+// codexSignedOutWhy says why magpie-friday sees no Codex sign-in: none where
+// Codex's config.toml keeps it, or one kept where magpie-friday couldn't read it
 // (#2312, #2367, Dony2050), and what to do.
 func codexSignedOutWhy() string {
 	_, _, err := readCodexLogin(codexHome(), false)
@@ -661,7 +661,7 @@ func codexSignedOutWhy() string {
 	case se.Setting.Mode == "ephemeral":
 		return se.Error() + ". Set cli_auth_credentials_store = \"file\" there and sign in again (codex login)."
 	case se.Cause != nil:
-		return se.Error() + ". Allow magpie when macOS asks for the keychain (\"Always Allow\" lets /usr/bin/security read that item from then on, so macOS stops asking each time Codex changes it), or set cli_auth_credentials_store = \"file\" there and sign in again (codex login)."
+		return se.Error() + ". Allow magpie-friday when macOS asks for the keychain (\"Always Allow\" lets /usr/bin/security read that item from then on, so macOS stops asking each time Codex changes it), or set cli_auth_credentials_store = \"file\" there and sign in again (codex login)."
 	}
 	return se.Error() + fmt.Sprintf(": here it reads only %s. Set cli_auth_credentials_store = \"file\" there and sign in again (codex login).", codexAuthPath())
 }
@@ -728,7 +728,7 @@ func codexLoginIn(home string) (savedLogin, bool) {
 	return l, true
 }
 
-// codexOtherHomes are the user's Codex folders but the one magpie and
+// codexOtherHomes are the user's Codex folders but the one magpie-friday and
 // Codex run with (appdir.CodexHomes): one ChatGPT account each, Codex run
 // in it with CODEX_HOME set.
 func codexOtherHomes() []string { return appdir.CodexHomes()[1:] }
@@ -778,7 +778,7 @@ func sameRefresh(x, y json.RawMessage) bool {
 // rememberLogins saves the accounts the agents are signed in to now. The
 // copy of an active account is only a bookmark: the agent keeps refreshing
 // its own, and a switch saves that fresher one first.
-// accountRemoved: the user removed the agent's account from magpie, which
+// accountRemoved: the user removed the agent's account from magpie-friday, which
 // then neither saves its sign-ins nor keeps them renewed.
 func accountRemoved(agent string) bool {
 	return slices.ContainsFunc(load().Providers, func(p Provider) bool { return p.ID == agent && p.Hidden })
@@ -836,7 +836,7 @@ func rememberLogins(force bool) {
 		ls = upsertLogin(ls, l)
 		changed = true
 	}
-	// every magpie run from a terminal is a new process, which the 30
+	// every magpie-friday run from a terminal is a new process, which the 30
 	// seconds above don't hold for: one that would only move Seen on, and
 	// that recently, writes nothing (#1674)
 	if changed && !onlySeenMoved(was, ls, now) {
@@ -882,7 +882,7 @@ func onlySeenMoved(was, next []savedLogin, now time.Time) bool {
 // SignedOut says that p is a signed-in account whose every account in use
 // (on, or the one the agent is signed in to) has had its sign-in refused:
 // listed, so it can be signed in again, but not "signed in". It is what
-// the app's Providers row says as "{user} is signed out", for magpie
+// the app's Providers row says as "{user} is signed out", for magpie-friday
 // providers and the TUI to say the same (LeeHom on Discord: Claude Code
 // listed on two lapsed accounts).
 func (p Provider) SignedOut() bool {
@@ -1051,7 +1051,7 @@ func inUseLogin(agent string, room func(user string) (known, spent bool)) string
 func inUseOf(ls []Login, room func(user string) (known, spent bool)) string {
 	for _, l := range ls {
 		if (l.Active || l.first) && !l.Paused {
-			// The account the agent is signed in to leads, but magpie moves
+			// The account the agent is signed in to leads, but magpie-friday moves
 			// the sign-in only every few minutes (SwitchWhenSpent, and for
 			// the agents it signs in at all), while the gateway moves its
 			// requests as soon as an account is spent. So the one in use can
@@ -1126,7 +1126,7 @@ func SwitchLogin(agent, user string) error {
 	if settings.AccountDiscoveryOff() {
 		return errAccountDiscoveryOff
 	}
-	// the user's own choice: magpie doesn't sign the agent back in to the
+	// the user's own choice: magpie-friday doesn't sign the agent back in to the
 	// account it moved it off
 	if slices.Contains(loginAgents, agent) {
 		setLoginReturn(agent, loginReturn{})
@@ -1165,13 +1165,13 @@ func switchLogin(agent, user string) error {
 	return err
 }
 
-// switchSavedLogin puts a Codex or Claude Code account magpie saved into
+// switchSavedLogin puts a Codex or Claude Code account magpie-friday saved into
 // the agent's own store, and answers the account it replaced: "" when there
 // was none, or the agent was on that one already.
 func switchSavedLogin(agent, user string) (from string, _ error) {
 	if agent == "claude" {
 		// nor while Claude Code runs in the account's own directory for
-		// magpie (inSavedClaudeDir), which may refresh it there
+		// magpie-friday (inSavedClaudeDir), which may refresh it there
 		mu := claudeDirRun(user)
 		mu.Lock()
 		defer mu.Unlock()
@@ -1196,7 +1196,7 @@ func switchSavedLogin(agent, user string) (from string, _ error) {
 		// Codex there keeps it signed in and refreshes it: a copy in
 		// ~/.codex would be a second holder of one refresh token, and
 		// whichever refreshed first would sign the other out
-		return "", fmt.Errorf("%s is signed in to Codex in %s: run Codex there (CODEX_HOME=%s codex) to use it, or turn it on for magpie's requests", target.User, home, home)
+		return "", fmt.Errorf("%s is signed in to Codex in %s: run Codex there (CODEX_HOME=%s codex) to use it, or turn it on for magpie-friday's requests", target.User, home, home)
 	}
 	if agent == "claude" {
 		// as Claude Code keeps it, if it has run on the account beside the
@@ -1440,7 +1440,7 @@ func loginAgentName(agent string) string {
 }
 
 // ForgetAccounts makes the next look at the accounts read them afresh, for
-// a caller that changed a sign-in behind magpie's back (a test's home).
+// a caller that changed a sign-in behind magpie-friday's back (a test's home).
 func ForgetAccounts() {
 	loginsMu.Lock()
 	loginsSeenAt.Store(0)
@@ -1471,7 +1471,7 @@ func forgetAccountCaches() {
 
 // claudeSignInOfAnother says the Claude sign-in l carries is another saved
 // account's, not the one its profile names: Claude Code's credential and
-// ~/.claude.json were read from two moments, as when magpie switches
+// ~/.claude.json were read from two moments, as when magpie-friday switches
 // Claude Code (keeping it signed in to one account) and a Claude Code
 // started on the account before writes that one's profile after. Saved,
 // it put the one account's sign-in and plan under the other's name, whose

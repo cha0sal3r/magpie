@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
 // The APIs are close cousins; everything below is the shape they have
@@ -192,14 +192,14 @@ type Request struct {
 	Ultrafast bool
 	// Tier is the service_tier the client sent, as it sent it. It goes on
 	// as it is to a provider the user added by its address (OwnTier):
-	// a relay of theirs may serve Fast and Ultrafast where magpie can't
+	// a relay of theirs may serve Fast and Ultrafast where magpie-friday can't
 	// tell (hsiangron on X: both were left out)
 	Tier string
 	// OwnTier is set for such a provider (gateway.go, as each attempt is
 	// built); one that turns the field away is asked again without it
 	// (optionalFields)
 	OwnTier bool
-	// OwnEffort is set when Effort is magpie's own ask, not the client's:
+	// OwnEffort is set when Effort is magpie-friday's own ask, not the client's:
 	// auto mode's classifier asked to reason least of a model whose levels
 	// aren't known (fitAutoModeClassifier). An upstream that turns it away
 	// is asked at low, or without it, as it would have been
@@ -828,7 +828,7 @@ func ByStrength(efforts []string) []string {
 // and max only.
 //
 // Codex's ultra is no API's level, whatever a list says (ChatGPT's lists
-// it for Codex's picker; magpie offers it on Copilot's gpt-6.1-sol, #656):
+// it for Codex's picker; magpie-friday offers it on Copilot's gpt-6.1-sol, #656):
 // it is sent as max, or the nearest the model has below it.
 func fitEffort(want string, levels []string) string {
 	if want == "ultra" {

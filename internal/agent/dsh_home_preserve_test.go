@@ -8,7 +8,7 @@ import (
 )
 
 // The home layer can hold a newer choice than the profiles. Refreshing
-// magpie's catalog, or only changing effort, must not select their old model.
+// magpie-friday's catalog, or only changing effort, must not select their old model.
 func TestDshHomePickSurvivesSyncAndEffort(t *testing.T) {
 	for _, action := range []string{"sync", "effort"} {
 		t.Run(action, func(t *testing.T) {
@@ -17,7 +17,7 @@ func TestDshHomePickSurvivesSyncAndEffort(t *testing.T) {
 				t.Fatal(err)
 			}
 			a := dsh(home)
-			if err := a.Field("model").Set("magpie/deepseek/pro"); err != nil {
+			if err := a.Field("model").Set("magpie-friday/deepseek/pro"); err != nil {
 				t.Fatal(err)
 			}
 			patch := filepath.Join(dir, "cordis.patch.yml")
@@ -53,11 +53,11 @@ func TestDshHomePickSurvivesSyncAndEffort(t *testing.T) {
 				t.Fatalf("catalog sync rewrote the user's choice:\n%s", b)
 			}
 			// A deliberate model pick still reaches the home layer, and
-			// taking magpie out restores the user's original entry.
-			if err := a.Field("model").Set("magpie/deepseek/flash"); err != nil {
+			// taking magpie-friday out restores the user's original entry.
+			if err := a.Field("model").Set("magpie-friday/deepseek/flash"); err != nil {
 				t.Fatal(err)
 			}
-			if got := a.Field("model").Get(); got != "magpie/deepseek/flash" {
+			if got := a.Field("model").Get(); got != "magpie-friday/deepseek/flash" {
 				t.Fatalf("explicit pick: %q", got)
 			}
 			if err := a.Field("model").Set(""); err != nil {
@@ -79,7 +79,7 @@ func TestDshHomeMetadataKeepsProfileConfig(t *testing.T) {
 		t.Fatal(err)
 	}
 	a := dsh(home)
-	if err := a.Field("model").Set("magpie/deepseek/pro"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	patch := filepath.Join(dir, "cordis.patch.yml")
@@ -87,13 +87,13 @@ func TestDshHomeMetadataKeepsProfileConfig(t *testing.T) {
 	if err := os.WriteFile(patch, []byte(own), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	if !a.Joined() || a.Field("model").Get() != "magpie/deepseek/pro" || a.Check() != "" {
+	if !a.Joined() || a.Field("model").Get() != "magpie-friday/deepseek/pro" || a.Check() != "" {
 		t.Fatalf("metadata hid the profile: joined=%v, model=%q, check=%q", a.Joined(), a.Field("model").Get(), a.Check())
 	}
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	if err := a.Field("model").Set("magpie/deepseek/flash"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
 	if b, err := os.ReadFile(patch); err != nil || string(b) != own {

@@ -7,9 +7,9 @@ import (
 	"testing"
 )
 
-// A plugin's page (magpie.page) is a file inside the plugin's folder: one
+// A plugin's page (magpie-friday.page) is a file inside the plugin's folder: one
 // that names a path out of it, by "..", an absolute path or a symbolic
-// link, is no page. Its reads are those magpie has, and a plugin that is
+// link, is no page. Its reads are those magpie-friday has, and a plugin that is
 // only a page is nothing for the host to load, nor "not a plugin".
 func TestWindowPageStaysInside(t *testing.T) {
 	root := t.TempDir()
@@ -38,7 +38,7 @@ func TestWindowPageStaysInside(t *testing.T) {
 	}
 	p := w.Page
 	if !slices.Equal(w.Reads, []string{"usage:summary"}) {
-		t.Errorf("reads %v, want only the one magpie has, once", w.Reads)
+		t.Errorf("reads %v, want only the one magpie-friday has, once", w.Reads)
 	}
 	if !InMagpieOnly(good) || notPlugin(good) != nil {
 		t.Errorf("a page-only plugin: InMagpieOnly %v, notPlugin %v", InMagpieOnly(good), notPlugin(good))
@@ -71,10 +71,10 @@ func TestWindowPageStaysInside(t *testing.T) {
 	}
 }
 
-// A plugin's panels (magpie.panels) go only where magpie has a slot, each
+// A plugin's panels (magpie-friday.panels) go only where magpie-friday has a slot, each
 // an .html inside the plugin's folder, at most maxPanels of them; a page
 // replaces only a built-in page that can be replaced. A plugin that is
-// only panels is a window plugin all the same: in magpie only, and a
+// only panels is a window plugin all the same: in magpie-friday only, and a
 // plugin.
 func TestWindowPanels(t *testing.T) {
 	root := t.TempDir()
@@ -140,7 +140,7 @@ func TestWindowPanels(t *testing.T) {
 	}
 }
 
-// A page's and a panel's titles by language (magpie.page.titles) are kept
+// A page's and a panel's titles by language (magpie-friday.page.titles) are kept
 // trimmed, without the empty ones; titles that aren't an object of strings
 // leave the page as it was, with its title.
 func TestWindowTitles(t *testing.T) {
@@ -174,9 +174,9 @@ func TestWindowTitles(t *testing.T) {
 	}
 }
 
-// A plugin's actions (magpie.actions) are items in a provider's or an
+// A plugin's actions (magpie-friday.actions) are items in a provider's or an
 // agent's row menu that open its page: a plugin with no page has none,
-// an action in a menu magpie hasn't, or with an id the page couldn't
+// an action in a menu magpie-friday hasn't, or with an id the page couldn't
 // switch on, is dropped, an id given twice is the first's, and there are
 // eight at most.
 func TestWindowActions(t *testing.T) {

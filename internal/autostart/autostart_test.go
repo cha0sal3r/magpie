@@ -17,7 +17,7 @@ func TestSet(t *testing.T) {
 	t.Setenv("HOME", home)
 	t.Setenv("USERPROFILE", home)
 	t.Setenv("XDG_CONFIG_HOME", home+"/.config")
-	t.Setenv("APPIMAGE", "/opt/my apps/magpie.AppImage")
+	t.Setenv("APPIMAGE", "/opt/my apps/magpie-friday.AppImage")
 	if Enabled() != Off {
 		t.Fatal("on before it was turned on")
 	}
@@ -36,7 +36,7 @@ func TestSet(t *testing.T) {
 	if runtime.GOOS == "android" {
 		arg = "serve"
 	}
-	for _, want := range []string{"/opt/my apps/magpie.AppImage", arg} {
+	for _, want := range []string{"/opt/my apps/magpie-friday.AppImage", arg} {
 		if !strings.Contains(string(b), want) {
 			t.Errorf("%s lacks %q:\n%s", path, want, b)
 		}

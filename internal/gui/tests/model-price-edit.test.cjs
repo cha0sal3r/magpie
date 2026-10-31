@@ -1,11 +1,11 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // #819 (ITea312: 图形界面找不到给某个模型单独定价，只能用全局倍率): a model's
-// price, which only `magpie model price` set, is given in the provider
+// price, which only `magpie-friday model price` set, is given in the provider
 // editor's Names & levels, beside its name. Each box shows the model's list
 // price until one is typed, a part left empty takes the list's, and
 // Restore default gives it its list price again; all made with the
-// provider's Save. A Remote magpie's model says its list price is what the
-// other magpie counts it at (Sorghum on Discord). English and Chinese.
+// provider's Save. A Remote magpie-friday's model says its list price is what the
+// other magpie-friday counts it at (Sorghum on Discord). English and Chinese.
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
@@ -21,7 +21,7 @@ function serve(lang, posts) {
     { id: "model-1", name: "Model 1", on: true, efforts: [], images: false, list },
     { id: "model-2", name: "Model 2", on: true, efforts: [], images: false, list, price: { input: 0.5, output: 2, cache_read: 0.05, cache_write: 0 } },
     { id: "model-3", name: "Model 3", on: true, efforts: [], images: false },
-    // a Remote magpie's: its list price is what that magpie counts it at
+    // a Remote magpie-friday's: its list price is what that magpie-friday counts it at
     { id: "model-4", name: "Model 4", on: true, efforts: [], images: false, list, remoteList: true },
   ];
   const provider = { id: "relay", name: "Relay", icon: "generic", chat: "https://relay.example/v1", responses: "", anthropic: "", models, agents: [], key: { set: true, masked: "sk-…1234" }, ready: true };
@@ -75,9 +75,9 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       assert.deepEqual(await boxes("model-2").evaluateAll((is) => is.map((i) => i.value)), ["0.5", "2", "0.05", "0", ""]);
       assert.equal(await row("model-1").getByRole("textbox", { name: L.input, exact: true }).count(), 1);
       assert.equal(await row("model-1").locator("select").count(), 0);
-      // whose list price it is: models.dev's, or the other magpie's
+      // whose list price it is: models.dev's, or the other magpie-friday's
       assert.match(await row("model-1").locator(".mprice").getAttribute("title"), zh ? /留空即官方价格/ : /empty: its list price/);
-      assert.match(await row("model-4").locator(".mprice").getAttribute("title"), zh ? /留空即另一台 magpie 计费用的价格/ : /empty: what the other magpie counts it at/);
+      assert.match(await row("model-4").locator(".mprice").getAttribute("title"), zh ? /留空即另一台 magpie-friday 计费用的价格/ : /empty: what the other magpie-friday counts it at/);
 
       // a part typed, the others the list's; Restore default drops a price
       const y = await page.evaluate(() => scrollY);

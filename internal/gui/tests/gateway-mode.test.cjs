@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// Gateway mode (Player on Discord): magpie web on a server that is only
+// Gateway mode (Player on Discord): magpie-friday web on a server that is only
 // the gateway for other computers' agents. boot.js says so and the page
 // opens on Providers with no Agents or Library tab, an address
 // kept for one of them opening Providers; Settings leaves out what is
@@ -7,8 +7,8 @@
 // the Codex and Claude Code settings live on the Agents page, which is
 // gone) and the desktop's alerts, and General has the switch — Automatic, On, Off —
 // saying why it is on. Off brings the tabs and the rows back at once, the
-// Agents page opening again; Automatic takes them away again. magpie web
-// not in gateway mode keeps every tab, and the switch is magpie web's
+// Agents page opening again; Automatic takes them away again. magpie-friday web
+// not in gateway mode keeps every tab, and the switch is magpie-friday web's
 // alone. No click scrolls the page, no native <select>, no left border.
 // English and Chinese; no backend, the API is faked here.
 const assert = require("node:assert/strict");
@@ -26,7 +26,7 @@ function settingsPayload(over) {
     dock: false, dockWindow: false, proxy: "", redact: false, redactPersonal: false, redactWords: [],
     codexWarmup: "", claudeWarmup: "", codexWarmAt: "", claudeWarmAt: "", workbuddyCheckin: false, noStats: false,
     trayUsage: "", trayUsageEvery: 3, vision: "", imageGen: "",
-    version: "0.1.400", dir: "/config/home/.config/magpie", gateway: "http://127.0.0.1:3425",
+    version: "0.1.400", dir: "/config/home/.config/magpie-friday", gateway: "http://127.0.0.1:3425",
     proxyNow: "none", proxySource: "none", login: false,
     visionModels: [], imageGenModels: [], workbuddyCheckins: [], lanURLs: [],
     fx: { rate: 7.2, at: new Date().toISOString(), stale: false },
@@ -34,7 +34,7 @@ function settingsPayload(over) {
   };
 }
 
-// agents says whether magpie found agents here: Automatic is on without
+// agents says whether magpie-friday found agents here: Automatic is on without
 // notice is the warning on Codex's subagents row, when the answer
 // carries one
 function server(lang, posts, { web = true, gateway = true, agents = false, notice } = {}) {
@@ -174,8 +174,8 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       await context.close();
     }
 
-    // magpie web with agents here, and the app's window: every tab; the
-    // switch is magpie web's alone
+    // magpie-friday web with agents here, and the app's window: every tab; the
+    // switch is magpie-friday web's alone
     for (const [web, name] of [[true, "web with agents"], [false, "window"]]) {
       for (const lang of ["en", "zh"]) {
         const where = `${engine} ${lang} ${name}`;
@@ -203,14 +203,14 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
 // Codex's settings (its opened row on the Agents page) carry the subagents
 // row's the warning element
 // #codexAgentsV1Warn: with `notice` in the settings answer it shows the text
-// (translated), without one it stays hidden. magpie writes nothing here — the
+// (translated), without one it stays hidden. magpie-friday writes nothing here — the
 // user turns Codex's own multi_agent_v2 off themselves (#141, #1028 review).
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
   test(`${engine}: the codex subagents warning row`, async (t) => {
     const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: "chromium" }));
     t.after(() => browser.close());
     // not an i18n key, so t() hands it back as it is in every language
-    const notice = "Codex's own multi_agent_v2 is on in the config magpie routes (#141 probe)";
+    const notice = "Codex's own multi_agent_v2 is on in the config magpie-friday routes (#141 probe)";
     for (const [withNotice, what] of [[true, "with notice"], [false, "without notice"]]) {
       const where = `${engine} ${what}`;
       const context = await browser.newContext({ viewport: { width: 1100, height: 560 }, reducedMotion: "reduce" });
@@ -262,7 +262,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
   test(`${engine}: the codex subagents warning in every language, narrow`, async (t) => {
     const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: "chromium" }));
     t.after(() => browser.close());
-    const warning = "Codex's own multi_agent_v2 is on in the config magpie routes, which takes over the multi-agent V1 magpie's models ask for; turn it off in Codex's config to run subagents on magpie's models.";
+    const warning = "Codex's own multi_agent_v2 is on in the config magpie-friday routes, which takes over the multi-agent V1 magpie-friday's models ask for; turn it off in Codex's config to run subagents on magpie-friday's models.";
     const restart = "Codex builds its model list at start-up — restart the Codex app, open codex sessions and the app-server they share (codex app-server daemon restart) to see this.";
     for (const lang of ["en", "zh", "zh-TW", "ja", "de"]) {
       const context = await browser.newContext({ viewport: { width: 420, height: 720 }, reducedMotion: "reduce" });

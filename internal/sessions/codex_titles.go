@@ -89,7 +89,7 @@ func codexTitlesAt(path string, ids []string) map[string]string {
 	return out
 }
 
-// CodexTitleRecipients includes chats whose requests never crossed Magpie.
+// CodexTitleRecipients includes chats whose requests never crossed magpie-friday.
 // They still count as conflicting recipients of a generated title.
 func CodexTitleRecipients(digests []string) map[string][]TitleApplication {
 	out := map[string][]TitleApplication{}

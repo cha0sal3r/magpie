@@ -11,17 +11,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
-// The bar widget: magpie's icon in Omarchy's own bar, where Omarchy's
+// The bar widget: magpie-friday's icon in Omarchy's own bar, where Omarchy's
 // widgets are, rather than in the tray's drawer, which Omarchy keeps tray
 // icons behind until each is pinned. It is a third-party Omarchy plugin,
 // put in by hand the way Omarchy's shell README says (the files under
 // ~/.config/omarchy/plugins/<id>/, then rescanPlugins and plugin enable),
 // and only when the user asks for it in Settings.
-const WidgetID = "usemagpie.magpie"
+const WidgetID = "usemagpie.magpie-friday"
 
 //go:embed widget
 var widgetFiles embed.FS
@@ -41,7 +41,7 @@ func WidgetOn() bool {
 	return err == nil
 }
 
-// AddWidget puts the widget in Omarchy's bar, running exe (magpie) when
+// AddWidget puts the widget in Omarchy's bar, running exe (magpie-friday) when
 // clicked, or brings it up to date.
 func AddWidget(exe string) error {
 	dir := widgetDir()
@@ -65,7 +65,7 @@ func AddWidget(exe string) error {
 	return run("omarchy", "plugin", "enable", WidgetID)
 }
 
-// KeepWidget brings a widget that is in the bar up to date with this magpie,
+// KeepWidget brings a widget that is in the bar up to date with this magpie-friday,
 // which may have moved or been updated since it was put in.
 func KeepWidget(exe string) error {
 	if !WidgetOn() {

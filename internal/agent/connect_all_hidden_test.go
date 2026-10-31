@@ -6,11 +6,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // znuaibot's case (#1989): OpenCode is shown only the one model picked for
-// it, and that model's provider is switched off. magpie has models, but
+// it, and that model's provider is switched off. magpie-friday has models, but
 // none is left in OpenCode's lists: Connect says so, with a code the GUI
 // says it by in the reader's language, not that OpenCode can't be
 // connected.

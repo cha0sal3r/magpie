@@ -8,15 +8,15 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agentenv"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// Codex's own multi_agent_v2 on in the config magpie routes is what the
+// Codex's own multi_agent_v2 on in the config magpie-friday routes is what the
 // Settings row's notice is for (#141): with Codex connected and CodexAgentsV1
 // on, the answer says so and leaves the key alone; off has nothing of the
-// setting's to say. magpie writes nothing here — the user turns the key off.
+// setting's to say. magpie-friday writes nothing here — the user turns the key off.
 func TestCodexAgentsV1SettingNotice(t *testing.T) {
 	h := t.TempDir()
 	t.Setenv("HOME", h)
@@ -56,7 +56,7 @@ func TestCodexAgentsV1SettingNotice(t *testing.T) {
 		return rec.Code, out
 	}
 
-	// connect Codex so the config magpie routes is the one with the key
+	// connect Codex so the config magpie-friday routes is the one with the key
 	if code, out := call("POST", "/api/agents/connect/codex", "{}"); code != 200 {
 		t.Fatalf("connect: %d %v", code, out)
 	}
@@ -72,7 +72,7 @@ func TestCodexAgentsV1SettingNotice(t *testing.T) {
 		t.Fatalf("no notice that Codex's own V2 wins: %q", n)
 	}
 	if b, _ := os.ReadFile(cfg); !strings.Contains(string(b), "multi_agent_v2 = true") || strings.Contains(string(b), "multi_agent_v2 = false") {
-		t.Fatalf("magpie wrote the key:\n%s", b)
+		t.Fatalf("magpie-friday wrote the key:\n%s", b)
 	}
 
 	code, out = call("POST", "/api/settings/codex-agents-v1", `{"on":false}`)

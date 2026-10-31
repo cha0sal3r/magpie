@@ -5,7 +5,7 @@
 // the last, × beside a time takes it away while another is left, a field
 // changed posts the list with it, and Off posts none. Each post sends the
 // whole list (codexWarmAts) and its first as codexWarmAt, which an older
-// magpie reads. The app's own controls (no <select>), nothing runs off the
+// magpie-friday reads. The app's own controls (no <select>), nothing runs off the
 // side at 440px, a click never moves the page. en, zh, ja, de; the API is
 // faked here, keeping the list as Go's settings do (sorted, once each).
 const assert = require("node:assert/strict");
@@ -117,7 +117,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
           for (let i = 0; i < 50 && posts.length < n; i++) await page.waitForTimeout(40);
           assert.equal(posts.length, n, "posts");
           assert.deepEqual(posts.at(-1).codexWarmAts, want, "codexWarmAts");
-          assert.equal(posts.at(-1).codexWarmAt, want[0] || "", "codexWarmAt, for an older magpie");
+          assert.equal(posts.at(-1).codexWarmAt, want[0] || "", "codexWarmAt, for an older magpie-friday");
           await page.waitForFunction((n) => document.querySelectorAll("#warmAtSegs input.at").length === n, want.length);
         };
         // the one time a payload from before the list has

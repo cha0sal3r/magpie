@@ -3,13 +3,13 @@ package agent
 import (
 	"time"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // Rescan forgets what was found of the agents on this machine a while ago,
 // so the next read of them looks again at once: the reader asked for it with
 // the Agents page's refresh (#844), having just installed an agent, or
-// removed one, or changed its settings outside magpie. What is read from an
+// removed one, or changed its settings outside magpie-friday. What is read from an
 // agent's files every time needs nothing forgotten; these are the answers
 // kept for a while because asking was slow (the apps folder, wsl.exe, Alma's
 // server), and where each command was found on PATH (proc.LookPath).

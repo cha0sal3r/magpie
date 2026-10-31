@@ -5,14 +5,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 // The Codex app left unable to send on its used-up ChatGPT account is
-// reopened by magpie on macOS (MasterYi on Discord), once each time the
-// account runs out, and only while: the app open then still runs, magpie
+// reopened by magpie-friday on macOS (MasterYi on Discord), once each time the
+// account runs out, and only while: the app open then still runs, magpie-friday
 // is Codex's provider for the account, the account is out, and no turn is
-// in flight through magpie or ended in the last codexAppOutIdle. Nothing
+// in flight through magpie-friday or ended in the last codexAppOutIdle. Nothing
 // real is quit: the reopen is a stub.
 func TestCodexAppOutReopenedOnce(t *testing.T) {
 	var (
@@ -62,7 +62,7 @@ func TestCodexAppOutReopenedOnce(t *testing.T) {
 	check("a turn ended 10s ago", false)
 	busy = gateway.Busy{Last: now.Add(-codexAppOutIdle)}
 	agentOut = false
-	check("magpie not Codex's provider for it", false)
+	check("magpie-friday not Codex's provider for it", false)
 	agentOut, usedUp = true, false
 	check("the account has room", false)
 	usedUp, user = true, ""

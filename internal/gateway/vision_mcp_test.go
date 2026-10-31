@@ -12,8 +12,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/budget"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/budget"
 )
 
 // visionPost sends one JSON-RPC body to the image recognition MCP server
@@ -54,7 +54,7 @@ func pngFile(t *testing.T) (string, string) {
 	return p, base64.StdEncoding.EncodeToString(b)
 }
 
-// magpie's image recognition is an MCP server of its own beside the web
+// magpie-friday's image recognition is an MCP server of its own beside the web
 // search's (JonahFu on X): an agent lists one analyze_image tool and calls
 // it with a file on this computer, and the model that describes images
 // answers — with a full description, or what the prompt asks.
@@ -64,7 +64,7 @@ func TestVisionMCPAnalyzesImage(t *testing.T) {
 	const here = "127.0.0.1:50000"
 
 	init := readMCP(t, visionPost(h, here, `{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"claude-code","version":"2"}}}`))
-	if init.Error != nil || init.Result.ProtocolVersion != "2025-06-18" || init.Result.ServerInfo.Name != "magpie-vision" {
+	if init.Error != nil || init.Result.ProtocolVersion != "2025-06-18" || init.Result.ServerInfo.Name != "magpie-friday-vision" {
 		t.Fatalf("initialize: %+v", init)
 	}
 	list := readMCP(t, visionPost(h, here, `{"jsonrpc":"2.0","id":2,"method":"tools/list"}`))
@@ -133,9 +133,9 @@ func TestVisionMCPWithNoSeer(t *testing.T) {
 }
 
 // The server is a gateway route like the others: another computer reaches
-// it only while magpie is shared and with a gateway key, a web page is
+// it only while magpie-friday is shared and with a gateway key, a web page is
 // turned away, and a file path is read only for an agent on this computer —
-// a shared magpie's files aren't its callers'.
+// a shared magpie-friday's files aren't its callers'.
 func TestVisionMCPGuarded(t *testing.T) {
 	s, u := eyed(t)
 	t.Setenv("MAGPIE_ADDR", "")
@@ -154,7 +154,7 @@ func TestVisionMCPGuarded(t *testing.T) {
 		t.Fatalf("a page on this computer: %d %s", w.Code, w.Body.String())
 	}
 	m := readMCP(t, visionPost(h, there, analyzeCall(file, ""), "Authorization", "Bearer "+secrets[0]))
-	if !m.Result.IsError || !strings.Contains(m.Result.Content[0].Text, "only for an agent on the computer magpie runs on") {
+	if !m.Result.IsError || !strings.Contains(m.Result.Content[0].Text, "only for an agent on the computer magpie-friday runs on") {
 		t.Fatalf("another computer's file path: %+v", m)
 	}
 	// through a tunnel to this computer, too

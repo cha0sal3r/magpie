@@ -10,14 +10,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
 )
 
 // A plugin's browser sign-in ("auto") that the plugin finishes at a port of
 // its own on this machine — Devin's, Kiro's, Trae's and Zed's do — can't
-// finish when the browser is on another computer: magpie on a server or in
+// finish when the browser is on another computer: magpie-friday on a server or in
 // Docker, opened from the web (Chicring). The page the browser ends on
-// won't load there, but its address is pasted back, and magpie opens it on
+// won't load there, but its address is pasted back, and magpie-friday opens it on
 // this machine, where the plugin is listening, as a built-in's pasted
 // address goes to its own callback (pastedCallback).
 
@@ -29,7 +29,7 @@ import (
 var pluginPostsCallback = map[string]string{"commandcode-plan": cmdKeysURL}
 
 // pastedPluginWait is how long a pasted address is given to finish the
-// sign-in before magpie says it didn't.
+// sign-in before magpie-friday says it didn't.
 var pastedPluginWait = 30 * time.Second
 
 // loopbackPorts are the ports on this machine a sign-in page sends the
@@ -202,7 +202,7 @@ func pluginKeyMethod(id string) (method int, keys string, ok bool) {
 
 // pastedPluginKey finishes a plugin's browser sign-in with a key pasted
 // instead, through the plugin's own API key way: the page's post couldn't
-// reach a magpie on a server or in Docker.
+// reach a magpie-friday on a server or in Docker.
 func (s *signInFlow) pastedPluginKey(raw string) error {
 	key := strings.TrimSpace(raw)
 	switch {

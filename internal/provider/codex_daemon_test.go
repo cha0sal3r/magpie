@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 func TestIsManagedDaemon(t *testing.T) {
@@ -216,12 +216,12 @@ func TestRestartCodexDaemon(t *testing.T) {
 	if got := read(".args"); got != "app-server daemon restart" {
 		t.Errorf("args %q", got)
 	}
-	// the daemon of the CODEX_HOME magpie writes auth.json in, which is the
+	// the daemon of the CODEX_HOME magpie-friday writes auth.json in, which is the
 	// user's own CODEX_HOME when that is set
 	if got, want := read(".home"), "/somewhere/else"; got != want || filepath.Clean(got) != filepath.Dir(codexAuthPath()) {
-		t.Errorf("CODEX_HOME %q, want %q (where magpie writes auth.json)", got, want)
+		t.Errorf("CODEX_HOME %q, want %q (where magpie-friday writes auth.json)", got, want)
 	}
-	// the proxy a terminal has, which magpie opened from the desktop hasn't
+	// the proxy a terminal has, which magpie-friday opened from the desktop hasn't
 	if got := read(".proxy"); got != "http://127.0.0.1:7890" {
 		t.Errorf("HTTPS_PROXY %q, want the login shell's", got)
 	}
@@ -328,8 +328,8 @@ func writeDaemonPID(t *testing.T, home, body string, at time.Time) string {
 }
 
 // luci (Discord, Codex 0.162): the daemon codex sessions attach to was
-// started on Codex's own models; wired to magpie after, every new codex
-// showed the official list. magpie restarts a daemon started before the
+// started on Codex's own models; wired to magpie-friday after, every new codex
+// showed the official list. magpie-friday restarts a daemon started before the
 // change while no codex session is on it, and only then.
 func TestKeepCodexDaemonCurrent(t *testing.T) {
 	pid := fakeDaemon(t)
@@ -403,7 +403,7 @@ func TestKeepCodexDaemonCurrent(t *testing.T) {
 
 // The processes are listed only when a pid file says a daemon started
 // before the change: listing them is a PowerShell run on Windows, which
-// the look every 15s made for as long as magpie ran (#2341).
+// the look every 15s made for as long as magpie-friday ran (#2341).
 func TestKeepCodexDaemonCurrentListsOnlyWhenBehind(t *testing.T) {
 	pid := fakeDaemon(t)
 	fakeCodex(t, 0)
@@ -469,7 +469,7 @@ func TestFindCodexApp(t *testing.T) {
 
 // The Codex app reads the sign-in once, as it opens: switched while it
 // runs, it stays on the account before, shows that account's limits and,
-// once they are spent, sends in no thread (CavillZhang on X). magpie says
+// once they are spent, sends in no thread (CavillZhang on X). magpie-friday says
 // so until the app is opened again.
 func TestCodexAppStale(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
@@ -533,8 +533,8 @@ func TestCodexAppStale(t *testing.T) {
 	}
 }
 
-// The daemon magpie restarts runs with the login shell's proxy and PATH,
-// as one a terminal started would (guotianci6 on X): magpie opened from
+// The daemon magpie-friday restarts runs with the login shell's proxy and PATH,
+// as one a terminal started would (guotianci6 on X): magpie-friday opened from
 // the desktop has neither.
 func TestCodexDaemonEnvIsTheTerminals(t *testing.T) {
 	oldEnv, oldPath := daemonLoginEnv, daemonLoginPath
@@ -547,7 +547,7 @@ func TestCodexDaemonEnvIsTheTerminals(t *testing.T) {
 	if !slices.Equal(got, want) {
 		t.Errorf("env %q, want %q", got, want)
 	}
-	// a login shell with no proxy and no PATH to say leaves magpie's own
+	// a login shell with no proxy and no PATH to say leaves magpie-friday's own
 	login = nil
 	daemonLoginPath = func() string { return "" }
 	in := []string{"PATH=/usr/bin", "HTTPS_PROXY=http://p:1"}

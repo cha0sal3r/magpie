@@ -7,7 +7,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
 )
 
 func codexConfigPath() string {
@@ -44,8 +44,8 @@ func readCodexConfig(path string) ([]AppImport, error) {
 			name = id
 		}
 		it := AppImport{Ref: id, From: "config.toml"}
-		if id == "magpie" {
-			it.Provider, it.Skip = Provider{Name: name}, "it points at magpie itself"
+		if id == "magpie-friday" {
+			it.Provider, it.Skip = Provider{Name: name}, "it points at magpie-friday itself"
 			out = append(out, it)
 			continue
 		}
@@ -112,7 +112,7 @@ func codexImportModels(configPath, catalogPath string) []string {
 	} else if !filepath.IsAbs(catalogPath) {
 		catalogPath = filepath.Join(filepath.Dir(configPath), catalogPath)
 	}
-	if filepath.Clean(catalogPath) == filepath.Join(appdir.CodexHomeIn(home), "magpie-models.json") {
+	if filepath.Clean(catalogPath) == filepath.Join(appdir.CodexHomeIn(home), "magpie-friday-models.json") {
 		return nil
 	}
 	b, err := os.ReadFile(catalogPath)

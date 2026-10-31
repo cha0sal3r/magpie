@@ -13,7 +13,7 @@ import (
 type uncheckedKey struct{}
 
 // WithUncheckedTLS is ctx for requests made on behalf of a provider the
-// user added whose HTTPS server they asked magpie not to check the
+// user added whose HTTPS server they asked magpie-friday not to check the
 // certificate of (#2383, fangzhengjin: vLLM on the LAN, Ollama behind a
 // self-signed cert, a company CA): a request through a transport Dispatch
 // made to the host of one of bases, over https, has its certificate taken

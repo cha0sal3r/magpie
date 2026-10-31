@@ -146,7 +146,7 @@ func TestSpendExpiringCodexResets(t *testing.T) {
 	}
 }
 
-// #2226 (JasonBuildAI): a Codex switched off or removed from magpie is
+// #2226 (JasonBuildAI): a Codex switched off or removed from magpie-friday is
 // left alone in the background, so the loop reads none of its accounts'
 // allowance and spends none of their resets, even with auto-use on.
 func TestExpiringResetLeftAlone(t *testing.T) {
@@ -189,7 +189,7 @@ func TestExpiringResetLeftAlone(t *testing.T) {
 		p    map[string]any
 	}{
 		{"switched off", map[string]any{"id": "codex", "off": true}},
-		{"removed from magpie", map[string]any{"id": "codex", "hidden": true}},
+		{"removed from magpie-friday", map[string]any{"id": "codex", "hidden": true}},
 	} {
 		writeFile(t, Path(), map[string]any{"providers": []map[string]any{c.p}})
 		SpendExpiringCodexResets(t.Context())

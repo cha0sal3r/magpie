@@ -9,17 +9,17 @@ import (
 	"strings"
 )
 
-// Claude Code signed in to claude.ai, its base URL magpie's and no key
+// Claude Code signed in to claude.ai, its base URL magpie-friday's and no key
 // set, sends its own sign-in as its key (Authorization: Bearer
-// sk-ant-oat…), which magpie never passes on. A 401 it reads as that
+// sk-ant-oat…), which magpie-friday never passes on. A 401 it reads as that
 // sign-in refused: it renews the sign-in before each of its retries, ten
 // of them for one request, and then asks to /login; a 403 saying "OAuth
 // token has been revoked" the same. Any error whose message mentions
 // x-api-key, whatever its status, it tells as "Not logged in · Please run
-// /login" (Claude Code 2.1.293). Whatever magpie answers such a request
-// with is never about that sign-in — a provider refused magpie's
-// credential, or one of magpie's own Claude accounts lapsed — so it is
-// told as the 502 it is, in magpie's words: "<provider> refused magpie's
+// /login" (Claude Code 2.1.293). Whatever magpie-friday answers such a request
+// with is never about that sign-in — a provider refused magpie-friday's
+// credential, or one of magpie-friday's own Claude accounts lapsed — so it is
+// told as the 502 it is, in magpie-friday's words: "<provider> refused magpie-friday's
 // credential (HTTP 401): …", the provider's reason after it with x-api-key
 // said as "API key". Any other error keeps its status, x-api-key said as
 // "API key" in it too. The usage log and Recent calls keep the provider's
@@ -33,7 +33,7 @@ func claudeSignIn(r *http.Request) bool {
 }
 
 // keepsSignIn is h, a request with a Claude sign-in (claudeSignIn) told a
-// 401 as a 502 in magpie's words, and a 403 too where it says the OAuth
+// 401 as a 502 in magpie-friday's words, and a 403 too where it says the OAuth
 // token was revoked; no error it is told mentions x-api-key.
 func keepsSignIn(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -49,13 +49,13 @@ func keepsSignIn(h http.HandlerFunc) http.HandlerFunc {
 
 // signInWriter is keepsSignIn's: an error's status is held until its
 // body, which says whose refusal it was and is said without x-api-key —
-// magpie writes an error whole, in one write, and a stream's event the
+// magpie-friday writes an error whole, in one write, and a stream's event the
 // same.
 type signInWriter struct {
 	http.ResponseWriter
 	held  int  // an error's status, waiting for its body
 	wrote bool // the status went
-	told  bool // the error went in magpie's words: the rest of it is dropped
+	told  bool // the error went in magpie-friday's words: the rest of it is dropped
 }
 
 func (w *signInWriter) WriteHeader(code int) {
@@ -113,8 +113,8 @@ func (w *signInWriter) Write(b []byte) (int, error) {
 
 var xAPIKey = regexp.MustCompile(`(?i)x-api-key`)
 
-// refusedMessage is a provider's refusal of magpie's credential, as a
-// Claude Code signed in to claude.ai is told it: b is magpie's error,
+// refusedMessage is a provider's refusal of magpie-friday's credential, as a
+// Claude Code signed in to claude.ai is told it: b is magpie-friday's error,
 // "<provider>: <reason>".
 func refusedMessage(b []byte, id string, code int) string {
 	var e struct {
@@ -130,7 +130,7 @@ func refusedMessage(b []byte, id string, code int) string {
 	if name == "" {
 		name = "The provider"
 	}
-	msg := fmt.Sprintf("%s refused magpie's credential (HTTP %d)", name, code)
+	msg := fmt.Sprintf("%s refused magpie-friday's credential (HTTP %d)", name, code)
 	if reason != "" {
 		msg += ": " + xAPIKey.ReplaceAllString(reason, "API key")
 	}

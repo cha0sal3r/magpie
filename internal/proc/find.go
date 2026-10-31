@@ -10,9 +10,9 @@ import (
 // FindTool is the command-line tool name as a terminal would run it: on
 // PATH, else in one of the folders a user's tools are installed in
 // (UserBinDirs), else, on Windows, on the PATH the registry has now, which
-// a magpie started before the tool was installed doesn't have (#839: the
+// a magpie-friday started before the tool was installed doesn't have (#839: the
 // Claude sign-in said Claude Code wasn't installed, its installer having
-// put claude.exe in ~/.local/bin after magpie started). A version
+// put claude.exe in ~/.local/bin after magpie-friday started). A version
 // manager's wrapper script found there is given as the program it runs
 // (Unwrap). "" when none. Where it is on PATH is kept while those folders
 // are unchanged (LookPath); Unwrap keeps its own answer by the script's

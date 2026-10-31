@@ -9,7 +9,7 @@ import (
 )
 
 // An agent can sign in to a remote MCP server itself: Claude Code's /mcp
-// does, and keeps the tokens in its own .credentials.json. magpie's check
+// does, and keeps the tokens in its own .credentials.json. magpie-friday's check
 // connects without them, so such a server answers it 401 and its row said
 // "needs sign-in" while the agent used it fine (CyberCaius on Discord: the
 // server signed in to in Claude Code in WSL). The check says which agents
@@ -18,7 +18,7 @@ import (
 // Every target is read where it keeps its files, so an agent in a running
 // WSL distro is read under the distro's home (wslTargetOf), as its
 // settings are; a stopped distro has no target and is never started for
-// this. On a Mac Claude Code keeps the tokens in the Keychain, which magpie
+// this. On a Mac Claude Code keeps the tokens in the Keychain, which magpie-friday
 // never reads: there only the file, when Claude Code fell back to it.
 
 // ownSignIns are the agents signed in to a server themselves, by

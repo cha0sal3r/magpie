@@ -9,15 +9,15 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// ZCode's row picks which of magpie's models its picker lists, as every
+// ZCode's row picks which of magpie-friday's models its picker lists, as every
 // other agent's does (#1508, NovaTrailX: settings.hiddenModels had no
 // zcode, and both its files got every model). Through the page's own
 // handlers: its row has the line and the menu, the list takes one out, the
-// row counts one fewer, and the files magpie writes for it leave it out.
+// row counts one fewer, and the files magpie-friday writes for it leave it out.
 func TestZCodeModelList(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
@@ -92,7 +92,7 @@ func TestZCodeModelList(t *testing.T) {
 		t.Fatalf("the user's own provider went: %s", b)
 	}
 	var ids []string
-	for id := range c.Provider["magpie"].Models {
+	for id := range c.Provider["magpie-friday"].Models {
 		ids = append(ids, id)
 	}
 	if !slices.Equal(ids, []string{"relay/m1"}) {

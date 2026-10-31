@@ -7,20 +7,20 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // Every agent's model picker has two halves: the models the agent reaches
-// on its own (its sign-in, its own keys), and magpie's catalog — every model
+// on its own (its sign-in, its own keys), and magpie-friday's catalog — every model
 // of every provider the user added, reached through the local gateway.
 // A catalog model is spelled "provider/model"; an agent that sends that to
 // the gateway gets the vendor's reply in whichever API the agent speaks.
 
 // magpieID is the provider id agents know the gateway by.
-const magpieID = "magpie"
+const magpieID = "magpie-friday"
 
 // RoutingGroups is the picker's group of routing groups.
 const RoutingGroups = "Routing groups"
@@ -53,10 +53,10 @@ func viaMagpie(agent, prefix string) []Option {
 	// firstUser: the account a request for a subscription's model goes to
 	// first, which the note names. A Codex or Claude Code subscription is
 	// the account the agent is signed in to (Account.User), but its
-	// requests go to the first in magpie's order: another one when that
+	// requests go to the first in magpie-friday's order: another one when that
 	// one is paused, or when the agent is kept signed in to an account
 	// that isn't first (#1957, parkavenue9639: every codex/gpt-* read
-	// "A · via magpie" while each went to B). Asked once a provider.
+	// "A · via magpie-friday" while each went to B). Asked once a provider.
 	firsts := map[string]string{}
 	firstUser := func(p provider.Provider) string {
 		a := p.Account
@@ -74,13 +74,13 @@ func viaMagpie(agent, prefix string) []Option {
 	var tiered map[string]bool // provider.UltraModels, read at the first fast model
 	for _, e := range shown {
 		if e.Group != "" {
-			groups = append(groups, Option{Value: prefix + e.ID, Label: e.Name, Note: "routing group · via magpie",
+			groups = append(groups, Option{Value: prefix + e.ID, Label: e.Name, Note: "routing group · via magpie-friday",
 				Icon: e.Provider.Icon, Icons: e.Icons, Group: RoutingGroups, Ref: e.ID})
 			continue
 		}
-		note := e.Provider.Name + " · via magpie"
+		note := e.Provider.Name + " · via magpie-friday"
 		if a := e.Provider.Account; a != nil {
-			note = firstUser(e.Provider) + " · via magpie"
+			note = firstUser(e.Provider) + " · via magpie-friday"
 		}
 		o := Option{Value: prefix + e.ID, Label: e.Name, Note: note,
 			Icon: e.Provider.Icon, Group: e.Provider.Name, Ref: e.ID, Free: e.Free, Rate: e.Rate, RateWas: e.RateWas, Context: e.Context, own: own[e.Provider.ID],
@@ -103,7 +103,7 @@ func viaMagpie(agent, prefix string) []Option {
 
 // listLabels are the names the agent's own list calls the catalog's models
 // by, by id: provider.Labels, which follows the Provider in model names
-// setting, where an Option's Label is the name alone for magpie's picker.
+// setting, where an Option's Label is the name alone for magpie-friday's picker.
 func listLabels(agent string) map[string]string {
 	shown, _ := provider.CatalogFor(agent)
 	labels := provider.Labels(shown)
@@ -115,7 +115,7 @@ func listLabels(agent string) map[string]string {
 }
 
 // viaMagpieFor is viaMagpie without the agent's own account: Codex CLI going
-// through magpie to its own ChatGPT login would only add a hop.
+// through magpie-friday to its own ChatGPT login would only add a hop.
 func viaMagpieFor(agentID, prefix string) []Option {
 	var out []Option
 	for _, o := range viaMagpie(agentID, prefix) {
@@ -202,7 +202,7 @@ func magpieModels(agent string) []catalog.Model {
 	var out []catalog.Model
 	shown, _ := provider.CatalogFor(agent)
 	labels := provider.Labels(shown)
-	// a model magpie describes images to takes them (provider.Described)
+	// a model magpie-friday describes images to takes them (provider.Described)
 	seen := provider.Described != nil && provider.Described()
 	st, find := settings.Load(), provider.GroupFinder()
 	priceOf := provider.EntryPricer(st, find)
@@ -239,8 +239,8 @@ func magpieModels(agent string) []catalog.Model {
 			m.APIs = []string{string(provider.Responses)}
 		}
 		// the service tiers Codex is offered on it, as the gateway's own
-		// lists offer them: Fast in the Codex CLI magpie writes
-		// magpie-models.json for (#1530)
+		// lists offer them: Fast in the Codex CLI magpie-friday writes
+		// magpie-friday-models.json for (#1530)
 		provider.CodexTiers(&m, e, members)
 		// the gateway paths it goes on untranslated, as /v1/models says
 		// them: what an agent plugin's connect is told (cleary5779)
@@ -278,7 +278,7 @@ func maxTokens(m catalog.Model) int { return provider.OutputWithin(m.Context, m.
 
 // outputOr is the output limit an agent is handed for m: the Max output the
 // user set for it (catalog.Model.OutputSet), kept within its window, else
-// capped, the agent's own trim of the vendor's figure. A cap of magpie's
+// capped, the agent's own trim of the vendor's figure. A cap of magpie-friday's
 // never overrides the user's number: DeepSeek V4.1 Flash set to 384k reached
 // VS Code as 250000 and WorkBuddy as 128000 (#2064).
 func outputOr(m catalog.Model, capped int) int {

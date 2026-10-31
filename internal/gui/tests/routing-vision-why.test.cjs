@@ -2,9 +2,9 @@
 // A DeepSeek chat in Codex had its image described by Codex's GPT, and
 // the row said only "Image description" (#1287: codex的图片识别还是调用默认的
 // 模型): the row's story says why the model was counted as unable to see —
-// nothing magpie knows says it sees, or its list says text only — and
+// nothing magpie-friday knows says it sees, or its list says text only — and
 // where that and the describer are changed. An Image recognition model
-// picked in Settings that magpie can't find any more is named, with the one
+// picked in Settings that magpie-friday can't find any more is named, with the one
 // that described in its place, not replaced in silence.
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
@@ -23,17 +23,17 @@ const call = (id, i, agent, model, provider, extra) => ({
   done: true, status: 200, ms: 900, tokens: 1200,
 });
 const routes = [
-  call(202, 0, "magpie", "gpt-6.1-sol", "codex", { kind: "vision", for: { agent: "codex", model: "deepseek/deepseek-v4.1-flash", unknown: true } }),
-  call(201, 1, "magpie", "gpt-6.1-sol", "codex", { kind: "vision", for: { agent: "codex", model: "deepseek/deepseek-v4-pro" } }),
-  // the Image recognition model picked in Settings is gone: the one magpie
+  call(202, 0, "magpie-friday", "gpt-6.1-sol", "codex", { kind: "vision", for: { agent: "codex", model: "deepseek/deepseek-v4.1-flash", unknown: true } }),
+  call(201, 1, "magpie-friday", "gpt-6.1-sol", "codex", { kind: "vision", for: { agent: "codex", model: "deepseek/deepseek-v4-pro" } }),
+  // the Image recognition model picked in Settings is gone: the one magpie-friday
   // picks described in its place, and the row names the one picked
-  call(200, 2, "magpie", "gpt-6.1-sol", "codex", { kind: "vision", for: { agent: "codex", model: "deepseek/deepseek-v4-pro", missing: "gone/qwen-vl-max" } }),
+  call(200, 2, "magpie-friday", "gpt-6.1-sol", "codex", { kind: "vision", for: { agent: "codex", model: "deepseek/deepseek-v4-pro", missing: "gone/qwen-vl-max" } }),
 ];
 
 function serve(lang) {
   const state = {
     agents: [{ id: "codex", name: "Codex", path: "/test/config.toml", fields: [] }],
-    clients: [{ id: "codex", name: "Codex", icon: "codex-color" }, { id: "magpie", name: "magpie", icon: "magpie" }],
+    clients: [{ id: "codex", name: "Codex", icon: "codex-color" }, { id: "magpie-friday", name: "magpie-friday", icon: "magpie-friday" }],
     profiles: [], settings: { lang, theme: "light" },
   };
   return async (route) => {
@@ -62,10 +62,10 @@ function serve(lang) {
 }
 
 const want = {
-  en: { tag: "Image description", unknown: [/nothing magpie knows says deepseek\/deepseek-v4\.1-flash can see images/, /tick “Accepts images” for it in its provider's models/, /Settings › Models › Image recognition picks the model that describes/, /codex\/gpt-6\.1-sol describe an image for Codex's/],
+  en: { tag: "Image description", unknown: [/nothing magpie-friday knows says deepseek\/deepseek-v4\.1-flash can see images/, /tick “Accepts images” for it in its provider's models/, /Settings › Models › Image recognition picks the model that describes/, /codex\/gpt-6\.1-sol describe an image for Codex's/],
     listed: [/which its provider's list or its own setting says takes text only/, /Settings › Models › Image recognition/],
     missing: [/gone\/qwen-vl-max, the Image recognition model picked in Settings, isn't set up any more/, /codex\/gpt-6\.1-sol, its automatic choice/, /Pick another in Settings › Models › Image recognition/] },
-  zh: { tag: "图片描述", unknown: [/magpie 所知的信息都没有说 deepseek\/deepseek-v4\.1-flash 能看图/, /勾选“支持图片输入”/, /设置 › 模型 › 识图模型/, /让 codex\/gpt-6\.1-sol 为 Codex/],
+  zh: { tag: "图片描述", unknown: [/magpie-friday 所知的信息都没有说 deepseek\/deepseek-v4\.1-flash 能看图/, /勾选“支持图片输入”/, /设置 › 模型 › 识图模型/, /让 codex\/gpt-6\.1-sol 为 Codex/],
     listed: [/服务商的模型列表或它自己的设置说它只收文本/, /设置 › 模型 › 识图模型/],
     missing: [/设置里选的识图模型 gone\/qwen-vl-max 已不可用/, /自动选择的 codex\/gpt-6\.1-sol/, /设置 › 模型 › 识图模型 里另选一个/] },
 };
@@ -100,7 +100,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       for (const re of want[lang].unknown) assert.match(await s.textContent(), re);
       s = await story(1);
       for (const re of want[lang].listed) assert.match(await s.textContent(), re);
-      assert.doesNotMatch(await s.textContent(), /nothing magpie knows|所知的信息/);
+      assert.doesNotMatch(await s.textContent(), /nothing magpie-friday knows|所知的信息/);
       s = await story(2);
       assert.equal(await s.locator(".kind").textContent(), want[lang].tag);
       for (const re of want[lang].missing) assert.match(await s.textContent(), re);

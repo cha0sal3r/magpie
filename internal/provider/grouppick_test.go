@@ -8,7 +8,7 @@ import (
 // A Manual group switched from the tray panel (#2489) sends every request
 // to the member picked, from the next request on, and keeps the rest of
 // itself; a group that doesn't route by hand, a model not in it, or a
-// group magpie hasn't are refused and change nothing.
+// group magpie-friday hasn't are refused and change nothing.
 func TestPickGroup(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
 	t.Setenv("USERPROFILE", t.TempDir())

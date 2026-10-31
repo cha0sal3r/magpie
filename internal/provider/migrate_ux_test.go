@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // fakePlugin readies the test plugin's host for a move of fakeco, with
@@ -110,7 +110,7 @@ func TestMoveTidiesItsPlugin(t *testing.T) {
 }
 
 // There is no way back to a built-in, as each is going. One an older
-// magpie moved back is moved again by itself. The plugin turned off keeps
+// magpie-friday moved back is moved again by itself. The plugin turned off keeps
 // it moved, off with it; the plugin removed leaves its accounts with the
 // plugin's sign-ins, nothing moving or installing it again, and the plugin
 // installed again (or the editor's Move) has it at once, accounts and all.
@@ -121,7 +121,7 @@ func TestNoWayBack(t *testing.T) {
 	setFakeLogins(t, fakeLogin("a@fake", "r-a", true, true))
 	_ = setMigration("fakeco", func(m *Migration) { *m = Migration{State: MovedBack, Package: abs} })
 	if errs := MoveRetiring(ctx); errs["fakeco"] != nil || !Moved("fakeco") {
-		t.Fatalf("one moved back by an older magpie: %v, moved %v", errs, Moved("fakeco"))
+		t.Fatalf("one moved back by an older magpie-friday: %v, moved %v", errs, Moved("fakeco"))
 	}
 	signedIn := func(when string) {
 		t.Helper()
@@ -151,7 +151,7 @@ func TestNoWayBack(t *testing.T) {
 	was := *installs
 	keepMovedCurrent(ctx)
 	if errs := MoveRetiring(ctx); len(errs) != 0 || *installs != was || pluginListed(abs) {
-		t.Fatalf("magpie put back a plugin the user removed: %v, %d installs", errs, *installs-was)
+		t.Fatalf("magpie-friday put back a plugin the user removed: %v, %d installs", errs, *installs-was)
 	}
 
 	if _, err := plugin.Add(ctx, abs); err != nil {

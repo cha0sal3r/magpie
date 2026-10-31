@@ -43,7 +43,7 @@ func TestCodexReachedReadsLogOnlyWhenItChanged(t *testing.T) {
 	for range 50 {
 		got, to, _ := codexReached(dir, since)
 		if got.Unix() != at || to != "ws://127.0.0.1:3425/backend-api/codex/responses" {
-			t.Fatalf("read %v %q, want %v and magpie's address", got, to, at)
+			t.Fatalf("read %v %q, want %v and magpie-friday's address", got, to, at)
 		}
 	}
 	if n := reachedOpens.Load() - before; n != 1 {

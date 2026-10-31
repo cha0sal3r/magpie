@@ -188,7 +188,7 @@ func readOpenCodeGo(b []byte) (string, []QuotaWindow, error) {
 	return "", out, nil
 }
 
-// shapeOf names the fields of a JSON reply magpie couldn't read, two
+// shapeOf names the fields of a JSON reply magpie-friday couldn't read, two
 // levels down, without their values: enough to see what the vendor sends
 // now, with nothing of the account in it.
 func shapeOf(b []byte) string {
@@ -629,7 +629,7 @@ var planQuotaCache struct {
 // windows are read with changed (a Volcengine or Tencent Cloud access key).
 func ForgetPlanQuotas() { forgetPlanQuotas() }
 
-// PlanQuotas is the windows of every plan magpie has a key for, each key
+// PlanQuotas is the windows of every plan magpie-friday has a key for, each key
 // on a card of its own when a provider has several. What was asked less
 // than a minute ago is not asked again.
 func PlanQuotas(ctx context.Context) []SubscriptionQuota {
@@ -785,7 +785,7 @@ func TakesZhipuTeam(p Provider) bool {
 // zhipuKeyTeamWindows is a GLM key's windows on a team's GLM Coding Plan:
 // the quota asked with type=2 where ZCode asks it (bigmodel.cn, api.z.ai),
 // with the team's organization and project in the headers: those the user
-// gave the provider, else those of a ZCode account's team key magpie holds
+// gave the provider, else those of a ZCode account's team key magpie-friday holds
 // (a key pasted alone is asked without them, which is a guess: ZCode
 // always sends them).
 func zhipuKeyTeamWindows(ctx context.Context, quotaURL, key string, team *ZhipuTeam) (plan string, ws []QuotaWindow, err error) {

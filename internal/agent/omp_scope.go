@@ -3,7 +3,7 @@ package agent
 import (
 	"strings"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 	"gopkg.in/yaml.v3"
 )
 
@@ -11,13 +11,13 @@ import (
 // session is held to while it names anything: the default role starts only
 // when the list takes its model in, else omp picks another model from the
 // list (main.ts buildSessionOptions, sdk.ts resolveAllowedModels and
-// pickDefaultAvailableModel), so a model magpie picks outside it never
+// pickDefaultAvailableModel), so a model magpie-friday picks outside it never
 // starts (#1769). omp's other roles are resolved against every model it has
 // (task/executor.ts resolveModelOverride, session/model-controls.ts
 // resolveRoleModelFull, both on modelRegistry.getAvailable()), so only the
 // default role is held to the list.
 //
-// The list is the user's: magpie adds the default role's model to it as Pi's
+// The list is the user's: magpie-friday adds the default role's model to it as Pi's
 // fix did (#160), keeps the entries, their order and comments,
 // and never makes a list where there is none or an empty one. Its plain
 // entries hold in every folder; an entry scoped to folders ({path, models})
@@ -37,12 +37,12 @@ func ompScopePlain(n *yaml.Node) []string {
 	return out
 }
 
-// ompEvery is the entry magpie adds to enabledModels for its own models:
-// every model magpie writes into models.yml for omp, which are the ones its
+// ompEvery is the entry magpie-friday adds to enabledModels for its own models:
+// every model magpie-friday writes into models.yml for omp, which are the ones its
 // Agents page offers. omp matches a glob with Bun.Glob, whose * stops at a
-// slash, and a model of magpie's is magpie/<provider>/<model>, so it takes
+// slash, and a model of magpie-friday's is magpie-friday/<provider>/<model>, so it takes
 // **. With the default role's model alone there, omp's picker and Ctrl+P
-// left out every other model magpie gives it (#1769, real-jacket).
+// left out every other model magpie-friday gives it (#1769, real-jacket).
 const ompEvery = magpieID + "/**"
 
 // ompTakes reports whether an enabledModels entry surely takes in model, a
@@ -72,9 +72,9 @@ func ompScopeTakes(plain []string, model string) bool {
 }
 
 // ompScopeOwnMagpie says whether the user chose for themselves which of
-// magpie's models the list holds: an entry on magpie with a glob or a
+// magpie-friday's models the list holds: an entry on magpie-friday with a glob or a
 // thinking level, or a glob of theirs that takes model in (deepseek/*,
-// which omp matches against the id alone), is theirs, not one magpie added.
+// which omp matches against the id alone), is theirs, not one magpie-friday added.
 func ompScopeOwnMagpie(plain []string, model string) bool {
 	for _, p := range plain {
 		m, level := ompLevel(strings.TrimSpace(p))
@@ -88,10 +88,10 @@ func ompScopeOwnMagpie(plain []string, model string) bool {
 
 // ompScopeWith lets a session start on model, a provider/model, when
 // config.yml's enabledModels has plain entries and none takes it in. For
-// one of magpie's it is ompEvery that joins the end, in place of the
-// models of magpie's the list names one by one (what magpie added before),
-// so omp's picker has every model magpie offers it beside the user's own;
-// unless the user picked which of magpie's the list holds
+// one of magpie-friday's it is ompEvery that joins the end, in place of the
+// models of magpie-friday's the list names one by one (what magpie-friday added before),
+// so omp's picker has every model magpie-friday offers it beside the user's own;
+// unless the user picked which of magpie-friday's the list holds
 // (ompScopeOwnMagpie), when only model joins it. Another model joins as
 // itself.
 func ompScopeWith(cfg, model string) error {
@@ -120,16 +120,16 @@ func ompScopeWith(cfg, model string) error {
 	})
 }
 
-// ompScopeMagpieOne is a plain entry naming one of magpie's models, with
-// no glob or level: what magpie adds, or ompEvery takes in all the same.
+// ompScopeMagpieOne is a plain entry naming one of magpie-friday's models, with
+// no glob or level: what magpie-friday adds, or ompEvery takes in all the same.
 func ompScopeMagpieOne(v string) bool {
 	v = strings.TrimSpace(v)
 	return !strings.ContainsAny(v, "*?[") && strings.HasPrefix(strings.ToLower(v), magpieID+"/")
 }
 
-// ompScopeWithout takes magpie's models out of enabledModels's plain
+// ompScopeWithout takes magpie-friday's models out of enabledModels's plain
 // entries, ompEvery among them, once nothing else in config.yml is on
-// magpie, and its provider leaves models.yml: there they would name
+// magpie-friday, and its provider leaves models.yml: there they would name
 // nothing. A list left empty is removed, never written as [].
 func ompScopeWithout(cfg string) error {
 	return edit.EditYAMLNode(cfg, "enabledModels", func(n *yaml.Node) (bool, bool) {
@@ -184,8 +184,8 @@ func ompScopeOnce(cfg string) error {
 }
 
 // ompScopeFoldersOnMagpie says whether an entry of enabledModels scoped to
-// folders names one of magpie's models: the user's own, which keeps
-// magpie's provider as a role on it does.
+// folders names one of magpie-friday's models: the user's own, which keeps
+// magpie-friday's provider as a role on it does.
 func ompScopeFoldersOnMagpie(cfg string) (used bool, err error) {
 	err = edit.EditYAMLNode(cfg, "enabledModels", func(n *yaml.Node) (bool, bool) {
 		if n == nil || n.Kind != yaml.SequenceNode {

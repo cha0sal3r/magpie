@@ -32,17 +32,17 @@ func TestSetJSONKeepsMixedEndings(t *testing.T) {
 // used to bring bare \n lines into it.
 func TestSetJSONItemKeepsCRLF(t *testing.T) {
 	p := tmpFile(t, "models.json", "[\r\n\t{\r\n\t\t\"name\": \"other\"\r\n\t}\r\n]\r\n")
-	if err := SetJSONItem(p, map[string]string{"name": "magpie"}, map[string]any{"name": "magpie", "n": 1}); err != nil {
+	if err := SetJSONItem(p, map[string]string{"name": "magpie-friday"}, map[string]any{"name": "magpie-friday", "n": 1}); err != nil {
 		t.Fatal(err)
 	}
-	want := "[\r\n\t{\r\n\t\t\"name\": \"other\"\r\n\t},\r\n\t{\r\n\t\t\"n\": 1,\r\n\t\t\"name\": \"magpie\"\r\n\t}\r\n]\r\n"
+	want := "[\r\n\t{\r\n\t\t\"name\": \"other\"\r\n\t},\r\n\t{\r\n\t\t\"n\": 1,\r\n\t\t\"name\": \"magpie-friday\"\r\n\t}\r\n]\r\n"
 	if got := read(t, p); got != want {
 		t.Fatalf("added: got %q, want %q", got, want)
 	}
-	if err := SetJSONItem(p, map[string]string{"name": "magpie"}, map[string]any{"name": "magpie", "n": 2}); err != nil {
+	if err := SetJSONItem(p, map[string]string{"name": "magpie-friday"}, map[string]any{"name": "magpie-friday", "n": 2}); err != nil {
 		t.Fatal(err)
 	}
-	want = "[\r\n\t{\r\n\t\t\"name\": \"other\"\r\n\t},\r\n\t{\r\n\t\t\"n\": 2,\r\n\t\t\"name\": \"magpie\"\r\n\t}\r\n]\r\n"
+	want = "[\r\n\t{\r\n\t\t\"name\": \"other\"\r\n\t},\r\n\t{\r\n\t\t\"n\": 2,\r\n\t\t\"name\": \"magpie-friday\"\r\n\t}\r\n]\r\n"
 	if got := read(t, p); got != want {
 		t.Fatalf("replaced: got %q, want %q", got, want)
 	}
@@ -50,10 +50,10 @@ func TestSetJSONItemKeepsCRLF(t *testing.T) {
 
 func TestSetJSONItemIntoEmptyCRLFArray(t *testing.T) {
 	p := tmpFile(t, "models.json", "[\r\n]\r\n")
-	if err := SetJSONItem(p, map[string]string{"name": "magpie"}, map[string]any{"name": "magpie"}); err != nil {
+	if err := SetJSONItem(p, map[string]string{"name": "magpie-friday"}, map[string]any{"name": "magpie-friday"}); err != nil {
 		t.Fatal(err)
 	}
-	if got, want := read(t, p), "[\r\n\t{\r\n\t\t\"name\": \"magpie\"\r\n\t}\r\n]\r\n"; got != want {
+	if got, want := read(t, p), "[\r\n\t{\r\n\t\t\"name\": \"magpie-friday\"\r\n\t}\r\n]\r\n"; got != want {
 		t.Fatalf("got %q, want %q", got, want)
 	}
 }
@@ -94,18 +94,18 @@ func TestDelJSONItemTakesCRLFLine(t *testing.T) {
 	in := "[\r\n\t{\r\n\t\t\"name\": \"other\"\r\n\t}\r\n]\r\n"
 	p := tmpFile(t, "models.json", in)
 	for range 2 {
-		if err := SetJSONItem(p, map[string]string{"name": "magpie"}, map[string]any{"name": "magpie"}); err != nil {
+		if err := SetJSONItem(p, map[string]string{"name": "magpie-friday"}, map[string]any{"name": "magpie-friday"}); err != nil {
 			t.Fatal(err)
 		}
-		if err := DelJSONItem(p, map[string]string{"name": "magpie"}); err != nil {
+		if err := DelJSONItem(p, map[string]string{"name": "magpie-friday"}); err != nil {
 			t.Fatal(err)
 		}
 		if got := read(t, p); got != in {
 			t.Fatalf("set and deleted: got %q, want %q", got, in)
 		}
 	}
-	p = tmpFile(t, "models2.json", "[\r\n\t{\"name\": \"magpie\"},\r\n\t{\"name\": \"other\"}\r\n]\r\n")
-	if err := DelJSONItem(p, map[string]string{"name": "magpie"}); err != nil {
+	p = tmpFile(t, "models2.json", "[\r\n\t{\"name\": \"magpie-friday\"},\r\n\t{\"name\": \"other\"}\r\n]\r\n")
+	if err := DelJSONItem(p, map[string]string{"name": "magpie-friday"}); err != nil {
 		t.Fatal(err)
 	}
 	if got, want := read(t, p), "[\r\n\t{\"name\": \"other\"}\r\n]\r\n"; got != want {

@@ -8,14 +8,14 @@ import (
 	"testing"
 )
 
-// Every name in Vars is one magpie reads somewhere outside this package. A
+// Every name in Vars is one magpie-friday reads somewhere outside this package. A
 // name it stopped reading, or one a sandbox invented, is a hole that every
 // sandbox clearing this list believes is covered: internal/backup's cleared
 // GEMINI_CLI_HOME and OPENCODE_CONFIG, which nothing reads, and not
 // OPENCODE_CONFIG_DIR, which internal/agent does. This reads the sources
 // rather than the agents' table, since the table is in internal/agent, which
 // internal/sessions' tests cannot import; it looks for a quoted name, so a
-// name only a comment mentions still counts, and a variable magpie reads
+// name only a comment mentions still counts, and a variable magpie-friday reads
 // through a name it builds at runtime would not.
 func TestVarsAreRead(t *testing.T) {
 	found := make(map[string]bool, len(Vars))
@@ -49,7 +49,7 @@ func TestVarsAreRead(t *testing.T) {
 	}
 	for _, v := range Vars {
 		if !found[v] {
-			t.Errorf("%s is in Vars, but nothing outside this package reads it: magpie stopped reading it, or the name was never the one magpie reads", v)
+			t.Errorf("%s is in Vars, but nothing outside this package reads it: magpie-friday stopped reading it, or the name was never the one magpie-friday reads", v)
 		}
 	}
 }

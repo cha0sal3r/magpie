@@ -14,7 +14,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // parseRouteFrame splits one SSE frame into its event name and data body.

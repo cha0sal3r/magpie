@@ -5,14 +5,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 // Codex stays on the local gateway even when its advertised URL changes.
 func TestCodexPublicURL(t *testing.T) {
 	home, read := codexHome(t, `{"tokens":{"access_token":"x","id_token":"x.e30.x"}}`, "model = \"gpt-5.5\"\n")
-	t.Setenv("MAGPIE_PUBLIC_URL", "https://magpie.example.com/magpie///")
+	t.Setenv("MAGPIE_PUBLIC_URL", "https://magpie-friday.example.com/magpie-friday///")
 	cx := codex(home)
 	if err := cx.Fields[0].Set("fake/m1"); err != nil {
 		t.Fatal(err)
@@ -34,10 +34,10 @@ func TestCodexPublicURL(t *testing.T) {
 }
 
 // Gemini keeps its local wiring and restores the original URL across changes
-// to the advertised URL, including a second application of magpie.
+// to the advertised URL, including a second application of magpie-friday.
 func TestGeminiPublicURL(t *testing.T) {
 	home, _ := codexHome(t, "", "")
-	t.Setenv("MAGPIE_PUBLIC_URL", "https://magpie.example.com/")
+	t.Setenv("MAGPIE_PUBLIC_URL", "https://magpie-friday.example.com/")
 	path := filepath.Join(home, ".gemini", ".env")
 	if err := edit.SetEnvFile(path, edit.KV{Path: "GOOGLE_GEMINI_BASE_URL", Value: "https://gemini.example.com"}); err != nil {
 		t.Fatal(err)

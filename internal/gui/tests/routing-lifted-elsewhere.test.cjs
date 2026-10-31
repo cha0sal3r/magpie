@@ -2,7 +2,7 @@
 // A rest lifted outside the Routing page (zoecats on Discord): a key rate
 // limited (429) and another sent to the back of the order, then Try now
 // pressed in the provider's editor. Before, Routing kept saying 429 and
-// "at the back" on its stage and under Accounts and keys until magpie
+// "at the back" on its stage and under Accounts and keys until magpie-friday
 // restarted, as the requests it keeps still say so. Now the trace tells the
 // page what was lifted and when (lifted), and the page shows neither
 // resting, with no request since. In every language, at a wide and a

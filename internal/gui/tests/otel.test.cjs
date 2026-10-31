@@ -15,7 +15,7 @@ function settingsPayload(over) {
     dock: false, dockWindow: false, proxy: "", redact: false, redactPersonal: false, redactWords: [],
     codexWarmup: "", claudeWarmup: "", codexWarmAt: "", claudeWarmAt: "", workbuddyCheckin: false, noStats: false,
     trayUsage: "", trayUsageEvery: 3, vision: "", imageGen: "",
-    version: "0.1.400", dir: "~/.config/magpie", gateway: "http://127.0.0.1:3425",
+    version: "0.1.400", dir: "~/.config/magpie-friday", gateway: "http://127.0.0.1:3425",
     proxyNow: "none", proxySource: "none", login: false,
     visionModels: [], imageGenModels: [], workbuddyCheckins: [], lanURLs: [],
     fx: { rate: 7.2, at: new Date().toISOString(), stale: false },
@@ -180,7 +180,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         }
         if (process.env.OTEL_SCREENSHOTS) {
           await page.setViewportSize({ width: 1100, height: 1000 });
-          await page.locator("#otelList").screenshot({ path: `/tmp/magpie-otel-${engine}-${lang}.png` });
+          await page.locator("#otelList").screenshot({ path: `/tmp/magpie-friday-otel-${engine}-${lang}.png` });
         }
         assert.deepEqual(errors, []);
         await context.close();

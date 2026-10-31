@@ -13,7 +13,7 @@ import (
 )
 
 // sub2APIWindows are the windows a sub2api key's rate_limits name, with
-// the names magpie's cards already give a 5-hour, a day's and a week's.
+// the names magpie-friday's cards already give a 5-hour, a day's and a week's.
 var sub2APIWindows = []struct {
 	window, name string
 	span         time.Duration

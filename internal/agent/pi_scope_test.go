@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 func TestPiTakes(t *testing.T) {
@@ -20,9 +20,9 @@ func TestPiTakes(t *testing.T) {
 		{"xai/grok-4.6:high", "xai/grok-4.6", true},
 		{"xai/*", "xai/grok-4.6", true},
 		{"*grok*", "xai/grok-4.6", true},
-		{"magpie/*", "magpie/deepseek/deepseek-v4", false}, // Pi's * stops at a /
-		{"magpie/*/*", "magpie/deepseek/deepseek-v4", true},
-		{"deepseek/*:low", "magpie/deepseek/deepseek-v4", true}, // the model id fits
+		{"magpie-friday/*", "magpie-friday/deepseek/deepseek-v4", false}, // Pi's * stops at a /
+		{"magpie-friday/*/*", "magpie-friday/deepseek/deepseek-v4", true},
+		{"deepseek/*:low", "magpie-friday/deepseek/deepseek-v4", true}, // the model id fits
 		{"grok-4.6", "xai/grok-4.6", false},                     // a bare id: added beside
 		{"xai/grok-4.6", "xai/grok-4.7", false},
 		{"openai-codex/gpt-5.6-sol", "opencode-go/deepseek-v4-flash", false},
@@ -34,7 +34,7 @@ func TestPiTakes(t *testing.T) {
 }
 
 // Pi starts a new session on defaultModel only when enabledModels takes it
-// in: the model magpie picks is added to the list, the user's entries
+// in: the model magpie-friday picks is added to the list, the user's entries
 // kept; there is no list made where there was none, and none left empty
 // (#160)
 func TestPiModelJoinsEnabledModels(t *testing.T) {
@@ -76,7 +76,7 @@ func TestPiModelJoinsEnabledModels(t *testing.T) {
 		t.Errorf("enabledModels grew: %s", got)
 	}
 
-	// set outside magpie: the model shown is the one Pi starts on
+	// set outside magpie-friday: the model shown is the one Pi starts on
 	edit.SetJSON(settings, edit.KV{Path: "defaultModel", Value: "grok-3"})
 	if got := f.Get(); got != "xai/grok-4.6" {
 		t.Errorf("Get with a default outside the list = %q, want the list's first", got)
@@ -100,30 +100,30 @@ func TestPiModelJoinsEnabledModels(t *testing.T) {
 	}
 }
 
-// Turning Pi's model back to its own takes magpie's models out of the list
-// with magpie's provider; a list left with nothing goes, not left empty
+// Turning Pi's model back to its own takes magpie-friday's models out of the list
+// with magpie-friday's provider; a list left with nothing goes, not left empty
 func TestPiModelOffLeavesEnabledModels(t *testing.T) {
 	home := syncHome(t)
 	settings := filepath.Join(home, ".pi", "agent", "settings.json")
 	os.MkdirAll(filepath.Dir(settings), 0o755)
 	f := pi(home).Field("model")
 
-	os.WriteFile(settings, []byte(`{"enabledModels":["xai/grok-4.6","magpie/*/*"]}`), 0o644)
-	if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+	os.WriteFile(settings, []byte(`{"enabledModels":["xai/grok-4.6","magpie-friday/*/*"]}`), 0o644)
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
-	if err := f.Set("magpie/deepseek/deepseek-v4"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/deepseek-v4"); err != nil {
 		t.Fatal(err)
 	}
 	if err := f.Set(""); err != nil {
 		t.Fatal(err)
 	}
 	// the user's glob is theirs
-	if got := strings.Join(strings.Fields(mustGet(t, settings, "enabledModels")), ""); got != `["xai/grok-4.6","magpie/*/*"]` {
+	if got := strings.Join(strings.Fields(mustGet(t, settings, "enabledModels")), ""); got != `["xai/grok-4.6","magpie-friday/*/*"]` {
 		t.Errorf("enabledModels = %s", got)
 	}
 
-	os.WriteFile(settings, []byte(`{"enabledModels":["magpie/relay/glm-4.6"],"defaultProvider":"magpie","defaultModel":"relay/glm-4.6"}`), 0o644)
+	os.WriteFile(settings, []byte(`{"enabledModels":["magpie-friday/relay/glm-4.6"],"defaultProvider":"magpie-friday","defaultModel":"relay/glm-4.6"}`), 0o644)
 	if err := f.Set(""); err != nil {
 		t.Fatal(err)
 	}
@@ -141,7 +141,7 @@ func mustGet(t *testing.T, path, key string) string {
 	return v
 }
 
-// A provider renamed moves the magpie/<id>/ entries in Pi's enabledModels
+// A provider renamed moves the magpie-friday/<id>/ entries in Pi's enabledModels
 // onto the new id, in Pi and in its forks that keep the same settings.json
 // (OmO, Prime Agent): the model it is on, kept at its place and not listed
 // twice, another of that provider's with a thinking level, and a glob. The
@@ -171,26 +171,26 @@ func TestPiEnabledModelsFollowRename(t *testing.T) {
 			os.MkdirAll(filepath.Dir(settings), 0o755)
 			os.WriteFile(settings, []byte(`{
   // the user's own
-  "enabledModels": ["xai/grok-4.6:high", "magpie/deepseek/flash:low", "magpie/deepseek/*", "magpie/deepseekx/flash", "magpie/deepseek/pro"],
+  "enabledModels": ["xai/grok-4.6:high", "magpie-friday/deepseek/flash:low", "magpie-friday/deepseek/*", "magpie-friday/deepseekx/flash", "magpie-friday/deepseek/pro"],
   "defaultProvider": "xai",
   "defaultModel": "grok-4.6"
 }
 `), 0o644)
 			a := c.a(home)
-			if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+			if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 				t.Fatal(err)
 			}
 			if _, err := RenameProvider("deepseek", "ds"); err != nil {
 				t.Fatal(err)
 			}
-			want := `["xai/grok-4.6:high","magpie/ds/flash:low","magpie/ds/*","magpie/deepseekx/flash","magpie/ds/pro"]`
+			want := `["xai/grok-4.6:high","magpie-friday/ds/flash:low","magpie-friday/ds/*","magpie-friday/deepseekx/flash","magpie-friday/ds/pro"]`
 			if got := strings.Join(strings.Fields(mustGet(t, settings, "enabledModels")), ""); got != want {
 				t.Errorf("enabledModels = %s, want %s", got, want)
 			}
 			if !strings.Contains(readFile(settings), "// the user's own") {
 				t.Errorf("comment lost: %s", readFile(settings))
 			}
-			if got := a.Field("model").Get(); got != "magpie/ds/pro" {
+			if got := a.Field("model").Get(); got != "magpie-friday/ds/pro" {
 				t.Errorf("model = %q", got)
 			}
 

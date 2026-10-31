@@ -102,7 +102,7 @@ func TestReadOllamaBalanceMissing(t *testing.T) {
 }
 
 // An Ollama Cloud key's allowance is a plan card and its bought credits a
-// balance card, on the Usage page and in magpie quota; a key that bought
+// balance card, on the Usage page and in magpie-friday quota; a key that bought
 // none has no balance card, and a key Ollama refuses says so.
 func TestOllamaCloudCards(t *testing.T) {
 	signIn(t)

@@ -8,11 +8,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
-// magpie plugin says the tools a plugin gives agents, by their names on
+// magpie-friday plugin says the tools a plugin gives agents, by their names on
 // the plugin tools MCP server, and the page it adds to the window with
 // what that page may read: the list had neither, so a plugin with only
 // tools or a page had nothing under it.

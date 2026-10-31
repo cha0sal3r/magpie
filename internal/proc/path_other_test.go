@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/agentenv"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 	"golang.org/x/sys/unix"
 )
 
@@ -51,7 +51,7 @@ func TestUserPath(t *testing.T) {
 // A desktop app started from the Finder doesn't have the variables a shell
 // profile exports either; the agents' folders among them come from the login
 // shell by the time UserPath returns (atie on Discord: PI_CODING_AGENT_DIR in
-// the shell, Pi's models.json still written to ~/.pi/agent). One magpie was
+// the shell, Pi's models.json still written to ~/.pi/agent). One magpie-friday was
 // started with is kept, and one the profile leaves empty isn't set.
 func TestUserPathTakesAgentVars(t *testing.T) {
 	home := t.TempDir()
@@ -78,7 +78,7 @@ func TestUserPathTakesAgentVars(t *testing.T) {
 		t.Fatalf("PI_CODING_AGENT_DIR = %q, want the profile's %q", got, pi)
 	}
 	if got := os.Getenv("CODEX_HOME"); got != "/started/with" {
-		t.Fatalf("CODEX_HOME = %q: the one magpie was started with was replaced", got)
+		t.Fatalf("CODEX_HOME = %q: the one magpie-friday was started with was replaced", got)
 	}
 	for _, v := range []string{"GROK_HOME", "CLAUDE_CONFIG_DIR"} {
 		if _, set := os.LookupEnv(v); set {
@@ -91,9 +91,9 @@ func TestUserPathTakesAgentVars(t *testing.T) {
 }
 
 // liu_dyj on X: a NO_PROXY=127.0.0.1 in .zshrc keeps the Codex a terminal
-// or the ChatGPT app runs off the proxy, while magpie, opened from the Dock
+// or the ChatGPT app runs off the proxy, while magpie-friday, opened from the Dock
 // without it, warned that Codex went through the proxy. The login shell's
-// proxy variables are read (LoginEnv) but never set in magpie's own
+// proxy variables are read (LoginEnv) but never set in magpie-friday's own
 // environment, whose requests take their proxy from netproxy.
 func TestLoginEnvProxyVarsNotSet(t *testing.T) {
 	home := t.TempDir()
@@ -121,7 +121,7 @@ func TestLoginEnvProxyVarsNotSet(t *testing.T) {
 	UserPath()
 	for _, v := range ProxyVars {
 		if _, set := os.LookupEnv(v); set {
-			t.Fatalf("%s set in magpie's own environment", v)
+			t.Fatalf("%s set in magpie-friday's own environment", v)
 		}
 	}
 	if got := LoginEnv("HTTP_PROXY"); got != "http://127.0.0.1:7890" {
@@ -173,8 +173,8 @@ func TestLoginEnvUnexportedNotCounted(t *testing.T) {
 }
 
 // jw1dev on X: CLAUDE_CODE_USE_BEDROCK=1 sends Claude Code to Bedrock past
-// magpie. One in the profile is read (LoginEnv), for magpie to say so, but
-// never set in magpie's own environment, where every agent magpie starts
+// magpie-friday. One in the profile is read (LoginEnv), for magpie-friday to say so, but
+// never set in magpie-friday's own environment, where every agent magpie-friday starts
 // would take it.
 func TestLoginEnvClaudeProvidersNotSet(t *testing.T) {
 	home := t.TempDir()
@@ -201,7 +201,7 @@ func TestLoginEnvClaudeProvidersNotSet(t *testing.T) {
 	UserPath()
 	for _, v := range agentenv.ClaudeProviders {
 		if _, set := os.LookupEnv(v); set {
-			t.Fatalf("%s set in magpie's own environment", v)
+			t.Fatalf("%s set in magpie-friday's own environment", v)
 		}
 	}
 	if got := LoginEnv("CLAUDE_CODE_USE_BEDROCK"); got != "1" {
@@ -217,7 +217,7 @@ func TestLoginEnvClaudeProvidersNotSet(t *testing.T) {
 
 // A login shell that doesn't expand "$CLAUDE_CONFIG_DIR" prints the
 // reference itself. That is no folder: the variable counts as unset,
-// rather than magpie setting CLAUDE_CONFIG_DIR to "$CLAUDE_CONFIG_DIR" and
+// rather than magpie-friday setting CLAUDE_CONFIG_DIR to "$CLAUDE_CONFIG_DIR" and
 // then looking for Claude Code's sign-in under it (#738).
 func TestParseShellEnvUnexpanded(t *testing.T) {
 	s := shellMark + "$PATH"
@@ -272,10 +272,10 @@ func TestShellEnvNushell(t *testing.T) {
 	}
 }
 
-// The login shell is asked outside magpie's process group and session (DD
-// on Discord: magpie web → zsh: suspended (tty input)). An interactive zsh
-// in magpie's session puts itself in the terminal's foreground, which left
-// magpie's group in the background there: Ctrl-C no longer reached it, and
+// The login shell is asked outside magpie-friday's process group and session (DD
+// on Discord: magpie-friday web → zsh: suspended (tty input)). An interactive zsh
+// in magpie-friday's session puts itself in the terminal's foreground, which left
+// magpie-friday's group in the background there: Ctrl-C no longer reached it, and
 // anything in the group that touched the terminal had the kernel stop all
 // of it. The fake shell answers with its own process group and session; a
 // real zsh, where there is one, still gives its PATH when asked that way.
@@ -290,10 +290,10 @@ func TestAskShellOwnSession(t *testing.T) {
 		t.Fatalf("the fake shell's answer: %q", out)
 	}
 	if mine := strconv.Itoa(syscall.Getpgrp()); f[0] == mine {
-		t.Fatalf("the login shell ran in magpie's process group %s: a shell there takes the terminal from magpie", mine)
+		t.Fatalf("the login shell ran in magpie-friday's process group %s: a shell there takes the terminal from magpie-friday", mine)
 	}
 	if sid, err := unix.Getsid(0); err == nil && f[1] == strconv.Itoa(sid) && f[1] != "0" {
-		t.Fatalf("the login shell ran in magpie's session %s: it can take magpie's terminal", f[1])
+		t.Fatalf("the login shell ran in magpie-friday's session %s: it can take magpie-friday's terminal", f[1])
 	}
 	zsh, err := exec.LookPath("zsh")
 	if err != nil {
@@ -395,7 +395,7 @@ func TestShellEnvFishLogin(t *testing.T) {
 }
 
 // The real fish, where it is installed: a folder fish_add_path adds in
-// config.fish and a variable it sets reach magpie with zsh (here a plain
+// config.fish and a variable it sets reach magpie-friday with zsh (here a plain
 // sh) as the login shell, and ShellPath(fish) has the folder.
 func TestShellEnvRealFish(t *testing.T) {
 	fish := FindShell("fish")

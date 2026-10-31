@@ -215,7 +215,7 @@ func TestHooksEachAgentsOwnShape(t *testing.T) {
 	}
 
 	ok(t)(RemoveHooks([]string{"bark", "fmt"}))
-	// the same settings, its comment kept (a list magpie wrote into is
+	// the same settings, its comment kept (a list magpie-friday wrote into is
 	// spaced the way the editor spaces one)
 	if got := read(t, settings); canonical(jsonc.ToJSON([]byte(got))) != canonical(jsonc.ToJSON([]byte(mine))) || !strings.Contains(got, "// the user's own") {
 		t.Errorf("claude's settings after, not as the user had them:\n%s", got)
@@ -231,7 +231,7 @@ func TestHooksEachAgentsOwnShape(t *testing.T) {
 	}
 }
 
-// An entry the user changed after magpie wrote it is theirs: taking the
+// An entry the user changed after magpie-friday wrote it is theirs: taking the
 // hook out of the library, or changing it, leaves their entry be. One the
 // user had already, the same as the library's, is neither written twice
 // nor taken.
@@ -253,7 +253,7 @@ func TestHooksTheUsersEditsAreTheirs(t *testing.T) {
 	write(t, settings, strings.Replace(s, "gofmt -w .", "gofmt -w ./cmd", 1))
 	ok(t)(HookAgents("fmt", []string{}))
 	if got := hooksOf(t, settings, "PostToolUse"); len(got) != 1 || !strings.Contains(got[0], "./cmd") {
-		t.Errorf("the user's edit of magpie's entry was taken out: %v", got)
+		t.Errorf("the user's edit of magpie-friday's entry was taken out: %v", got)
 	}
 
 	// a changed hook goes out as it was and in as it is
@@ -276,7 +276,7 @@ func TestHooksUnreadableFileLeftAlone(t *testing.T) {
 		t.Fatal(err)
 	}
 	if read(t, codexHooks) != bad {
-		t.Error("a hooks.json magpie can't read was written over")
+		t.Error("a hooks.json magpie-friday can't read was written over")
 	}
 	if !slices.ContainsFunc(res.Problems, func(p Problem) bool { return p.Agent == "codex" && p.What == "hook:bark" }) {
 		t.Errorf("problems: %+v", res.Problems)
@@ -286,7 +286,7 @@ func TestHooksUnreadableFileLeftAlone(t *testing.T) {
 	}
 }
 
-// Codex trusts a hook by its place in hooks.json: a group of magpie's
+// Codex trusts a hook by its place in hooks.json: a group of magpie-friday's
 // taken out from before the user's own moves the user's trust with it,
 // and the record of the group taken out goes. The record's key holds
 // hooks.json's path, spelled as Codex spells it (codexKey): on Windows the
@@ -350,7 +350,7 @@ func codexKey(k string) string {
 	return `"` + strings.NewReplacer(`\`, `\\`, `"`, `\"`).Replace(k) + `"`
 }
 
-// An agent's own event goes to that agent alone, and an agent magpie can't
+// An agent's own event goes to that agent alone, and an agent magpie-friday can't
 // give hooks to is said to be one, on the page, before any change.
 func TestHooksNativeEventsAndUnavailableAgents(t *testing.T) {
 	h := sandbox(t)
@@ -441,7 +441,7 @@ func TestHookDescription(t *testing.T) {
 }
 
 // Claude Code's own events are all of its HOOK_EVENTS (claude 2.1.296),
-// those added after magpie's hooks first came among them: one goes to
+// those added after magpie-friday's hooks first came among them: one goes to
 // settings.json under its own name, and the page offers every one (#2020,
 // emo172).
 func TestHooksClaudeEventsAll(t *testing.T) {

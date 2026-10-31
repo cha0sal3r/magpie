@@ -11,8 +11,8 @@ import (
 func TestWrite(t *testing.T) {
 	dir := t.TempDir()
 	lnk := filepath.Join(dir, Name+".lnk")
-	exe := filepath.Join(dir, "a", "magpie.exe")
-	moved := filepath.Join(dir, "b", "magpie.exe")
+	exe := filepath.Join(dir, "a", "magpie-friday.exe")
+	moved := filepath.Join(dir, "b", "magpie-friday.exe")
 	for _, f := range []string{exe, moved} {
 		os.MkdirAll(filepath.Dir(f), 0o755)
 		os.WriteFile(f, []byte("MZ"), 0o755)

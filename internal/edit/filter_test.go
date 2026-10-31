@@ -21,8 +21,8 @@ func TestFilteredWrites(t *testing.T) {
 	var seen string
 	err := Filtered(func(p string, b []byte) []byte {
 		seen = p
-		return bytes.ReplaceAll(b, []byte("magpie"), []byte("kept"))
-	}, func() error { return SetJSON(link, KV{Path: "k", Value: "magpie"}) })
+		return bytes.ReplaceAll(b, []byte("magpie-friday"), []byte("kept"))
+	}, func() error { return SetJSON(link, KV{Path: "k", Value: "magpie-friday"}) })
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -32,10 +32,10 @@ func TestFilteredWrites(t *testing.T) {
 	if want, _ := filepath.EvalSymlinks(path); seen != path && seen != want {
 		t.Errorf("filter given %s, not %s", seen, path)
 	}
-	if err := SetJSON(path, KV{Path: "k", Value: "magpie"}); err != nil {
+	if err := SetJSON(path, KV{Path: "k", Value: "magpie-friday"}); err != nil {
 		t.Fatal(err)
 	}
-	if got, _ := GetJSON(path, "k"); got != "magpie" {
+	if got, _ := GetJSON(path, "k"); got != "magpie-friday" {
 		t.Errorf("filter still on after Filtered: %q", got)
 	}
 }

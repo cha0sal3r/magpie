@@ -5,7 +5,7 @@ package provider
 // Code empties the tokens where it keeps them (Claude Code 2.1.x), and each
 // run on that sign-in fails with "OAuth session expired and could not be
 // refreshed" until the account is signed in again. Waiting doesn't mend it,
-// so magpie doesn't rest the account and try it again: it keeps the refusal
+// so magpie-friday doesn't rest the account and try it again: it keeps the refusal
 // on the saved login, for the credential it was made on (Refused), and
 // passes over the login while it still has that credential. A credential
 // changed since — Claude Code refreshed it after all, or the account was
@@ -19,9 +19,9 @@ import (
 
 // claudeAuthLapse is why a saved Claude account whose credential Anthropic
 // refused can't be used.
-const claudeAuthLapse = "Claude Code could not authenticate this account; sign in again in magpie"
+const claudeAuthLapse = "Claude Code could not authenticate this account; sign in again in magpie-friday"
 
-// ClaudeSignInRequired says message is Claude Code's, or magpie's, word that
+// ClaudeSignInRequired says message is Claude Code's, or magpie-friday's, word that
 // a Claude sign-in is gone and has to be made again: not a failure of the
 // moment, as a network error or another Claude Code holding the refresh is
 // ("Failed to refresh OAuth token: another Claude Code process is

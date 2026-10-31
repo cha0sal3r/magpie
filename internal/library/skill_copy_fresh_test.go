@@ -113,7 +113,7 @@ func TestSkillCopyScanErrorPreservesEdits(t *testing.T) {
 
 // #1031: switching a group of skills on for one agent made the sync read
 // every file of every copy every agent has, which over a WSL distro's
-// share took 10 seconds and more. A copy unchanged since magpie made it is
+// share took 10 seconds and more. A copy unchanged since magpie-friday made it is
 // known fresh by its mark, without its files being read: here one of them
 // can't be read at all, and the sync leaves it as it is.
 func TestSyncDoesNotReadUnchangedCopies(t *testing.T) {
@@ -130,7 +130,7 @@ func TestSyncDoesNotReadUnchangedCopies(t *testing.T) {
 	ok(t)(SkillAgents("docx", []string{}))
 	f := filepath.Join(h, ".codex/skills/pdf/scripts/run.sh")
 	ok(t)(SkillAgents("pdf", []string{"claude", "codex"}))
-	// unreadable, with its time as it was: the copy is as magpie made it
+	// unreadable, with its time as it was: the copy is as magpie-friday made it
 	old := time.Now().Add(-time.Hour)
 	if err := os.Chtimes(f, old, old); err != nil {
 		t.Fatal(err)
@@ -181,7 +181,7 @@ func TestCopyFreshByMark(t *testing.T) {
 		t.Fatal("a copy just made isn't fresh")
 	}
 	// a mark from before: no hash
-	write(t, filepath.Join(cx, marker), "copied from "+skillDir("pdf")+" by magpie, and copied again when it changes\n")
+	write(t, filepath.Join(cx, marker), "copied from "+skillDir("pdf")+" by magpie-friday, and copied again when it changes\n")
 	if !fresh(cx) {
 		t.Error("an old mark's copy, the same as the library's, isn't fresh")
 	}

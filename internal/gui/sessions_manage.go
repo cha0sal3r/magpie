@@ -13,14 +13,14 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/sessions"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // The Sessions page: every session of an agent, by folder, to pick up again
-// or delete. A delete moves the session's files into magpie's trash, and a
+// or delete. A delete moves the session's files into magpie-friday's trash, and a
 // restore moves them back. Only the reader's Delete forever or Empty trash
 // erases what is in the trash; nothing is erased by itself.
 
@@ -32,7 +32,7 @@ type manageAgentJSON struct {
 
 // managedJSON is a session as the Sessions page lists it: its files, and
 // what it spent (tokens, cost and models, which the Usage page's list shows
-// too, #752) with where magpie's gateway sent its calls
+// too, #752) with where magpie-friday's gateway sent its calls
 type managedJSON struct {
 	sessions.Managed
 	Via []usage.Via `json:"via,omitempty"`
@@ -163,7 +163,7 @@ func sessionManageRoutes(mux *http.ServeMux, w Windows) {
 					counts[s.Agent] = j
 				}
 				j.Count++
-				// what magpie keeps of it can be deleted, whatever the agent
+				// what magpie-friday keeps of it can be deleted, whatever the agent
 				j.Deletable = true
 			}
 			for _, j := range counts {
@@ -220,7 +220,7 @@ func sessionManageRoutes(mux *http.ServeMux, w Windows) {
 				}
 				s := gatewaySession(g)
 				addCodexModelEffort(&s, modelEffort)
-				// its size is the conversation text magpie recorded of it
+				// its size is the conversation text magpie-friday recorded of it
 				m := sessions.Managed{Session: s, Deletable: true, Size: sizes(s.Agent, s.ID)}
 				out.Sessions = append(out.Sessions, managedJSON{Managed: m, Via: vias.Of(s.Agent + "|" + s.ID)})
 			}
@@ -237,9 +237,9 @@ func sessionManageRoutes(mux *http.ServeMux, w Windows) {
 		q := r.URL.Query()
 		writeJSON(rw, searchSessions(r.Context(), q.Get("agent"), q.Get("q"), searchBudget))
 	})
-	// delete moves the sessions named to magpie's trash, one by one; one
+	// delete moves the sessions named to magpie-friday's trash, one by one; one
 	// still being written is left, and said so. One seen only through the
-	// gateway, of any agent, has what magpie keeps of it moved there.
+	// gateway, of any agent, has what magpie-friday keeps of it moved there.
 	mux.HandleFunc("POST /api/sessions/delete", func(rw http.ResponseWriter, r *http.Request) {
 		var in struct {
 			Agent string   `json:"agent"`
@@ -271,7 +271,7 @@ func sessionManageRoutes(mux *http.ServeMux, w Windows) {
 			if g, ok := listed[id]; ok {
 				_, err = sessions.DeleteGateway(g.Agent, g.ID, g.ID, g.Last)
 			} else if !sessions.Deletable(in.Agent) {
-				err = errors.New("magpie can't delete this agent's sessions")
+				err = errors.New("magpie-friday can't delete this agent's sessions")
 			} else {
 				_, err = sessions.Delete(in.Agent, id)
 			}
@@ -337,7 +337,7 @@ func sessionManageRoutes(mux *http.ServeMux, w Windows) {
 	})
 	// purge erases trashed sessions for good: the keys named, or every one
 	// the trash lists with all. Each key is checked by sessions.Purge, which
-	// removes only a session's folder in magpie's trash.
+	// removes only a session's folder in magpie-friday's trash.
 	mux.HandleFunc("POST /api/sessions/purge", func(rw http.ResponseWriter, r *http.Request) {
 		var in struct {
 			Keys []string `json:"keys"`
@@ -400,7 +400,7 @@ type searchJSON struct {
 	// out of time
 	Cut bool `json:"cut,omitempty"`
 	// Unread: the agent's own sessions can't be read here (a database),
-	// only those magpie recorded through the gateway are searched
+	// only those magpie-friday recorded through the gateway are searched
 	Unread bool `json:"unread,omitempty"`
 }
 
@@ -425,7 +425,7 @@ func searchSessions(ctx context.Context, agentID, query string, budget time.Dura
 			jobs = append(jobs, job{m.Session, m.Last})
 		}
 	} else {
-		// what magpie recorded of them through the gateway is still read
+		// what magpie-friday recorded of them through the gateway is still read
 		out.Unread = true
 		for _, m := range sessions.ListAgent(agentID) {
 			native[m.ID] = true

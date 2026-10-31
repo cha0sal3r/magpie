@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // overloadedStatus is the ChatGPT backend's overload said as a status.
@@ -57,7 +57,7 @@ func (o *overloadedBackend) asked() int {
 }
 
 // oneCodexAccount is Codex signed in to ChatGPT with its one account and
-// nothing else on in magpie, the ChatGPT backend o: a turn on one of
+// nothing else on in magpie-friday, the ChatGPT backend o: a turn on one of
 // Codex's own models is relayed as it came (codexAccounts), nobody else
 // to ask.
 func oneCodexAccount(t *testing.T, o *overloadedBackend) {
@@ -156,7 +156,7 @@ func TestCodexOneAccountOverloadBounded(t *testing.T) {
 
 // With fallbacks set on the Codex subscription, an overload that lasts
 // goes on to them once the account was asked again, as a turn through
-// magpie's accounts does; without the account asked any more.
+// magpie-friday's accounts does; without the account asked any more.
 func TestCodexOneAccountOverloadFallsBack(t *testing.T) {
 	for name, failed := range map[string]reply{
 		"status": {529, "application/json", overloadedStatus},

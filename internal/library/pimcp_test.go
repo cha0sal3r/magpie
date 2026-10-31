@@ -9,8 +9,8 @@ import (
 
 	"github.com/tidwall/jsonc"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 func piDoc(t *testing.T, p string) map[string]any {
@@ -49,7 +49,7 @@ func TestPiPackageName(t *testing.T) {
 
 // xiaozhu1337 on #58: pi-mcp-adapter 3 installed where Pi used to put
 // packages, npm's global folder, so the adapter's own folder in the agent
-// dir wasn't there and magpie kept writing mcp.json. With mcp-adapter.json
+// dir wasn't there and magpie-friday kept writing mcp.json. With mcp-adapter.json
 // already there too, mcp.json's servers are merged in and mcp.json goes.
 func TestPiMCPGlobalAdapterMerge(t *testing.T) {
 	h := sandbox(t)
@@ -189,9 +189,9 @@ func TestPiMCPExtension(t *testing.T) {
 	}
 }
 
-// fakePi puts a pi on PATH that says it is version out: what magpie asks
+// fakePi puts a pi on PATH that says it is version out: what magpie-friday asks
 // to tell Pi's own MCP (0.99) from before it. Each is a new binary (its
-// size changes with out), so magpie asks it again.
+// size changes with out), so magpie-friday asks it again.
 func fakePi(t *testing.T, bin, out string) {
 	t.Helper()
 	if runtime.GOOS == "windows" {
@@ -203,7 +203,7 @@ func fakePi(t *testing.T, bin, out string) {
 }
 
 // Pi 0.99 reads mcp.json itself (extensions/mcp/config.ts): with no MCP
-// extension installed, the servers go there in its shape, those magpie put
+// extension installed, the servers go there in its shape, those magpie-friday put
 // in mcp-adapter.json for pi-mcp-adapter 3 are moved over, and SSE, which
 // it can't reach, is refused.
 func TestPiMCPNative(t *testing.T) {
@@ -224,7 +224,7 @@ func TestPiMCPNative(t *testing.T) {
 	if s := piServers(t, adapter); s["docs"]["httpTransport"] != "streamable-http" || s["fs"]["command"] != "npx" {
 		t.Fatalf("mcp-adapter.json: %v", s)
 	}
-	// the user's own, and a field of theirs on magpie's; the adapter's settings
+	// the user's own, and a field of theirs on magpie-friday's; the adapter's settings
 	edit := piDoc(t, adapter)
 	servers := edit["mcpServers"].(map[string]any)
 	servers["theirs"] = map[string]any{"command": "t", "lifecycle": "eager"}
@@ -359,7 +359,7 @@ func TestPiMCPWholeMoveKeepsABackup(t *testing.T) {
 // in npm/node_modules that settings.json doesn't list, so Pi doesn't load
 // it (core/package-manager.js resolve). Pi's own MCP reads mcp.json, and
 // the Library's servers go there, not to mcp-adapter.json; the user's
-// mcp.json stays where it is, and what an earlier magpie moved into
+// mcp.json stays where it is, and what an earlier magpie-friday moved into
 // mcp-adapter.json comes back, both files backed up first.
 func TestPiMCPUnloadedAdapter(t *testing.T) {
 	for _, v := range []string{"1.0.3", ""} {

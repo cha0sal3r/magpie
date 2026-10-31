@@ -5,7 +5,7 @@ package gateway
 // answers its task_id, which GET /tasks/<id> (X-ModelScope-Task-Type:
 // image_generation) reports on until task_status is SUCCEED, with
 // output_images, or FAILED. It takes one task of a user's at a time
-// ("user queue is full" otherwise) and limits bursts with 429s, so magpie
+// ("user queue is full" otherwise) and limits bursts with 429s, so magpie-friday
 // asks it one image at a time, and again after a short wait when it is busy.
 // Its answers carry no OpenAI "data", which read as an empty drawing (#645).
 
@@ -18,7 +18,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // isModelScope is a provider at ModelScope's API-Inference, a preset's or

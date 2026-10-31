@@ -43,7 +43,7 @@ const KEYS = ["Hard to strong, easy to cheap", "A hard task goes to the stronges
   "Needs a model cheap beside {name}", "Add a provider first", "Added {name}", "Start from a template: made of your own models, added in a click", "Edit first", "Templates"];
 
 function serve(lang, posts, mine = 0) {
-  // a group magpie found is no group of the user's: the cards still show
+  // a group magpie-friday found is no group of the user's: the cards still show
   let list = [{ id: "auto-big", name: "Big", members: ["a/big"], ready: true, auto: true, memberInfo: info(["a/big"]) },
     ...Array.from({ length: mine }, (_, i) => ({ id: `mine-${i}`, name: `Mine ${i}`, members: ["a/big", "a/mini"], routing: "order", ready: true, memberInfo: info(["a/big", "a/mini"]) }))];
   const groups = () => ({ models, pools: [], deciders: [], found: true, groups: list, templates });

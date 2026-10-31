@@ -7,7 +7,7 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // advisorTurn is a Claude Code turn with its advisor on, as Claude Code
@@ -24,7 +24,7 @@ func advisorTurn(model, advisor string) string {
 }
 
 // Claude Code's advisor names its model as Claude Code names its own: on
-// magpie, by magpie's id, which the vendor doesn't know, so the request was
+// magpie-friday, by magpie-friday's id, which the vendor doesn't know, so the request was
 // turned away whole and the advisor never ran (JackChou on Discord). The
 // advisor's model now goes as the upstream's own name for it when it is
 // the same provider's Claude model; one the upstream can't run (another

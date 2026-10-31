@@ -63,7 +63,7 @@ func TestPackedArchiveHoldsOnlyItsBytes(t *testing.T) {
 }
 
 // A block of a few rows is packed too: most session files hold a handful
-// of calls, and a started magpie kept ~14k of them unpacked, ~98k rows
+// of calls, and a started magpie-friday kept ~14k of them unpacked, ~98k rows
 // and ~38 MB more than the same blocks read back from requests-v1.bin.
 func TestFewRowsArePacked(t *testing.T) {
 	now := time.Now()

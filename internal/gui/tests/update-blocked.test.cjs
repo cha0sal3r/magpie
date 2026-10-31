@@ -1,6 +1,6 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // #894: on Windows with Smart App Control on, the new unsigned version was
-// refused when magpie restarted into it. magpie now puts itself back and
+// refused when magpie-friday restarted into it. magpie-friday now puts itself back and
 // runs on, and Settings › About › Version says the version didn't start
 // here and why, offering Download and Check (which tries it once more).
 // No click moves the page, nothing is a native select, no left border.
@@ -15,18 +15,18 @@ const { openPart } = require("./reader.cjs");
 const assets = path.resolve(__dirname, "../assets");
 
 const words = {
-  en: { policy: "Smart App Control", stays: "magpie stays on 0.1.900", download: "Download", check: "Check", other: "didn't start on this computer" },
-  zh: { policy: "智能应用控制", stays: "magpie 仍是 0.1.900", download: "下载", check: "检查", other: "没能在这台电脑上启动" },
+  en: { policy: "Smart App Control", stays: "magpie-friday stays on 0.1.900", download: "Download", check: "Check", other: "didn't start on this computer" },
+  zh: { policy: "智能应用控制", stays: "magpie-friday 仍是 0.1.900", download: "下载", check: "检查", other: "没能在这台电脑上启动" },
 };
 
-const blocked = (policy) => ({ state: "blocked", current: "0.1.900", latest: "0.1.901", url: "https://github.com/yetone/magpie-releases/releases/tag/v0.1.901",
-  blocked: { version: "0.1.901", policy, error: policy ? "fork/exec magpie.exe: An Application Control policy has blocked this file." : "it quit as soon as it started" } });
+const blocked = (policy) => ({ state: "blocked", current: "0.1.900", latest: "0.1.901", url: "https://github.com/cha0sal3r/magpie-friday-releases/releases/tag/v0.1.901",
+  blocked: { version: "0.1.901", policy, error: policy ? "fork/exec magpie-friday.exe: An Application Control policy has blocked this file." : "it quit as soon as it started" } });
 
 function server(lang, ctl) {
   return async (route) => {
     const req = route.request(), url = new URL(req.url());
     const json = (data, status) => route.fulfill({ json: data, status: status || 200 });
-    const settings = () => ({ theme: "light", lang, version: "0.1.900", dir: "~/.config/magpie", gateway: "http://127.0.0.1:3425", lanURLs: [], fx: { rate: 7.2 } });
+    const settings = () => ({ theme: "light", lang, version: "0.1.900", dir: "~/.config/magpie-friday", gateway: "http://127.0.0.1:3425", lanURLs: [], fx: { rate: 7.2 } });
     if (url.pathname === "/boot.js") return route.fulfill({ contentType: "text/javascript", body: `window.bootPrefs = {lang:"${lang}",theme:"light",web:false};` });
     if (url.pathname === "/wails/runtime.js") return route.fulfill({ contentType: "text/javascript", body: "export const Window = {};" });
     if (url.pathname === "/api/state") return json({ agents: [], profiles: [], settings: settings() });

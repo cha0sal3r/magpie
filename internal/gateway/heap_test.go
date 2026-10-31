@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // The heap profile is a program's on this computer alone: whatever a
@@ -63,7 +63,7 @@ func TestHeapProfileOnlyToThisComputer(t *testing.T) {
 	for _, host := range []string{"127.0.0.1:3425", "localhost:3425", "[::1]:3425"} {
 		w := call(true, "127.0.0.1:50123", host, "User-Agent", "Go-http-client/1.1")
 		if w.Code != http.StatusOK {
-			t.Fatalf("magpie heap at %s: %d %q", host, w.Code, w.Body.String())
+			t.Fatalf("magpie-friday heap at %s: %d %q", host, w.Code, w.Body.String())
 		}
 		zr, err := gzip.NewReader(bytes.NewReader(w.Body.Bytes()))
 		if err != nil {

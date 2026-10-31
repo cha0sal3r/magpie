@@ -16,7 +16,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // ---- Anthropic Messages -----------------------------------------------------
@@ -472,8 +472,8 @@ func claudeVersionOf(model string) (major, minor int, ok bool) {
 
 // adaptiveThinking is an Anthropic request as a model that thinks only
 // adaptively takes it: thinking.type=enabled with a budget — sent by an
-// agent that doesn't know the model (its name in magpie, an alias, or a
-// group's member, mapped to the vendor's later), or by magpie fitting an
+// agent that doesn't know the model (its name in magpie-friday, an alias, or a
+// group's member, mapped to the vendor's later), or by magpie-friday fitting an
 // effort to it — goes as thinking.type=adaptive, with the budget as the
 // effort it is nearest in output_config.effort unless one is there (Keenc
 // on Discord: claude-opus-5-5 answered 400). Read off the model the body
@@ -571,7 +571,7 @@ func thinkingOffOf(model string) thinkingOff {
 // the model it is sent to takes that (thinkingOffOf). Claude Code turns
 // thinking off for auto mode's classifier and its side queries whenever
 // it can't tell the model refuses it — a model reached through a gateway
-// is one — and magpie turns it off itself when fitting an effort of none
+// is one — and magpie-friday turns it off itself when fitting an effort of none
 // or a budget that doesn't fit; claude-sonnet-5-5 answered every one of
 // them 400 (#1454). Sonnet 5.5 is sent between_tools, alone in thinking,
 // with an effort above high asked as high; Opus 5.5, Fable and Mythos are
@@ -715,7 +715,7 @@ func samplingRefused(model string) bool {
 
 // samplingAsTaken is an Anthropic request without temperature, top_p and
 // top_k when the model it is sent to refuses them (samplingRefused):
-// Claude Code's auto mode classifier, and magpie's own classifiers, ask at
+// Claude Code's auto mode classifier, and magpie-friday's own classifiers, ask at
 // temperature 0. model is the vendor's name, from the body or, for
 // Bedrock and Vertex, the path. Any other request goes byte for byte as it
 // came.

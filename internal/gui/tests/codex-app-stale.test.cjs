@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// The Codex app reads the sign-in only when it opens. After magpie switches
+// The Codex app reads the sign-in only when it opens. After magpie-friday switches
 // Codex to another account it stays on the one before, shows that account's
 // limits and, once they are spent, sends in no thread (CavillZhang on X).
 // Codex's accounts say so, with the account the app is on and what moves it

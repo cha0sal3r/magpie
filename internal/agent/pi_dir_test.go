@@ -6,8 +6,8 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // #304: PI_CODING_AGENT_DIR moves Pi's agent folder (config.js,
@@ -44,16 +44,16 @@ func TestPiAgentDir(t *testing.T) {
 	if f := a.Field("model"); f.Get() != "xai/grok-4.6" {
 		t.Fatalf("model %q", f.Get())
 	}
-	if err := a.Field("model").Set("magpie/relay/glm-4.6"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	settings := filepath.Join(custom, "settings.json")
-	for k, want := range map[string]string{"defaultProvider": "magpie", "defaultModel": "relay/glm-4.6", "theme": "dark"} {
+	for k, want := range map[string]string{"defaultProvider": "magpie-friday", "defaultModel": "relay/glm-4.6", "theme": "dark"} {
 		if v, _ := edit.GetJSON(settings, k); v != want {
 			t.Fatalf("%s = %q:\n%s", k, v, readFile(settings))
 		}
 	}
-	if v, _ := edit.GetJSON(filepath.Join(custom, "models.json"), "providers.magpie.baseUrl"); v == "" {
+	if v, _ := edit.GetJSON(filepath.Join(custom, "models.json"), "providers.magpie-friday.baseUrl"); v == "" {
 		t.Fatalf("models.json:\n%s", readFile(filepath.Join(custom, "models.json")))
 	}
 	if c := a.Check(); c != "" {
@@ -110,10 +110,10 @@ func TestOmpAgentDir(t *testing.T) {
 	t.Setenv("PI_CODING_AGENT_DIR", custom)
 	os.Unsetenv("OMP_PROFILE")
 	t.Setenv("PI_PROFILE", "")
-	if err := omp(home).Field("model").Set("magpie/relay/glm-4.6"); err != nil {
+	if err := omp(home).Field("model").Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
-	if v, _ := edit.GetYAML(filepath.Join(custom, "config.yml"), "modelRoles.default"); v != "magpie/relay/glm-4.6" {
+	if v, _ := edit.GetYAML(filepath.Join(custom, "config.yml"), "modelRoles.default"); v != "magpie-friday/relay/glm-4.6" {
 		t.Fatalf("config.yml:\n%s", readFile(filepath.Join(custom, "config.yml")))
 	}
 	if _, err := os.Stat(filepath.Join(home, ".omp")); !os.IsNotExist(err) {

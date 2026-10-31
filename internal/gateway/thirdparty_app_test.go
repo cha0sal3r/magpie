@@ -7,20 +7,20 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
-// What docs/integrating.md promises an app magpie has no adapter for (#918):
+// What docs/integrating.md promises an app magpie-friday has no adapter for (#918):
 // /api/hello finds the gateway, and its calls are counted as its own in
-// Usage, by the key it sends (magpie-<app>) or else by its User-Agent.
+// Usage, by the key it sends (magpie-friday-<app>) or else by its User-Agent.
 func TestThirdPartyAppIsCountedAsItself(t *testing.T) {
 	setHome(t, t.TempDir())
 
 	rec := httptest.NewRecorder()
 	New().Handler().ServeHTTP(rec, httptest.NewRequest("GET", "/api/hello", nil))
 	var hello struct{ Name string }
-	if rec.Code != 200 || json.Unmarshal(rec.Body.Bytes(), &hello) != nil || hello.Name != "magpie" {
+	if rec.Code != 200 || json.Unmarshal(rec.Body.Bytes(), &hello) != nil || hello.Name != "magpie-friday" {
 		t.Fatalf("GET /api/hello: %d %s", rec.Code, rec.Body.String())
 	}
 

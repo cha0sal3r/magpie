@@ -15,7 +15,7 @@ import (
 )
 
 // JL on Discord (droid 0.240.0): droid offers Haiku 5.5, a Factory account
-// through magpie didn't. The fixture is droid 0.240.0's own registry
+// through magpie-friday didn't. The fixture is droid 0.240.0's own registry
 // entries (@factory/cli-darwin-arm64, bin/droid), byte for byte.
 func TestFactoryDroid0240Models(t *testing.T) {
 	raw, err := os.ReadFile("testdata/factory_droid_0.240.0_models.txt")

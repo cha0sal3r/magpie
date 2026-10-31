@@ -281,7 +281,7 @@ func TestGatewayHookMixedPiPackage(t *testing.T) {
 			if err := json.Unmarshal(b, &pkg); err != nil {
 				t.Fatal(err)
 			}
-			pkg["magpie"] = map[string]string{"hooks": "./request.js"}
+			pkg["magpie-friday"] = map[string]string{"hooks": "./request.js"}
 			b = mustJSON(t, pkg)
 		}
 		if err := os.WriteFile(filepath.Join(dir, filepath.FromSlash(file)), b, 0o644); err != nil {
@@ -426,7 +426,7 @@ func TestGatewayHookInvalidOrUndefinedResult(t *testing.T) {
 }
 
 // Bun loads TypeScript itself: a direct *.hooks.ts file and a package
-// whose magpie.hooks names a .ts entry both run without a build step.
+// whose magpie-friday.hooks names a .ts entry both run without a build step.
 func TestGatewayHookTypeScript(t *testing.T) {
 	sandbox(t)
 	direct := filepath.Join(t.TempDir(), "recall.hooks.ts")
@@ -470,8 +470,8 @@ func gatewayRequest(ctx context.Context, body []byte, info GatewayContext) []byt
 	return run.Body
 }
 
-// A JS gateway middleware (*.gateway.js, magpie.gateway) and a request hook
-// (*.hooks.js, magpie.hooks) never claim the same entry: a hook importing
+// A JS gateway middleware (*.gateway.js, magpie-friday.gateway) and a request hook
+// (*.hooks.js, magpie-friday.hooks) never claim the same entry: a hook importing
 // node:fs loaded as middleware too would show "didn't load" for a plugin
 // that works.
 func TestGatewayHookNamesApartFromMiddleware(t *testing.T) {
@@ -497,10 +497,10 @@ func TestGatewayHookNamesApartFromMiddleware(t *testing.T) {
 			t.Fatal(err)
 		}
 		if got := Gateway(dir) != ""; got != hook {
-			t.Errorf("magpie.%s: hook %v, want %v", key, got, hook)
+			t.Errorf("magpie-friday.%s: hook %v, want %v", key, got, hook)
 		}
 		if f, _ := Middleware(dir); hook && f != "" {
-			t.Errorf("magpie.%s is loaded as middleware too", key)
+			t.Errorf("magpie-friday.%s is loaded as middleware too", key)
 		}
 	}
 }

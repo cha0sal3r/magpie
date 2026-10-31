@@ -2,7 +2,7 @@
 // Each route keeps the folder its agent works in, its last two levels only
 // (#1068, emo172: two Claude Code runs in two projects read as one). The
 // Routing page's By session heads a session with it ("Claude Code ·
-// workspace/magpie · title"), the session id under the pointer; a request's
+// workspace/magpie-friday · title"), the session id under the pointer; a request's
 // row says it under the pointer; the stage's agent, working in two folders
 // at once, names both by their last level; the tray panel's agent says them
 // under the pointer. A session that says no folder reads as before. In every
@@ -22,8 +22,8 @@ function fixture() {
     model: "relay/m1", provider: "relay", order: [seat], tries: [{ id: seat.id, model: "m1", start: at(ago), done: true, status: 200, ms: 500 }],
     done: true, status: 200, ms: 500, tokens: 1000, ...extra });
   return [
-    req(1, "s-magpie", "workspace/magpie", 5),
-    req(2, "s-magpie", "workspace/magpie", 4, { sessionTitle: "Fix the gateway" }),
+    req(1, "s-magpie-friday", "workspace/magpie-friday", 5),
+    req(2, "s-magpie-friday", "workspace/magpie-friday", 4, { sessionTitle: "Fix the gateway" }),
     req(3, "s-dial", "src/dial", 3),
     req(4, "s-none", "", 2),
     req(5, "", "", 1),
@@ -80,10 +80,10 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         // By session: the folder after the agent, before the title
         const names = await page.locator(".rt-session .nm").evaluateAll((es) => es.map((e) => ({ text: e.textContent, title: e.title })));
         const of = (re) => names.find((n) => re.test(n.title)) || assert.fail(`no group for ${re}: ${JSON.stringify(names)}`);
-        assert.equal(of(/s-magpie$/).text, "Claude Code · workspace/magpie · Fix the gateway");
+        assert.equal(of(/s-magpie-friday$/).text, "Claude Code · workspace/magpie-friday · Fix the gateway");
         assert.equal(of(/s-dial$/).text, "Claude Code · src/dial", "a folder stands in for the session id");
         assert.equal(of(/s-none$/).text, "Claude Code · s-none", "no folder: as before");
-        assert.match(of(/s-magpie$/).title, new RegExp(`${w.folder}: workspace/magpie\\n${w.session}: s-magpie$`));
+        assert.match(of(/s-magpie-friday$/).title, new RegExp(`${w.folder}: workspace/magpie-friday\\n${w.session}: s-magpie-friday$`));
         assert.doesNotMatch(of(/s-none$/).title, new RegExp(w.folder));
 
         // a request's row says its folder under the pointer
@@ -94,8 +94,8 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         // the stage: one agent in two folders at once names both
         const node = page.locator(".rt-src").first();
         await page.waitForFunction(() => document.querySelector(".rt-src small")?.textContent.includes(","));
-        assert.equal(await node.locator("small").textContent(), "magpie, dial");
-        assert.match(await node.getAttribute("title"), new RegExp(`${w.folder}: workspace/magpie\\n${w.folder}: src/dial$`));
+        assert.equal(await node.locator("small").textContent(), "magpie-friday, dial");
+        assert.match(await node.getAttribute("title"), new RegExp(`${w.folder}: workspace/magpie-friday\\n${w.folder}: src/dial$`));
 
         const fit = await page.evaluate(() => ({ client: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
         assert(fit.scroll <= fit.client + 1, `the page overflows at ${width}: ${JSON.stringify(fit)}`);
@@ -114,7 +114,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         await panel.goto("http://magpie.test/?mode=panel");
         await panel.locator('[data-ptab="routing"]').click();
         await panel.locator(".ps-ag").first().waitFor();
-        assert.match(await panel.locator(".ps-ag").first().getAttribute("title"), new RegExp(`^Claude Code\\n${w.folder}: workspace/magpie\\n${w.folder}: src/dial$`));
+        assert.match(await panel.locator(".ps-ag").first().getAttribute("title"), new RegExp(`^Claude Code\\n${w.folder}: workspace/magpie-friday\\n${w.folder}: src/dial$`));
         assert.deepEqual(errors, []);
       });
     }

@@ -73,7 +73,7 @@ for (const engine of ["chromium", "webkit"]) {
           assert.equal(await cells.nth(i).textContent(),localName,"a file that names no provider says only Local session");
         }
         // A session file names the provider it was set up to call. That is
-        // the file's own record, not a route magpie saw, so the id is shown
+        // the file's own record, not a route magpie-friday saw, so the id is shown
         // as the file carries it — never resolved to a provider's name,
         // which would promote an unknown request to an official provider —
         // and the row keeps saying it is a local session. An account, when
@@ -83,7 +83,7 @@ for (const engine of ["chromium", "webkit"]) {
           assert.equal(await cell.locator(".where-name").textContent(),"my-custom-route","the recorded provider ID, as the file carries it");
           assert((await cell.textContent()).includes(localName),"and it is still a local session");
           assert.equal(await cell.locator(".local").count(),1);
-          assert((await cell.locator(".local").getAttribute("title")).includes(lang === "zh" ? "不是 magpie 看到的路由" : "not a route magpie saw"));
+          assert((await cell.locator(".local").getAttribute("title")).includes(lang === "zh" ? "不是 magpie-friday 看到的路由" : "not a route magpie-friday saw"));
         }
         assert((await cells.nth(4).textContent()).includes("My Relay · relay.example"));
         assert.equal(await cells.nth(4).locator(".access").textContent(),"API");

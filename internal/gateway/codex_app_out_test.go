@@ -8,7 +8,7 @@ import (
 
 // A turn refused with usage_limit_reached on the account Codex is signed
 // in to has that account read again at once (provider.CodexMayBeUsedUp),
-// for magpie to become Codex's provider before the next five-minute look:
+// for magpie-friday to become Codex's provider before the next five-minute look:
 // the Codex app greys its Send on the account meanwhile (MasterYi on
 // Discord).
 func TestCodexUsedUpReplyAsksAtOnce(t *testing.T) {

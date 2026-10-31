@@ -38,7 +38,7 @@ func TestRefreshSavedClaudeUsage(t *testing.T) {
 	if before["max@x.com"].Error != errClaudeSaved.Error() {
 		t.Fatalf("unasked saved account: %+v", before["max@x.com"])
 	}
-	// the Usage page opened, `magpie quota`: the user asking, but not for
+	// the Usage page opened, `magpie-friday quota`: the user asking, but not for
 	// this account, and each saved account would start a Claude Code
 	beforeRuns := runs.Load()
 	AskClaudeUsage()
@@ -92,7 +92,7 @@ func TestRefreshSavedClaudeUsage(t *testing.T) {
 }
 
 // Claude Code run in a saved account's directory refreshes the sign-in it
-// keeps there when it is due, spending the old refresh token. magpie keeps
+// keeps there when it is due, spending the old refresh token. magpie-friday keeps
 // the new one at once, and doesn't hand the account to Claude Code itself
 // while that run may still be refreshing it: Claude Code's own copy would
 // be the spent one.

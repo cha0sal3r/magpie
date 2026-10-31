@@ -9,12 +9,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/ghtoken"
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/ghtoken"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
 )
 
 // The Plugins page says why GitHub's list isn't whole in the reader's
-// language when magpie knows the kind of why, rather than Go's English in
+// language when magpie-friday knows the kind of why, rather than Go's English in
 // the middle of the page (the Kiko03O1 reply on X: "no answer in 8s"
 // under 非官方插件 · GitHub). Each kind as the errors arrive: wrapped in
 // TaggedMissing, in a url.Error, or as they are.

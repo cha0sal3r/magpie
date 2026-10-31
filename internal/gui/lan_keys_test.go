@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 func TestLANSettingSharesCallerKeyStore(t *testing.T) {
@@ -38,7 +38,7 @@ func TestLANSettingSharesCallerKeyStore(t *testing.T) {
 	keys, _ := access.List()
 	key := keys[0]
 	id := key.ID
-	if keys, _ := access.List(); len(keys) != 1 || keys[0].ID != id || keys[0].Name != "Magpie" {
+	if keys, _ := access.List(); len(keys) != 1 || keys[0].ID != id || keys[0].Name != "magpie-friday" {
 		t.Fatal("LAN shortcut is not a named key", keys)
 	}
 	old, err := access.Update("copy-key", access.Change{Key: id})
@@ -62,7 +62,7 @@ func TestLANSettingSharesCallerKeyStore(t *testing.T) {
 		t.Fatal("toggling sharing replaced the LAN key")
 	}
 	post("/api/caller-keys/rename-key", `{"key":"`+id+`","name":"Desk"}`)
-	usage.Append(usage.Record{Time: time.Now(), CallerKeyID: id, CallerKeyName: "Magpie", Input: 30, Status: 200})
+	usage.Append(usage.Record{Time: time.Now(), CallerKeyID: id, CallerKeyName: "magpie-friday", Input: 30, Status: 200})
 	post("/api/settings/lan", `{"on":true,"newKey":true}`)
 	keys, _ = access.List()
 	key = keys[0]
@@ -109,7 +109,7 @@ func TestLANSettingSharesCallerKeyStore(t *testing.T) {
 
 func TestSettingsMigratesOldLANCredentialToManagedKey(t *testing.T) {
 	sandboxHome(t)
-	old := "sk-magpie-0123456789abcdef0123456789abcdef01234567"
+	old := "sk-magpie-friday-0123456789abcdef0123456789abcdef01234567"
 	s := settings.Load()
 	s.LAN, s.LANKey = true, old
 	if err := settings.Save(s); err != nil {
@@ -122,10 +122,10 @@ func TestSettingsMigratesOldLANCredentialToManagedKey(t *testing.T) {
 		t.Fatal("old credential leaked", w.Code, w.Body)
 	}
 	if settings.Load().LANKey != old {
-		t.Fatal("migration did not retain the old credential for older Magpie")
+		t.Fatal("migration did not retain the old credential for older magpie-friday")
 	}
 	keys, _ := access.List()
-	if len(keys) != 1 || keys[0].Name != "Magpie" || settings.Load().LANKeyID != keys[0].ID {
+	if len(keys) != 1 || keys[0].Name != "magpie-friday" || settings.Load().LANKeyID != keys[0].ID {
 		t.Fatal(keys)
 	}
 	who, ok := access.Authenticate(old)

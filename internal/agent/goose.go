@@ -13,10 +13,10 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
-// Goose (Block's goose, its CLI and desktop app alike) reaches magpie as a
+// Goose (Block's goose, its CLI and desktop app alike) reaches magpie-friday as a
 // custom provider: a JSON file of its own in custom_providers beside
 // config.yaml, named by the provider's id, which goose loads at start-up
 // (crates/goose/src/config/declarative_providers.rs). Its schema is
@@ -34,10 +34,10 @@ import (
 //
 // dynamic_models false keeps goose to this list rather than the gateway's
 // /v1/models (every model, none of their windows), and
-// skip_canonical_filtering keeps magpie's order and models goose's registry
+// skip_canonical_filtering keeps magpie-friday's order and models goose's registry
 // doesn't know.
 
-// gooseProviderID is magpie's file in Goose's custom_providers and the
+// gooseProviderID is magpie-friday's file in Goose's custom_providers and the
 // provider GOOSE_PROVIDER names.
 const gooseProviderID = magpieID
 
@@ -51,7 +51,7 @@ const gooseProviderID = magpieID
 var gooseThinks = regexp.MustCompile(`(?i)(?:^|[-/])(?:o\d+(?:$|-)|gpt-(?:5|6)(?:$|[-.]))`)
 
 // gooseKeys are the secrets goose reads for the native providers whose
-// models magpie can list, and which goose takes from the environment before
+// models magpie-friday can list, and which goose takes from the environment before
 // its keyring (Config::get_secret, crates/goose/src/config/base.rs; the keys
 // from crates/goose/src/providers/<name>_def.rs).
 var gooseKeys = map[string]string{
@@ -61,7 +61,7 @@ var gooseKeys = map[string]string{
 	"openrouter": "OPENROUTER_API_KEY",
 }
 
-// gooseConfigured is the providers other than magpie that the Goose whose
+// gooseConfigured is the providers other than magpie-friday that the Goose whose
 // config.yaml is at cfg has set up: the ones its providers map marks
 // configured or that it uses now (set_active_provider, crates/goose/src/
 // config/providers.rs), the ones a legacy <name>_configured marker names
@@ -108,13 +108,13 @@ func gooseConfigured(cfg string, getenv func(string) string) []string {
 	return out
 }
 
-// gooseProviderPath is magpie's custom provider file for the Goose whose
+// gooseProviderPath is magpie-friday's custom provider file for the Goose whose
 // config.yaml is at cfg.
 func gooseProviderPath(cfg string) string {
 	return filepath.Join(filepath.Dir(cfg), "custom_providers", gooseProviderID+".json")
 }
 
-// gooseProviderJSON is magpie as a custom provider of the Goose at a
+// gooseProviderJSON is magpie-friday as a custom provider of the Goose at a
 // place, its models the catalog as Goose is shown it.
 func gooseProviderJSON(at place) map[string]any {
 	models := []map[string]any{}
@@ -128,8 +128,8 @@ func gooseProviderJSON(at place) map[string]any {
 	p := map[string]any{
 		"name":                     gooseProviderID,
 		"engine":                   "openai",
-		"display_name":             "magpie",
-		"description":              "Every model magpie has, through its local gateway",
+		"display_name":             "magpie-friday",
+		"description":              "Every model magpie-friday has, through its local gateway",
 		"api_key_env":              "",
 		"base_url":                 at.v1(),
 		"headers":                  map[string]any{"Authorization": "Bearer " + gooseKey(at)},
@@ -144,20 +144,20 @@ func gooseProviderJSON(at place) map[string]any {
 	return p
 }
 
-// gooseKey is the key magpie's custom provider hands the Goose at a place:
+// gooseKey is the key magpie-friday's custom provider hands the Goose at a place:
 // one that names Goose (agentKeyAt), since goose's HTTP client sends no
 // User-Agent (reqwest's default, crates/goose-providers/src/api_client.rs),
 // so the plain key left its requests to "your agent" on Routing and "other"
 // in Usage (#1083).
 func gooseKey(at place) string { return agentKeyAt("goose", at.gw()) }
 
-// gooseProviderKept is magpie's custom provider laid over the file at path.
+// gooseProviderKept is magpie-friday's custom provider laid over the file at path.
 // Goose's own editor (update_custom_provider, crates/goose/src/config/
 // declarative_providers.rs) carries the keys it doesn't show into the file it
 // writes, and the user sets timeout_seconds, toolshim, supports_streaming,
 // preserves_thinking, a header or a name there (DeclarativeProviderConfig).
 // Each stays (#2030); what reaches the gateway, its key and the model list
-// are magpie's.
+// are magpie-friday's.
 func gooseProviderKept(path string, at place) map[string]any {
 	want := gooseProviderJSON(at)
 	raw, err := edit.Read(path)
@@ -172,13 +172,13 @@ func gooseProviderKept(path string, at place) map[string]any {
 		want["display_name"] = name
 	}
 	if h, _ := have["headers"].(map[string]any); h != nil {
-		// a header of the user's, beside magpie's Authorization
+		// a header of the user's, beside magpie-friday's Authorization
 		want["headers"] = mergeKept(h, want["headers"].(map[string]any), nil)
 	}
 	return mergeKept(have, want, []string{"name", "engine", "api_key_env", "base_url", "requires_auth", "dynamic_models", "models", "headers"})
 }
 
-// writeGooseProvider writes magpie's custom provider file for Goose.
+// writeGooseProvider writes magpie-friday's custom provider file for Goose.
 func writeGooseProvider(path string, at place) error {
 	b, err := json.MarshalIndent(gooseProviderKept(path, at), "", "  ")
 	if err != nil {
@@ -190,8 +190,8 @@ func writeGooseProvider(path string, at place) error {
 	return edit.WriteAtomic(path, append(b, '\n'))
 }
 
-// syncGooseProvider rewrites magpie's custom provider file for Goose with
-// the catalog as it is now, where magpie wrote one and it differs.
+// syncGooseProvider rewrites magpie-friday's custom provider file for Goose with
+// the catalog as it is now, where magpie-friday wrote one and it differs.
 func syncGooseProvider(path string, at place) error {
 	raw, err := edit.Read(path)
 	if err != nil || raw == nil {
@@ -203,8 +203,8 @@ func syncGooseProvider(path string, at place) error {
 	return writeGooseProvider(path, at)
 }
 
-// removeGooseProvider takes magpie's custom provider file away once Goose's
-// model is no longer one of magpie's.
+// removeGooseProvider takes magpie-friday's custom provider file away once Goose's
+// model is no longer one of magpie-friday's.
 func removeGooseProvider(path string) error {
 	if err := edit.Remove(path); err != nil && !errors.Is(err, fs.ErrNotExist) {
 		return err
@@ -218,9 +218,9 @@ func removeGooseProvider(path string) error {
 // which goose migrates a config to on its next write, is active_provider
 // and an entry in the providers map holding that provider's model:
 //
-//	active_provider: magpie
+//	active_provider: magpie-friday
 //	providers:
-//	  magpie:
+//	  magpie-friday:
 //	    enabled: true
 //	    model: zhipu/glm-5.3
 //	    configured: true
@@ -304,8 +304,8 @@ func setGooseModel(cfg, v string) error {
 }
 
 // clearGooseModel takes the Goose config at cfg off any model, as goose's
-// clear_active_provider does, and drops magpie's own providers entry, as
-// magpie's custom provider goes with it; other providers' entries are kept.
+// clear_active_provider does, and drops magpie-friday's own providers entry, as
+// magpie-friday's custom provider goes with it; other providers' entries are kept.
 func clearGooseModel(cfg string) error {
 	if err := edit.DelYAMLTop(cfg, "active_provider", "GOOSE_PROVIDER", "GOOSE_MODEL"); err != nil {
 		return err

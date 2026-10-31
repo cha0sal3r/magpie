@@ -9,7 +9,7 @@ import (
 )
 
 // A Claude Code session's revision window (claudeUsageState) lived in memory
-// alone, so once magpie started again, or let a ninth live session's window
+// alone, so once magpie-friday started again, or let a ninth live session's window
 // go, every Claude file that had grown was read again from its first line: a
 // live 2 GB session took seconds of the first Requests page after every
 // update (#3493). The window is bounded (claudeRevisionEntries), so it is

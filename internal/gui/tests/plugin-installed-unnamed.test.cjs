@@ -1,6 +1,6 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // A plugin installed a moment ago has no subscriptions named for it yet: the
-// Installed list is drawn from what the plugins said the last time magpie asked
+// Installed list is drawn from what the plugins said the last time magpie-friday asked
 // them, which a plugin installed since hasn't been asked about yet, and asking
 // them means every plugin's vendor answering, one at a time.
 //
@@ -21,7 +21,7 @@ const EMPTY = "opencode-nothing-auth";
 const OLD = "opencode-copilot-auth";
 const claude = { id: "claude", name: "Claude Code", icon: "", skills: `${HOME}/.claude/skills`, mcp: `${HOME}/.claude/mcp.json` };
 const lib = {
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: [claude],
   instructions: { agents: [], sets: [] }, foundServers: [], projects: [], foundSkills: [], skills: [], servers: [],
 };
@@ -45,8 +45,8 @@ function server(lang, state) {
 }
 
 const words = {
-  en: { signsIn: "Signs in to", nothing: "Signs in to nothing magpie can use" },
-  zh: { signsIn: "可登录", nothing: "没有 magpie 能用的登录" },
+  en: { signsIn: "Signs in to", nothing: "Signs in to nothing magpie-friday can use" },
+  zh: { signsIn: "可登录", nothing: "没有 magpie-friday 能用的登录" },
 };
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {

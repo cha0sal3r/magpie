@@ -13,9 +13,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/probelog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/probelog"
 )
 
 // A plugin's provider (see internal/plugin) is a subscription like the
@@ -43,7 +43,7 @@ const (
 	WorkGitHeader = "X-Magpie-Work-Git"
 )
 
-// PluginID is the id magpie gives the provider OpenCode calls id: the same,
+// PluginID is the id magpie-friday gives the provider OpenCode calls id: the same,
 // unless a preset or a built-in subscription has it (google, openai,
 // anthropic), or a provider of the user's own made before the plugin was
 // installed (zenmux, #867), or "auto" or "group", which start the ids of
@@ -53,7 +53,7 @@ func PluginID(id string) string {
 	if PluginServes(id) {
 		return id
 	}
-	if slices.Contains(accountIDs, id) || Preset(id) != nil || id == "magpie" || id == autoID || id == strings.TrimSuffix(GroupPrefix, "/") || customIDs()[id] {
+	if slices.Contains(accountIDs, id) || Preset(id) != nil || id == "magpie-friday" || id == autoID || id == strings.TrimSuffix(GroupPrefix, "/") || customIDs()[id] {
 		return id + "-plugin"
 	}
 	return id
@@ -89,7 +89,7 @@ func subscriptionID(id string) bool {
 func (p Provider) IsPlugin() bool { return p.Account != nil && p.Account.plugin != nil }
 
 // PluginProvider is the id OpenCode knows the plugin's provider p is by
-// (grok, kiro), whatever magpie names it; "" for one no plugin gives.
+// (grok, kiro), whatever magpie-friday names it; "" for one no plugin gives.
 func (p Provider) PluginProvider() string {
 	if !p.IsPlugin() {
 		return ""
@@ -97,7 +97,7 @@ func (p Provider) PluginProvider() string {
 	return p.Account.plugin.ID
 }
 
-// PluginOf is the plugin provider magpie's provider id is, when it is one.
+// PluginOf is the plugin provider magpie-friday's provider id is, when it is one.
 func PluginOf(id string) (plugin.Provider, bool) {
 	for _, pp := range heldPlugins() {
 		if PluginID(pp.ID) == id {
@@ -557,7 +557,7 @@ func pluginFetch(pp plugin.Provider, account string, req *http.Request) (*http.R
 		url = base + "/models/" + api + ":streamGenerateContent?alt=sse"
 	case strings.HasPrefix(rest, "/v1/"):
 		// chat, responses and Anthropic's messages: the AI SDK's base
-		// ends where magpie's /v1 does
+		// ends where magpie-friday's /v1 does
 		url = base + strings.TrimPrefix(rest, "/v1")
 	case strings.HasPrefix(rest, "https://") || strings.HasPrefix(rest, "http://"):
 		// a URL of the vendor's own outside the base (Provider.Origin's),
@@ -684,7 +684,7 @@ func firstOf(ss ...string) string {
 // plugin's), the client the account asks for this request when it asks
 // for one (ZCode's Start Plan: zcodeStartClient), and client otherwise.
 //
-// A request sent for magpie's own test (probelog.With) is written into the
+// A request sent for magpie-friday's own test (probelog.With) is written into the
 // request log here, whichever way it goes: a plugin's fetch and a client
 // of the account's own pass no transport that would.
 func (p Provider) Do(client *http.Client, req *http.Request) (*http.Response, error) {

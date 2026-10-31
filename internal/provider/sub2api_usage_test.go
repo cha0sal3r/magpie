@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
 )
 
 // sub2apiUsage is a sub2api key's /v1/usage as sub2api v0.1.149 answered
@@ -95,7 +95,7 @@ func TestReadSub2APIKeyLimits(t *testing.T) {
 	}
 }
 
-// keyLimitsHome gives a test a magpie of its own, without any key or
+// keyLimitsHome gives a test a magpie-friday of its own, without any key or
 // window another test read.
 func keyLimitsHome(t *testing.T) {
 	t.Helper()
@@ -195,7 +195,7 @@ func TestSub2APIKeyLimitsOnItsCard(t *testing.T) {
 	if q.Error != "" || q.Balance != "" || len(q.Windows) != 2 || q.Windows[0].Name != "1 day" || q.Windows[1].Name != "7 days" || q.ReadAt == nil {
 		t.Fatalf("card = %+v", q)
 	}
-	// checked from its editor, or magpie provider show: what it can
+	// checked from its editor, or magpie-friday provider show: what it can
 	// spend now, the least its windows have left
 	if amount, ok, err := Balance(context.Background(), p); err != nil || !ok || amount != "$300.00" {
 		t.Fatalf("Balance = %q %v %v", amount, ok, err)
@@ -417,7 +417,7 @@ func TestKeyAllowanceStaleMidRead(t *testing.T) {
 	}
 }
 
-// Until the key is first read (magpie just started), its windows are the
+// Until the key is first read (magpie-friday just started), its windows are the
 // ones its card last showed, kept on disk; a window whose reset passed
 // since is empty again.
 func TestKeyAllowanceSeededFromItsCard(t *testing.T) {

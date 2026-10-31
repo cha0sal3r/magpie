@@ -19,10 +19,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // QuotaWindow is one rolling allowance reported by a subscription provider.
@@ -89,16 +89,16 @@ type QuotaWindow struct {
 	// CapID is, beside Capped, how the window is known to a cap of its
 	// own (WindowCapID), for the GUI to set and show one.
 	CapID string `json:"capId,omitempty"`
-	// Holds is what the whole window holds, reckoned from magpie's own
+	// Holds is what the whole window holds, reckoned from magpie-friday's own
 	// calls through the account (usage.WithWindowHolds), for the GUI and,
-	// through ReckonHolds, magpie quota --json and /v1/magpie/quotas
+	// through ReckonHolds, magpie-friday quota --json and /v1/magpie-friday/quotas
 	// (#2333); nil where that can't be told honestly.
 	Holds *WindowHolds `json:"holds,omitempty"`
 	// HoldsWhy is, where Holds is nil on a window of an account's own card
 	// that runs out and starts again, why its whole isn't told (#2045):
 	// HoldsLow, HoldsNoClock, HoldsBeforeLog, HoldsNoneRouted or
 	// HoldsCredits. Empty where no whole is ever told (a pool, a family,
-	// money aside, another magpie's card).
+	// money aside, another magpie-friday's card).
 	HoldsWhy string `json:"holdsWhy,omitempty"`
 	// StartsAt is when the window began (Bounds), for the GUI only
 	// (WithWindowStarts): with ResetsAt it places an even pace through the
@@ -131,7 +131,7 @@ type SubscriptionQuota struct {
 	// it: DeepSeek's granted credit and the money topped up, each a part
 	// labelled SplitGranted or SplitTopUp
 	BalanceSplit []BalancePart `json:"balanceSplit,omitempty"`
-	// BalanceTrend is the Balance over time, as magpie read it, and when
+	// BalanceTrend is the Balance over time, as magpie-friday read it, and when
 	// it runs out at that pace (balance_history.go)
 	BalanceTrend *BalanceTrend `json:"balanceTrend,omitempty"`
 	// Until is when the plan's paid time ends: it renews then when Renew
@@ -141,8 +141,8 @@ type SubscriptionQuota struct {
 	Renew string     `json:"renew,omitempty"`
 	Error string     `json:"error,omitempty"`
 	// PluginError is an Error a plugin's own usage read gave, in its own
-	// words: magpie has no reading of it to say better, so the GUI shows
-	// it on the card rather than only in a tooltip (aqiu817/magpie-sensenova#1).
+	// words: magpie-friday has no reading of it to say better, so the GUI shows
+	// it on the card rather than only in a tooltip (aqiu817/magpie-friday-sensenova#1).
 	PluginError bool `json:"pluginError,omitempty"`
 	// NeedsAccessKey is a plan read with the account's access key, which
 	// its provider hasn't (accessKeyCard, #1821): the Usage page offers
@@ -166,7 +166,7 @@ type SubscriptionQuota struct {
 	// Resets are the rate-limit resets a Codex account holds, nil when it
 	// holds none (codex_resets.go).
 	Resets *ResetCredits `json:"resets,omitempty"`
-	// ResetsUsed are the Codex account's resets magpie spent, newest
+	// ResetsUsed are the Codex account's resets magpie-friday spent, newest
 	// first, by itself or by hand (codex_resets_used.go): what the card
 	// says when one is gone and the user asks where
 	ResetsUsed []ResetUse `json:"resetsUsed,omitempty"`
@@ -174,7 +174,7 @@ type SubscriptionQuota struct {
 	// now (codexHeld): not on a window at 100% alone, which credits get
 	// past.
 	Held bool `json:"held,omitempty"`
-	// Daily is a WorkBuddy account's credits used day by day, as magpie
+	// Daily is a WorkBuddy account's credits used day by day, as magpie-friday
 	// counted them from its readings (credits_daily.go).
 	Daily *DailyCredits `json:"daily,omitempty"`
 	// Checkins is set on a WorkBuddy (China) or Trae CN account whose
@@ -187,10 +187,10 @@ type SubscriptionQuota struct {
 	// CheckinOff is set on such an account the user left out of its
 	// vendor's check-in (settings.CheckinOff, #1902): it isn't checked in.
 	CheckinOff bool `json:"checkinOff,omitempty"`
-	// Kind is the card's kind as another magpie is told it (CachedCards):
+	// Kind is the card's kind as another magpie-friday is told it (CachedCards):
 	// subscription, plan or balance; "" here.
 	Kind string `json:"kind,omitempty"`
-	// From is the remote magpie a card is that one's (remote_quotas.go),
+	// From is the remote magpie-friday a card is that one's (remote_quotas.go),
 	// by its name here; "" for this computer's own.
 	From string `json:"from,omitempty"`
 	// LastServedAt is when the account, plan or key last answered a
@@ -204,8 +204,8 @@ type SubscriptionQuota struct {
 	// handed out, never cached.
 	Alias string `json:"alias,omitempty"`
 	Seat  string `json:"seat,omitempty"`
-	// GatewayKey is set on the card of a gateway key a remote magpie gave
-	// this computer (#1547, remote_key_limits.go): the limit that magpie
+	// GatewayKey is set on the card of a gateway key a remote magpie-friday gave
+	// this computer (#1547, remote_key_limits.go): the limit that magpie-friday
 	// holds the key to, beside the windows that show it.
 	GatewayKey *GatewayKeyLimit `json:"gatewayKey,omitempty"`
 	// In-process read order, separate from the vendor's ReadAt and never
@@ -326,7 +326,7 @@ func SubscriptionUsageReading() bool {
 	return c.pending != nil
 }
 
-// visibleQuotas drops accounts removed from magpie since the last refresh.
+// visibleQuotas drops accounts removed from magpie-friday since the last refresh.
 func visibleQuotas(all []SubscriptionQuota) []SubscriptionQuota {
 	hidden := map[string]bool{}
 	for _, p := range load().Providers {
@@ -344,7 +344,7 @@ func visibleQuotas(all []SubscriptionQuota) []SubscriptionQuota {
 			}
 			var base func(string) string
 			if q.Provider == "antigravity" {
-				// Antigravity's quota names each level's id; magpie offers
+				// Antigravity's quota names each level's id; magpie-friday offers
 				// the family (gemini-3.7-flash-high is gemini-3.7-flash)
 				base = func(id string) string {
 					if b, _, ok := AntigravityBase(id); ok {
@@ -360,7 +360,7 @@ func visibleQuotas(all []SubscriptionQuota) []SubscriptionQuota {
 	return out
 }
 
-// exposedIDs is, for each provider, the models magpie offers from it.
+// exposedIDs is, for each provider, the models magpie-friday offers from it.
 func exposedIDs() map[string]map[string]bool {
 	out := map[string]map[string]bool{}
 	for _, p := range All() {
@@ -375,9 +375,9 @@ func exposedIDs() map[string]map[string]bool {
 
 // chosenWindows keeps a Google account's allowances for the models the user
 // enabled: Antigravity reports one for every model it has, a couple of dozen,
-// most of them never used through magpie. When none of them is enabled — the
+// most of them never used through magpie-friday. When none of them is enabled — the
 // ids a quota names aren't always the ones served — they are all kept.
-// base, when not nil, is the model magpie offers for an id a quota names.
+// base, when not nil, is the model magpie-friday offers for an id a quota names.
 func chosenWindows(ws []QuotaWindow, chosen map[string]bool, base func(string) string) []QuotaWindow {
 	var out []QuotaWindow
 	some := false // a model's window kept, not only a pool's
@@ -477,12 +477,12 @@ func fetchSubscriptionUsage(ctx context.Context) []SubscriptionQuota {
 				fetches = append(fetches, withUser(ctx, p.Account.User, func() SubscriptionQuota { return codexSubscriptionUsage(viaLogin("codex", p.Account.User), dir) }))
 			}
 		}
-		// Every Copilot account magpie knows, the editors' or the CLI's own
-		// sign-in or not: one signed in from magpie alone is enough
+		// Every Copilot account magpie-friday knows, the editors' or the CLI's own
+		// sign-in or not: one signed in from magpie-friday alone is enough
 		// (copilotLoginList reads both, copilot_accounts.go). Asking only
-		// when copilotLogin found the editors' token left an account magpie
+		// when copilotLogin found the editors' token left an account magpie-friday
 		// signed in itself without a card on the Usage page, and out of the
-		// gateway's GET /v1/magpie/quotas, however fresh its reading was
+		// gateway's GET /v1/magpie-friday/quotas, however fresh its reading was
 		// (subscription_usage_test.go, TestCopilotQuotaWithoutEditorsSignIn).
 		if ls := copilotLoginList(); len(ls) > 0 && !hidden["copilot"] {
 			fetches = append(fetches, perLogin(via("copilot"), ls, accountCard("copilot"))...)
@@ -519,7 +519,7 @@ func fetchSubscriptionUsage(ctx context.Context) []SubscriptionQuota {
 	return out
 }
 
-// accountsOf is every account magpie remembers for agent, the one it is
+// accountsOf is every account magpie-friday remembers for agent, the one it is
 // signed in to first.
 func accountsOf(agent string) []Login {
 	ls := Logins(agent)
@@ -586,7 +586,7 @@ type accountStatusError struct {
 func (e *accountStatusError) Error() string { return http.StatusText(e.status) }
 
 // claudeSubscriptionUsage is the allowance of user, the account Claude Code
-// is signed in to, by the name magpie gives it (claudeAccount): its
+// is signed in to, by the name magpie-friday gives it (claudeAccount): its
 // readings and what it said answering are kept under that name, which for
 // a Team seat isn't the email alone `claude auth status` gives.
 func claudeSubscriptionUsage(ctx context.Context, user string) SubscriptionQuota {
@@ -633,7 +633,7 @@ func claudeReadAt(user string) *time.Time {
 // claudeUsage keeps each Claude account's allowance as Claude Code last
 // told it: its /usage, run when the user asks (AskClaudeUsage, Asked), or
 // what it said as it answered
-// (NoteClaudeLimits). magpie never asks Anthropic for it itself; the Usage
+// (NoteClaudeLimits). magpie-friday never asks Anthropic for it itself; the Usage
 // page's timer, the switch list and routing show what is kept here.
 var claudeUsage struct {
 	sync.Mutex
@@ -662,7 +662,7 @@ func (e claudeUsageEntry) windows(now time.Time) []QuotaWindow {
 }
 
 // claudeAskFloor is the least time between two readings, however often the
-// user refreshes; between two that nobody asked for (a reading magpie keeps
+// user refreshes; between two that nobody asked for (a reading magpie-friday keeps
 // up to date by itself, for the Usage page left open, the menu bar's
 // figures and routing) it is claudeUsageWait, drawn afresh after each run,
 // so /usage isn't run on a clock, and then only once Claude Code has been
@@ -725,7 +725,7 @@ func markClaudeUsageAsked() {
 }
 
 // AskClaudeUsage is the user asking to see Claude's usage — opening the
-// Usage page, refreshing it, `magpie quota` — so Claude Code's /usage is
+// Usage page, refreshing it, `magpie-friday quota` — so Claude Code's /usage is
 // run at once rather than when the next unasked reading is due
 // (claudeUsageWait); the next SubscriptionUsage waits for it.
 func AskClaudeUsage() {
@@ -743,7 +743,7 @@ func AskClaudeUsage() {
 
 // AskUsage has the next SubscriptionUsage wait for a new reading rather
 // than hand back the last one, as AskClaudeUsage does, without having
-// Claude Code's /usage run: magpie quota wait reads again each time it
+// Claude Code's /usage run: magpie-friday quota wait reads again each time it
 // wakes, and only a wait for Claude needs Claude read.
 func AskUsage() {
 	c := &subscriptionUsageCache
@@ -769,7 +769,7 @@ func AskUsage() {
 // Code run in the account's own config directory (readSavedClaudeUsage),
 // Claude Code's own sign-in left as it is (#1630). Any other time it is
 // what was kept.
-// magpie itself never asks Anthropic.
+// magpie-friday itself never asks Anthropic.
 func claudeWindows(ctx context.Context, user string, active bool) ([]QuotaWindow, error) {
 	key := strings.ToLower(user)
 	c := &claudeUsage
@@ -866,13 +866,13 @@ func claudeWindows(ctx context.Context, user string, active bool) ([]QuotaWindow
 }
 
 var (
-	errClaudeNotAsked = errors.New("not read yet: magpie reads Claude's usage by running Claude Code's /usage")
+	errClaudeNotAsked = errors.New("not read yet: magpie-friday reads Claude's usage by running Claude Code's /usage")
 	errClaudeSaved    = errors.New("not read yet: refresh this account's card to have Claude Code's /usage read it")
 )
 
 // savedRefresh says ctx is the refresh of the card of the saved Claude
 // account user, the one ask that runs Claude Code for a saved account. The
-// Usage page opened, its timer, `magpie quota` and routing keep to what
+// Usage page opened, its timer, `magpie-friday quota` and routing keep to what
 // was read: a run in every saved account's directory for each of them
 // would start Claude Code once per account.
 func savedRefresh(ctx context.Context, user string) bool {
@@ -1063,7 +1063,7 @@ var codexReservePlans = []string{"team", "self_serve_business_prolite"}
 //
 // Where the app goes by what usage can't show (the reserve experiment's
 // gate, the reserve it may send on, a reset redeemed in the app), this
-// says held: wrongly held costs the app its ChatGPT extras while magpie
+// says held: wrongly held costs the app its ChatGPT extras while magpie-friday
 // serves the turn, wrongly not held leaves it sending nothing at all.
 func codexHeld(u codexUsage) bool {
 	if u.RateLimit.Allowed == nil || *u.RateLimit.Allowed {

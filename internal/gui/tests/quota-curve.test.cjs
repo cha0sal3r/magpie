@@ -1,6 +1,6 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // What was left over time (#651): under an account's meters on the Usage
-// page, a line a window from magpie's readings — broken where the 5-hour
+// page, a line a window from magpie-friday's readings — broken where the 5-hour
 // window started again — a dashed even burn from each window's start to its
 // reset, and an upright line at now. One pick in the allowances' head, the
 // app's own menu, turns every card at once: "2 days" / "Cycle", or "Off"
@@ -403,7 +403,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       const ocard = one.locator(".pq-card", { hasText: "a@x.com" });
       await ocard.waitFor();
       assert.equal(await ocard.locator(".pq-pace").textContent(), " · " + w.lasts);
-      // a window magpie has read nothing of this cycle says nothing, rather
+      // a window magpie-friday has read nothing of this cycle says nothing, rather
       // than reading a pace from nothing (#2079)
       const quiet = JSON.parse(JSON.stringify(single));
       quiet.history[0].lines[0].points = [];
@@ -442,7 +442,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       // turned off in the window, the tray's line goes too, and stays gone
       const win = await panel.context().newPage();
       await win.route("**/*", serve(lang, "dark", false, data));
-      // a page of magpie's origin, only for its storage: served as a 404
+      // a page of magpie-friday's origin, only for its storage: served as a 404
       // with no body, Chromium refused to open it (ERR_HTTP_RESPONSE_CODE_FAILURE)
       await win.route("http://magpie.test/blank", (r) => r.fulfill({ contentType: "text/html", body: "<!doctype html><title>blank</title>" }));
       await win.goto("http://magpie.test/blank");
@@ -725,7 +725,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
     data.historyHolds = () => [{ provider: "codex", user: "a@x.com", windows: [{ name: "Weekly", holdsWhy: "log" }] }];
     await card.locator(".quota-refresh").click();
     await page.waitForFunction(() => document.querySelector(".quota-holds-why")?.textContent === "Whole: not enough data");
-    assert.match(await card.locator(".quota-holds-why").getAttribute("title"), /before magpie's request log/);
+    assert.match(await card.locator(".quota-holds-why").getAttribute("title"), /before magpie-friday's request log/);
     assert.equal(await card.locator(".quota-holds").count(), 0);
     // and one with no estimate and no reason shows nothing, like a live card
     data.historyHolds = () => [];

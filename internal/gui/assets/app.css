@@ -1,39 +1,46 @@
-/* magpie — one quiet surface, real logos, controls that read as pop-up buttons. */
+/* magpie-friday — one quiet surface, real logos, controls that read as pop-up buttons. */
 :root {
-  --bg: #f4f4f6;
-  --card: #ffffff;
-  --card-2: #f9f9fb;      /* expanded editor */
-  --pill: #f1f1f4;
-  --pill-hover: #e9e9ee;
+  color-scheme: light;
+  --bg: #f3f7ff;
+  --bg-paint: radial-gradient(circle at 12% 0%, rgba(103, 87, 255, .16), transparent 30%), radial-gradient(circle at 88% 4%, rgba(0, 183, 255, .18), transparent 28%), linear-gradient(180deg, #fbfdff 0%, #f2f5ff 52%, #eef3fb 100%);
+  --card: rgba(255, 255, 255, .86);
+  --card-2: rgba(248, 250, 255, .78);      /* expanded editor */
+  --pill: rgba(236, 240, 250, .8);
+  --pill-hover: rgba(224, 231, 246, .92);
   /* the header's view switch: its track and the thumb on the view shown, the
      track a shade deeper than a pill so the white thumb stands off it (#477) */
-  --seg-track: #e6e6eb;
-  --seg-thumb: var(--card);
-  --seg-edge: 0 1px 2px rgba(0, 0, 0, .14), 0 0 0 .5px rgba(0, 0, 0, .08);
+  --seg-track: rgba(225, 232, 246, .78);
+  --seg-thumb: linear-gradient(135deg, rgba(255, 255, 255, .96), rgba(238, 243, 255, .92));
+  --seg-edge: 0 10px 24px rgba(79, 70, 229, .14), 0 1px 2px rgba(0, 0, 0, .12), inset 0 0 0 .5px rgba(255, 255, 255, .75);
   /* a control's quiet text (the switch's other views, a text button): darker
      than --muted, so it reads at 4.5:1 or better on every surface it sits on */
   --ctl-fg: #63636b;
-  --line: #e3e3e8;
-  --line-2: #ececf0;
-  --fg: #1c1c21;
-  --fg-2: #4b4b53;
-  --muted: #85858d;
-  --faint: #b9b9c2;
-  --accent: #4f46e5;
-  --accent-soft: #eeedfd;
+  --line: rgba(96, 112, 150, .2);
+  --line-2: rgba(96, 112, 150, .13);
+  --fg: #101422;
+  --fg-2: #3f4a63;
+  --muted: #6e7890;
+  --faint: #a9b2c6;
+  --accent: #635bff;
+  --accent-2: #00b7ff;
+  --accent-3: #ff4fd8;
+  --accent-soft: rgba(99, 91, 255, .13);
   --accent-fg: #ffffff;
-  --sel: #ecebfb;
+  --accent-grad: linear-gradient(135deg, #635bff 0%, #00b7ff 58%, #64f4c8 100%);
+  --glow: 0 18px 45px rgba(99, 91, 255, .18), 0 4px 16px rgba(0, 183, 255, .12);
+  --glass-edge: inset 0 1px 0 rgba(255, 255, 255, .78), 0 0 0 1px rgba(96, 112, 150, .18);
+  --sel: rgba(99, 91, 255, .13);
   --green: #189a58;
   --green-soft: #e4f6ec;
   --red: #d64545;
   --red-soft: #fbe9e9;
   --amber: #b45309;
   --amber-soft: #fbf0df;
-  /* an agent magpie set up that no longer goes through it */
+  /* an agent magpie-friday set up that no longer goes through it */
   --drift: #ce2c31;
   --drift-soft: #feebec;
-  --pop-bg: rgba(255, 255, 255, .94);
-  --shadow: 0 16px 44px rgba(20, 22, 30, .16), 0 2px 8px rgba(20, 22, 30, .06), 0 0 0 .5px rgba(20, 22, 30, .1);
+  --pop-bg: rgba(255, 255, 255, .82);
+  --shadow: 0 22px 58px rgba(22, 34, 64, .18), 0 6px 18px rgba(67, 87, 124, .12), 0 0 0 .5px rgba(82, 98, 138, .16);
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
   --code: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --logo-invert: 0;
@@ -43,25 +50,32 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #1a1a1e;
-    --card: #232327;
-    --card-2: #1f1f23;
-    --pill: #2d2d33;
-    --pill-hover: #36363d;
-    --seg-track: rgba(255, 255, 255, .035);
-    --seg-thumb: rgba(255, 255, 255, .15);
-    --seg-edge: inset 0 .5px 0 rgba(255, 255, 255, .08), 0 1px 2px rgba(0, 0, 0, .3);
-    --line: #333339;
-    --line-2: #2c2c32;
-    --fg: #ededf1;
-    --fg-2: #b9b9c1;
-    --muted: #8b8b94;
-    --faint: #56565f;
-    --ctl-fg: #a1a1aa;
-    --accent: #a5b4fc;
-    --accent-soft: #2b2c47;
-    --accent-fg: #14142a;
-    --sel: #33345a;
+    color-scheme: dark;
+    --bg: #0b1020;
+    --bg-paint: radial-gradient(circle at 8% 0%, rgba(110, 86, 255, .34), transparent 30%), radial-gradient(circle at 92% 4%, rgba(0, 210, 255, .22), transparent 28%), radial-gradient(circle at 50% 95%, rgba(255, 79, 216, .12), transparent 34%), linear-gradient(180deg, #0a0f1f 0%, #10162b 52%, #0b1020 100%);
+    --card: rgba(20, 27, 50, .76);
+    --card-2: rgba(16, 23, 43, .82);
+    --pill: rgba(38, 48, 80, .68);
+    --pill-hover: rgba(51, 64, 103, .82);
+    --seg-track: rgba(255, 255, 255, .055);
+    --seg-thumb: linear-gradient(135deg, rgba(118, 104, 255, .28), rgba(0, 183, 255, .18));
+    --seg-edge: inset 0 .5px 0 rgba(255, 255, 255, .18), 0 12px 30px rgba(0, 0, 0, .32), 0 0 0 1px rgba(139, 155, 255, .16);
+    --line: rgba(185, 198, 255, .14);
+    --line-2: rgba(185, 198, 255, .09);
+    --fg: #f4f7ff;
+    --fg-2: #c6cee4;
+    --muted: #909bb8;
+    --faint: #5b6583;
+    --ctl-fg: #b2bad3;
+    --accent: #8da2ff;
+    --accent-2: #39d6ff;
+    --accent-3: #ff72dd;
+    --accent-soft: rgba(141, 162, 255, .18);
+    --accent-fg: #071026;
+    --accent-grad: linear-gradient(135deg, #8da2ff 0%, #39d6ff 56%, #64f4c8 100%);
+    --glow: 0 18px 50px rgba(57, 214, 255, .14), 0 8px 30px rgba(141, 162, 255, .14);
+    --glass-edge: inset 0 1px 0 rgba(255, 255, 255, .12), 0 0 0 1px rgba(185, 198, 255, .13);
+    --sel: rgba(141, 162, 255, .18);
     --green: #6fd99b;
     --green-soft: #1e3a2b;
     --red: #f28b82;
@@ -70,22 +84,27 @@
     --amber-soft: #3f3220;
     --drift: #ff9592;
     --drift-soft: #3b1219;
-    --pop-bg: rgba(38, 38, 43, .96);
-    --shadow: 0 16px 44px rgba(0, 0, 0, .55), 0 2px 8px rgba(0, 0, 0, .3), 0 0 0 .5px rgba(255, 255, 255, .1);
+    --pop-bg: rgba(15, 22, 42, .84);
+    --shadow: 0 24px 70px rgba(0, 0, 0, .56), 0 8px 24px rgba(0, 0, 0, .34), 0 0 0 .5px rgba(185, 198, 255, .12);
     --logo-invert: 1;
     --tk-s: #98d8a4; --tk-k: #c4b5fd; --tk-f: #93c5fd; --tk-n: #f2b544; --tk-v: #67e8f9; --tk-o: #f0abfc; --tk-c: #8b8b94;
     --c1: #a5b4fc; --c2: #7dd3fc; --c3: #6ee7b7; --c4: #fcd34d; --c5: #f9a8d4; --c6: #c4b5fd; --c7: #94a3b8;
   }
 }
+:root[data-theme="light"] { color-scheme: light; }
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) { color-scheme: light; }
+}
 :root[data-theme="dark"] {
-  --bg: #1a1a1e; --card: #232327; --card-2: #1f1f23; --pill: #2d2d33; --pill-hover: #36363d;
-  --seg-track: rgba(255, 255, 255, .035); --seg-thumb: rgba(255, 255, 255, .15); --seg-edge: inset 0 .5px 0 rgba(255, 255, 255, .08), 0 1px 2px rgba(0, 0, 0, .3);
-  --line: #333339; --line-2: #2c2c32; --fg: #ededf1; --fg-2: #b9b9c1; --muted: #8b8b94; --faint: #56565f; --ctl-fg: #a1a1aa;
-  --accent: #a5b4fc; --accent-soft: #2b2c47; --accent-fg: #14142a; --sel: #33345a;
+  color-scheme: dark;
+  --bg: #0b1020; --bg-paint: radial-gradient(circle at 8% 0%, rgba(110, 86, 255, .34), transparent 30%), radial-gradient(circle at 92% 4%, rgba(0, 210, 255, .22), transparent 28%), radial-gradient(circle at 50% 95%, rgba(255, 79, 216, .12), transparent 34%), linear-gradient(180deg, #0a0f1f 0%, #10162b 52%, #0b1020 100%); --card: rgba(20, 27, 50, .76); --card-2: rgba(16, 23, 43, .82); --pill: rgba(38, 48, 80, .68); --pill-hover: rgba(51, 64, 103, .82);
+  --seg-track: rgba(255, 255, 255, .055); --seg-thumb: linear-gradient(135deg, rgba(118, 104, 255, .28), rgba(0, 183, 255, .18)); --seg-edge: inset 0 .5px 0 rgba(255, 255, 255, .18), 0 12px 30px rgba(0, 0, 0, .32), 0 0 0 1px rgba(139, 155, 255, .16);
+  --line: rgba(185, 198, 255, .14); --line-2: rgba(185, 198, 255, .09); --fg: #f4f7ff; --fg-2: #c6cee4; --muted: #909bb8; --faint: #5b6583; --ctl-fg: #b2bad3;
+  --accent: #8da2ff; --accent-2: #39d6ff; --accent-3: #ff72dd; --accent-soft: rgba(141, 162, 255, .18); --accent-fg: #071026; --accent-grad: linear-gradient(135deg, #8da2ff 0%, #39d6ff 56%, #64f4c8 100%); --glow: 0 18px 50px rgba(57, 214, 255, .14), 0 8px 30px rgba(141, 162, 255, .14); --glass-edge: inset 0 1px 0 rgba(255, 255, 255, .12), 0 0 0 1px rgba(185, 198, 255, .13); --sel: rgba(141, 162, 255, .18);
   --green: #6fd99b; --green-soft: #1e3a2b; --red: #f28b82; --red-soft: #45272a; --amber: #f2b544; --amber-soft: #3f3220;
   --drift: #ff9592; --drift-soft: #3b1219;
-  --pop-bg: rgba(38, 38, 43, .96);
-  --shadow: 0 16px 44px rgba(0, 0, 0, .55), 0 2px 8px rgba(0, 0, 0, .3), 0 0 0 .5px rgba(255, 255, 255, .1);
+  --pop-bg: rgba(15, 22, 42, .84);
+  --shadow: 0 24px 70px rgba(0, 0, 0, .56), 0 8px 24px rgba(0, 0, 0, .34), 0 0 0 .5px rgba(185, 198, 255, .12);
   --logo-invert: 1;
   --tk-s: #98d8a4; --tk-k: #c4b5fd; --tk-f: #93c5fd; --tk-n: #f2b544; --tk-v: #67e8f9; --tk-o: #f0abfc; --tk-c: #8b8b94;
   --c1: #a5b4fc; --c2: #7dd3fc; --c3: #6ee7b7; --c4: #fcd34d; --c5: #f9a8d4; --c6: #c4b5fd; --c7: #94a3b8;
@@ -116,6 +135,8 @@ body {
   font: var(--ui-style, normal) var(--ui-weight, 400) 13px/1.4 var(--ui-font, var(--font)); font-stretch: var(--ui-stretch, 100%);
   color: var(--fg);
   background: var(--bg);
+  background-image: var(--bg-paint, none);
+  background-attachment: fixed;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -200,7 +221,7 @@ body:not(.window.linux) #winclose { display: none; }
    as GNOME draws its close button, and set a little apart from the icons */
 .icon.winclose { align-self: center; width: 22px; height: 22px; margin-left: 8px; border-radius: 50%; background: var(--pill); color: var(--fg-2); }
 .icon.winclose:hover { background: color-mix(in srgb, var(--fg) 12%, transparent); }
-/* the magpie flaps, flicks its tail and bobs when the window opens and on
+/* the magpie-friday flaps, flicks its tail and bobs when the window opens and on
    hover. It moves in pieces cut from the logo, and is drawn whole at rest, so
    the cuts never show. */
 .logo svg { display: block; overflow: visible; }
@@ -238,7 +259,8 @@ body:not(.window.linux) #winclose { display: none; }
 .seg {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
   display: inline-flex; padding: 2px; border-radius: 8px;
-  /* no grey track behind the tabs: only the open one's thumb */
+  background: var(--seg-track); box-shadow: var(--glass-edge);
+  -webkit-backdrop-filter: blur(18px) saturate(1.25); backdrop-filter: blur(18px) saturate(1.25);
 }
 .seg > .thumb { border-radius: 6px; background: var(--seg-thumb); box-shadow: var(--seg-edge); }
 body.panel .seg { display: none; }
@@ -262,7 +284,7 @@ body.panel .seg { display: none; }
    WebKit turns a whole svg on a layer snapped to the pixel grid, so off a
    whole pixel its ring circles about a point a pixel or so off its centre */
 .icon.spin svg > * { transform-box: view-box; transform-origin: 50% 50%; animation: spin .9s linear infinite; }
-/* a newer magpie is ready: a quiet pill before the header's icons */
+/* a newer magpie-friday is ready: a quiet pill before the header's icons */
 .update {
   align-self: center; display: inline-flex; align-items: center; gap: 4px;
   height: 22px; margin-right: 6px; padding: 0 9px 0 7px; border-radius: 999px;
@@ -292,7 +314,7 @@ body.panel .seg { display: none; }
 .update-hide:focus-visible { opacity: 1; pointer-events: auto; } /* its own rule: Safari before 15.4 drops a list holding it */
 .update-hide:hover { color: var(--fg); }
 .update[hidden] + .update-hide, .update.busy + .update-hide { display: none; }
-/* a narrow header (fitTop): the magpie without its name, Update as its arrow,
+/* a narrow header (fitTop): the magpie-friday without its name, Update as its arrow,
    the tabs closer together, still in the middle of the window, and only when
    they don't fit there, in the row rather than over it: halfway between what
    is either side of them, not a third of the room their left and two thirds
@@ -309,7 +331,7 @@ body.window .top.inrow .actions { margin-left: 0; }
 /* and when even that doesn't fit, the tabs scroll sideways rather than push the page wider */
 .top.packed .seg { min-width: 0; flex: 0 1 auto; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
 .top.packed .seg::-webkit-scrollbar { display: none; }
-/* magpie web on a phone, or a browser as narrow (phoneWeb): the magpie and
+/* magpie-friday web on a phone, or a browser as narrow (phoneWeb): the magpie-friday and
    the icons in a row, the tabs at their size in a row of their own under
    them, sliding sideways when they don't fit (they were squeezed into the
    room between, too small to read or tap) */
@@ -349,14 +371,14 @@ body.side-nav { --side-w: 212px; padding-left: var(--side-w); }
    (app.js sideDrag): the reach a little either side of the line, the line
    itself unchanged */
 .side-edge { position: absolute; top: 0; bottom: 0; right: -4px; width: 8px; z-index: 1; cursor: col-resize; touch-action: none; }
-/* a finger needs more than a pointer's reach: an iPad's in magpie web */
+/* a finger needs more than a pointer's reach: an iPad's in magpie-friday web */
 @media (pointer: coarse) { .side-edge { right: -12px; width: 24px; } }
 .side-edge:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 4px; }
 body.side-drag, body.side-drag * { cursor: col-resize !important; user-select: none; }
 .side-top { flex: none; display: flex; align-items: center; height: 46px; padding: 0 18px; }
 .side-top .brand { font-size: 13.5px; }
 /* the traffic lights are the sidebar's top left, as in a Mac app's sidebar;
-   the magpie beside them, level with them (see .top above) */
+   the magpie-friday beside them, level with them (see .top above) */
 body.window.mac .side-top { height: calc(50px / var(--zoom, 1)); padding: calc(2px / var(--zoom, 1)) 0 0 calc(90px / var(--zoom, 1)); }
 /* Windows' title bar above already shows the icon and the name */
 body.window:not(.mac):not(.linux):not(.web) .side-top { height: 10px; }
@@ -560,7 +582,7 @@ body.mac .modal .editor.framed > .ebody { overflow-y: scroll; padding-right: 10p
    picked (@LingYi_Stu on X). The other pages have no such grid and keep the
    8px while short */
 body.window :is(#view-usage, #view-routing) { overflow-y: scroll; }
-.list { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; flex: none; }
+.list { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; flex: none; box-shadow: var(--glass-edge), var(--glow); -webkit-backdrop-filter: blur(18px) saturate(1.16); backdrop-filter: blur(18px) saturate(1.16); }
 body.panel .list { border: 0; border-radius: 10px; box-shadow: var(--card-edge); }
 .row { display: flex; align-items: center; gap: 9px; min-height: 40px; padding: 5px 9px 5px 11px; }
 body.window .row { min-height: 48px; padding: 7px 12px 7px 14px; gap: 12px; }
@@ -624,7 +646,7 @@ body.panel #agents > .row .ag-handle::before { left: -8px; }
    hidden by hand, and has to be seen to be found (#479) */
 .ag-show:focus-visible { outline: 1.5px solid var(--fg-2); outline-offset: 1px; }
 .ag-show svg { color: var(--muted); }
-/* an agent whose config was rewritten since magpie set it: a line under
+/* an agent whose config was rewritten since magpie-friday set it: a line under
    its name saying so, and the button that sets it again */
 /* a drifted agent: a coral pill on its name's line — the row keeps its
    height and the pickers their columns */
@@ -635,17 +657,17 @@ body.panel #agents > .row .ag-handle::before { left: -8px; }
 .ag-fix:active { transform: scale(.96); }
 .ag-fix:focus-visible { outline: 1.5px solid var(--drift); outline-offset: 1px; }
 .ag-fix.busy { pointer-events: none; opacity: .7; }
-/* a desktop app to restart for magpie's change (agent.AppBehind): the
+/* a desktop app to restart for magpie-friday's change (agent.AppBehind): the
    row's waiting colour, not a fault's */
 .ag-fix.ag-restart { background: color-mix(in srgb, var(--amber) 13%, transparent); color: var(--amber); }
 .ag-fix.ag-restart:hover { background: color-mix(in srgb, var(--amber) 22%, transparent); }
 .ag-fix.ag-restart:focus-visible { outline-color: var(--amber); }
-/* the accounts that keep an agent going through magpie for failover (#1385) */
+/* the accounts that keep an agent going through magpie-friday for failover (#1385) */
 .ag-acc { display: inline-flex; align-items: center; flex: none; height: 20px; padding: 0 8px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); color: var(--fg-2); font: inherit; font-size: 11.5px; line-height: 1; cursor: pointer; transition: background-color .15s, color .15s; }
 .ag-acc:hover { background: var(--pill); color: var(--fg); }
 .ag-acc:focus-visible { outline: 1.5px solid var(--fg-2); outline-offset: 1px; }
 .ag-fix.busy svg > * { transform-box: view-box; transform-origin: 50% 50%; animation: spin .8s linear infinite; }
-/* what has to listen at an address no agent reaches magpie by (#1013): long addresses wrap, and it can be copied */
+/* what has to listen at an address no agent reaches magpie-friday by (#1013): long addresses wrap, and it can be copied */
 .drift-why { overflow-wrap: anywhere; user-select: text; -webkit-user-select: text; }
 /* the agent's CLI on its name's line (#202): its version faint, and a quiet
    pill that updates it when a newer one is out — the row keeps its height */
@@ -982,10 +1004,10 @@ body.window .field.solo { grid-column: auto; }
 .quota-resets { display: flex; align-items: center; gap: 8px; margin-top: 9px; font-size: 10.5px; font-variant-numeric: tabular-nums; }
 .quota-resets .text { margin-left: auto; flex: none; font-size: 11px; padding: 2px 7px; }
 .subscription-card.several .quota-resets:not([hidden]) + .subscription-account { margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--line); }
-/* a remote magpie's gateway key (#1547): its cycle, calls, used up */
+/* a remote magpie-friday's gateway key (#1547): its cycle, calls, used up */
 .quota-keyline { margin-top: 7px; font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .quota-keyline.spent { color: var(--red); }
-/* magpie's own requests, apart from the agents' (#1839) */
+/* magpie-friday's own requests, apart from the agents' (#1839) */
 .own-badge { display: inline-flex; align-items: center; flex: none; margin-left: 6px; font-size: 9.5px; font-weight: 550; line-height: 16px; padding: 0 6px; border: 1px solid color-mix(in srgb, var(--muted) 30%, transparent); border-radius: 5px; color: var(--muted); background: color-mix(in srgb, var(--muted) 8%, var(--card)); white-space: nowrap; vertical-align: 1px; }
 .led .who .own-badge { margin-left: 0; }
 .quota-own { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 7px; font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -1992,9 +2014,9 @@ body.panel .foot { min-height: 0; padding: 5px 8px 7px 14px; border-top: 1px sol
 .text { font-size: 12px; color: var(--ctl-fg); padding: 3px 7px; border-radius: 6px; transition: background .12s, color .12s; white-space: nowrap; }
 .text:hover { color: var(--fg); background: var(--pill); }
 .text.action { height: 27px; padding: 0 10px; border: 1px solid var(--line); background: var(--card); color: var(--fg-2); box-shadow: 0 1px 1px rgba(0, 0, 0, .04); display: inline-flex; align-items: center; justify-content: center; }
-.text.action:hover { border-color: var(--muted); background: var(--card-2); color: var(--fg); }
-.text.primary { color: var(--accent-fg); background: var(--accent); font-weight: 500; }
-.text.primary:hover { filter: brightness(1.08); }
+.text.action:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); background: var(--card-2); color: var(--fg); box-shadow: var(--glow); }
+.text.primary { color: var(--accent-fg); background: var(--accent-grad, var(--accent)); font-weight: 600; box-shadow: 0 10px 24px color-mix(in srgb, var(--accent) 26%, transparent); }
+.text.primary:hover { filter: brightness(1.06) saturate(1.08); }
 .text.danger:hover { color: var(--red); background: var(--red-soft); }
 /* a partner listed since the add sheet last showed them (markNewPartners) */
 #addProvider.has-new::after { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 0 0 5px; border-radius: 50%; background: var(--accent); vertical-align: 6px; box-shadow: 0 0 0 0 var(--accent); animation: new-dot-in .4s cubic-bezier(.3, 1.6, .5, 1), new-dot-ring 2.4s ease-out .4s 2; }
@@ -2078,9 +2100,9 @@ body.window .foot { padding-left: 18px; }
   width: 320px; max-height: 340px;
   display: flex; flex-direction: column;
   background: var(--pop-bg);
-  -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px);
-  border-radius: 11px;
-  box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(28px) saturate(1.28); backdrop-filter: blur(28px) saturate(1.28);
+  border-radius: 13px;
+  box-shadow: var(--shadow), var(--glass-edge);
   overflow: hidden;
   /* it grows out of the button it drops from (--ox, its middle), quick to
      answer and a long soft settle with no bounce, the way iOS's menus come;
@@ -2188,7 +2210,7 @@ body.window .foot { padding-left: 18px; }
 .pop li.reset .ic { opacity: .75; }
 .pop li.custom .v { color: var(--fg); }
 .pop li.custom .n { color: var(--muted); }
-/* the models on the agent's own account through magpie, folded into one
+/* the models on the agent's own account through magpie-friday, folded into one
    row (#496): a chevron says it opens, turned down while open */
 .pop li.fold .v { color: var(--muted); }
 .pop li.fold .chev { display: inline-flex; margin-left: auto; flex: none; color: var(--faint); transition: transform .18s cubic-bezier(.22, 1, .36, 1); }
@@ -2430,7 +2452,7 @@ body.window .ag-sk-icon { width: 22px; height: 22px; border-radius: 6px; }
 .badge.off { background: var(--pill); color: var(--muted); }
 .badge.free { background: var(--green-soft); color: var(--green); }
 /* a model's context, when it is a large one: grey, as it is a fact, not a warning */
-/* which way a model goes (#726): through magpie, or straight to its vendor */
+/* which way a model goes (#726): through magpie-friday, or straight to its vendor */
 .badge.path { letter-spacing: .02em; text-transform: none; white-space: nowrap; }
 .badge.path.via { background: var(--accent-soft); color: var(--accent); }
 .badge.path.direct { background: var(--pill); color: var(--muted); box-shadow: inset 0 0 0 1px var(--line); }
@@ -2588,7 +2610,7 @@ body.window .ag-sk-icon { width: 22px; height: 22px; border-radius: 6px; }
 .acc .alane:hover, .acc .alane.open { color: var(--fg); background: var(--pill-hover); }
 .acc .alane-in { width: 64px; }
 .acc .acap-held { color: var(--fg); }
-/* held for magpie's requests, not the agent signed in to it: a warning */
+/* held for magpie-friday's requests, not the agent signed in to it: a warning */
 .acc .acap-held.acap-direct { color: var(--amber); }
 .accts .acc.with-am { flex-wrap: wrap; row-gap: 3px; }
 .acc .acct-models { flex-basis: 100%; display: grid; gap: 7px; padding: 6px 0 2px 25px; cursor: auto; }
@@ -2873,10 +2895,10 @@ body.window .ag-sk-icon { width: 22px; height: 22px; border-radius: 6px; }
    added has a small green dot after its name rather than fading */
 .tile {
   display: flex; align-items: center; gap: 10px; height: 34px; padding: 0 8px;
-  border-radius: 8px; text-align: left; min-width: 0; transition: background .12s;
+  border-radius: 9px; text-align: left; min-width: 0; transition: background .12s, box-shadow .12s, color .12s;
 }
-.tile:hover { background: var(--pill); }
-.tile.on { background: var(--sel); }
+.tile:hover { background: var(--pill); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent); }
+.tile.on { background: var(--sel); box-shadow: inset 2px 0 0 var(--accent), inset 0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent); }
 .tile .ic { width: 18px; height: 18px; flex: none; }
 .tile .nm { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; font-size: 13px; }
 .tile .n { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -2985,11 +3007,19 @@ body.window .ag-sk-icon { width: 22px; height: 22px; border-radius: 6px; }
 .editor .extra-body .why { font-size: 12px; line-height: 1.45; color: var(--red); overflow-wrap: anywhere; }
 .editor .extra-body .why:empty { display: none; }
 .segs { position: relative; display: inline-flex; padding: 2px; border-radius: 7px; background: var(--pill); align-self: flex-start; }
+/* Appearance is a palette picker: three tiny surfaces show the outcome, not
+   just the names. The preview belongs to the option and never changes the
+   saved choice until that option is pressed. */
+#themeSegs .segs { gap: 3px; background: var(--card-2); box-shadow: var(--glass-edge); -webkit-backdrop-filter: blur(18px) saturate(1.2); backdrop-filter: blur(18px) saturate(1.2); }
+#themeSegs .opt { display: inline-flex; align-items: center; gap: 6px; padding: 0 8px; }
+#themeSegs .opt::before { content: ""; flex: none; width: 13px; height: 13px; border-radius: 5px; border: 1px solid var(--line); background: linear-gradient(135deg, var(--card), var(--accent-soft)); box-shadow: inset 0 -4px color-mix(in srgb, var(--accent) 22%, transparent), 0 0 14px color-mix(in srgb, var(--accent-2, var(--accent)) 28%, transparent); }
+#themeSegs .opt:nth-of-type(2)::before { background: radial-gradient(circle at 25% 20%, #ffffff, #eaf3ff 48%, #d9defd 100%); border-color: #b8c4e6; box-shadow: inset 0 -4px rgba(99, 91, 255, .22), 0 0 14px rgba(0, 183, 255, .18); }
+#themeSegs .opt:nth-of-type(3)::before { background: radial-gradient(circle at 25% 20%, #24335f, #10172d 52%, #070b18 100%); border-color: #586997; box-shadow: inset 0 -4px rgba(57, 214, 255, .25), 0 0 16px rgba(141, 162, 255, .28); }
 .opt { position: relative; z-index: 1; white-space: nowrap; height: 22px; padding: 0 10px; border-radius: 5px; font-size: 12px; color: var(--muted); transition: color .18s var(--ease), transform .14s var(--ease); }
 .opt.on { color: var(--fg); }
-/* how often magpie checks for updates, while it doesn't by itself */
+/* how often magpie-friday checks for updates, while it doesn't by itself */
 .update-every-row.off .segs, .update-restart-row.off .segs { opacity: .55; }
-/* Command line: each shell's `magpie`, a dot for whether it runs this app */
+/* Command line: each shell's `magpie-friday`, a dot for whether it runs this app */
 .cli-row .sub { overflow-wrap: anywhere; }
 .cli-shells { display: flex; flex-direction: column; gap: 3px; margin-top: 6px; }
 .cli-shell { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 12px; color: var(--muted); min-height: 22px; }
@@ -3360,7 +3390,7 @@ body:not(.side-nav) #view-settings .set-head.stuck::before { box-shadow: 0 1px 0
 .view.plugin-page { padding: 0; }
 .plugin-frame { flex: 1; display: block; width: 100%; min-height: 240px; border: 0; background: transparent; }
 .view.plugin-page > .slot-error { margin: 0 12px; }
-/* a plugin's panels in magpie's own pages (P5): each a card, as tall as
+/* a plugin's panels in magpie-friday's own pages (P5): each a card, as tall as
    what its frame draws, under its title */
 .plugin-slot { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
 .plugin-slot[hidden] { display: none; }
@@ -3604,8 +3634,8 @@ html.theming, html.theming *, html.theming *::before, html.theming *::after {
 .modal {
   position: fixed; inset: 0; z-index: 20;
   display: flex; align-items: center; justify-content: center; padding: 28px 24px;
-  background: rgba(0, 0, 0, .28);
-  -webkit-backdrop-filter: blur(8px) saturate(1.1); backdrop-filter: blur(8px) saturate(1.1);
+  background: radial-gradient(circle at 50% 20%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 36%), rgba(3, 7, 18, .38);
+  -webkit-backdrop-filter: blur(14px) saturate(1.18); backdrop-filter: blur(14px) saturate(1.18);
 }
 /* opening and closing are animated from app.js (openModal, closeModal) */
 .modal.out { pointer-events: none; }
@@ -3614,8 +3644,9 @@ html.theming, html.theming *, html.theming *::before, html.theming *::after {
 .modal .dialog { position: relative; }
 .modal .dialog {
   width: min(600px, 100%); min-width: 0; max-height: 100%; overflow-y: auto;
-  border-radius: 14px; background: var(--card);
-  box-shadow: 0 0 0 1px var(--line), 0 24px 60px rgba(0, 0, 0, .32), 0 2px 8px rgba(0, 0, 0, .12);
+  border-radius: 16px; background: var(--card);
+  -webkit-backdrop-filter: blur(22px) saturate(1.18); backdrop-filter: blur(22px) saturate(1.18);
+  box-shadow: var(--glass-edge), 0 28px 72px rgba(0, 0, 0, .36), var(--glow);
 }
 .modal .dialog.swap { animation: content-in .22s var(--ease); }
 /* In a dialog the editor's head and buttons stay put and only the fields
@@ -4051,7 +4082,7 @@ body.window .row.agent .who.with-models { flex-wrap: wrap; row-gap: 0; }
 .am-only .lib-switch { flex: none; }
 .am-only > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .am-foot .am-reset { flex: none; }
-/* the agent's own models, beside magpie's in its picker or not (#1642) */
+/* the agent's own models, beside magpie-friday's in its picker or not (#1642) */
 .am-own { display: flex; align-items: center; gap: 6px; min-width: 0; margin-top: 8px; font-size: 12px; color: var(--fg-2); cursor: pointer; }
 .am-own .lib-switch { flex: none; }
 .am-own > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -4070,7 +4101,7 @@ body.window .row.agent .who.with-models { flex-wrap: wrap; row-gap: 0; }
 .am-order.sorting .am-or { transition: transform .22s cubic-bezier(.22, 1, .36, 1); cursor: grabbing; }
 .am-order .am-or.dragging { position: relative; z-index: 2; transition: none; background: var(--pop-bg); box-shadow: 0 6px 18px rgba(20, 22, 30, .12), 0 0 0 1px var(--line); }
 
-/* ---- an agent's switch onto magpie ---------------------------------------- */
+/* ---- an agent's switch onto magpie-friday ---------------------------------------- */
 /* the rows drawn again under the line said beneath each name had WebKit's
    scroll anchoring move the list a few px before the page was held back
    (claude-direct.test.cjs); the page holds the reader itself */
@@ -4083,7 +4114,7 @@ body.window .row.agent.gone > .ag-conn { margin-left: auto; }
 .ag-conn-row .ag-conn-said { flex: 1; min-width: 0; font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ag-conn-row .lib-switch { cursor: pointer; }
 
-/* 「接入」 in the window: a row says whether the agent goes through magpie —
+/* 「接入」 in the window: a row says whether the agent goes through magpie-friday —
    a line under its name, a link that opens it, its switch */
 .ag-lead { margin: 0 2px 12px; font-size: 12.5px; color: var(--fg-2); }
 .ag-lead b { font-weight: 600; color: var(--fg); }

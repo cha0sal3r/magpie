@@ -42,7 +42,7 @@ const words = {
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
   for (const lang of ["en", "zh"]) {
     const w = words[lang];
-    test(`${engine} ${lang}: Privacy switches off sharing what magpie is used with`, async (t) => {
+    test(`${engine} ${lang}: Privacy switches off sharing what magpie-friday is used with`, async (t) => {
       const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: "chromium" }));
       t.after(() => browser.close());
       const errors = [];

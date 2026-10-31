@@ -15,11 +15,11 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/mcpauth"
+	"github.com/cha0sal3r/magpie-friday/internal/mcpauth"
 )
 
 // GitHub's remote MCP server (新v学员 on Discord): its sign-in is GitHub's
-// own OAuth, which has no registration endpoint, so magpie signs in only as
+// own OAuth, which has no registration endpoint, so magpie-friday signs in only as
 // an OAuth app the user made. The answers are GitHub's own, saved from
 // api.githubcopilot.com/mcp/ and github.com/login/oauth on 2026-10-12, with
 // the addresses pointed here; the token endpoint answers its errors with a
@@ -185,7 +185,7 @@ func TestGitHubWithoutAnApp(t *testing.T) {
 	}
 }
 
-// With the user's app, magpie registers nothing: it signs in as that app,
+// With the user's app, magpie-friday registers nothing: it signs in as that app,
 // called back at localhost's /callback as Claude Code is, and gives the secret in the form,
 // as GitHub's token endpoint takes it. The record keeps the app, to renew
 // as it.
@@ -251,7 +251,7 @@ func TestGitHubCallbackPort(t *testing.T) {
 	}
 }
 
-// An app made for Claude Code signs magpie in as it is. Claude Code calls
+// An app made for Claude Code signs magpie-friday in as it is. Claude Code calls
 // a pre-configured client back at http://localhost:<callbackPort>/callback
 // (code.claude.com/docs/en/mcp, "Use pre-configured OAuth credentials";
 // its 2.1.296 builds it as `http://localhost:${port}/callback` and listens

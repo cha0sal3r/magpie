@@ -1,4 +1,4 @@
-// A magpie://import link with only gemini= (#2251, ggbdpq): the dialog's
+// A magpie-friday://import link with only gemini= (#2251, ggbdpq): the dialog's
 // warning names the host the user's prompts and key would go to, the
 // Gemini endpoint shows, and Add saves it. Before, the warning read "will
 // go to ;" with no host. All APIs and keys are fixtures.

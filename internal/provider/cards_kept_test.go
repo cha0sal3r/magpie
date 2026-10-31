@@ -21,9 +21,9 @@ func cardOf(cs []SubscriptionQuota, provider, user string) *SubscriptionQuota {
 	return nil
 }
 
-// #1313 (jorben): a magpie serving only other magpies has nobody on its
+// #1313 (jorben): a magpie-friday serving only other magpies has nobody on its
 // Usage page, while its Codex accounts' usage is read all the time behind
-// the requests (the account switching, CodexUsedUp). What another magpie
+// the requests (the account switching, CodexUsedUp). What another magpie-friday
 // is told of its cards (CachedCards) is that reading, not "nothing read";
 // after a restart, before anything is read again, it is the reading kept
 // on disk, dated. Telling it asks nobody.
@@ -120,7 +120,7 @@ func TestCachedCardsKeepALaterPageRead(t *testing.T) {
 }
 
 // Two keys of one provider given the same name are two cards: each is
-// read and kept by its key (keyTag), and another magpie is told both
+// read and kept by its key (keyTag), and another magpie-friday is told both
 // after a restart, as the Usage page shows two. cardKeys answered a map
 // keyed by the name, so of one name it held the last key alone, and the
 // first key's reading was told as nobody's.
@@ -164,7 +164,7 @@ func TestCachedCardsKeepBothKeysOfOneName(t *testing.T) {
 }
 
 // The sibling for keys: routing reads a sub2api key's windows behind the
-// requests (KeyAllowance); another magpie is told them on the key's card,
+// requests (KeyAllowance); another magpie-friday is told them on the key's card,
 // one made for it when the Usage page never read it.
 func TestCachedCardsTellKeyReadings(t *testing.T) {
 	keyLimitsHome(t)

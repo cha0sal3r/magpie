@@ -3,11 +3,11 @@ package cli
 import (
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// magpie model compact off runs Codex's and Claude Code's conversations to
+// magpie-friday model compact off runs Codex's and Claude Code's conversations to
 // the model's whole window, on compacts them at the working window again
 // (Max on Discord found no way to it but the app's Settings); anything else
 // is refused.

@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// Plugins › Built-in (Lxxyx on X: too much to look through): magpie's
+// Plugins › Built-in (Lxxyx on X: too much to look through): magpie-friday's
 // built-in plugins (internal/pluginrt, plugins/), each with a switch kept in
 // plugins.yml. Off, a plugin's parts leave the window: its page leaves the
 // nav — the sidebar's and the header's — and an address kept for it opens
@@ -64,7 +64,7 @@ function server(lang, posts, broken) {
   const cur = () => ({
     theme: "light", lang, tray: "panel", currency: "usd", textSize: 100, redactWords: [],
     codexWarmup: "", claudeWarmup: "", codexWarmAt: "", claudeWarmAt: "",
-    version: "0.1.400", dir: "/config/home/.config/magpie", gateway: "http://127.0.0.1:3425",
+    version: "0.1.400", dir: "/config/home/.config/magpie-friday", gateway: "http://127.0.0.1:3425",
     proxyNow: "none", proxySource: "none", visionModels: [], imageGenModels: [], workbuddyCheckins: [], lanURLs: [],
     fx: { rate: 7.2, at: new Date().toISOString(), stale: false },
     builtins: list(),

@@ -7,14 +7,14 @@ import (
 	"time"
 )
 
-// ProbeContext is CommandContext for a command magpie only asks something
+// ProbeContext is CommandContext for a command magpie-friday only asks something
 // of and waits on for the answer: who a CLI says is signed in, its version.
 // The CLI is often a script (a version manager's wrapper, a shim), and
 // killing it on the timeout left what it had started running; a probe still
-// asking when magpie quit or updated itself was left whole, adopted by init
+// asking when magpie-friday quit or updated itself was left whole, adopted by init
 // with nothing to end it, and one stuck in a loop held a core for hours. A
 // probe leads a group of its own on Unix, the context ending kills the whole
-// group, and EndProbes does the same for those still asking when magpie
+// group, and EndProbes does the same for those still asking when magpie-friday
 // exits. ctx must end (a timeout): the probe is forgotten when it does.
 func ProbeContext(ctx context.Context, name string, args ...string) *exec.Cmd {
 	ctx, cancel := context.WithCancel(ctx)
@@ -51,7 +51,7 @@ var probes = struct {
 var endWait = time.Second
 
 // EndProbes kills every probe still running, with what it started, and
-// waits until none of that is left: magpie is exiting or putting a new
+// waits until none of that is left: magpie-friday is exiting or putting a new
 // version in its place, and nothing would end them after. A kill that missed
 // a process being forked signals the group again until it is empty, and an
 // exit before that left the missed one running, adopted by init (#1278); the

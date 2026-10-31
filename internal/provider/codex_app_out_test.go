@@ -5,13 +5,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // A reply that says the account Codex is signed in to is out has its
 // allowance read again at once, not at the next look five minutes on
 // (MasterYi on Discord: the Codex app greyed Send meanwhile): once per
-// codexRecheckEvery, for the active account alone, and only in a magpie
+// codexRecheckEvery, for the active account alone, and only in a magpie-friday
 // that keeps Codex on an account with room.
 func TestCodexMayBeUsedUpReadsAtOnce(t *testing.T) {
 	signIn(t) // me@example.com, active

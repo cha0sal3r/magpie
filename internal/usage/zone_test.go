@@ -7,7 +7,7 @@ import (
 )
 
 // viewerZone is a zone whose clock this computer's doesn't keep: the
-// browser of `magpie web` read from elsewhere.
+// browser of `magpie-friday web` read from elsewhere.
 func viewerZone(t *testing.T) *time.Location {
 	t.Helper()
 	for _, name := range []string{"Asia/Shanghai", "America/Los_Angeles"} {

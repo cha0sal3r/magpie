@@ -5,10 +5,10 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// magpie provider account-models gives one key, by its name or its id, the
+// magpie-friday provider account-models gives one key, by its name or its id, the
 // models it alone serves; all gives it every one again, and a key the
 // provider doesn't have is an error (#474).
 func TestAccountModelsCmd(t *testing.T) {

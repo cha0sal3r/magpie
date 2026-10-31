@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// The repositories tagged magpie-plugin on GitHub are many and of every
+// The repositories tagged magpie-friday-plugin on GitHub are many and of every
 // kind (the owner: 这里应该有分类以及搜索框方便用户筛选), so their section
 // has its kinds to pick from, each with how many there are, and a field of
 // its own that narrows them by name, author or description as it is typed.
@@ -26,7 +26,7 @@ const GH = require("./fixtures/plugins-github-31.json");
 // two of them already here, a provider and a middleware, installed by the
 // spec the page would send for each: the strip says both sides of it, and
 // the kinds narrow it either way
-const HERE = ["mu-zi-lee/magpie-our-free-model", "ezdemo/magpie-haiku55-thinking"];
+const HERE = ["mu-zi-lee/magpie-friday-our-free-model", "ezdemo/magpie-friday-haiku55-thinking"];
 const INSTALLED = HERE
   .map((repo) => GH.repos.find((r) => r.repo === repo))
   .map((r) => ({ spec: r.spec, package: r.package, providers: [], version: "1.0.0", moved: [] }));

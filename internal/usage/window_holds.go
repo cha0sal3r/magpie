@@ -2,10 +2,10 @@ package usage
 
 // What a whole subscription window holds (Chiao on Discord): the Usage
 // page's account cards show each window's share used, as the vendor reads
-// it; magpie knows what it routed through the account since the window
+// it; magpie-friday knows what it routed through the account since the window
 // began, so the whole is about that over the share. It is told only where
 // that is honest: the window's start and the account's calls are known,
-// magpie's log reaches back to the start, and enough of it is used for a
+// magpie-friday's log reaches back to the start, and enough of it is used for a
 // rounded percent to scale up (provider.HoldsFloor).
 
 import (
@@ -14,12 +14,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// magpie quota --json and GET /v1/magpie/quotas tell the same whole as the
+// magpie-friday quota --json and GET /v1/magpie-friday/quotas tell the same whole as the
 // Usage page (#2333).
 func init() { provider.ReckonHolds = WithWindowHolds }
 
@@ -173,7 +173,7 @@ func dryRuns(qs []provider.SubscriptionQuota, hist []provider.QuotaHistory, now 
 // calls of the card's provider (by the id it has now) answered by its
 // account, to a model the window counts, from the window's start to when
 // its share was read. first is the log's first call: a window begun before
-// it has calls magpie can't see, and isn't reckoned. Nor is a window with a
+// it has calls magpie-friday can't see, and isn't reckoned. Nor is a window with a
 // call in one of its account's dry runs that may have been paid otherwise:
 // one where the vendor answered a call after a reading of none left, or
 // where no reading with some left is known before it.

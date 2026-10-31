@@ -10,7 +10,7 @@ import (
 // case is taken off first: Header.Set keys a name by its canonical form,
 // while the user's goes in as typed (some gateways match names
 // case-sensitively), so a "user-agent" or "authorization" typed in lower
-// case used to ride beside magpie's own — two of the header, magpie's
+// case used to ride beside magpie-friday's own — two of the header, magpie-friday's
 // first (#1487, a relay that checks the client turned the request away).
 //
 // User-Agent itself is kept under its canonical name: Go's HTTP/1 writer

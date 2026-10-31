@@ -9,10 +9,10 @@ import (
 	"testing"
 )
 
-// A magpie here that does not serve the gateway shows the routing of the one
-// that does (#2606), and names it: the console reads the serving magpie's
+// A magpie-friday here that does not serve the gateway shows the routing of the one
+// that does (#2606), and names it: the console reads the serving magpie-friday's
 // trace over loopback and plays it as its own, and its state carries how that
-// magpie was started and its pid.
+// magpie-friday was started and its pid.
 func TestConsoleShowsTheServingMagpiesRouting(t *testing.T) {
 	h := t.TempDir()
 	t.Setenv("HOME", h)
@@ -29,8 +29,8 @@ func TestConsoleShowsTheServingMagpiesRouting(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.URL.Path {
 		case "/":
-			w.Write([]byte(`{"name":"magpie","version":"0.1.1257","models":3,"window":true,"serves":"serve","pid":4321,"apis":[]}`))
-		case "/v1/magpie/trace":
+			w.Write([]byte(`{"name":"magpie-friday","version":"0.1.1257","models":3,"window":true,"serves":"serve","pid":4321,"apis":[]}`))
+		case "/v1/magpie-friday/trace":
 			w.Write([]byte(`{"object":"trace","seq":7,"pid":4321,"serves":"serve","routes":[{"id":1,"model":"ollama/gemma4:e4b","provider":"ollama","status":200}]}`))
 		default:
 			http.NotFound(w, r)
@@ -62,12 +62,12 @@ func TestConsoleShowsTheServingMagpiesRouting(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !got.Mine || len(got.Routes) != 1 || got.Routes[0].Model != "ollama/gemma4:e4b" || got.Routes[0].Status != 200 {
-		t.Fatalf("the serving magpie's routing was not shown: mine %v routes %+v", got.Mine, got.Routes)
+		t.Fatalf("the serving magpie-friday's routing was not shown: mine %v routes %+v", got.Mine, got.Routes)
 	}
-	// the trace names the magpie it came from, so the page's name for it
-	// changes with the trace when another magpie takes the gateway over
+	// the trace names the magpie-friday it came from, so the page's name for it
+	// changes with the trace when another magpie-friday takes the gateway over
 	if got.By == nil || got.By.Pid != 4321 || got.By.Serves != "serve" {
-		t.Errorf("the trace doesn't name the magpie it came from: %+v", got.By)
+		t.Errorf("the trace doesn't name the magpie-friday it came from: %+v", got.By)
 	}
 
 	// the state names it, for the page's heading to say which one is routing
@@ -79,7 +79,7 @@ func TestConsoleShowsTheServingMagpiesRouting(t *testing.T) {
 
 // One that doesn't tell its trace (older than the endpoint, or a refusal) is
 // unknown, not empty: the page keeps the notice it had, and never plays
-// another magpie's routing as its own.
+// another magpie-friday's routing as its own.
 func TestConsoleKeepsTheNoticeFromAnOlderGateway(t *testing.T) {
 	h := t.TempDir()
 	t.Setenv("HOME", h)
@@ -95,7 +95,7 @@ func TestConsoleKeepsTheNoticeFromAnOlderGateway(t *testing.T) {
 	other := &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		if r.URL.Path == "/" {
-			w.Write([]byte(`{"name":"magpie","version":"0.1.550","models":3,"window":true,"apis":[]}`))
+			w.Write([]byte(`{"name":"magpie-friday","version":"0.1.550","models":3,"window":true,"apis":[]}`))
 			return
 		}
 		http.NotFound(w, r)

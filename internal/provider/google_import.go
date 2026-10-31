@@ -6,7 +6,7 @@ package provider
 // keeps each account as {email, token: {refresh_token, project_id, …}},
 // CLIProxyAPI as {type: "antigravity", email, refresh_token, project_id, …},
 // and Cockpit also takes bare refresh tokens, one a line. They all sign in
-// with Antigravity's own OAuth client, the one magpie uses, so a refresh
+// with Antigravity's own OAuth client, the one magpie-friday uses, so a refresh
 // token from any of them works here. Each is checked the way a sign-in is
 // finished: the token refreshed with Google, whose account it is asked,
 // the Code Assist project found; only then is it kept, as a signed-in
@@ -22,7 +22,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // ImportedAccount is what became of one account in an import.
@@ -30,8 +30,8 @@ type ImportedAccount struct {
 	// User is the account's email, or "#n" (its place in the file) when
 	// the file doesn't say and Google wasn't asked or didn't answer.
 	User string `json:"user"`
-	// Status: "added", "updated" (in magpie already, now with this
-	// sign-in), "exists" (in magpie already with this very sign-in),
+	// Status: "added", "updated" (in magpie-friday already, now with this
+	// sign-in), "exists" (in magpie-friday already with this very sign-in),
 	// "failed".
 	Status string `json:"status"`
 	Plan   string `json:"plan,omitempty"`
@@ -202,7 +202,7 @@ func ImportGoogleAccounts(ctx context.Context, agent string, files []string) ([]
 	if len(all) > maxGoogleImport {
 		return nil, fmt.Errorf("%d accounts; at most %d at a time", len(all), maxGoogleImport)
 	}
-	// what magpie has already: refresh token and user of each account
+	// what magpie-friday has already: refresh token and user of each account
 	haveTok, haveUser := map[string]string{}, map[string]string{}
 	loginsMu.Lock()
 	for _, l := range readLogins() {
@@ -247,7 +247,7 @@ func ImportGoogleAccounts(ctx context.Context, agent string, files []string) ([]
 	wg.Wait()
 	for _, r := range out {
 		if r.Status == "added" || r.Status == "updated" {
-			// an import brings back an account removed from magpie, as
+			// an import brings back an account removed from magpie-friday, as
 			// signing in does
 			_ = ShowAccount(agent)
 			break

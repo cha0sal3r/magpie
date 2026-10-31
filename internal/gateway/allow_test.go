@@ -9,12 +9,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/lastgood"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/lastgood"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// lc on Discord, magpie in Docker on a public host: with an allow list,
+// lc on Discord, magpie-friday in Docker on a public host: with an allow list,
 // a request from an address outside it is refused 403 even with an
 // enabled gateway key, saying why; one inside it is judged by its key as
 // before; loopback and this computer's own addresses are always let in.
@@ -96,7 +96,7 @@ func TestAllowList(t *testing.T) {
 	if l, env := AllowIPs(); !env || len(l) != 2 {
 		t.Errorf("AllowIPs = %v %v", l, env)
 	}
-	// a typo lets nothing in, and never opens magpie to all
+	// a typo lets nothing in, and never opens magpie-friday to all
 	t.Setenv(AllowIPsEnv, "203.0.113.0/33")
 	check("typo", []want{
 		{"203.0.113.9:5000", secret, 403},
@@ -159,7 +159,7 @@ func TestKeepsOut(t *testing.T) {
 
 // settings.json that can't be read, or doesn't parse with no last good
 // generation, holds a list nobody knows, and is never taken for no list:
-// the list read last stays in force, and with none read since magpie
+// the list read last stays in force, and with none read since magpie-friday
 // started, only this computer is let in, told why. No file is no list.
 func TestAllowListUnreadableSettings(t *testing.T) {
 	fresh(t)

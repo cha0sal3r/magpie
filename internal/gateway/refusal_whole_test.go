@@ -8,12 +8,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // cyberPolicyMsg is what the ChatGPT backend said refusing CartethyiaQwQ's
-// Codex turn (#3274), as the reporter quoted it from magpie, without
-// magpie's cut at 300 characters ("bef…").
+// Codex turn (#3274), as the reporter quoted it from magpie-friday, without
+// magpie-friday's cut at 300 characters ("bef…").
 const cyberPolicyMsg = `This content was flagged for possible cybersecurity risk. If this seems wrong, try rephrasing your request. If you're doing authorized security work that requires more cyber permissive safeguards, apply for Daybreak access via https://platform.openai.com/settings/organization/status-and-access`
 
 // liveRests is every candidate resting now, by its rest key.

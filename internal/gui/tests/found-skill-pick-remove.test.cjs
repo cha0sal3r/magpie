@@ -28,7 +28,7 @@ const FOUND = [
 ];
 const local = (name) => ({ name, description: name + " does a thing", kind: "local", agents: ["claude"] });
 const lib = (found) => ({
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: [agent("claude", "Claude Code"), agent("codex", "Codex"), agent("gemini", "Gemini CLI"), agent("goose", "Goose")],
   instructions: { agents: [] }, servers: [], skills: [local("lib-a"), local("lib-b")], foundServers: [], projects: [], foundSkills: found, problems: [],
 });
@@ -186,7 +186,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         assert.equal((await sheet.locator(".ehead b").textContent()).trim(), w("Remove {n} skills?", { n: 3 }));
         assert.deepEqual(await lines(), [
           w("They are taken out of {agents}.", { agents: "Claude Code, Codex, Goose" }),
-          w("{n} folders are moved to magpie's backups (Backups, at the top of the Library), not deleted.", { n: 2 }) + " " + w("{n} linked from folders of your own are only unlinked: those folders stay where they are.", { n: 1 }),
+          w("{n} folders are moved to magpie-friday's backups (Backups, at the top of the Library), not deleted.", { n: 2 }) + " " + w("{n} linked from folders of your own are only unlinked: those folders stay where they are.", { n: 1 }),
           w("{n} have an entry in the shared skills folder, which goes to the backups too, so no agent reads them from there.", { n: 1 }),
           w("Another agent's own skill by one of these names stays."),
         ]);
@@ -221,7 +221,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         await sheet.waitFor();
         await settled(page);
         assert.equal((await sheet.locator(".ehead b").textContent()).trim(), w("Remove {name}?", { name: "stuck" }));
-        assert.deepEqual(await lines(), [w("It is taken out of {agents}, and its folder is moved to magpie's backups.", { agents: "Gemini CLI" })]);
+        assert.deepEqual(await lines(), [w("It is taken out of {agents}, and its folder is moved to magpie-friday's backups.", { agents: "Gemini CLI" })]);
         assert.equal((await sheet.locator(".bar button.primary").textContent()).trim(), w("Remove"));
         await sheet.locator(".bar button.primary").click();
         await page.locator("#status").filter({ hasText: STUCK }).waitFor();

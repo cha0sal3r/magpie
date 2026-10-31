@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // What the Agents page says beside an agent's 「接入」 switch (the owner's
@@ -23,7 +23,7 @@ import (
 // it on touches; once on, whether copies of it already running still have
 // the list they started with.
 
-// Source is what an agent not connected to magpie runs on now: "sub" (a
+// Source is what an agent not connected to magpie-friday runs on now: "sub" (a
 // Claude subscription), "chatgpt" (a ChatGPT sign-in), "key" (an API key
 // of its own), "providers:N" (N providers of its own); "" when unknown.
 //
@@ -92,28 +92,28 @@ func (a *Agent) Source() string {
 }
 
 // FailoverSaid is, for an agent not connected whose requests still go
-// through magpie for account failover alone (FailingOver), what the CLI
+// through magpie-friday for account failover alone (FailingOver), what the CLI
 // and the TUI say of it, the Agents page's line in words of their own:
-// why it goes through magpie, and what turns that off (#1385). "" when it
+// why it goes through magpie-friday, and what turns that off (#1385). "" when it
 // doesn't.
 func (a *Agent) FailoverSaid() string {
 	if a.FailingOver == nil || !a.FailingOver() {
 		return ""
 	}
-	return "not connected · goes through magpie only to fail over to your other ChatGPT accounts; tick Only switch Codex's sign-in under Providers › Codex (magpie accounts switch-only codex on), or switch them off, to stop it"
+	return "not connected · goes through magpie-friday only to fail over to your other ChatGPT accounts; tick Only switch Codex's sign-in under Providers › Codex (magpie-friday accounts switch-only codex on), or switch them off, to stop it"
 }
 
-// startsWith is, for an agent that reads magpie's models only as it
+// startsWith is, for an agent that reads magpie-friday's models only as it
 // starts, how to find its processes (patterns for pgrep -f), the files it
-// reads them from, and the part of those files magpie writes for it. The
-// files' times alone don't say when magpie changed that part: the agent
+// reads them from, and the part of those files magpie-friday writes for it. The
+// files' times alone don't say when magpie-friday changed that part: the agent
 // writes the same files (Codex keeps each project's trust, a notice seen,
 // the model picked in its app in config.toml), and a copy started before
-// such a write has magpie's list all the same (#729).
+// such a write has magpie-friday's list all the same (#729).
 func (a *Agent) startsWith() (pats []string, files []string, reads func() string) {
 	switch a.ID {
 	case "codex":
-		list := filepath.Join(filepath.Dir(a.Path), "magpie-models.json")
+		list := filepath.Join(filepath.Dir(a.Path), "magpie-friday-models.json")
 		return []string{`(^|/)codex( |$)`}, []string{a.Path, list}, func() string {
 			var b strings.Builder
 			for _, k := range []string{"model_provider", "model_catalog_json", "openai_base_url"} {
@@ -148,9 +148,9 @@ type runningProc struct {
 // can say.
 var running = listRunning
 
-// changedAt is when magpie last changed what the agent reads at start. It
+// changedAt is when magpie-friday last changed what the agent reads at start. It
 // is kept in the stash with a digest of what that was, so neither the
-// agent's own writes to the same files nor magpie starting again move it;
+// agent's own writes to the same files nor magpie-friday starting again move it;
 // a change first seen is put at the files' latest write, or at now when
 // no file was written since the last one. Zero when the files aren't
 // there.
@@ -182,7 +182,7 @@ func (a *Agent) changedAt(files []string, reads func() string) time.Time {
 }
 
 // Stale is how many copies of the agent are running that started before
-// magpie last changed what it reads at start: they still have the list
+// magpie-friday last changed what it reads at start: they still have the list
 // they started with until reopened. On Windows only the Codex daemon is
 // told.
 func (a *Agent) Stale() int { return len(a.StaleCopies()) }

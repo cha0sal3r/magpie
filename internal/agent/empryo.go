@@ -8,9 +8,9 @@ package agent
 // The model sessions start on is defaultModel, "<provider id>/<model id>",
 // split at the first "/".
 //
-// magpie adds a provider of its own, id "magpie", at the gateway, and sets
-// defaultModel to magpie/<catalog id>; the defaultModel the user had is
-// stashed and put back when magpie steps out, and the "magpie" provider
+// magpie-friday adds a provider of its own, id "magpie-friday", at the gateway, and sets
+// defaultModel to magpie-friday/<catalog id>; the defaultModel the user had is
+// stashed and put back when magpie-friday steps out, and the "magpie-friday" provider
 // goes again then. The user's providers and other keys are left as they
 // are. With no envVar Empryo only lists a provider whose baseURL answers
 // (2xx, 401 or 403), which the gateway's GET /v1 does.
@@ -22,7 +22,7 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 const (
@@ -42,11 +42,11 @@ func empryoAt(at place) *Agent {
 	dir := filepath.Join(at.home, ".empryo")
 	path := filepath.Join(dir, "config.json")
 	keyModel := "empryo:" + path + ":" + empryoModel
-	// keyNew marks a file magpie made, which goes again once magpie's
+	// keyNew marks a file magpie-friday made, which goes again once magpie-friday's
 	// provider and model are taken out of it and nothing is left
 	keyNew := "empryo:" + path + ":new"
 	model := func() string { v, _ := edit.GetJSON(path, empryoModel); return v }
-	// ours is magpie's provider entry, "" where there is none
+	// ours is magpie-friday's provider entry, "" where there is none
 	ours := func() string {
 		raw, err := edit.Read(path)
 		if err != nil {
@@ -59,13 +59,13 @@ func empryoAt(at place) *Agent {
 		}
 		return ""
 	}
-	// on: magpie's — the model is one of magpie's provider
+	// on: magpie-friday's — the model is one of magpie-friday's provider
 	on := func() bool {
 		ref, ok := strings.CutPrefix(model(), magpieID+"/")
 		return ok && isMagpie(ref)
 	}
 	// providers sets the providers array to the user's ones plus, with
-	// add, magpie's; with neither left the key goes
+	// add, magpie-friday's; with neither left the key goes
 	providers := func(add bool) error {
 		raw, err := edit.Read(path)
 		if err != nil && isFile(path) {
@@ -79,7 +79,7 @@ func empryoAt(at place) *Agent {
 		}
 		if add {
 			mine, _ := json.Marshal(map[string]any{
-				"id": magpieID, "name": "Magpie",
+				"id": magpieID, "name": "magpie-friday",
 				"baseURL": gatewayV1(), "modelsAPI": gatewayV1() + "/models",
 			})
 			list = append(list, mine)
@@ -116,7 +116,7 @@ func empryoAt(at place) *Agent {
 			}
 			raw := ours()
 			if raw == "" {
-				return "Empryo's magpie provider (config.json) is gone, so it no longer reaches magpie"
+				return "Empryo's magpie-friday provider (config.json) is gone, so it no longer reaches magpie-friday"
 			}
 			return wiringOff("Empryo", path, func(k string) (string, bool) {
 				r := gjson.Get(raw, k)
@@ -128,7 +128,7 @@ func empryoAt(at place) *Agent {
 			Get: model,
 			Set: func(v string) error {
 				if ref, ok := strings.CutPrefix(v, magpieID+"/"); ok && isMagpie(ref) {
-					// what the user had, unless magpie stashed it already
+					// what the user had, unless magpie-friday stashed it already
 					if !on() {
 						forget(keyModel, keyNew)
 						stash(map[string]string{keyModel: model()})

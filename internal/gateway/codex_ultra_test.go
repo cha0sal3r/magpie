@@ -14,8 +14,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/codexcat"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/codexcat"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // copilotUp is a Copilot account whose API serves gpt-6.1-sol and gpt-6-luna
@@ -107,7 +107,7 @@ func copilotSol(t *testing.T) *copilotUp {
 	return c
 }
 
-// Codex's Ultra on Copilot's GPT-6.1 Sol (#656): magpie's /v1/models and
+// Codex's Ultra on Copilot's GPT-6.1 Sol (#656): magpie-friday's /v1/models and
 // the list it hands Codex offer it there, not on GPT-6 Luna, which OpenAI
 // offers up to max alone; Codex is told multi-agent V2 for it, where Ultra
 // hands work to its agents. An "ultra" that reaches the gateway goes to
@@ -207,7 +207,7 @@ func TestCopilotUltraSubagentWithWebSearch(t *testing.T) {
 		t.Fatalf("lead: %d %s", code, out)
 	}
 	// made again for Copilot, not relayed: its tools flat, the search
-	// magpie's
+	// magpie-friday's
 	if lead, _ := json.Marshal(c.last(t)["tools"]); !strings.Contains(string(lead), `"collaboration__spawn_agent"`) || strings.Contains(string(lead), `"encrypted"`) {
 		t.Fatalf("lead's tools to Copilot: %s", lead)
 	}
@@ -260,7 +260,7 @@ func TestCopilotUltraSubagentWithWebSearch(t *testing.T) {
 
 // A Codex turn on Copilot offering web_search is relayed as Codex sent it,
 // as Copilot runs the search itself (echo_ts on Discord: translated for
-// magpie's search, every turn lost the relay); one whose tools mark an
+// magpie-friday's search, every turn lost the relay); one whose tools mark an
 // argument "encrypted" is made again unmarked, with the search or without,
 // since Copilot seals that argument and can't open it on the next turn.
 func TestCopilotRelayedUnlessAskedToSeal(t *testing.T) {
@@ -283,7 +283,7 @@ func TestCopilotRelayedUnlessAskedToSeal(t *testing.T) {
 		if code != 200 {
 			t.Fatalf("%s: %d %s", tc.name, code, out)
 		}
-		// a field magpie doesn't know goes on only as Codex sent it
+		// a field magpie-friday doesn't know goes on only as Codex sent it
 		body := c.last(t)
 		sent, _ := json.Marshal(body["tools"])
 		relayed := body["probe"] == "as sent"

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // The tray panel's Allowances tab leaves out the subscriptions set hidden
@@ -89,11 +89,11 @@ func TestUsageArrangeAgentsHidden(t *testing.T) {
 	want(nil, []string{"deepseek"})
 }
 
-// A client magpie doesn't know is counted as one of its agents from the
+// A client magpie-friday doesn't know is counted as one of its agents from the
 // Usage page's Agents list (#1958, NorethSea), saved on its own and kept
 // through a save of the Settings page; As "" counts it on its own again.
-// An agent magpie knows isn't counted as another, nor anything as
-// magpie, nor as a client that isn't an agent.
+// An agent magpie-friday knows isn't counted as another, nor anything as
+// magpie-friday, nor as a client that isn't an agent.
 func TestUsageArrangeCountClient(t *testing.T) {
 	h := t.TempDir()
 	t.Setenv("HOME", h)
@@ -122,8 +122,8 @@ func TestUsageArrangeCountClient(t *testing.T) {
 	want(map[string]string{"hermes-codex-thread-bridge": "codex"})
 	for _, bad := range []string{
 		`{"count":{"client":"claude-code","as":"codex"}}`,
-		`{"count":{"client":"magpie-router","as":"codex"}}`,
-		`{"count":{"client":"my-bridge","as":"magpie"}}`,
+		`{"count":{"client":"magpie-friday-router","as":"codex"}}`,
+		`{"count":{"client":"my-bridge","as":"magpie-friday"}}`,
 		`{"count":{"client":"my-bridge","as":"Python-urllib"}}`,
 		`{"count":{"client":"","as":"codex"}}`,
 	} {

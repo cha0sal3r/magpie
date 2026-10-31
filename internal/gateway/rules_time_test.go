@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A rule's hours are looked at as a turn begins, on the clock then: a turn
@@ -64,7 +64,7 @@ func TestRuleTimeWindowAtTurnStart(t *testing.T) {
 }
 
 // A rule's hours set in a zone hold at that zone's hours, on a server
-// whose clock reads UTC (gaubeebangeel on X: magpie on a cloud server, its
+// whose clock reads UTC (gaubeebangeel on X: magpie-friday on a cloud server, its
 // user in Beijing, the hours 8 off): the instants here are UTC, as such a
 // server has them, and the zone is one hours away from this computer's.
 func TestRuleTimeWindowInItsZoneAtTurnStart(t *testing.T) {

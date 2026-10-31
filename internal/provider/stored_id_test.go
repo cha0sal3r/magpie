@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// A provider whose id was put in providers.json by hand, not one magpie
+// A provider whose id was put in providers.json by hand, not one magpie-friday
 // would make ("b.ai"), is saved as it is and renamed to one that is
 // right; a new provider still can't be given such an id (01huadalang on
 // Discord: 我不管改成什么都显示不能用 b.ai).

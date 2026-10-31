@@ -2,7 +2,7 @@ package sessions
 
 // What was said in a call — what the agent was given and what came back —
 // read from the session file the call is in when it is asked for, from the place
-// the call has in it (Call.File, From, To); magpie keeps no copy.
+// the call has in it (Call.File, From, To); magpie-friday keeps no copy.
 
 import (
 	"bytes"

@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // routerUp is a router key whose vendor lists a small model that sees,
@@ -39,7 +39,7 @@ func TestAutoVisionPicksOnlyAnEnabledModel(t *testing.T) {
 		t.Fatalf("AutoVision = %q, a model the user never enabled", m)
 	}
 	code, body := postAs(t, s, "", `{"model":"router/text","messages":[{"role":"user","content":[{"type":"text","text":"read"},{"type":"image_url","image_url":{"url":"data:image/png;base64,aGVsbG8="}}]}]}`)
-	if code != 400 || !strings.Contains(body, "none of the models enabled in magpie can see images") {
+	if code != 400 || !strings.Contains(body, "none of the models enabled in magpie-friday can see images") {
 		t.Fatalf("%d %s", code, body)
 	}
 	if got := u.sent("anthropic/claude-haiku-5.5"); len(got) != 0 {

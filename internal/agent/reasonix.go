@@ -1,7 +1,7 @@
 package agent
 
 // Reasonix Studio 2.x and its CLI share config.toml and .env under REASONIX_HOME,
-// ~/.reasonix, or %APPDATA%/reasonix on Windows. Magpie owns one [[providers]]
+// ~/.reasonix, or %APPDATA%/reasonix on Windows. magpie-friday owns one [[providers]]
 // entry, never the user's other providers. Project/session overrides stay theirs.
 
 import (
@@ -19,9 +19,9 @@ import (
 	"sync"
 
 	"github.com/pelletier/go-toml/v2"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 const reasonixKey = "MAGPIE_REASONIX_API_KEY"
@@ -137,7 +137,7 @@ func reasonixIn(at place) *Agent {
 	checkOwner := func(cfg reasonixConfig, state *reasonixState) error {
 		for _, p := range cfg.Providers {
 			if p.Name == magpieID && (state == nil || p.APIKeyEnv != reasonixKey) {
-				return fmt.Errorf("Reasonix already has a provider named magpie that magpie does not own")
+				return fmt.Errorf("Reasonix already has a provider named magpie-friday that magpie-friday does not own")
 			}
 			if p.Name != magpieID && p.APIKeyEnv == reasonixKey {
 				return fmt.Errorf("Reasonix's %s is used by another provider", reasonixKey)
@@ -153,7 +153,7 @@ func reasonixIn(at place) *Agent {
 			return fmt.Errorf("Reasonix credentials repeat %s", reasonixKey)
 		}
 		if _, exists := edit.GetEnvFile(env, reasonixKey); exists && state == nil {
-			return fmt.Errorf("Reasonix's %s already exists; it was not created by magpie", reasonixKey)
+			return fmt.Errorf("Reasonix's %s already exists; it was not created by magpie-friday", reasonixKey)
 		}
 		return nil
 	}
@@ -239,7 +239,7 @@ func reasonixIn(at place) *Agent {
 		currentState := *state
 		models := magpieModels("reasonix")
 		if !slices.ContainsFunc(models, func(m catalog.Model) bool { return m.ID == ref }) {
-			return fmt.Errorf("magpie has no visible model %q", ref)
+			return fmt.Errorf("magpie-friday has no visible model %q", ref)
 		}
 		if err := checkOwner(cfg, currentState); err != nil {
 			return err
@@ -323,22 +323,22 @@ func reasonixIn(at place) *Agent {
 			}
 			p := cfg.magpie()
 			if state == nil || p.APIKeyEnv != reasonixKey {
-				return "Reasonix's magpie provider or restore record is missing"
+				return "Reasonix's magpie-friday provider or restore record is missing"
 			}
 			if err := checkOwner(cfg, state); err != nil {
 				return err.Error()
 			}
 			if p.Kind != "openai" || p.BaseURL != at.v1() && !reachesMagpie(p.BaseURL, at.v1()) {
-				return "Reasonix's magpie base_url or kind changed"
+				return "Reasonix's magpie-friday base_url or kind changed"
 			}
 			if token, _ := edit.GetEnvFile(env, reasonixKey); !keyHolds(token, gwKey()) {
 				return "Reasonix's gateway credential changed"
 			}
 			if !slices.Contains(p.Models, ref) || cfg.Agent.Planner != nil && usesMagpie(*cfg.Agent.Planner) && !slices.Contains(p.Models, strings.TrimPrefix(*cfg.Agent.Planner, magpieID+"/")) {
-				return "Reasonix's selected model is missing from the magpie catalog"
+				return "Reasonix's selected model is missing from the magpie-friday catalog"
 			}
 			if cfg.Desktop.Access != nil && !slices.Contains(cfg.Desktop.Access, magpieID) {
-				return "Reasonix Studio's provider_access excludes magpie"
+				return "Reasonix Studio's provider_access excludes magpie-friday"
 			}
 			return ""
 		},
@@ -359,7 +359,7 @@ func reasonixIn(at place) *Agent {
 			}
 			models := magpieModels("reasonix")
 			if len(models) == 0 {
-				return fmt.Errorf("magpie has no visible Reasonix models")
+				return fmt.Errorf("magpie-friday has no visible Reasonix models")
 			}
 			next := reasonixCatalogAt(models, current.Default, current.Effort, at.v1())
 			if reflect.DeepEqual(current, next) {
@@ -413,7 +413,7 @@ func reasonixIn(at place) *Agent {
 						if v == "" {
 							return nil
 						}
-						return fmt.Errorf("select a magpie model in Reasonix before setting effort")
+						return fmt.Errorf("select a magpie-friday model in Reasonix before setting effort")
 					}
 					if err := checkOwner(cfg, state); err != nil {
 						return err
@@ -593,7 +593,7 @@ func readReasonix(path string) (reasonixConfig, error) {
 	names := map[string]bool{}
 	for _, p := range cfg.Providers {
 		if strings.TrimSpace(p.Name) == magpieID && p.Name != magpieID {
-			return cfg, fmt.Errorf("Reasonix provider has a noncanonical magpie name")
+			return cfg, fmt.Errorf("Reasonix provider has a noncanonical magpie-friday name")
 		}
 		if names[p.Name] {
 			return cfg, fmt.Errorf("Reasonix has duplicate provider %q", p.Name)

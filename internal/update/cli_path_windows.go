@@ -23,7 +23,7 @@ func cliDir(exe string, _ []string, _ string) string { return filepath.Dir(exe) 
 
 // cliPlace puts dir first in the user's PATH in the registry, where a
 // terminal opened from now on takes it up, and tells Explorer; an app not
-// named magpie.exe gets its magpie.cmd there first (writeShim).
+// named magpie-friday.exe gets its magpie-friday.cmd there first (writeShim).
 func cliPlace(exe, dir string) error {
 	if _, err := writeShim(exe); err != nil {
 		return err

@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // #275: a restart to update from the open window (Windows, Linux) came
@@ -37,7 +37,7 @@ func TestRelaunchArgs(t *testing.T) {
 // process as before.
 func TestRelaunchBinaryArgs(t *testing.T) {
 	if runtime.GOOS == "windows" {
-		t.Skip("a shell script stands in for magpie")
+		t.Skip("a shell script stands in for magpie-friday")
 	}
 	for _, c := range []struct {
 		window bool
@@ -51,7 +51,7 @@ func TestRelaunchBinaryArgs(t *testing.T) {
 		// read as the next one's
 		dir := t.TempDir()
 		out := filepath.Join(dir, "out")
-		exe := filepath.Join(dir, "magpie")
+		exe := filepath.Join(dir, "magpie-friday")
 		script := "#!/bin/sh\necho \"$* $MAGPIE_REPLACES\" > " + out + ".tmp && mv " + out + ".tmp " + out + "\n"
 		testenv.Program(t, exe, script)
 		if err := RelaunchBinary(exe, "", c.window, c.view); err != nil {

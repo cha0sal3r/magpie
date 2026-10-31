@@ -12,7 +12,7 @@ package gateway
 // the accounts, where without Sink it goes back to the first each time
 // that one's rest ends.
 //
-// What sank is remembered in memory, until magpie restarts — or until it
+// What sank is remembered in memory, until magpie-friday restarts — or until it
 // sinks again, which sends it to the back once more, or its rest is
 // lifted by hand (Unrest), which puts it back in its place. Nothing else changes:
 // a resting one still waits behind every one ready (restLast), an account
@@ -24,7 +24,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 type sinking struct {

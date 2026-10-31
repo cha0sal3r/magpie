@@ -27,7 +27,7 @@ const piDesktopSchema = `CREATE TABLE sessions (
   updated_at  INTEGER NOT NULL
 )`
 
-// A chat PI-Desktop sends through magpie (X-Magpie-Session: its id) goes
+// A chat PI-Desktop sends through magpie-friday (X-Magpie-Session: its id) goes
 // by the title PI-Desktop keeps in pi.sqlite, as Pi's or as PI-Desktop's
 // own agent, and not by its id (#1967, dgmico) — read with the title still
 // in the write-ahead log, as a running PI-Desktop leaves it, without a

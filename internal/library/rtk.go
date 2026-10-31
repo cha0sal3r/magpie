@@ -16,18 +16,18 @@ import (
 	"time"
 
 	"github.com/pelletier/go-toml/v2"
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/filememo"
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/filememo"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 	"gopkg.in/yaml.v3"
 )
 
 // RTK (rtk-ai.app) is a CLI that the shell commands an agent runs go
 // through — git status, cargo test, ls — cut down to what the model needs,
 // so their output costs fewer tokens. Each agent gets it through a hook its
-// own installer writes (rtk init -g …): magpie runs that installer for the
+// own installer writes (rtk init -g …): magpie-friday runs that installer for the
 // agents switched on, takes out what it wrote for those switched off, and
 // reads each one's files to say which have it, since rtk init --show knows
 // only of Claude Code, OpenCode and Cursor.
@@ -43,10 +43,10 @@ type rtkSpec struct {
 	// has says whether the agent has rtk's hook, by its files
 	has func(a *agent.Agent) bool
 	// files are those the installer writes and remove takes back, kept
-	// aside by magpie first
+	// aside by magpie-friday first
 	files func(a *agent.Agent) []string
 	// remove takes out what the installer put in, and only that. It is
-	// magpie's own, not rtk init --uninstall: it works with rtk gone (its
+	// magpie-friday's own, not rtk init --uninstall: it works with rtk gone (its
 	// hooks left behind then fail every command), and rtk's uninstaller
 	// deletes Gemini's GEMINI.md whole and takes Claude Code, OpenCode and
 	// Cursor away together.
@@ -57,7 +57,7 @@ type rtkSpec struct {
 	// withClaude: the installer gives it to Claude Code too, which is
 	// pointed at a folder thrown away after
 	withClaude bool
-	// env is what the installer is run with besides magpie's own
+	// env is what the installer is run with besides magpie-friday's own
 	// environment, so it writes where the agent reads
 	env func(a *agent.Agent) []string
 	// blocked says why rtk's installer mustn't be run for the agent as it
@@ -179,7 +179,7 @@ var rtkSpecs = map[string]rtkSpec{
 	// all in plugins/rtk. agy discovers a plugin there by its plugin.json.
 	// The Antigravity branch reads no patch mode, so --auto-patch isn't
 	// given; rtk's own uninstaller for it ran Claude Code's
-	// (rtk-ai/rtk#3404), so the folder is taken out by magpie.
+	// (rtk-ai/rtk#3404), so the folder is taken out by magpie-friday.
 	"agy": {
 		flags: []string{"--agent", "antigravity"}, blocked: agyBlocked,
 		has: func(*agent.Agent) bool {
@@ -214,7 +214,7 @@ var rtkSpecs = map[string]rtkSpec{
 }
 
 // rtkNoHook are agents RTK has no hook for, and why: the Library lists
-// them all the same, so one isn't simply missing as if magpie hadn't seen
+// them all the same, so one isn't simply missing as if magpie-friday hadn't seen
 // it (Discord, lc: rtk 没有识别 deepseek harness).
 //
 // DeepSeek Harness: RTK works by rewriting the shell command an agent is
@@ -586,7 +586,7 @@ type RTKView struct {
 	// Days are what it saved each day it ran commands, oldest first
 	Days []RTKDay `json:"days,omitempty"`
 	// Latest is rtk's latest release, "" when it isn't known (see
-	// CheckLatest); Upgrade the command Upgrade RTK runs, "" when magpie
+	// CheckLatest); Upgrade the command Upgrade RTK runs, "" when magpie-friday
 	// doesn't know how this rtk was installed
 	Latest  string `json:"latest,omitempty"`
 	Upgrade string `json:"upgrade,omitempty"`
@@ -607,7 +607,7 @@ type RTKView struct {
 	// hooks, which run rtk by name, do nothing (Pi's says "rtk binary not
 	// found in PATH"). PathDir is where Put RTK on PATH makes it found — a
 	// link to it made in that folder (PathLink), or (Windows) that folder,
-	// rtk's own, added to the user's PATH; "" when magpie has nowhere
+	// rtk's own, added to the user's PATH; "" when magpie-friday has nowhere
 	PathDir  string     `json:"pathDir,omitempty"`
 	PathLink bool       `json:"pathLink,omitempty"`
 	OffPath  bool       `json:"offPath,omitempty"`
@@ -622,7 +622,7 @@ type RTKView struct {
 
 var rtkMu sync.Mutex
 
-// rtkPath is rtk's, "" when it isn't installed; one installed since magpie
+// rtkPath is rtk's, "" when it isn't installed; one installed since magpie-friday
 // started may not be on its PATH yet, so where the installers put it is
 // looked in too (Homebrew's are on it from the start: proc.UserPath).
 // winget's is in its package folder, linked from WinGet\Links only when
@@ -680,7 +680,7 @@ func lastLines(s string, n int) string {
 }
 
 // detected is the agents on this machine, as agent.Detected says; a var for
-// tests. Detecting them probes a file or a command for every agent magpie
+// tests. Detecting them probes a file or a command for every agent magpie-friday
 // knows of, which is a few hundred milliseconds, so it is asked once per read
 // and not once per pass over the list (see ReadRTK).
 var detected = agent.Detected
@@ -799,7 +799,7 @@ func parseGain(out string) (*RTKGain, []RTKDay, string) {
 	}
 	i, j := strings.Index(out, "{"), strings.LastIndex(out, "}")
 	if i < 0 || j < i || json.Unmarshal([]byte(out[i:j+1]), &g) != nil || g.Summary == nil {
-		return nil, nil, strings.TrimSuffix("rtk gain printed no summary magpie can read: "+installerSaid(out, 2), ": ")
+		return nil, nil, strings.TrimSuffix("rtk gain printed no summary magpie-friday can read: "+installerSaid(out, 2), ": ")
 	}
 	s := g.Summary
 	if s.Commands == 0 {
@@ -860,7 +860,7 @@ func shown(c []string) string {
 		return c[2]
 	}
 	if c[0] == rtkWindowsRelease {
-		// magpie's own action, not a command line: name what it does
+		// magpie-friday's own action, not a command line: name what it does
 		// rather than the action and the path the user's rtk is at (#2006)
 		return "rtk's own Windows release"
 	}
@@ -937,7 +937,7 @@ func rtkInstall(bin string, a *agent.Agent) error {
 	}
 	var env []string
 	if sp.withClaude {
-		tmp, err := os.MkdirTemp("", "magpie-rtk-")
+		tmp, err := os.MkdirTemp("", "magpie-friday-rtk-")
 		if err != nil {
 			return err
 		}

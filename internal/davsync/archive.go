@@ -9,7 +9,7 @@ import (
 )
 
 // Bucket is the S3 sync's bucket for files other than the backup — the
-// gateway's request archive — each at <prefix>/magpie/<name>, beside the
+// gateway's request archive — each at <prefix>/magpie-friday/<name>, beside the
 // backup, written as it is: no passphrase seals them, so they can be read
 // in the bucket too.
 type Bucket struct{ s *s3 }

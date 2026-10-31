@@ -16,7 +16,7 @@ const assets = path.resolve(__dirname, "../assets");
 const days = (n) => new Date(Date.now() - n * 86400e3).toISOString();
 const codex = {
   id: "codex", name: "Codex", icon: "generic", path: "/fixture/codex", wired: true,
-  fields: [{ key: "model", label: "model", value: "gpt-6.1-sol", options: [{ value: "gpt-6.1-sol", label: "GPT-6.1 Sol", ref: "group/auto-gpt-6-1-sol", note: "Group · via magpie" }] }],
+  fields: [{ key: "model", label: "model", value: "gpt-6.1-sol", options: [{ value: "gpt-6.1-sol", label: "GPT-6.1 Sol", ref: "group/auto-gpt-6-1-sol", note: "Group · via magpie-friday" }] }],
   stale: 3, staleCopies: [{ kind: "app", since: days(3) }, { kind: "daemon", since: days(1) }, { kind: "embedded", app: "Agents Anywhere", since: days(1) }],
 };
 
@@ -127,7 +127,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
           assert.equal(box.lines, 1, `${name}: one line`);
           if (process.env.ARTIFACT_DIR) await page.locator(row).screenshot({ path: path.join(process.env.ARTIFACT_DIR, `stale-${engine}-${lang}-${width}-${name}.png`) });
         }
-        // a copy of no kind magpie knows keeps the plain words
+        // a copy of no kind magpie-friday knows keeps the plain words
         await page.unrouteAll();
         await page.route("**/*", serve(lang, { ...codex, stale: 1, staleCopies: [{ since: days(1) }] }));
         await page.goto("http://magpie.test/?view=agents");
@@ -141,7 +141,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
 
 // luci on Discord (Codex 0.162): every new codex showed Codex's own models
 // after Codex was wired in, since the daemon they attach to had the list
-// from before. magpie restarts it itself while no codex session is on it;
+// from before. magpie-friday restarts it itself while no codex session is on it;
 // with one on, the daemon's line has a Restart, which restarts it, and
 // the row as it is after takes the line away. Only the daemon's line has
 // it. Every language, both widths.
@@ -193,7 +193,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
   }
 }
 
-// the Codex app's line has a Restart of its own (the owner, 10-23): magpie
+// the Codex app's line has a Restart of its own (the owner, 10-23): magpie-friday
 // asks, then quits the app named by its bundle and opens it again
 const appName = { en: "The Codex app", zh: "Codex 应用", "zh-TW": "Codex 應用", ja: "Codex アプリ", de: "Die Codex-App" };
 const cancelSays = { en: "Cancel", zh: "取消", "zh-TW": "取消", ja: "キャンセル", de: "Abbrechen" };
@@ -229,7 +229,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         assert.equal((await go.textContent()).trim(), restartSays[lang]);
         const box = await go.boundingBox();
         assert.ok(box.x + box.width <= width, "past the window");
-        // asked first, in magpie's own dialog (微雨南山 and stones): Cancel
+        // asked first, in magpie-friday's own dialog (微雨南山 and stones): Cancel
         // quits nothing
         await go.click();
         const ask = page.locator("dialog.action-confirm[open]");

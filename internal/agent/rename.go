@@ -4,7 +4,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // RenameProvider gives a provider another id (provider.Rename) and moves
@@ -89,7 +89,7 @@ func RenameProvider(from, to string) ([]string, error) {
 // subscription's id (provider.OnAccountIDs) to a free one, the agents on it
 // with it, so the subscription is listed once signed in: a "WorkBuddy" key
 // saved as workbuddy before WorkBuddy's plan was a subscription hid it, and
-// signing in to it said "signed in, but magpie can't list it". Run at
+// signing in to it said "signed in, but magpie-friday can't list it". Run at
 // start-up; errors are swallowed as RenameLegacy's are.
 func MoveOffAccountIDs() {
 	for _, id := range provider.OnAccountIDs() {
@@ -98,7 +98,7 @@ func MoveOffAccountIDs() {
 }
 
 // renameRef is one entry of an agent's enabledModels (StepCode's, Pi's
-// and its forks') with magpie's provider from renamed to to. A glob or a thinking level after the model stays. An entry that
+// and its forks') with magpie-friday's provider from renamed to to. A glob or a thinking level after the model stays. An entry that
 // does not name that provider is the user's and is left as it is.
 func renameRef(s, from, to string) (string, bool) {
 	rest, ok := strings.CutPrefix(s, magpieID+"/"+from+"/")
@@ -108,7 +108,7 @@ func renameRef(s, from, to string) (string, bool) {
 	return magpieID + "/" + to + "/" + rest, true
 }
 
-// renameRefList renames magpie/<from>/ entries. The model just set is
+// renameRefList renames magpie-friday/<from>/ entries. The model just set is
 // appended before the old entry is renamed onto the same text, so that
 // second copy is dropped. A list that names nothing of that provider is
 // returned unchanged, a repeated entry of the user's included.

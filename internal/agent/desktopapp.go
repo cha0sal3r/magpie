@@ -12,8 +12,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // An agent that is a desktop app as well as a CLI has the app's version shown
@@ -183,7 +183,7 @@ func macBundle(app desktopApp) bool {
 
 // macBundles are where app's bundle may be on a Mac, the likeliest first:
 // under one of its names in appFolders, or in a folder of theirs one level
-// down (sungoku keeps DeepSeek Harness.app in /Applications/AI, and magpie
+// down (sungoku keeps DeepSeek Harness.app in /Applications/AI, and magpie-friday
 // 0.1.1253 said 未找到 CLI, #2325), then wherever Spotlight knows its bundle
 // id to be (spotlightApps), as Zed's is found (zedAppPath). A caller still
 // reads each one's Info.plist.
@@ -276,7 +276,7 @@ func spotlightBundles(id string) []string {
 }
 
 // AppVersion is the version of the agent's desktop app installed here, ""
-// for an agent without one magpie knows, one not installed, or an Info.plist
+// for an agent without one magpie-friday knows, one not installed, or an Info.plist
 // that doesn't say (a binary one isn't read).
 func (a *Agent) AppVersion() string {
 	app, ok := desktopApps[a.ID]

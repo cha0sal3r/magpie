@@ -1,4 +1,4 @@
-// A plugin that leaves renewing its sign-ins to magpie (auth.refresh)
+// A plugin that leaves renewing its sign-ins to magpie-friday (auth.refresh)
 // against a vendor that spends a refresh token once: $RACE_TOKEN_URL
 // exchanges it, and answers one sent again, or never given, with
 // invalid_grant, which signs the account out. Requests go to $FAKE_BASE.

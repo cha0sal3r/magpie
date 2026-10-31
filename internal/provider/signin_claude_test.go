@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // fakeClaudeAccount is who a fake `claude auth login` signs in to.
@@ -26,8 +26,8 @@ type fakeClaudeAccount struct {
 // callback server here), prints the page whose code is pasted into it, and
 // keeps the sign-in in $CLAUDE_CONFIG_DIR. own is the script that answers
 // `auth status` with no CLAUDE_CONFIG_DIR, "" for no answer. opens says
-// whether the browser it's given opens anything; magpie's own is replaced
-// with a script that writes the page down as magpie would.
+// whether the browser it's given opens anything; magpie-friday's own is replaced
+// with a script that writes the page down as magpie-friday would.
 func fakeClaudeLogin(t *testing.T, a fakeClaudeAccount, own string, opens bool) string {
 	t.Helper()
 	shellFakes(t)
@@ -152,7 +152,7 @@ func noAnthropic(t *testing.T) {
 }
 
 // A browser that can't come back to this machine: the page Claude Code
-// prints shows a code, pasted into magpie, which types it into Claude Code;
+// prints shows a code, pasted into magpie-friday, which types it into Claude Code;
 // or the address the browser ended on, handed to Claude Code's listener.
 func TestClaudeSignInByPaste(t *testing.T) {
 	claudeHome(t)
@@ -247,7 +247,7 @@ func TestClaudeSavedAccountDir(t *testing.T) {
 		t.Fatalf(".claude.json %s", b)
 	}
 
-	// Claude Code refreshes it there; magpie keeps what it made of it
+	// Claude Code refreshes it there; magpie-friday keeps what it made of it
 	c.OAuth.RefreshToken = "sk-ant-ort01-side2"
 	b, _ := c.marshal()
 	os.WriteFile(filepath.Join(dir, ".credentials.json"), b, 0o600)

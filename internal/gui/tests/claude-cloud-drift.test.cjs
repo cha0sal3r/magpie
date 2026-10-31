@@ -1,7 +1,7 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// Claude Code wired to magpie while a provider switch magpie can't take out
+// Claude Code wired to magpie-friday while a provider switch magpie-friday can't take out
 // sends its requests elsewhere (jw1dev on X: CLAUDE_CODE_USE_BEDROCK=1 kept
-// in the env, Bedrock refused magpie's model, magpie said nothing). Check
+// in the env, Bedrock refused magpie-friday's model, magpie-friday said nothing). Check
 // says which variable and where, and the row says it in the window's
 // language: the line under the name and the Reconnect pill carry the advice,
 // with its file, variable and cloud as given. Both notices (a file, the
@@ -14,8 +14,8 @@ const { test } = require("node:test");
 const { chromium, webkit } = require("playwright");
 
 const assets = path.resolve(__dirname, "../assets");
-const FILE = "{file} sets {var}, so Claude Code sends its requests to {cloud}, not to magpie: take it out there to go through magpie.";
-const SHELL = "{var} is set in your shell's environment, so Claude Code started there sends its requests to {cloud}, not to magpie: take it out of your shell's profile to go through magpie.";
+const FILE = "{file} sets {var}, so Claude Code sends its requests to {cloud}, not to magpie-friday: take it out there to go through magpie-friday.";
+const SHELL = "{var} is set in your shell's environment, so Claude Code started there sends its requests to {cloud}, not to magpie-friday: take it out of your shell's profile to go through magpie-friday.";
 const cases = [
   { name: "managed settings", en: FILE, vars: { file: "/Library/Application Support/ClaudeCode/managed-settings.json", var: "CLAUDE_CODE_USE_BEDROCK", cloud: "Amazon Bedrock" } },
   { name: "the shell", en: SHELL, vars: { var: "CLAUDE_CODE_USE_VERTEX", cloud: "Google Vertex AI" } },
@@ -49,7 +49,7 @@ function serve(lang, detail) {
 const row = `.row.agent[data-id="claude"]`;
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
-  test(engine + ": a Claude provider switch that bypasses magpie is said in the window's language", async (t) => {
+  test(engine + ": a Claude provider switch that bypasses magpie-friday is said in the window's language", async (t) => {
     const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: "chromium" }));
     const errors = [];
     t.after(async () => {

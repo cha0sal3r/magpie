@@ -9,13 +9,13 @@ import (
 
 func TestReplacedAndStaleNew(t *testing.T) {
 	dir := t.TempDir()
-	exe := filepath.Join(dir, "magpie.exe")
+	exe := filepath.Join(dir, "magpie-friday.exe")
 	os.WriteFile(exe, []byte("v1"), 0o755)
 	started, _ := os.Stat(exe)
 	if Replaced(exe, started) {
 		t.Fatal("replaced before anything happened")
 	}
-	// another magpie moves it aside and puts the new one in
+	// another magpie-friday moves it aside and puts the new one in
 	os.Rename(exe, exe+".old")
 	os.WriteFile(exe, []byte("v2 build"), 0o755)
 	if !Replaced(exe, started) {

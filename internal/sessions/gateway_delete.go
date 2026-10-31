@@ -9,15 +9,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/lastgood"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/lastgood"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // Deleting a gateway session (lc on Discord: a Claude Code session seen only
-// through magpie's gateway was listed "read only"). Such a session has no
-// file of the agent's on this computer, so what magpie can delete is what it
+// through magpie-friday's gateway was listed "read only"). Such a session has no
+// file of the agent's on this computer, so what magpie-friday can delete is what it
 // keeps of it: its row in the session lists, and the conversation text it
-// recorded, if any. The text is moved into magpie's trash like a native
+// recorded, if any. The text is moved into magpie-friday's trash like a native
 // session's files, under trash/sessions/gateway/, and the row is hidden up
 // to the last request it had; Restore moves the text back and shows the row
 // again. The usage ledger is never touched, so Usage's totals stay as they
@@ -75,7 +75,7 @@ func writeHidden(list []hiddenGateway) error {
 
 // keepUnreadHidden copies a gateway-sessions-hidden.json that doesn't parse
 // aside before it is written over (or taken away): it holds the deletions
-// magpie made before, and a read that came back empty is unknown, not
+// magpie-friday made before, and a read that came back empty is unknown, not
 // nothing. A copy that can't be made stops the write.
 func keepUnreadHidden() error {
 	return lastgood.KeepUnparsed(gatewayHiddenPath(), lastgood.Into[[]hiddenGateway])
@@ -97,7 +97,7 @@ func GatewayHidden() func(agent, id string, last time.Time) bool {
 	}
 }
 
-// GatewaySizes is what conversation text magpie keeps of each gateway
+// GatewaySizes is what conversation text magpie-friday keeps of each gateway
 // session, in bytes, read in one walk of the store.
 func GatewaySizes() func(agent, id string) int64 {
 	by := map[string]int64{}

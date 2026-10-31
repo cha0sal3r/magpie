@@ -9,7 +9,7 @@
 //     plugins/middleware. It fails open: a middleware that fails leaves the
 //     request as it was. A Run that is also Tried changes the body again
 //     for each provider the gateway tries the request on.
-//   - Masker: what magpie sends to a vendor, masked as the settings say,
+//   - Masker: what magpie-friday sends to a vendor, masked as the settings say,
 //     and what the vendor answers with the values back. The redact plugin
 //     registers it. It fails closed: when the settings ask for masking and
 //     no masker is served, or the masker fails, nothing is sent.
@@ -73,7 +73,7 @@ type Tried interface {
 	Tried(body []byte, to To) []byte
 }
 
-// Masker masks what magpie sends to a vendor and puts the values back in
+// Masker masks what magpie-friday sends to a vendor and puts the values back in
 // what comes back. It reads its settings itself; Wanted is the core's
 // reading of whether any are asked for.
 type Masker interface {
@@ -249,7 +249,7 @@ func ForgetRefreshForTest() {
 
 // ErrUnmasked is the error a request gets when masking is wanted and
 // nothing can mask it.
-var ErrUnmasked = fmt.Errorf("masking is on in magpie's Settings → Privacy, but the redact plugin isn't serving it, so nothing was sent; turn the plugin on in Settings → Plugins")
+var ErrUnmasked = fmt.Errorf("masking is on in magpie-friday's Settings → Privacy, but the redact plugin isn't serving it, so nothing was sent; turn the plugin on in Settings → Plugins")
 
 // Served is the masker that serves now. With none, one refresh is asked
 // (at most once a second, never from inside one) and it is looked for

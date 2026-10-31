@@ -1,9 +1,9 @@
 #!/bin/sh
-# magpie installer: curl -fsSL https://usemagpie.ai/install.sh | sh
+# magpie-friday installer: curl -fsSL https://usemagpie.ai/install.sh | sh
 #
-# macOS: puts magpie.app in /Applications (~/Applications when that is not
-# writable) and links the magpie command into ~/.local/bin.
-# Linux: puts magpie in ~/.local/bin — the desktop app when GTK 3 and
+# macOS: puts magpie-friday.app in /Applications (~/Applications when that is not
+# writable) and links the magpie-friday command into ~/.local/bin.
+# Linux: puts magpie-friday in ~/.local/bin — the desktop app when GTK 3 and
 # WebKitGTK 4.1 are installed (with a menu entry), the terminal build
 # otherwise or with MAGPIE_CLI=1.
 # Termux: installs the Android terminal build into $PREFIX/bin.
@@ -28,7 +28,7 @@ proxy="${MAGPIE_PROXY:-}"
 mirror="${MAGPIE_MIRROR:-}"
 
 say() { printf '  %s\n' "$*"; }
-die() { printf 'magpie: %s\n' "$*" >&2; exit 1; }
+die() { printf 'magpie-friday: %s\n' "$*" >&2; exit 1; }
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -66,7 +66,7 @@ case "$(uname -m)" in
   *) die "unsupported CPU: $(uname -m)" ;;
 esac
 case "$(uname -s)" in
-  Darwin) os=darwin; file="magpie-darwin-$arch.zip" ;;
+  Darwin) os=darwin; file="magpie-friday-darwin-$arch.zip" ;;
   Linux)
     termux="${TERMUX_VERSION:-}"
     case "${PREFIX:-}" in */com.termux/files/usr) termux=1 ;; esac
@@ -77,7 +77,7 @@ case "$(uname -s)" in
     else
       os=linux; file="magpie-cli-linux-$arch"
       if [ -z "${MAGPIE_CLI:-}" ] && { ldconfig -p 2>/dev/null | grep -q 'libwebkit2gtk-4\.1\.so\.0'; }; then
-        file="magpie-linux-$arch"
+        file="magpie-friday-linux-$arch"
       fi
     fi ;;
   *) die "unsupported system: $(uname -s); see $site" ;;
@@ -102,8 +102,8 @@ from=$url
 case "$url" in
   https://github.com/*) [ -z "$mirror" ] || from="$mirror$url" ;;
 esac
-if [ "$from" != "$url" ]; then say "downloading magpie $version ($file) through $mirror"
-else say "downloading magpie $version ($file)"; fi
+if [ "$from" != "$url" ]; then say "downloading magpie-friday $version ($file) through $mirror"
+else say "downloading magpie-friday $version ($file)"; fi
 get -o "$tmp/$file" "$from" || die "could not download $from"
 if command -v sha256sum >/dev/null; then got=$(sha256sum "$tmp/$file" | cut -d' ' -f1)
 else got=$(shasum -a 256 "$tmp/$file" | cut -d' ' -f1); fi
@@ -119,48 +119,48 @@ if [ "$os" = darwin ]; then
   ditto -x -k "$tmp/$file" "$tmp/x"
   # the new app beside the old one first: a move failing (a full disk)
   # leaves the old app in place
-  rm -rf "$apps/.magpie.app.new"
-  mv "$tmp/x/magpie.app" "$apps/.magpie.app.new"
-  rm -rf "$apps/magpie.app"
-  mv "$apps/.magpie.app.new" "$apps/magpie.app"
-  ln -sf "$apps/magpie.app/Contents/MacOS/magpie" "$bin/magpie"
-  say "installed $apps/magpie.app"
+  rm -rf "$apps/.magpie-friday.app.new"
+  mv "$tmp/x/magpie-friday.app" "$apps/.magpie-friday.app.new"
+  rm -rf "$apps/magpie-friday.app"
+  mv "$apps/.magpie-friday.app.new" "$apps/magpie-friday.app"
+  ln -sf "$apps/magpie-friday.app/Contents/MacOS/magpie-friday" "$bin/magpie-friday"
+  say "installed $apps/magpie-friday.app"
 else
-  install -m 755 "$tmp/$file" "$bin/magpie"
-  if [ "$file" = "magpie-linux-$arch" ]; then
+  install -m 755 "$tmp/$file" "$bin/magpie-friday"
+  if [ "$file" = "magpie-friday-linux-$arch" ]; then
     share="${XDG_DATA_HOME:-$HOME/.local/share}"
     mkdir -p "$share/applications" "$share/icons/hicolor/256x256/apps"
-    get -o "$share/icons/hicolor/256x256/apps/magpie.png" "$site/img/icon-256.png" || true
-    cat > "$share/applications/magpie.desktop" <<EOF
+    get -o "$share/icons/hicolor/256x256/apps/magpie-friday.png" "$site/img/icon-256.png" || true
+    cat > "$share/applications/magpie-friday.desktop" <<EOF
 [Desktop Entry]
 Type=Application
-Name=magpie
+Name=magpie-friday
 Comment=Every agent's model. One place.
-Exec=$bin/magpie %u
-Icon=magpie
-StartupWMClass=magpie
+Exec=$bin/magpie-friday %u
+Icon=magpie-friday
+StartupWMClass=magpie-friday
 Categories=Development;Utility;
-MimeType=x-scheme-handler/magpie;
+MimeType=x-scheme-handler/magpie-friday;
 Terminal=false
 EOF
-    # magpie://import links open in magpie
+    # magpie-friday://import links open in magpie-friday
     command -v update-desktop-database >/dev/null && update-desktop-database "$share/applications" 2>/dev/null || true
-    command -v xdg-mime >/dev/null && xdg-mime default magpie.desktop x-scheme-handler/magpie 2>/dev/null || true
-    say "installed the magpie desktop app (menu entry: magpie)"
+    command -v xdg-mime >/dev/null && xdg-mime default magpie-friday.desktop x-scheme-handler/magpie-friday 2>/dev/null || true
+    say "installed the magpie-friday desktop app (menu entry: magpie-friday)"
   elif [ "$os" = android ]; then
-    say "installed the Termux build; use magpie web for the browser UI or magpie tui for the terminal UI"
+    say "installed the Termux build; use magpie-friday web for the browser UI or magpie-friday tui for the terminal UI"
   else
     say "installed the terminal build; for the desktop app, install WebKitGTK 4.1 (libwebkit2gtk-4.1-0) and run this again"
   fi
 fi
-say "installed $bin/magpie"
+say "installed $bin/magpie-friday"
 case ":$PATH:" in
   *":$bin:"*) ;;
-  *) say "add $bin to your PATH to run magpie from a terminal" ;;
+  *) say "add $bin to your PATH to run magpie-friday from a terminal" ;;
 esac
 case "$file" in
-  *.zip) say "open it: open -a magpie" ;;
-  magpie-cli-android-*) say "run it: magpie web" ;;
-  magpie-linux-*) say "open it from your app menu, or run: magpie app" ;;
-  *) say "run it: magpie" ;;
+  *.zip) say "open it: open -a magpie-friday" ;;
+  magpie-cli-android-*) say "run it: magpie-friday web" ;;
+  magpie-friday-linux-*) say "open it from your app menu, or run: magpie-friday app" ;;
+  *) say "run it: magpie-friday" ;;
 esac

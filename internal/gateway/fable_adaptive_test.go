@@ -8,7 +8,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // alwaysAdaptiveVendor answers as Anthropic documents for Claude Fable and
@@ -55,7 +55,7 @@ func (v *alwaysAdaptiveVendor) last() map[string]any {
 }
 
 // Claude Fable and Mythos think adaptively only, as Opus 5.5 does: a budget
-// relayed from an agent, or one magpie builds from a Chat client's
+// relayed from an agent, or one magpie-friday builds from a Chat client's
 // reasoning_effort, goes as thinking.type=adaptive with the effort in
 // output_config, and agents told how to ask a model are told so.
 func TestFableAndMythosNeverGetABudget(t *testing.T) {

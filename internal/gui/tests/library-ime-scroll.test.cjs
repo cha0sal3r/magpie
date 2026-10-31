@@ -23,7 +23,7 @@ const ids = ["claude", "codex", "gemini", "opencode", "pi", "kimi", "qwen", "dro
 const named = (id) => id[0].toUpperCase() + id.slice(1);
 const lines = (n, what) => Array.from({ length: n }, (_, i) => `- ${what} ${i + 1}: keep it short`).join("\n");
 const library = () => ({
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: ids.map((id) => ({ id, name: named(id), icon: "", instructions: `${HOME}/.${id}/AGENTS.md` })),
   instructions: {
     shared: "",

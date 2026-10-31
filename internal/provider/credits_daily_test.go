@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // wbCard is a WorkBuddy card as the built-in and its plugin both make it:
@@ -47,7 +47,7 @@ func TestDailyCredits(t *testing.T) {
 		{day(2, 9), 160.25, 5650}, // 30, and a check-in's 50 granted
 		{day(3, 1), 4, 5600},      // the cycle started again: not counted
 		{day(3, 2), 10, 5600},     // 6
-		{day(5, 12), 70, 5600},    // 60 while magpie wasn't reading: on the 5th
+		{day(5, 12), 70, 5600},    // 60 while magpie-friday wasn't reading: on the 5th
 	}
 	for _, s := range steps {
 		noteDailyCredits([]SubscriptionQuota{wbCard("workbuddy", "李雷", s.used, s.tot)}, s.at)

@@ -8,11 +8,11 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Codex's /model lists the models in the order dragged on the Agents page
-// (M3chD09, #855): the account's own and magpie's in one order, a model
+// (M3chD09, #855): the account's own and magpie-friday's in one order, a model
 // it doesn't name after them as it stood, and the ETag changes with the
 // order so Codex asks for the list again. Without one, the backend's come
 // first, as before.
@@ -67,7 +67,7 @@ func TestCodexModelListInUsersOrder(t *testing.T) {
 	if own == "" {
 		t.Fatal("no catalog entry for the account's gpt-5-codex")
 	}
-	// magpie's sonnet first, then the account's gpt-5-codex; the rest after
+	// magpie-friday's sonnet first, then the account's gpt-5-codex; the rest after
 	if err := provider.SetModelOrder("codex", []string{"relay/claude-sonnet-4-5", own}); err != nil {
 		t.Fatal(err)
 	}
@@ -78,7 +78,7 @@ func TestCodexModelListInUsersOrder(t *testing.T) {
 	if tag2 == tag {
 		t.Errorf("the ETag %q didn't change with the order", tag)
 	}
-	// the catalog magpie writes for Codex follows it too
+	// the catalog magpie-friday writes for Codex follows it too
 	shown, _ := provider.CatalogFor("codex")
 	var ids []string
 	for _, e := range shown {
@@ -87,7 +87,7 @@ func TestCodexModelListInUsersOrder(t *testing.T) {
 	if len(ids) < 2 || ids[0] != "relay/claude-sonnet-4-5" || ids[1] != own {
 		t.Errorf("CatalogFor(codex) %v", ids)
 	}
-	// another agent's list keeps magpie's own order
+	// another agent's list keeps magpie-friday's own order
 	other, _ := provider.CatalogFor("opencode")
 	for i, e := range other {
 		if e.ID == "relay/claude-sonnet-4-5" && i == 0 {

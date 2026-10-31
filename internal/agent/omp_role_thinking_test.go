@@ -6,8 +6,8 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // #1397 (KKKKKKKEM): omp's plan, vision and advisor roles can be put on a
@@ -47,8 +47,8 @@ func TestOmpRoleThinking(t *testing.T) {
 		if f == nil || !f.Quiet || f.Label != k {
 			t.Fatalf("role %s: %+v", k, f)
 		}
-		apply(k, "magpie/deepseek/pro")
-		if got := role(k); got != "magpie/deepseek/pro" {
+		apply(k, "magpie-friday/deepseek/pro")
+		if got := role(k); got != "magpie-friday/deepseek/pro" {
 			t.Fatalf("modelRoles.%s: %q", k, got)
 		}
 	}
@@ -67,7 +67,7 @@ func TestOmpRoleThinking(t *testing.T) {
 	if err := slow.Set("high"); err == nil {
 		t.Fatal("a level set on a role with no model")
 	}
-	apply("slow", "magpie/deepseek/pro")
+	apply("slow", "magpie-friday/deepseek/pro")
 	var levels []string
 	for _, o := range slow.Options(a.Values()) {
 		levels = append(levels, o.Value)
@@ -77,7 +77,7 @@ func TestOmpRoleThinking(t *testing.T) {
 	}
 
 	apply("slow_thinking", "high")
-	if got := role("slow"); got != "magpie/deepseek/pro:high" {
+	if got := role("slow"); got != "magpie-friday/deepseek/pro:high" {
 		t.Fatalf("modelRoles.slow: %q", got)
 	}
 	if got := slow.Get(); got != "high" {
@@ -87,17 +87,17 @@ func TestOmpRoleThinking(t *testing.T) {
 		t.Fatalf("the session's level moved: %q", v)
 	}
 	// the level stays with the role on another model
-	apply("slow", "magpie/deepseek/flash")
-	if got := role("slow"); got != "magpie/deepseek/flash:high" {
+	apply("slow", "magpie-friday/deepseek/flash")
+	if got := role("slow"); got != "magpie-friday/deepseek/flash:high" {
 		t.Fatalf("slow on another model: %q", got)
 	}
 	apply("advisor_thinking", "max")
-	if got := role("advisor"); got != "magpie/deepseek/pro:max" {
+	if got := role("advisor"); got != "magpie-friday/deepseek/pro:max" {
 		t.Fatalf("modelRoles.advisor: %q", got)
 	}
 	// none: the role at the session's level again
 	apply("slow_thinking", "")
-	if got := role("slow"); got != "magpie/deepseek/flash" {
+	if got := role("slow"); got != "magpie-friday/deepseek/flash" {
 		t.Fatalf("slow's level cleared: %q", got)
 	}
 	if err := slow.Set("loud"); err == nil {
@@ -113,7 +113,7 @@ func TestOmpRoleThinking(t *testing.T) {
 		t.Fatalf("a level written onto a list: %v, %q", err, role("task"))
 	}
 
-	// reset, the role and its level go, and magpie's provider with the
+	// reset, the role and its level go, and magpie-friday's provider with the
 	// last role on it
 	for _, k := range []string{"slow", "plan", "vision", "advisor"} {
 		apply(k, "")
@@ -124,8 +124,8 @@ func TestOmpRoleThinking(t *testing.T) {
 	if a.Field("advisor_thinking").Get() != "" {
 		t.Fatal("advisor's level outlived it")
 	}
-	if v, ok := edit.GetYAML(filepath.Join(dir, "models.yml"), "providers.magpie.baseUrl"); ok && v != "" {
-		t.Fatal("magpie's provider stayed with no role on it")
+	if v, ok := edit.GetYAML(filepath.Join(dir, "models.yml"), "providers.magpie-friday.baseUrl"); ok && v != "" {
+		t.Fatal("magpie-friday's provider stayed with no role on it")
 	}
 }
 
@@ -133,7 +133,7 @@ func TestOmpRoleThinking(t *testing.T) {
 // Every one of omp's chat roles, as CHAT_MODEL_ROLE_IDS in its pi-tui
 // model-browser.ts lists them (18.6.1 to 18.8.8), is a field of the row
 // with a thinking level of its own but the default one; a role the user had
-// set off magpie comes back when magpie's is reset.
+// set off magpie-friday comes back when magpie-friday's is reset.
 func TestOmpEveryChatRole(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
@@ -154,7 +154,7 @@ func TestOmpEveryChatRole(t *testing.T) {
 	a := omp(home)
 	role := func(name string) string { v, _ := edit.GetYAML(configPath, "modelRoles."+name); return v }
 
-	// omp's name for the role → magpie's field key
+	// omp's name for the role → magpie-friday's field key
 	chat := map[string]string{
 		"default": "model", "smol": "small", "slow": "slow", "vision": "vision", "plan": "plan",
 		"commit": "commit", "tiny": "tiny", "memory": "memory", "task": "subagent", "advisor": "advisor",
@@ -164,10 +164,10 @@ func TestOmpEveryChatRole(t *testing.T) {
 		if f == nil || f.Quiet == (name == "default") {
 			t.Fatalf("omp's %s role: %+v", name, f)
 		}
-		if err := a.Apply(key, "magpie/deepseek/pro"); err != nil {
+		if err := a.Apply(key, "magpie-friday/deepseek/pro"); err != nil {
 			t.Fatalf("%s: %v", name, err)
 		}
-		if got := role(name); got != "magpie/deepseek/pro" {
+		if got := role(name); got != "magpie-friday/deepseek/pro" {
 			t.Fatalf("modelRoles.%s: %q", name, got)
 		}
 		if name == "default" {
@@ -176,7 +176,7 @@ func TestOmpEveryChatRole(t *testing.T) {
 		if err := a.Apply(key+"_thinking", "high"); err != nil {
 			t.Fatalf("%s thinking: %v", name, err)
 		}
-		if got := role(name); got != "magpie/deepseek/pro:high" {
+		if got := role(name); got != "magpie-friday/deepseek/pro:high" {
 			t.Fatalf("modelRoles.%s at high: %q", name, got)
 		}
 	}

@@ -6,7 +6,7 @@ package agent
 //
 //	cindy://provider/import?v=1&data=<base64url of the provider's JSON>
 //
-// So magpie has nothing to set there: its row is the link, magpie as one
+// So magpie-friday has nothing to set there: its row is the link, magpie-friday as one
 // custom provider with an endpoint for each of Cindy's runtimes, and
 // whether Cindy has it already, read from Cindy's database and never
 // written.
@@ -19,9 +19,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/sessions"
-	_ "github.com/yetone/magpie/internal/sqlitedb"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
+	_ "github.com/cha0sal3r/magpie-friday/internal/sqlitedb"
 )
 
 // CindyScheme begins every Cindy import link.
@@ -35,7 +35,7 @@ type cindyEndpoint struct {
 }
 
 // CindyLink is the link that adds the gateway at url to Cindy as the
-// provider Magpie, keyed so that its requests are counted as Cindy's.
+// provider magpie-friday, keyed so that its requests are counted as Cindy's.
 func CindyLink(url string) string {
 	v1 := url + "/v1"
 	models := v1 + "/models"
@@ -46,7 +46,7 @@ func CindyLink(url string) string {
 		Auth      map[string]any  `json:"auth"`
 		Endpoints []cindyEndpoint `json:"endpoints"`
 	}{
-		Kind: "custom", Name: "Magpie", ID: magpieID,
+		Kind: "custom", Name: "magpie-friday", ID: magpieID,
 		Auth: map[string]any{"method": "apiKey", "apiKey": agentKeyAt("cindy", url)},
 		Endpoints: []cindyEndpoint{
 			{"anthropic-messages", url, []string{"claude-code"}, models},
@@ -58,7 +58,7 @@ func CindyLink(url string) string {
 	return CindyScheme + "v=1&data=" + base64.RawURLEncoding.EncodeToString(b)
 }
 
-// cindyHas reports whether Cindy's database at path has magpie among its
+// cindyHas reports whether Cindy's database at path has magpie-friday among its
 // custom providers: by the id or name the link gives it, or by the
 // gateway's address in its endpoints. Read untouched, whether Cindy runs or
 // not (sessions.OpenUntouched); no database is no, and one that can't be
@@ -103,7 +103,7 @@ func cindyDirs() []string {
 	return append(have, not...)
 }
 
-// cindyAdded reports whether any of Cindy's databases in dirs has magpie:
+// cindyAdded reports whether any of Cindy's databases in dirs has magpie-friday:
 // one per account (cindy-<account>.db) once signed in, cindy-local-v1.db
 // before. One that has it is enough; else one that couldn't be read leaves
 // it unknown.

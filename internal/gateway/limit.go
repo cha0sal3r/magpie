@@ -11,7 +11,7 @@ import (
 // it sends when a request asks for less ("max_tokens must be greater than
 // 2"). Apps checking a model is up ask for a token or two, which most
 // providers answer and some turn away. A > may come JSON-escaped, as
-// \u003e: the error is read from the body magpie re-encoded for the agent,
+// \u003e: the error is read from the body magpie-friday re-encoded for the agent,
 // or a vendor encodes its own that way (#260: "Expected a value >= 16").
 var tooFewTokens = regexp.MustCompile(`(?i)max_(?:completion_|output_)?tokens.{0,60}?(greater than|more than|larger than|at least|(?:>|\\u003e)=?)\s*(\d+)`)
 

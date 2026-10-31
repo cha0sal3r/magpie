@@ -25,15 +25,15 @@ func zcodeCalls(t *testing.T) map[string]Call {
 func TestZCodeCalls(t *testing.T) {
 	setupAgents(t)
 	cs := zcodeCalls(t)
-	// ses_zcA's own reply went through magpie's gateway (the route magpie
-	// writes names it "magpie"), so it is the gateway's record to keep; the
+	// ses_zcA's own reply went through magpie-friday's gateway (the route magpie-friday
+	// writes names it "magpie-friday"), so it is the gateway's record to keep; the
 	// others are read here: ses_zcB's (a subagent, counted under the session
 	// it ran in) and ses_zcC's
 	if len(cs) != 2 {
 		t.Fatalf("want 2 ZCode calls, got %d: %+v", len(cs), cs)
 	}
 	if _, dup := cs["msg_z3"]; dup {
-		t.Fatalf("a call made to magpie's gateway was read from the database too: %+v", cs["msg_z3"])
+		t.Fatalf("a call made to magpie-friday's gateway was read from the database too: %+v", cs["msg_z3"])
 	}
 	if b := cs["msg_z4"]; b.Model != "glm-5.1-air" || b.Tokens != (Tokens{50, 5, 0, 0, 0}) {
 		t.Fatalf("the subagent's reply: %+v", b)

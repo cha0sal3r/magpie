@@ -7,11 +7,11 @@ package agent
 // protocol, the gateway's /v1 and the key; the model table holds the model
 // string, the context window (AtomCode compacts as it nears it), the output
 // limit, whether it sees images, the reasoning levels its picker offers and
-// the one in use. magpie adds the account "magpie" and one model table per
-// catalog model, keyed "magpie/<provider>/<model>" — the model string goes
+// the one in use. magpie-friday adds the account "magpie-friday" and one model table per
+// catalog model, keyed "magpie-friday/<provider>/<model>" — the model string goes
 // to the gateway as it is, for it to resolve — and points default_provider
 // and default_model at the one picked, default_model winning when both are
-// set; the defaults the user had are stashed and put back when magpie steps
+// set; the defaults the user had are stashed and put back when magpie-friday steps
 // out. Requests are Chat Completions with Bearer auth and a User-Agent of
 // atomcode/<version>, which the gateway knows apart; the key is AtomCode's
 // own, so a request is its agent's even when the header is overridden.
@@ -23,11 +23,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
-// atomcodeAccount is the account table magpie writes, and atomcodeModels the
+// atomcodeAccount is the account table magpie-friday writes, and atomcodeModels the
 // header prefix of every model table it writes.
 var atomcodeAccount = `provider_accounts."` + magpieID + `"`
 var atomcodeModels = `models."` + magpieID + "/"
@@ -36,7 +36,7 @@ var atomcodeAccountNames = []string{atomcodeAccount, "provider_accounts." + magp
 
 var atomcodeEffortLevels = []string{"low", "medium", "high", "xhigh", "max"}
 
-// atomcodeContext is what AtomCode is told of a model whose context magpie
+// atomcodeContext is what AtomCode is told of a model whose context magpie-friday
 // doesn't know: it has to be told one, and compacts as it nears it.
 const atomcodeContext = 128000
 
@@ -44,7 +44,7 @@ const atomcodeContext = 128000
 // default_provider and default_model name.
 func atomcodeKey(ref string) string { return magpieID + "/" + ref }
 
-// atomcodeTable is the header of the model table a key names. Magpie's are
+// atomcodeTable is the header of the model table a key names. magpie-friday's are
 // always written quoted; the user's own are found by their decoded names
 // (atomcodeOwnModels), not built ones.
 func atomcodeTable(key string) string { return "models." + strconv.Quote(key) }
@@ -143,14 +143,14 @@ func atomcodeIn(at place) *Agent {
 				return err.Error()
 			}
 			if t == nil {
-				return "AtomCode's [models." + strconv.Quote(k) + "] (config.toml) is gone, so it no longer reaches magpie"
+				return "AtomCode's [models." + strconv.Quote(k) + "] (config.toml) is gone, so it no longer reaches magpie-friday"
 			}
 			a, err := atomcodeAccountValues(path)
 			if err != nil {
 				return err.Error()
 			}
 			if a == nil {
-				return "AtomCode's [" + atomcodeAccount + "] (config.toml) is gone, so it no longer reaches magpie"
+				return "AtomCode's [" + atomcodeAccount + "] (config.toml) is gone, so it no longer reaches magpie-friday"
 			}
 			return wiringOff("AtomCode", path, func(f string) (string, bool) { v, ok := a[f]; return v, ok },
 				"base_url", at.v1(), "api_key", agentKeyAt("atomcode", at.gw()))
@@ -173,14 +173,14 @@ func atomcodeIn(at place) *Agent {
 					return setDefaults(v)
 				}
 				if !usesMagpie(was) {
-					// no model of magpie's was in use: the pick moves
+					// no model of magpie-friday's was in use: the pick moves
 					// default_model, default_provider stays as it is
 					if v == "" {
 						return edit.DelTOMLTop(path, "default_provider", "default_model")
 					}
 					return setOwn(v)
 				}
-				// magpie was in use: the defaults the user had come back
+				// magpie-friday was in use: the defaults the user had come back
 				// where AtomCode still has them
 				saved := stashLoad()
 				p, m := saved[key+":default_provider"], saved[key+":default_model"]
@@ -286,7 +286,7 @@ func atomcodeIn(at place) *Agent {
 	}, path)
 }
 
-// atomcodeTables are magpie's account and model tables: the gateway spoken
+// atomcodeTables are magpie-friday's account and model tables: the gateway spoken
 // to as AtomCode's own Chat Completions, one model table per catalog model
 // with the model's window (AtomCode compacts as it nears it), its output
 // limit, whether it sees images, and the reasoning levels its picker offers.
@@ -317,7 +317,7 @@ func atomcodeTablesAt(path, v1, key string) []edit.Table {
 			{Path: "context_window", Value: ctx},
 		}
 		// an output above the window is cut to it — the window AtomCode is
-		// told when magpie doesn't know the model's is atomcodeContext
+		// told when magpie-friday doesn't know the model's is atomcodeContext
 		if n := maxTokens(m); n > 0 {
 			if m.Context <= 0 && n > atomcodeContext {
 				n = atomcodeContext

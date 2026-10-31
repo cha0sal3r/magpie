@@ -11,16 +11,16 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/sessions"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // traceJSON is the gateway's routing trace since the page last asked.
 type traceJSON struct {
 	gateway.TraceState
-	Mine   bool        `json:"mine"` // the trace here is live: this magpie serves the gateway, or this console reads the magpie that does (#2606)
+	Mine   bool        `json:"mine"` // the trace here is live: this magpie-friday serves the gateway, or this console reads the magpie-friday that does (#2606)
 	Now    time.Time   `json:"now"`
 	Routes []routeJSON `json:"routes"`
 }
@@ -163,7 +163,7 @@ func publicRefs() func(string) string {
 	}
 }
 
-// publicRoute is r as the Routing page names it: a group magpie found by
+// publicRoute is r as the Routing page names it: a group magpie-friday found by
 // the id agents pick it by, auto/<model>, wherever r names one — the
 // model asked for, the request a search or an image was for, a subagent's
 // pick, the group and the groups in it (未寒 on Discord: the live view
@@ -245,17 +245,17 @@ var mainName = regexp.MustCompile(`^[A-Za-z0-9._@:/ -]{1,80}$`)
 // which escaping the whole of it lost).
 func mainURL(view, query string) string { return "/?view=" + view + query }
 
-// argView is a tab named on the command line (`magpie gui settings`, a
+// argView is a tab named on the command line (`magpie-friday gui settings`, a
 // restart to update) as ShowMain takes it: a name, never parameters.
 func argView(s string) string { return url.QueryEscape(s) }
 
 // quotaView opens the Usage overview at a provider/account card, or at
-// the period of one of magpie's own totals (trayTotal). Invalid provider
+// the period of one of magpie-friday's own totals (trayTotal). Invalid provider
 // names fall back to the overview without a target.
 func quotaView(id string) string {
 	view := "usage&tab=usage"
 	if p, ok := trayTotalPeriod(id); ok {
-		// magpie's own total: the Requests tab at its period, which sums
+		// magpie-friday's own total: the Requests tab at its period, which sums
 		// what the total does (trayTotalSum)
 		return "usage&tab=requests&period=" + string(p)
 	}
@@ -368,7 +368,7 @@ func traceRoutes(mux *http.ServeMux) {
 		if gw != nil {
 			out.TraceState = gw.Trace(r.Context(), after, wait)
 		} else if st, ok := gateway.OwnerTrace(r.Context(), after, wait); ok {
-			// another magpie on this computer serves the gateway: show the
+			// another magpie-friday on this computer serves the gateway: show the
 			// routing it decides here too, live, and let the page name the
 			// process that is routing (#2606)
 			out.TraceState = st
@@ -379,7 +379,7 @@ func traceRoutes(mux *http.ServeMux) {
 		writeJSON(rw, out)
 	})
 	// the routes of a day gone by, from the history the gateway keeps on
-	// disk — read whichever magpie serves the gateway
+	// disk — read whichever magpie-friday serves the gateway
 	mux.HandleFunc("GET /api/gateway/history", func(rw http.ResponseWriter, r *http.Request) {
 		day := r.URL.Query().Get("day")
 		days, routes, cut := gateway.History(day)

@@ -98,8 +98,8 @@ var evalCases = []evalCase{
 	},
 	{
 		ID: "home-path", From: "611b9e173",
-		Text: "cd /Users/jdoe/workspace/projects/magpie && go test ./internal/redact",
-		Keep: []evalValue{{V: "jdoe", Kind: "PERSON"}, {V: "magpie", Kind: "PERSON"}},
+		Text: "cd /Users/jdoe/workspace/projects/magpie-friday && go test ./internal/redact",
+		Keep: []evalValue{{V: "jdoe", Kind: "PERSON"}, {V: "magpie-friday", Kind: "PERSON"}},
 	},
 	{
 		ID: "grep-pattern", From: "611b9e173",
@@ -108,7 +108,7 @@ var evalCases = []evalCase{
 	},
 	{
 		ID: "sizes-versions", From: "611b9e173",
-		Text: "Screenshot 1624x1487 at 2x; magpie v0.1.1513 built with go1.26.8 on darwin/arm64.",
+		Text: "Screenshot 1624x1487 at 2x; magpie-friday v0.1.1513 built with go1.26.8 on darwin/arm64.",
 		Keep: []evalValue{{V: "1624x1487", Kind: "PHONE"}, {V: "v0.1.1513", Kind: "ACCOUNT"}, {V: "1.26.8", Kind: "PHONE"}},
 	},
 	{
@@ -170,7 +170,7 @@ var evalCases = []evalCase{
 	},
 	{
 		ID: "user-path", From: "d3db461bb",
-		Text: "read /Users/yetone/workspace/projects/magpie/AGENTS.md and C:\\Users\\vdxz\\notes.txt, then /home/rina/.config/app.toml",
+		Text: "read /Users/yetone/workspace/projects/magpie-friday/AGENTS.md and C:\\Users\\vdxz\\notes.txt, then /home/rina/.config/app.toml",
 		Keep: []evalValue{{V: "yetone", Kind: "PERSON"}, {V: "AGENTS.md", Kind: "PERSON"}, {V: "vdxz", Kind: "PERSON"}, {V: "rina", Kind: "PERSON"}},
 	},
 	{

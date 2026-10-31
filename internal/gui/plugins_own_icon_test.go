@@ -7,14 +7,14 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // #1775 (peterroe): a plugin of several providers gives each its own
-// picture in the auth hook and itself one in package.json's magpie.icon.
+// picture in the auth hook and itself one in package.json's magpie-friday.icon.
 // Settings → Plugins is told the plugin's own, checked and kept as a
 // listed plugin's is, apart from its providers'; one that gives none, or
-// a picture magpie doesn't take (plain http), is told none.
+// a picture magpie-friday doesn't take (plain http), is told none.
 func TestPluginsStateGivesThePluginsOwnIcon(t *testing.T) {
 	h := t.TempDir()
 	t.Setenv("HOME", h)

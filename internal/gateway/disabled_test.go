@@ -11,12 +11,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // A model the user disabled (#1867) is refused on every route through
-// magpie before any provider is asked: by id, bare or by a glob, on each
+// magpie-friday before any provider is asked: by id, bare or by a glob, on each
 // API in its own error shape, as a routing group's member (the group goes
 // on without it; one left with none is refused), as a fallback, by
 // count_tokens and as System One's decision model. It is gone from
@@ -87,7 +87,7 @@ func TestDisabledModelRefusedOnEveryRoute(t *testing.T) {
 			Error struct{ Message, Type string }
 		}
 		json.Unmarshal(w.Body.Bytes(), &e)
-		if w.Code != 403 || e.Error.Type != "permission_error" || !strings.Contains(e.Error.Message, "is disabled in magpie") {
+		if w.Code != 403 || e.Error.Type != "permission_error" || !strings.Contains(e.Error.Message, "is disabled in magpie-friday") {
 			t.Fatalf("%s: %d %s", what, w.Code, w.Body.String())
 		}
 	}
@@ -152,7 +152,7 @@ func TestDisabledModelRefusedOnEveryRoute(t *testing.T) {
 	}
 	const ask = `{"model":"jev/jev-latest","state":{"message":"hi"},"questions":{"intent":{"type":"choice"}}}`
 	refused("system one", do("POST", "/v1/systemone", ask))
-	// magpie's own decision calls (a group rule's classifier, a decision
+	// magpie-friday's own decision calls (a group rule's classifier, a decision
 	// group's members, the provider check) all post through postDecide
 	jpp, err := provider.Find("jev")
 	if err != nil {
@@ -160,7 +160,7 @@ func TestDisabledModelRefusedOnEveryRoute(t *testing.T) {
 	}
 	jp := *jpp
 	if _, _, _, err := New().postDecide(context.Background(), jp, "jev-latest", []byte(ask)); err == nil || !strings.Contains(err.Error(), "disabled") {
-		t.Fatal("magpie's own decision call", err)
+		t.Fatal("magpie-friday's own decision call", err)
 	}
 	if err := jp.AskSystemOne(context.Background(), "jev-latest"); err == nil || !strings.Contains(err.Error(), "disabled") {
 		t.Fatal("the provider check", err)
@@ -182,7 +182,7 @@ func TestDisabledModelRefusedOnEveryRoute(t *testing.T) {
 	os.WriteFile(path, good, 0o600)
 
 	// an exact pattern refuses the model asked bare too, as itself, not
-	// as a model magpie doesn't know
+	// as a model magpie-friday doesn't know
 	if _, err := provider.EnableModels("*m2*"); err != nil {
 		t.Fatal(err)
 	}
@@ -214,7 +214,7 @@ func TestDisabledEmbeddingsModelRefused(t *testing.T) {
 	}
 	for _, model := range []string{"lib/embed-1", "embed-1"} {
 		code, raw := postRetrieval(t, s, "/v1/embeddings", `{"model":"`+model+`","input":"hi"}`)
-		if code != 403 || !strings.Contains(raw, "is disabled in magpie") {
+		if code != 403 || !strings.Contains(raw, "is disabled in magpie-friday") {
 			t.Fatalf("%s: %d %s", model, code, raw)
 		}
 	}
@@ -242,11 +242,11 @@ func TestDisabledCodexModels(t *testing.T) {
 	if got := up.asked(); len(got) != 1 || got[0] != "gpt-5.5" {
 		t.Fatalf("ChatGPT was asked for %v", got)
 	}
-	if r := lastRoute(s); r.Subagent == nil || r.Subagent.Kept != "it is disabled in magpie" {
+	if r := lastRoute(s); r.Subagent == nil || r.Subagent.Kept != "it is disabled in magpie-friday" {
 		t.Fatalf("trace %+v", r.Subagent)
 	}
 	rec = codexAsks(s, "gpt-6-astra", "", leadAsk)
-	if rec.Code != 403 || !strings.Contains(rec.Body.String(), "is disabled in magpie") {
+	if rec.Code != 403 || !strings.Contains(rec.Body.String(), "is disabled in magpie-friday") {
 		t.Fatalf("lead on a disabled model: %d %s", rec.Code, rec.Body.String())
 	}
 	if got := up.asked(); len(got) != 1 {

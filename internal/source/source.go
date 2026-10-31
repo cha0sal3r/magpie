@@ -1,4 +1,4 @@
-// Package source chooses where magpie reads from, with a mirror as a
+// Package source chooses where magpie-friday reads from, with a mirror as a
 // fallback when the official address can't be reached. The official source
 // stays first; a mirror is only asked when it fails. The Plugins page's
 // 「国内镜像」 switch (China) puts a mirror in China first for the few
@@ -16,7 +16,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 const (
@@ -41,7 +41,7 @@ var China = func() bool { return settings.Load().ChinaMirror }
 // official address: npmmirror for npm's registry and Bun's releases (whose
 // zips are checked against Bun's checksums all the same), jsDelivr for the
 // community repo's plugin list, hf-mirror for the masking model. Never a proxy such as gh-proxy, which
-// would hand magpie whatever it liked.
+// would hand magpie-friday whatever it liked.
 func chinaFirst(raw string) string {
 	u, err := url.Parse(raw)
 	if err != nil || u.Scheme != "https" {

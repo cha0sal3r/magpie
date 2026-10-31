@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
 // A model whose window is known says so, rather than Codex taking it for
@@ -25,7 +25,7 @@ func TestEntriesCarryContextWindow(t *testing.T) {
 	}
 }
 
-// The ETag handed to Codex carries a tag of magpie's list: another list,
+// The ETag handed to Codex carries a tag of magpie-friday's list: another list,
 // another ETag, which Codex refetches on.
 func TestETagTag(t *testing.T) {
 	a := Tag([]catalog.Model{{ID: "p/m1"}})
@@ -34,9 +34,9 @@ func TestETagTag(t *testing.T) {
 		t.Fatalf("tags %q %q", a, b)
 	}
 	for etag, want := range map[string]string{
-		`W/"abc"`: `W/"abc+magpie-` + a + `"`,
-		`"abc"`:   `"abc+magpie-` + a + `"`,
-		"":        "+magpie-" + a,
+		`W/"abc"`: `W/"abc+magpie-friday-` + a + `"`,
+		`"abc"`:   `"abc+magpie-friday-` + a + `"`,
+		"":        "+magpie-friday-" + a,
 	} {
 		if got := WithTag(etag, a); got != want || !Tagged(got, a) || Tagged(got, b) {
 			t.Errorf("WithTag(%q) = %q, want %q", etag, got, want)

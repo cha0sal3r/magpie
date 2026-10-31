@@ -7,7 +7,7 @@
 // models) and what went wrong are said in place under the buttons, not in
 // a toast. No click moves the page, there is no native <select> and no
 // left-border accent, and at 360px nothing runs off the side. In every
-// language magpie speaks.
+// language magpie-friday speaks.
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const fsp = require("node:fs/promises");

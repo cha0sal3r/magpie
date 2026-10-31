@@ -11,8 +11,8 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // raycastUser is a providers.yaml as the manual's examples write one
@@ -44,7 +44,7 @@ tools:
 `
 
 // raycastEntry is a provider of providers.yaml with the manual's fields
-// alone, so a field of magpie's own fails to decode.
+// alone, so a field of magpie-friday's own fails to decode.
 type raycastEntry struct {
 	ID                   string            `yaml:"id"`
 	Name                 string            `yaml:"name"`
@@ -91,10 +91,10 @@ func raycastOf(f raycastFile, id string) *raycastEntry {
 }
 
 // Raycast AI reads Custom Providers from ~/.config/raycast/ai/providers.yaml
-// (lx_78654 on Discord). magpie adds itself as the entry "magpie" at the
+// (lx_78654 on Discord). magpie-friday adds itself as the entry "magpie-friday" at the
 // gateway's /v1, with its models and their abilities, and leaves the user's
 // providers, tools and comments as they are; a sync keeps what the user
-// added to magpie's entry and writes nothing when nothing changed; off, it
+// added to magpie-friday's entry and writes nothing when nothing changed; off, it
 // takes only its own entry out.
 func TestRaycastProviders(t *testing.T) {
 	home := syncHome(t)
@@ -144,9 +144,9 @@ func TestRaycastProviders(t *testing.T) {
 		}
 	}
 	m := raycastOf(got, magpieID)
-	if m == nil || m.Name != "magpie" || m.BaseURL != gatewayV1() || strings.HasSuffix(m.BaseURL, "/chat/completions") ||
+	if m == nil || m.Name != "magpie-friday" || m.BaseURL != gatewayV1() || strings.HasSuffix(m.BaseURL, "/chat/completions") ||
 		!reflect.DeepEqual(m.APIKeys, map[string]string{magpieID: gateway.TokenFor("raycast")}) {
-		t.Fatalf("magpie's entry: %+v", m)
+		t.Fatalf("magpie-friday's entry: %+v", m)
 	}
 	ids := []string{}
 	for _, x := range m.Models {
@@ -166,8 +166,8 @@ func TestRaycastProviders(t *testing.T) {
 		}
 	}
 
-	// the user adds to magpie's entry: a sync keeps it
-	withTheirs := strings.Replace(readFile(path), "    name: magpie\n", "    name: magpie\n    include_user_email: true # mine\n", 1)
+	// the user adds to magpie-friday's entry: a sync keeps it
+	withTheirs := strings.Replace(readFile(path), "    name: magpie-friday\n", "    name: magpie-friday\n    include_user_email: true # mine\n", 1)
 	withTheirs = strings.Replace(withTheirs, "        name: GLM-4.6 · Relay\n", "        name: GLM-4.6 · Relay\n        description: the one I use\n", 1)
 	if withTheirs == readFile(path) || !strings.Contains(withTheirs, "the one I use") {
 		t.Fatalf("fixture edit didn't apply:\n%s", readFile(path))
@@ -189,7 +189,7 @@ func TestRaycastProviders(t *testing.T) {
 	got = raycastRead(t, path)
 	m = raycastOf(got, magpieID)
 	if m == nil || !m.IncludeUserEmail || !strings.Contains(readFile(path), "# mine") {
-		t.Errorf("the user's key in magpie's entry is gone:\n%s", readFile(path))
+		t.Errorf("the user's key in magpie-friday's entry is gone:\n%s", readFile(path))
 	}
 	kept := false
 	for _, x := range m.Models {
@@ -202,7 +202,7 @@ func TestRaycastProviders(t *testing.T) {
 		t.Errorf("a model's description of the user's is gone:\n%s", readFile(path))
 	}
 
-	// off: magpie's entry goes, the rest as it was
+	// off: magpie-friday's entry goes, the rest as it was
 	if err := f.Set(""); err != nil {
 		t.Fatal(err)
 	}
@@ -228,7 +228,7 @@ func TestRaycastProviders(t *testing.T) {
 }
 
 // With no providers.yaml (Raycast makes only the template), connecting makes
-// one holding magpie's entry alone, and Disconnect takes the file it made
+// one holding magpie-friday's entry alone, and Disconnect takes the file it made
 // away; a file with a tools block alone gets a providers list beside it.
 func TestRaycastMakesAndRemovesItsFile(t *testing.T) {
 	home := syncHome(t)
@@ -249,7 +249,7 @@ func TestRaycastMakesAndRemovesItsFile(t *testing.T) {
 		t.Fatal(err)
 	}
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
-		t.Fatalf("the file magpie made is still there:\n%s", readFile(path))
+		t.Fatalf("the file magpie-friday made is still there:\n%s", readFile(path))
 	}
 	if readFile(template) != "# Raycast's template\nproviders: []\n" {
 		t.Fatal("the template changed")

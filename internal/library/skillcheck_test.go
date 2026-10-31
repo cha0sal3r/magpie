@@ -138,7 +138,7 @@ func TestCheckSkills(t *testing.T) {
 		t.Errorf("pdf after update: %+v", got["pdf"])
 	}
 
-	// one installed before magpie kept a hash is compared by its files
+	// one installed before magpie-friday kept a hash is compared by its files
 	mu.Lock()
 	l, _ = load()
 	l.skill("docx").Hash, l.skill("docx").Commit = "", ""

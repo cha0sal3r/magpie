@@ -7,7 +7,7 @@ import (
 
 // #499: a provider added later can be put first. The order is the list's
 // and the one they are tried in: a bare model id goes to the first that
-// serves it, and the group magpie finds of a model several serve tries
+// serves it, and the group magpie-friday finds of a model several serve tries
 // the first one first. One added after stays last; a rename keeps its place.
 func TestProviderOrder(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())

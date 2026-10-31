@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/yetone/magpie/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
 )
 
 // MiniMax Code's calls (#1605, LukeZ1988: MiniMax Code was missing from
@@ -27,7 +27,7 @@ import (
 //	 "provider":"custom_provider:relay","model":"m2","usage":{"input":123,
 //	 "output":7,"cacheRead":50,"cacheWrite":20,…},"timestamp":1791717525043,…}}
 //
-// A call MiniMax Code made through magpie's entry (custom_provider:magpie,
+// A call MiniMax Code made through magpie-friday's entry (custom_provider:magpie-friday,
 // which internal/agent's minimax.go writes) is the gateway's to count: it
 // logged the call itself, with the provider and account that answered.
 
@@ -43,8 +43,8 @@ func MiniMaxDir() string {
 
 func minimaxSessions() string { return filepath.Join(MiniMaxDir(), "v2", "sessions") }
 
-// mcodeGateway is the provider MiniMax Code names a call to magpie's entry by.
-const mcodeGateway = "custom_provider:magpie"
+// mcodeGateway is the provider MiniMax Code names a call to magpie-friday's entry by.
+const mcodeGateway = "custom_provider:magpie-friday"
 
 // minimaxCallFiles are each session's messages files: messages.jsonl, and
 // any other generation of it the session's history-catalog.json keeps

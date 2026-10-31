@@ -9,7 +9,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // searchedHistory is a conversation that searched the web, its items the
@@ -126,7 +126,7 @@ func sentTools(t *testing.T, b []byte) (tools, additional []string, choice any, 
 
 // #1270 (xjdata, Codex CLI 0.162.0 on a custom provider, codex/gpt-6-astra):
 // Codex compacts a custom provider's conversation itself, a plain request
-// with tools: [] and no compaction_trigger, so magpie's compaction never
+// with tools: [] and no compaction_trigger, so magpie-friday's compaction never
 // sees it. A conversation that searched the web failed so every time; one
 // that didn't was answered.
 func TestSearchedConversationCompactsOnAnAccount(t *testing.T) {
@@ -146,9 +146,9 @@ func TestSearchedConversationCompactsOnAnAccount(t *testing.T) {
 	}
 }
 
-// Codex's remote compaction of a magpie model on the ChatGPT accounts:
+// Codex's remote compaction of a magpie-friday model on the ChatGPT accounts:
 // the backend writes the summary from the history as it came, once,
-// rather than refusing it and leaving magpie to ask again as text.
+// rather than refusing it and leaving magpie-friday to ask again as text.
 func TestSearchedConversationCompactionTrigger(t *testing.T) {
 	codexSignedIn(t)
 	got := protectedSearch(t)
@@ -218,10 +218,10 @@ const webRunTool = `{"type":"namespace","name":"web","description":"Tools in the
 
 // Savin on Discord (Codex 0.163.0-alpha.10.2, signed in with ChatGPT):
 // a conversation that had searched with the hosted tool went on under
-// Codex's web.run, and magpie declared the hosted web_search for the
+// Codex's web.run, and magpie-friday declared the hosted web_search for the
 // replayed search (#1270) beside it, which the backend refuses. web.run is
 // the conversation's search: the turn goes as Codex sent it, on Codex's
-// own sign-in and on a ChatGPT account in magpie, Lite or not.
+// own sign-in and on a ChatGPT account in magpie-friday, Lite or not.
 func TestSearchedConversationUnderWebRun(t *testing.T) {
 	codexSignedIn(t)
 	got := protectedSearch(t)

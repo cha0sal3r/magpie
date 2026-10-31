@@ -1,7 +1,7 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// A plugin's browser sign-in that comes back to a port on magpie's machine
+// A plugin's browser sign-in that comes back to a port on magpie-friday's machine
 // (Devin's, Kiro's, Trae's, Zed's plugins) takes the address the browser
-// ended on, for a magpie on a server or in Docker opened from another
+// ended on, for a magpie-friday on a server or in Docker opened from another
 // computer (Chicring): beside the plugin's own words, the same field a
 // built-in's sign-in shows, posted to the sign-in, and the plugin's API key
 // way still offered. Command Code's plugin, whose page posts its key from

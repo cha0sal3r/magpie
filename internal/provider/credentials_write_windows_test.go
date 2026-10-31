@@ -14,7 +14,7 @@ import (
 // (no write or delete sharing, as most do) refuses a write. A truncating
 // write was refused and its error dropped, so the rotated tokens never
 // reached the disk while the refresh token on it was spent, and the next
-// refresh, magpie's or Codex CLI's, was refused (refresh_token_reused).
+// refresh, magpie-friday's or Codex CLI's, was refused (refresh_token_reused).
 // The rename that replaces it waits the holder out.
 func TestCodexRefreshOutlastsAHeldAuthJSON(t *testing.T) {
 	isolate(t)

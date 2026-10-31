@@ -13,12 +13,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/dirent"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/dirent"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Antigravity CLI's (agy's) conversations, on the Sessions page (RickyWei on
-// Discord: the ones started from magpie's Agents page were listed nowhere).
+// Discord: the ones started from magpie-friday's Agents page were listed nowhere).
 // A conversation is the folder brain/<conversation id>/ of agy's data folder
 // (AgyDir); its steps are .system_generated/logs/transcript_full.jsonl, the
 // file its calls are read from too (calls_agy.go). As agy 1.3.5 and 1.4.7
@@ -41,11 +41,11 @@ import (
 // workspace_uris, a JSON list of file:// URIs. The steps name no model, so
 // a conversation's tokens are counted under "agy", as its calls are left
 // with no model. `agy --conversation <id>` picks one up again, from any
-// folder; started on magpie's gateway, it needs the variables and --model
+// folder; started on magpie-friday's gateway, it needs the variables and --model
 // the agent's row gives (AgyStart).
 
 // AgyStart, when set (package agent sets it), is the command that starts
-// agy on magpie's gateway, "" when agy isn't set to use magpie.
+// agy on magpie-friday's gateway, "" when agy isn't set to use magpie-friday.
 var AgyStart func() string
 
 // agySummary is what conversation_summaries.db says of a conversation.

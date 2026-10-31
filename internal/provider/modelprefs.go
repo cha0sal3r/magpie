@@ -8,8 +8,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // A model's name is the vendor's, or models.dev's, and agents are shown it
@@ -25,7 +25,7 @@ import (
 
 // The user can also keep only some of the reasoning levels a model has
 // (low, medium and high of its six): settings' ModelEfforts, kept the same
-// way. The lists magpie hands out — the gateway's, and those it writes into
+// way. The lists magpie-friday hands out — the gateway's, and those it writes into
 // the agents' files — offer only those, in the vendor's order; a request
 // for another still reaches the vendor as it did. A model whose levels
 // aren't known (one models.dev doesn't list, a custom provider's) can be
@@ -44,7 +44,7 @@ func modelNameIn(names map[string]string, pid, model string) (string, bool) {
 // splitRef is "provider/model" as the provider it names, by its id now,
 // and the model.
 func splitRef(ref string) (*Provider, string, error) {
-	r := strings.TrimPrefix(strings.TrimSpace(ref), "magpie/")
+	r := strings.TrimPrefix(strings.TrimSpace(ref), "magpie-friday/")
 	if IsGroupRef(r) {
 		return nil, "", errors.New("that is a routing group, not a provider's model")
 	}
@@ -85,7 +85,7 @@ func setModelName(ref, name string) (bool, error) {
 		return false, errors.New("a model's name is at most 80 characters")
 	}
 	if name != "" && !p.serves(model) {
-		return false, fmt.Errorf("%s has no model %s (magpie provider %s lists them)", p.ID, model, p.ID)
+		return false, fmt.Errorf("%s has no model %s (magpie-friday provider %s lists them)", p.ID, model, p.ID)
 	}
 	s := settings.Load()
 	key := p.ID + "/" + model
@@ -115,7 +115,7 @@ func setModelName(ref, name string) (bool, error) {
 //
 // Unlike the other model preferences this does not tell the agents. What a
 // call costs is not what an agent picks a model by, and the model lists
-// magpie keeps in the agents' own files are not its to rewrite over a number
+// magpie-friday keeps in the agents' own files are not its to rewrite over a number
 // in a cost report.
 func SetModelPrice(id string, p *catalog.Price) error {
 	if p == nil {
@@ -126,7 +126,7 @@ func SetModelPrice(id string, p *catalog.Price) error {
 	if model, every := strings.CutPrefix(strings.TrimSpace(id), settings.AnyProvider); every {
 		// a model from any provider, or from none still there: no provider
 		// is asked whether it serves it, since what it prices is mostly
-		// usage whose provider is gone, or that never went through magpie
+		// usage whose provider is gone, or that never went through magpie-friday
 		key = AnyPriceKey(model)
 	} else {
 		pr, model, err := splitRef(id)
@@ -134,10 +134,10 @@ func SetModelPrice(id string, p *catalog.Price) error {
 			return err
 		}
 		// a price for a model the provider does not serve is a price that
-		// never applies and nothing later says so; the same refusal `magpie
+		// never applies and nothing later says so; the same refusal `magpie-friday
 		// model name` makes for the same id.
 		if model != "*" && !pr.serves(model) {
-			return fmt.Errorf("%s has no model %s (magpie provider %s lists them, and magpie model price '*/%s' prices it from any provider)", pr.ID, model, pr.ID, model)
+			return fmt.Errorf("%s has no model %s (magpie-friday provider %s lists them, and magpie-friday model price '*/%s' prices it from any provider)", pr.ID, model, pr.ID, model)
 		}
 		// the entry is written under the id the provider has now, the way a
 		// name is: a key under a display name is a price the provider is
@@ -202,17 +202,17 @@ func PriceKey(pid, model string) (string, bool) {
 // DropModelPrice takes a user's price away under the key it is stored at,
 // without asking whether the provider is still there, and reports whether
 // there was one there to take away. A price outlives the provider it was set
-// for: that provider can be deleted, and `magpie model prices` still lists
+// for: that provider can be deleted, and `magpie-friday model prices` still lists
 // the price and usage is still counted at it, so a removal that resolved the
 // provider first would leave the user no way to take it away. Which of the
 // keys a price is ever kept under this one is, is PriceKey's to say.
 //
 // A key holding no price is still no error — there is nothing there to take
 // away, which is the state it is left in either way — but saying so is what
-// tells a mistyped id from a price that was cleared: `magpie model price --
+// tells a mistyped id from a price that was cleared: `magpie-friday model price --
 // reset` over a price still in the file would have the user believe it gone.
 func DropModelPrice(key string) (bool, error) {
-	key = strings.TrimPrefix(strings.TrimSpace(key), "magpie/")
+	key = strings.TrimPrefix(strings.TrimSpace(key), "magpie-friday/")
 	if IsGroupRef(key) {
 		return false, errors.New("that is a routing group, not a provider's model")
 	}
@@ -234,7 +234,7 @@ func DropModelPrice(key string) (bool, error) {
 var Levels = []string{"none", "minimal", "low", "medium", "high", "xhigh", "max"}
 
 // SetModelEfforts keeps only these of a provider's model's reasoning
-// levels in the lists magpie hands out; none, or all it has, offers them
+// levels in the lists magpie-friday hands out; none, or all it has, offers them
 // all again. They must be levels the model has — or, for a model whose
 // levels aren't known, any of Levels, which it is given; none takes them
 // away.
@@ -389,7 +389,7 @@ func setModelImage(ref string, images *bool) (bool, error) {
 		return false, err
 	}
 	if images != nil && !p.serves(model) {
-		return false, fmt.Errorf("%s has no model %s (magpie provider %s lists them)", p.ID, model, p.ID)
+		return false, fmt.Errorf("%s has no model %s (magpie-friday provider %s lists them)", p.ID, model, p.ID)
 	}
 	if images != nil {
 		if vendor, known := vendorSees(p, model); known && *images == vendor {
@@ -425,7 +425,7 @@ func setModelImage(ref string, images *bool) (bool, error) {
 // the URLs the provider has, as before. It must be an API the provider has
 // a URL for: a preset's or a subscription's as well as a custom
 // provider's, when it has more than one (01huadalang: OpenCode Go's
-// deepseek-v4.1-flash answers on Responses too, and magpie asked it on
+// deepseek-v4.1-flash answers on Responses too, and magpie-friday asked it on
 // chat alone).
 func SetModelAPI(ref, api string) error {
 	return touchedIf(setModelAPI(ref, api))
@@ -445,7 +445,7 @@ func setModelAPI(ref, api string) (bool, error) {
 			return false, fmt.Errorf("%s has no %s URL to ask %s on: add it under More endpoints first", p.ID, proto, model)
 		}
 		if !p.serves(model) {
-			return false, fmt.Errorf("%s has no model %s (magpie provider %s lists them)", p.ID, model, p.ID)
+			return false, fmt.Errorf("%s has no model %s (magpie-friday provider %s lists them)", p.ID, model, p.ID)
 		}
 	}
 	s := settings.Load()
@@ -481,7 +481,7 @@ func (p Provider) ModelAPI(model string) (Protocol, bool) {
 }
 
 // modelAPI is whether proto is one a model can be set to be asked on: the
-// three magpie translates between, and a Gemini URL's generateContent
+// three magpie-friday translates between, and a Gemini URL's generateContent
 // (Kayphoon on Discord: a custom provider's Gemini format, which a model's
 // own choice didn't offer)
 func modelAPI(proto Protocol) bool {
@@ -587,7 +587,7 @@ func SetModelPrefs(pid string, prefs map[string]ModelPref) error {
 
 // setModelSame says which model a provider's model, spelt "provider/model",
 // is the same as, for one a vendor names its own way (Volcengine Ark's
-// dated ids, kyzhouxu on #583): the routing groups magpie finds merge it
+// dated ids, kyzhouxu on #583): the routing groups magpie-friday finds merge it
 // with that model from every other provider (autoGroups), and a call to
 // it no list prices is costed at that model's maker's price (SamePriceIn,
 // #2344). The name is a
@@ -610,7 +610,7 @@ func setModelSame(ref, same string) (bool, error) {
 		same = "" // its own id: merged by it already
 	}
 	if same != "" && !p.serves(model) {
-		return false, fmt.Errorf("%s has no model %s (magpie provider %s lists them)", p.ID, model, p.ID)
+		return false, fmt.Errorf("%s has no model %s (magpie-friday provider %s lists them)", p.ID, model, p.ID)
 	}
 	s := settings.Load()
 	key := p.ID + "/" + model
@@ -643,7 +643,7 @@ func ImageOverrideIn(s settings.Settings, pid, model string) (bool, bool) {
 	return v, ok
 }
 
-// ApplyImage is what magpie tells of model: the user's answer when they
+// ApplyImage is what magpie-friday tells of model: the user's answer when they
 // gave one, else images as the vendor's list has it (known is that list's
 // explicit answer, nil when it didn't say).
 func ApplyImage(pid, model string, images bool, known *bool) (bool, *bool) {
@@ -739,8 +739,8 @@ func Labels(es []Entry) []string {
 	return out
 }
 
-// PlainName is the entry's name alone: a remote magpie's model's without
-// the provider its list put after it by that magpie's own setting, which
+// PlainName is the entry's name alone: a remote magpie-friday's model's without
+// the provider its list put after it by that magpie-friday's own setting, which
 // this one's Provider in model names Off leaves out as well (ARNO on
 // Discord: "· Relay A" and "· routing group" stayed under Off).
 func (e Entry) PlainName() string { return cmp.Or(e.Plain, e.Name) }
@@ -749,7 +749,7 @@ func (e Entry) PlainName() string { return cmp.Or(e.Plain, e.Name) }
 // agent's list is told it: a model with levels, or one marked Reasoning
 // with a thinking switch alone. An export that read the levels alone
 // marked Trae CN's kimi-k3-max, which always thinks and has no levels
-// magpie knows, not reasoning for Pi, and `magpie pi effort high` was
+// magpie-friday knows, not reasoning for Pi, and `magpie-friday pi effort high` was
 // clamped to off (#2380).
 func (e Entry) Thinks() bool { return e.Reasoning || len(e.Efforts) > 0 }
 
@@ -899,15 +899,15 @@ func (p Provider) serves(model string) bool {
 // ServesModel is whether the provider really serves model, listed or
 // exposed: the question SetUpstreamName asks before it keeps a name for
 // one, and the same one, since a name given for a model the provider does
-// not serve is a request magpie would never send it. It is the answer a
+// not serve is a request magpie-friday would never send it. It is the answer a
 // caller told to take a name off needs as well: a model the provider has
 // nothing like is not asked for by any name, so reporting which one is in
-// force for it would say magpie asks for a model it does not know.
+// force for it would say magpie-friday asks for a model it does not know.
 func ServesModel(p Provider, model string) bool { return p.serves(model) }
 
 // UpstreamName is the name to send a provider for one of its models: the one
 // the user gave, for the model or for every model of that provider, else the
-// name magpie knows the model by. Every "*" in the name the user gave is that
+// name magpie-friday knows the model by. Every "*" in the name the user gave is that
 // model, wherever it stands: "vendor-c/*" for a provider's every model sends
 // vendor-c/model-3 for model-3, so one name covers a relay that namespaces
 // its models and still asks for each of them by its own, and "vendor/*/pro"
@@ -917,7 +917,7 @@ func ServesModel(p Provider, model string) bool { return p.serves(model) }
 //
 // The two are deliberately different things. Everything a user or an agent
 // sees — the catalog, the routing groups' membership, what a call is recorded
-// and priced as — is in magpie's name for the model, so a rename upstream
+// and priced as — is in magpie-friday's name for the model, so a rename upstream
 // never renames a model here. Only the request that goes out carries the
 // vendor's name, and what a reply says answered is compared with it, so a
 // model asked for by the name the vendor serves it under is not read as
@@ -928,7 +928,7 @@ func UpstreamName(p Provider, model string) string {
 
 // UpstreamNameIn is UpstreamName over a settings' ModelWires already read,
 // for a caller that walks a whole ledger of models in a row. A name that is
-// only whitespace — one an older magpie stored, or one hand-edited into the
+// only whitespace — one an older magpie-friday stored, or one hand-edited into the
 // file — is no name, as it is where one is given.
 func UpstreamNameIn(wires map[string]string, pid, model string) string {
 	n := strings.TrimSpace(wires[pid+"/"+model])
@@ -942,13 +942,13 @@ func UpstreamNameIn(wires map[string]string, pid, model string) string {
 }
 
 // UpstreamNameAs is UpstreamName for a request that goes out asking for sent,
-// which is not always the model magpie knows: an Antigravity account is asked
+// which is not always the model magpie-friday knows: an Antigravity account is asked
 // for the variant of it the effort picks, and that is the id the body carries.
 // The two levels of the lookup are kept apart, since they are about different
 // things. A name given for the model itself is the model's, whichever variant
 // answers for it, so a "*" in it is that model and not the variant: the vendor
 // is asked for the model by the name its owner gave, as it is everywhere else
-// in magpie, and not for a "*" it never heard of. A "*" in the provider's own
+// in magpie-friday, and not for a "*" it never heard of. A "*" in the provider's own
 // name is whatever the request is going out under, so one name for a provider
 // asks for gemini-3.7-flash-high and gemini-3.7-flash-low each by its own,
 // rather than for the one id whatever level the effort picked.
@@ -975,8 +975,8 @@ func UpstreamNameAsIn(wires map[string]string, pid, model, sent string) string {
 
 // SentNameIn is the name a call on the provider's model goes out under at
 // that effort: the name the vendor would be asked for now, which is the one
-// magpie knows the model by unless the user gave one. It is UpstreamNameAs for
-// the id that call asks for, which is not the model magpie knows everywhere:
+// magpie-friday knows the model by unless the user gave one. It is UpstreamNameAs for
+// the id that call asks for, which is not the model magpie-friday knows everywhere:
 // on an Antigravity account it is the variant of it that effort picks, so a
 // name given for the provider asks for each level by its own id, and a ledger
 // reading a record back reads the vendor's reply against the name that
@@ -1017,7 +1017,7 @@ func SentNameOnIn(wires map[string]string, pid, account, model, effort string) s
 
 // antigravitySentID is the id a call on the model goes out under at that
 // effort on an Antigravity account. Every other account is asked for the
-// model magpie knows, and so is one of a model this account does not serve
+// model magpie-friday knows, and so is one of a model this account does not serve
 // as a family of levels.
 func antigravitySentID(account, model, effort string) string {
 	if account != "antigravity" {
@@ -1095,16 +1095,16 @@ func nearestEffort(want string, levels []string) string {
 }
 
 // SetUpstreamName is the name to send a provider for one of its models; an
-// empty name takes the user's away and sends the one magpie knows. A name is
+// empty name takes the user's away and sends the one magpie-friday knows. A name is
 // only given for a model the provider really serves: a relay lists the model
-// under the id magpie knows it by and asks for it under the vendor's own, and
-// one it does not list is a request magpie would never send, so naming it is
+// under the id magpie-friday knows it by and asks for it under the vendor's own, and
+// one it does not list is a request magpie-friday would never send, so naming it is
 // refused here, as a price and a limit are for the same id. A "*" stands
 // for every model of the provider rather than for one, and a removal is
 // exempt, so an entry left for a model that has since gone can still be
 // taken away.
 //
-// A provider magpie asks through an agent's own backend has no model field
+// A provider magpie-friday asks through an agent's own backend has no model field
 // to put a name in — the request goes out carrying the id the agent knows —
 // so a name given for one of its models would never be sent (asksOwnBackend).
 //
@@ -1130,10 +1130,10 @@ func nearestEffort(want string, levels []string) string {
 //
 // A blank name is a removal, and whether there was a name there to take away
 // is DropUpstreamName's to say, not this one's: a caller with something of
-// its own to say about a name that was not there — `magpie model wire --
+// its own to say about a name that was not there — `magpie-friday model wire --
 // reset`, which tells a mistyped id from a model already asked for by the
-// name magpie knows it by — asks DropUpstreamName for the removal itself,
-// the way `magpie model price --reset` asks DropModelPrice. A caller that
+// name magpie-friday knows it by — asks DropUpstreamName for the removal itself,
+// the way `magpie-friday model price --reset` asks DropModelPrice. A caller that
 // only wants the model left as it is has nothing to tell the user either
 // way, which is why a blank name is an error and not a second answer.
 func SetUpstreamName(ref, name string) error {
@@ -1150,10 +1150,10 @@ func SetUpstreamName(ref, name string) error {
 		return err
 	}
 	if model != "*" && !p.serves(model) {
-		return fmt.Errorf("%s has no model %s (magpie provider %s lists them)", p.ID, model, p.ID)
+		return fmt.Errorf("%s has no model %s (magpie-friday provider %s lists them)", p.ID, model, p.ID)
 	}
 	if p.asksOwnBackend() {
-		return fmt.Errorf("%s is %s's own account: magpie asks it for the model by the id it knows, so there is no upstream name to give it", p.Name, p.Account.Agent)
+		return fmt.Errorf("%s is %s's own account: magpie-friday asks it for the model by the id it knows, so there is no upstream name to give it", p.Name, p.Account.Agent)
 	}
 	s := settings.Load()
 	if s.ModelWires == nil {
@@ -1177,7 +1177,7 @@ func SetUpstreamName(ref, name string) error {
 // is really kept, rather than from under whichever provider the ref names
 // now.
 func DropUpstreamName(key string) (bool, error) {
-	key = strings.TrimPrefix(strings.TrimSpace(key), "magpie/")
+	key = strings.TrimPrefix(strings.TrimSpace(key), "magpie-friday/")
 	if IsGroupRef(key) {
 		return false, errors.New("that is a routing group, not a provider's model")
 	}
@@ -1203,14 +1203,14 @@ func DropUpstreamName(key string) (bool, error) {
 // has to know that this key is the one a name is kept under, which is the
 // one question wireKey's order is about.
 //
-// A key spelled as an agent spells one — with magpie/ in front of it, and
+// A key spelled as an agent spells one — with magpie-friday/ in front of it, and
 // the spaces a ref is typed with — is that same key, as it is for a removal
 // (DropUpstreamName): a name kept under it is there whichever way it is
 // spelled, and a check that answered for one spelling only would say a name
 // was not kept where it is. The one caller has had that prefix taken off
 // already (splitModelRef), so nothing depends on it yet.
 func HasUpstreamName(key string) bool {
-	key = strings.TrimPrefix(strings.TrimSpace(key), "magpie/")
+	key = strings.TrimPrefix(strings.TrimSpace(key), "magpie-friday/")
 	_, ok := settings.Load().ModelWires[key]
 	return ok
 }
@@ -1259,10 +1259,10 @@ func (p Provider) UpstreamNames() map[string]string {
 	return out
 }
 
-// asksOwnBackend reports whether p is a signed-in account magpie reaches
+// asksOwnBackend reports whether p is a signed-in account magpie-friday reaches
 // through that agent's own backend rather than through a vendor API: the
 // request goes out carrying the model id the agent already knows, with no
-// model field for magpie to name differently, so a wire name given for one
+// model field for magpie-friday to name differently, so a wire name given for one
 // of its models would never be sent. It is the account dispatch in
 // internal/gateway that decides which agents those are, so this and that
 // have to keep saying the same thing — a name accepted for an account the

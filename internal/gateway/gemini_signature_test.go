@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // geminiSigUpstream is Gemini's OpenAI-compatible API as far as thought
@@ -100,7 +100,7 @@ func sigPost(t *testing.T, s *Server, path, body string) string {
 	return rec.Body.String()
 }
 
-// Pi on Gemini through magpie (#687): Pi speaks Chat, relayed to Gemini's
+// Pi on Gemini through magpie-friday (#687): Pi speaks Chat, relayed to Gemini's
 // OpenAI-compatible API as it is, and keeps a tool call's id but not its
 // extra_content. The second request, the call and its result sent back,
 // was turned away with "Function call is missing a thought_signature";
@@ -147,7 +147,7 @@ func TestGeminiThoughtSignatureThroughPi(t *testing.T) {
 	}
 }
 
-// Claude Code, or any client magpie translates for, on Gemini's
+// Claude Code, or any client magpie-friday translates for, on Gemini's
 // OpenAI-compatible API: the tool_use id carries the signature back the
 // same way.
 func TestGeminiThoughtSignatureThroughAnthropic(t *testing.T) {
@@ -241,7 +241,7 @@ func TestGeminiCallsWithoutSignature(t *testing.T) {
 		t.Errorf("another upstream was sent %s", other)
 	}
 
-	// the same through magpie's own translation
+	// the same through magpie-friday's own translation
 	r := &Request{Messages: []Message{
 		{Role: "assistant", Parts: []Part{{Kind: ToolCall, ID: "toolu_1", Name: "a"}}},
 		{Role: "user", Parts: []Part{{Kind: ToolResult, CallID: "toolu_1", Text: "x"}}},
@@ -278,8 +278,8 @@ func TestSignedID(t *testing.T) {
 	}
 }
 
-// sigFixtures are ids as magpie gives them for Gemini 3's calls: Gemini's
-// own call id or magpie's call_<newID>, with a signature the size of
+// sigFixtures are ids as magpie-friday gives them for Gemini 3's calls: Gemini's
+// own call id or magpie-friday's call_<newID>, with a signature the size of
 // vertexCallSig and of the 421-character one #1536 measured (315 bytes),
 // and one that isn't canonical base64 (__tsr).
 func sigFixtures() []struct{ id, sig string } {
@@ -315,8 +315,8 @@ func TestShortenedIDHasNoSignature(t *testing.T) {
 	}
 }
 
-// Ids magpie gave before #1536, with no length in their mark, still give
-// their signatures back: a conversation started on an older magpie goes on.
+// Ids magpie-friday gave before #1536, with no length in their mark, still give
+// their signatures back: a conversation started on an older magpie-friday goes on.
 func TestOldSignedIDsStillRead(t *testing.T) {
 	for _, c := range sigFixtures() {
 		var old string
@@ -348,7 +348,7 @@ func TestOldSignedIDsStillRead(t *testing.T) {
 
 // Every path that takes a signature off an id sends Gemini the skip value,
 // never part of a signature, for an id cut at any length: Chat relayed as
-// it is, magpie's own Chat, Gemini and Code Assist (Antigravity) requests.
+// it is, magpie-friday's own Chat, Gemini and Code Assist (Antigravity) requests.
 func TestShortenedIDGoesUnsigned(t *testing.T) {
 	for _, c := range sigFixtures() {
 		full := signedID(c.id, c.sig)
@@ -426,7 +426,7 @@ func TestFortyCharacterIDThroughGateway(t *testing.T) {
 
 // #2411 (liangxyz): a signature of several KB made a call's id as long,
 // and LobeHub's PostgreSQL index (2704 bytes) turned the row away. The id
-// now refers to the signature magpie keeps: 6.4KB, the size in the
+// now refers to the signature magpie-friday keeps: 6.4KB, the size in the
 // report, gives an id of 64 characters at most, and the signature comes
 // back whole.
 func TestLongSignatureGivesShortID(t *testing.T) {
@@ -447,7 +447,7 @@ func TestLongSignatureGivesShortID(t *testing.T) {
 	}
 }
 
-// A reference magpie no longer has (pruned, or a folder from another
+// A reference magpie-friday no longer has (pruned, or a folder from another
 // computer) or whose file was changed reads as no signature, so the call
 // goes to Gemini unsigned rather than with someone else's signature.
 func TestKeptSignatureGoneOrChanged(t *testing.T) {
@@ -481,7 +481,7 @@ func TestKeptSignatureGoneOrChanged(t *testing.T) {
 	}
 }
 
-// Where magpie can't keep a signature (its folder can't be written), the
+// Where magpie-friday can't keep a signature (its folder can't be written), the
 // id carries the signature itself, as before #2411.
 func TestUnkeptSignatureRidesInTheID(t *testing.T) {
 	dir := sigDir

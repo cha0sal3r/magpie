@@ -1,11 +1,11 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // Codex's lead picks each subagent's model itself, and Codex's own config
-// can't overrule it (willz on Discord), so magpie puts every Codex subagent
+// can't overrule it (willz on Discord), so magpie-friday puts every Codex subagent
 // on a model set in Codex's settings, a named row. Codex's card has no
 // square for it beside the row (the same setting twice, the owner, 10-25);
 // a Codex in WSL, which those settings don't read, keeps it on its row: a
 // square opening the app's model picker
-// (no native select) with magpie's models, another provider's too (#1633),
+// (no native select) with magpie-friday's models, another provider's too (#1633),
 // "Same as the lead" first. It is the one square for the subagents' model:
 // Codex's own subagents square, which read the same (the owner), isn't
 // drawn, and a model left in Codex's config by it is said on this one and
@@ -25,10 +25,10 @@ const { chromium, webkit } = require("playwright");
 const assets = path.resolve(__dirname, "../assets");
 const own = [{ value: "gpt-5.5", label: "GPT-5.5", ref: "openai/gpt-5.5" }];
 const chatgpt = [
-  { value: "codex/gpt-6-astra", label: "GPT-6 Astra", note: "me@example.com · via magpie", group: "ChatGPT", ref: "codex/gpt-6-astra", icon: "openai" },
-  { value: "codex/gpt-5.5", label: "GPT-5.5", note: "me@example.com · via magpie", group: "ChatGPT", ref: "codex/gpt-5.5", icon: "openai" },
+  { value: "codex/gpt-6-astra", label: "GPT-6 Astra", note: "me@example.com · via magpie-friday", group: "ChatGPT", ref: "codex/gpt-6-astra", icon: "openai" },
+  { value: "codex/gpt-5.5", label: "GPT-5.5", note: "me@example.com · via magpie-friday", group: "ChatGPT", ref: "codex/gpt-5.5", icon: "openai" },
   // #1633: another provider's model, a lead on it wanting its subagents there too
-  { value: "token/gpt-6.1-sol", label: "GPT-6.1 Sol", note: "Token · via magpie", group: "Token", ref: "token/gpt-6.1-sol" },
+  { value: "token/gpt-6.1-sol", label: "GPT-6.1 Sol", note: "Token · via magpie-friday", group: "Token", ref: "token/gpt-6.1-sol" },
 ];
 const fresh = () => ({
   agents: [{
@@ -47,7 +47,7 @@ const fresh = () => ({
       { key: "subagent_model", label: "subagent model", value: "", options: chatgpt },
     ],
   },
-  // no ChatGPT account in magpie: no square
+  // no ChatGPT account in magpie-friday: no square
   {
     id: "codex2", name: "Codex", path: "/test2/config.toml", icon: "codex-color", wired: false,
     fields: [{ key: "model", label: "model", value: "gpt-5.5", options: own }, { key: "subagent_model", label: "subagent model", value: "", options: [] }],
@@ -62,7 +62,7 @@ const seat = { id: "codex", provider: "codex", name: "ChatGPT", who: "me@example
 const routes = [
   { id: 2, seq: 2, time: at(0), agent: "codex", kind: "collab_spawn", model: "gpt-5.5", provider: "codex", subagent: { asked: "gpt-5.5", to: "codex/gpt-6-astra" },
     order: [seat], tries: [{ id: "codex", model: "gpt-6-astra", start: at(0), done: true, status: 200, ms: 900 }], done: true, status: 200, ms: 900, tokens: 1200 },
-  { id: 1, seq: 1, time: at(1), agent: "codex", kind: "collab_spawn", model: "gpt-5.5", provider: "openai", subagent: { asked: "gpt-5.5", to: "codex/gpt-6-astra", kept: "no ChatGPT account on in magpie serves it" },
+  { id: 1, seq: 1, time: at(1), agent: "codex", kind: "collab_spawn", model: "gpt-5.5", provider: "openai", subagent: { asked: "gpt-5.5", to: "codex/gpt-6-astra", kept: "no ChatGPT account on in magpie-friday serves it" },
     order: [{ ...seat, provider: "openai", model: "gpt-5.5" }], tries: [{ id: "codex", model: "gpt-5.5", start: at(1), done: true, status: 200, ms: 900 }], done: true, status: 200, ms: 900, tokens: 1200 },
   // #1633: set to another provider's model, a task its lead sealed stays put
   { id: 0, seq: 0, time: at(2), agent: "codex", kind: "collab_spawn", model: "gpt-5.5", provider: "openai", subagent: { asked: "gpt-5.5", to: "token/gpt-6.1-sol", kept: "its task was sealed by the ChatGPT backend that answered its lead, and only a ChatGPT account can open it" },
@@ -112,32 +112,32 @@ const W = {
   en: { unset: "subagent model: Same as the lead", line: "Each subagent runs on the lead's model (GPT-5.5), or on another the lead picks for it. Pick a model here to put every subagent on it.",
     old: "Codex's config still starts subagents on gpt-5.4-mini when the lead names none; picking here replaces it.",
     def: "Same as the lead", note: "GPT-5.5, or another the lead picks for a subagent", set: "subagent model: GPT-6 Astra", setLine: "Every subagent runs on this model, whatever the lead asks for.", row: "Codex subagent model",
-    moved: "Codex requested a subagent on gpt-5.5; magpie put it on codex/gpt-6-astra, the model set for its subagents.",
-    kept: "Codex requested a subagent on gpt-5.5 and it stayed there: its subagents are set to codex/gpt-6-astra, but no ChatGPT account on in magpie serves it.",
+    moved: "Codex requested a subagent on gpt-5.5; magpie-friday put it on codex/gpt-6-astra, the model set for its subagents.",
+    kept: "Codex requested a subagent on gpt-5.5 and it stayed there: its subagents are set to codex/gpt-6-astra, but no ChatGPT account on in magpie-friday serves it.",
     sealed: "Codex requested a subagent on gpt-5.5 and it stayed there: its subagents are set to token/gpt-6.1-sol, but its task was sealed by the ChatGPT backend that answered its lead, and only a ChatGPT account can open it." },
   zh: { unset: "子代理模型：跟主代理一样", line: "每个子代理都用主代理正在用的模型（GPT-5.5），主代理也可能给某个子代理另选一个。在这里选定一个模型，所有子代理就都用它。",
     old: "Codex 配置里还写着：主代理没指定时，子代理用 gpt-5.4-mini。在这里选一次就会替换掉它。",
     def: "跟主代理一样", note: "GPT-5.5，或主代理给子代理另选的模型", set: "子代理模型：GPT-6 Astra", setLine: "所有子代理都用这个模型，不管主代理要的是哪个。", row: "Codex 子代理模型",
-    moved: "Codex 请求了使用 gpt-5.5 的子代理；magpie 将其改用 codex/gpt-6-astra，即为它的子代理设定的模型。",
-    kept: "Codex 请求了使用 gpt-5.5 的子代理，并保留在该模型上：它的子代理设为 codex/gpt-6-astra，但magpie 中启用的 ChatGPT 账号都不提供该模型。",
+    moved: "Codex 请求了使用 gpt-5.5 的子代理；magpie-friday 将其改用 codex/gpt-6-astra，即为它的子代理设定的模型。",
+    kept: "Codex 请求了使用 gpt-5.5 的子代理，并保留在该模型上：它的子代理设为 codex/gpt-6-astra，但magpie-friday 中启用的 ChatGPT 账号都不提供该模型。",
     sealed: "Codex 请求了使用 gpt-5.5 的子代理，并保留在该模型上：它的子代理设为 token/gpt-6.1-sol，但它的任务由回答主代理的 ChatGPT 后端加密，只有 ChatGPT 账号能打开。" },
   "zh-TW": { unset: "子代理模型：跟主代理一樣", line: "每個子代理都用主代理正在用的模型（GPT-5.5），主代理也可能給某個子代理另選一個。在這裡選定一個模型，所有子代理就都用它。",
     old: "Codex 設定裡還寫著：主代理沒指定時，子代理用 gpt-5.4-mini。在這裡選一次就會取代它。",
     def: "跟主代理一樣", note: "GPT-5.5，或主代理給子代理另選的模型", set: "子代理模型：GPT-6 Astra", setLine: "所有子代理都用這個模型，不管主代理要的是哪個。", row: "Codex 子代理模型",
-    moved: "Codex 請求了使用 gpt-5.5 的子代理；magpie 將其改用 codex/gpt-6-astra，即為它的子代理設定的模型。",
-    kept: "Codex 請求了使用 gpt-5.5 的子代理，並保留在該模型上：它的子代理設為 codex/gpt-6-astra，但magpie 中啟用的 ChatGPT 帳號都不提供該模型。",
+    moved: "Codex 請求了使用 gpt-5.5 的子代理；magpie-friday 將其改用 codex/gpt-6-astra，即為它的子代理設定的模型。",
+    kept: "Codex 請求了使用 gpt-5.5 的子代理，並保留在該模型上：它的子代理設為 codex/gpt-6-astra，但magpie-friday 中啟用的 ChatGPT 帳號都不提供該模型。",
     sealed: "Codex 請求了使用 gpt-5.5 的子代理，並保留在該模型上：它的子代理設為 token/gpt-6.1-sol，但它的任務由回應主代理的 ChatGPT 後端加密，只有 ChatGPT 帳號能打開。" },
   ja: { unset: "サブエージェントのモデル：リードと同じ", line: "各サブエージェントはリードと同じモデル（GPT-5.5）で動きます。リードが別のモデルを選ぶこともあります。ここでモデルを選ぶと、すべてのサブエージェントがそのモデルになります。",
     old: "Codex の設定には、リードが指定しないときのサブエージェントのモデルとして gpt-5.4-mini が残っています。ここで選ぶとそれを置き換えます。",
     def: "リードと同じ", note: "GPT-5.5、またはリードがサブエージェントに選ぶ別のモデル", set: "サブエージェントのモデル：GPT-6 Astra", setLine: "リードが何を指定しても、すべてのサブエージェントがこのモデルで動きます。", row: "Codex サブエージェントのモデル",
-    moved: "Codex が gpt-5.5 のサブエージェントをリクエストしました。magpie はサブエージェント用に設定された codex/gpt-6-astra に切り替えました。",
-    kept: "Codex が gpt-5.5 のサブエージェントをリクエストし、そのモデルのままになりました。サブエージェントは codex/gpt-6-astra に設定されていますが、magpie で有効な ChatGPT アカウントはどれもこのモデルを提供していません。",
+    moved: "Codex が gpt-5.5 のサブエージェントをリクエストしました。magpie-friday はサブエージェント用に設定された codex/gpt-6-astra に切り替えました。",
+    kept: "Codex が gpt-5.5 のサブエージェントをリクエストし、そのモデルのままになりました。サブエージェントは codex/gpt-6-astra に設定されていますが、magpie-friday で有効な ChatGPT アカウントはどれもこのモデルを提供していません。",
     sealed: "Codex が gpt-5.5 のサブエージェントをリクエストし、そのモデルのままになりました。サブエージェントは token/gpt-6.1-sol に設定されていますが、そのタスクはリードに応答した ChatGPT バックエンドが暗号化しており、開けるのは ChatGPT アカウントだけです。" },
   de: { unset: "Modell der Subagenten: Wie der Haupt-Agent", line: "Jeder Subagent läuft auf dem Modell des Haupt-Agenten (GPT-5.5) oder auf einem anderen, das der Haupt-Agent für ihn wählt. Wähle hier ein Modell, damit alle Subagenten darauf laufen.",
     old: "Die Codex-Konfiguration startet Subagenten noch auf gpt-5.4-mini, wenn der Haupt-Agent keins nennt; eine Wahl hier ersetzt das.",
     def: "Wie der Haupt-Agent", note: "GPT-5.5 oder ein anderes, das der Haupt-Agent für einen Subagenten wählt", set: "Modell der Subagenten: GPT-6 Astra", setLine: "Alle Subagenten laufen auf diesem Modell, egal was der Haupt-Agent verlangt.", row: "Codex-Subagenten-Modell",
-    moved: "Codex hat einen Subagent mit gpt-5.5 angefordert; magpie hat ihn auf codex/gpt-6-astra gesetzt, das für seine Subagenten festgelegte Modell.",
-    kept: "Codex hat einen Subagent mit gpt-5.5 angefordert, und er blieb dort: Seine Subagenten sind auf codex/gpt-6-astra gesetzt, aber kein eingeschaltetes ChatGPT-Konto in magpie bietet es an.",
+    moved: "Codex hat einen Subagent mit gpt-5.5 angefordert; magpie-friday hat ihn auf codex/gpt-6-astra gesetzt, das für seine Subagenten festgelegte Modell.",
+    kept: "Codex hat einen Subagent mit gpt-5.5 angefordert, und er blieb dort: Seine Subagenten sind auf codex/gpt-6-astra gesetzt, aber kein eingeschaltetes ChatGPT-Konto in magpie-friday bietet es an.",
     sealed: "Codex hat einen Subagent mit gpt-5.5 angefordert, und er blieb dort: Seine Subagenten sind auf token/gpt-6.1-sol gesetzt, aber seine Aufgabe wurde vom ChatGPT-Backend versiegelt, das seinen Lead beantwortet hat, und nur ein ChatGPT-Konto kann sie öffnen." },
 };
 
@@ -149,7 +149,7 @@ const langs = process.env.LANGS ? process.env.LANGS.split(",") : Object.keys(W);
 for (const engine of engines) {
   for (const lang of langs) {
     for (const width of [1100, 560]) {
-      test(`${engine} ${lang} ${width}px: Codex's subagent model opens magpie's models, a ChatGPT account's first, a square only in WSL`, async (t) => {
+      test(`${engine} ${lang} ${width}px: Codex's subagent model opens magpie-friday's models, a ChatGPT account's first, a square only in WSL`, async (t) => {
         const w = W[lang];
         const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: "chromium" }));
         const page = await browser.newPage({ viewport: { width, height: 760 } });
@@ -199,7 +199,7 @@ for (const engine of engines) {
         const items = await page.locator("#pop #list li").allInnerTexts();
         assert(items[0].includes(w.def) && items[0].includes(w.note), items[0]);
         assert(items.some((s) => s.includes("GPT-6 Astra")), items.join(" | "));
-        assert(!items.some((s) => s.includes("openai/")), "Codex's own models, which magpie can't put a request on");
+        assert(!items.some((s) => s.includes("openai/")), "Codex's own models, which magpie-friday can't put a request on");
         // #1633: another provider's model is offered too
         assert(items.some((s) => s.includes("GPT-6.1 Sol")), items.join(" | "));
         const pop = await page.locator("#pop").boundingBox();

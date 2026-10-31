@@ -11,11 +11,11 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// A remote magpie (another computer's gateway as a provider) is asked in
+// A remote magpie-friday (another computer's gateway as a provider) is asked in
 // the API the model's own provider speaks there: a Chat client's request
 // for a model served on Anthropic's Messages goes to it as Messages, not as
 // Chat to be translated on the other side too; a routing group's, which
@@ -24,7 +24,7 @@ import (
 // it speaks Anthropic's Messages alone.
 func TestRemoteMagpieNativeAPI(t *testing.T) {
 	var mu sync.Mutex
-	var vendor, hops []string // paths the vendor, and the remote magpie, were asked on
+	var vendor, hops []string // paths the vendor, and the remote magpie-friday, were asked on
 	up := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		b, _ := io.ReadAll(r.Body)
 		mu.Lock()

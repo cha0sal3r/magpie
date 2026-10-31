@@ -144,7 +144,7 @@ func TestCustomRules(t *testing.T) {
 	if _, n := Mask(in, Options{Rules: rules}); n != 0 {
 		t.Fatal("masked with secrets off")
 	}
-	// where the user's and magpie's find the same value, the user's name
+	// where the user's and magpie-friday's find the same value, the user's name
 	// wins; where they overlap, the first to start and the longest
 	o = Options{Secrets: true, Rules: []Rule{{Kind: "OC", Prefix: "oc_sk_"}}}
 	if out, _ := Mask(`"key": "`+ocKey+`"`, o); !strings.Contains(out, "{{OC_") || strings.Contains(out, "API_KEY") {

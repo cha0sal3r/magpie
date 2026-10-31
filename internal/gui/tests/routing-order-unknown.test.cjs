@@ -4,7 +4,7 @@
 // (planLevel): an account whose allowance isn't known doesn't go after
 // another member's known one. The Routing page said it did (bitssly on
 // X: "opencode：剩余额度未知，排在已知的之后。" under an In order group),
-// as if magpie had moved the member the user put there. Now an In order
+// as if magpie-friday had moved the member the user put there. Now an In order
 // group's first says In order, and the unknown-allowance line is said
 // only of an account weighed against a known one of its own member, as
 // a Smart group still says it of each; a group By weight says the

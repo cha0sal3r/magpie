@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 const chatGPTAuth = `{"tokens":{"access_token":"x","id_token":"x.e30.x"}}`
@@ -28,11 +28,11 @@ func namesGone(home string) string {
 	return ""
 }
 
-// Whatever leads up to it, magpie stepping out of Codex never leaves its
+// Whatever leads up to it, magpie-friday stepping out of Codex never leaves its
 // config naming a model list that isn't there. Disconnect removed
-// magpie-models.json whatever Codex's provider was, and took
-// model_catalog_json out only while model_provider was still magpie's: one
-// moved off magpie (by the app, another tool, a hand edit) kept the key
+// magpie-friday-models.json whatever Codex's provider was, and took
+// model_catalog_json out only while model_provider was still magpie-friday's: one
+// moved off magpie-friday (by the app, another tool, a hand edit) kept the key
 // naming the removed file, and Codex didn't open again.
 func TestCodexNeverNamesGoneCatalog(t *testing.T) {
 	path := func(home string) string { return filepath.Join(home, ".codex", "config.toml") }
@@ -102,8 +102,8 @@ func TestCodexNeverNamesGoneCatalog(t *testing.T) {
 	}
 }
 
-// A model list of the user's own, put back as magpie steps out, is put
-// back only while its file is there: one removed since magpie connected
+// A model list of the user's own, put back as magpie-friday steps out, is put
+// back only while its file is there: one removed since magpie-friday connected
 // would keep Codex from loading its config.
 func TestCodexOwnCatalogGoneNotPutBack(t *testing.T) {
 	mine := filepath.Join(t.TempDir(), "mine.json")
@@ -137,13 +137,13 @@ func TestCodexOwnCatalogGoneNotPutBack(t *testing.T) {
 	}
 }
 
-// A config an older magpie left naming its removed list is mended at the
-// next start (Sync), with no reconnect: the key taken out while magpie is
+// A config an older magpie-friday left naming its removed list is mended at the
+// next start (Sync), with no reconnect: the key taken out while magpie-friday is
 // not Codex's provider, the list written again while it is.
 func TestCodexSyncMendsGoneCatalog(t *testing.T) {
 	t.Run("not the provider", func(t *testing.T) {
 		home, read := codexHome(t, "", "model = \"gpt-5.5\"\n")
-		list := filepath.Join(home, ".codex", "magpie-models.json")
+		list := filepath.Join(home, ".codex", "magpie-friday-models.json")
 		os.WriteFile(filepath.Join(home, ".codex", "config.toml"),
 			[]byte("model = \"gpt-5.5\"\nmodel_catalog_json = \""+filepath.ToSlash(list)+"\"\n"), 0o644)
 		if err := codex(home).Sync(); err != nil {
@@ -162,7 +162,7 @@ func TestCodexSyncMendsGoneCatalog(t *testing.T) {
 		if err := cx.Connect(); err != nil {
 			t.Fatal(err)
 		}
-		list := filepath.Join(home, ".codex", "magpie-models.json")
+		list := filepath.Join(home, ".codex", "magpie-friday-models.json")
 		if err := os.Remove(list); err != nil {
 			t.Fatal(err)
 		}
@@ -173,7 +173,7 @@ func TestCodexSyncMendsGoneCatalog(t *testing.T) {
 			t.Fatalf("config.toml still names %s:\n%s", g, read())
 		}
 		if p, _ := edit.GetTOMLTop(filepath.Join(home, ".codex", "config.toml"), "model_provider"); p != magpieID {
-			t.Fatalf("magpie is no longer the provider:\n%s", read())
+			t.Fatalf("magpie-friday is no longer the provider:\n%s", read())
 		}
 	})
 }

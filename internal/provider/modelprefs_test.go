@@ -15,9 +15,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // prefsHome is a sandbox home where two providers serve the same model,
@@ -154,7 +154,7 @@ func TestModelName(t *testing.T) {
 }
 
 // Keeping some of a model's reasoning levels offers only those, in the
-// vendor's order, where magpie lists it (and so in the groups it is in);
+// vendor's order, where magpie-friday lists it (and so in the groups it is in);
 // asking for one it hasn't fails, and all of them, or none, is a reset.
 func TestModelEfforts(t *testing.T) {
 	prefsHome(t)
@@ -321,8 +321,8 @@ func TestRenameMovesEveryPerModelMap(t *testing.T) {
 }
 
 // A wire name is given only for a model the provider really serves: a relay
-// lists the model under the id magpie knows and asks for it under the
-// vendor's own, but one the provider does not serve is a request magpie would
+// lists the model under the id magpie-friday knows and asks for it under the
+// vendor's own, but one the provider does not serve is a request magpie-friday would
 // never send, so naming it is refused where it is given, as a price and a
 // limit are for the same id. "*" stands for every model of the provider
 // rather than for one and is allowed; a removal is exempt, so an entry left
@@ -353,7 +353,7 @@ func TestSetUpstreamNameRefusesAModelNotServed(t *testing.T) {
 	}
 }
 
-// A provider magpie reaches through an agent's own backend is asked for the
+// A provider magpie-friday reaches through an agent's own backend is asked for the
 // model by the id that agent already knows, with no model field for a wire
 // name to change; a name given for one of its models would never be sent, and
 // comparing the served model against it would read every call as swapped. It
@@ -362,7 +362,7 @@ func TestSetUpstreamNameRefusesAModelNotServed(t *testing.T) {
 // these and still takes a name.
 func TestSetUpstreamNameRefusesAnAccountBackend(t *testing.T) {
 	prefsHome(t)
-	// a Claude account is one magpie reaches through Claude's own backend
+	// a Claude account is one magpie-friday reaches through Claude's own backend
 	claudeSignIn(t, os.Getenv("HOME"), time.Now().Add(time.Hour))
 	forgetClaudeCredential()
 	p, err := Find("claude")
@@ -475,7 +475,7 @@ func TestSetUpstreamNameWildcardFollowsARenamedProvider(t *testing.T) {
 // it already is for the setters beside this one: a name a user reaches for
 // a provider by is that provider, and the wire name is kept under the id
 // it has. What the key check is for is a provider id that is not spelled
-// the way a provider's is — a file magpie did not write, whose keys no
+// the way a provider's is — a file magpie-friday did not write, whose keys no
 // lookup goes by — and not the name the provider is shown by.
 func TestSetUpstreamNameTakesTheNameAProviderIsCalledBy(t *testing.T) {
 	prefsHome(t)
@@ -517,7 +517,7 @@ func TestSetUpstreamNameTakesTheNameAProviderIsCalledBy(t *testing.T) {
 // price or the limit of the same model.
 func TestSetUpstreamNameSaysWhichSettingItChecks(t *testing.T) {
 	prefsHome(t)
-	// a providers file magpie did not write: "a" under an id that is not
+	// a providers file magpie-friday did not write: "a" under an id that is not
 	// spelled the way a provider's is, which is what the check refuses
 	f := load()
 	for i := range f.Providers {
@@ -554,7 +554,7 @@ func TestUpstreamNameInFollowsTheNamesAsTheyAreNow(t *testing.T) {
 	if got := UpstreamNameIn(settings.Load().ModelWires, "a", "sol"); got != "sol" {
 		t.Fatalf("with no name given, a/sol is judged as %q; want sol", got)
 	}
-	// a call made and answered under the name magpie knows the model by,
+	// a call made and answered under the name magpie-friday knows the model by,
 	// before any name is given for it
 	if err := SetUpstreamName("a/sol", "vendor-c/sol"); err != nil {
 		t.Fatal(err)
@@ -656,7 +656,7 @@ func TestDropUpstreamNameWorksOffTheKeyRatherThanTheProvidersName(t *testing.T) 
 		t.Errorf("c's own name is %q; the removal went through the name c is shown by", got)
 	}
 	// which is the whole of what taking the name off buys: a provider
-	// taking the id b is asked for its model by the name magpie knows it by
+	// taking the id b is asked for its model by the name magpie-friday knows it by
 	if err := Save(Provider{ID: "b", Name: "B", Catalog: "b", Key: "k",
 		Chat: "http://127.0.0.1:1/v1", Models: []string{"sol"}}); err != nil {
 		t.Fatal(err)
@@ -672,7 +672,7 @@ func TestDropUpstreamNameWorksOffTheKeyRatherThanTheProvidersName(t *testing.T) 
 
 // HasUpstreamName answers for the key a name is really kept under, however
 // it is spelled: a name that is there is not "not kept" because the ref
-// that named it carried a magpie/ in front of it, which is the spelling
+// that named it carried a magpie-friday/ in front of it, which is the spelling
 // every agent uses and the one the removal standing in front of it is asked
 // for by.
 func TestHasUpstreamNameReadsTheKeyHoweverItIsSpelled(t *testing.T) {
@@ -683,12 +683,12 @@ func TestHasUpstreamNameReadsTheKeyHoweverItIsSpelled(t *testing.T) {
 	if err := SetUpstreamName("b/*", "vendor-c/*"); err != nil {
 		t.Fatal(err)
 	}
-	for _, key := range []string{"b/sol", "magpie/b/sol", "  b/sol  ", "magpie/b/*"} {
+	for _, key := range []string{"b/sol", "magpie-friday/b/sol", "  b/sol  ", "magpie-friday/b/*"} {
 		if !HasUpstreamName(key) {
 			t.Errorf("a name is kept under %q; HasUpstreamName says none is", key)
 		}
 	}
-	for _, key := range []string{"b/other", "magpie/b/other", "magpie/a/sol", ""} {
+	for _, key := range []string{"b/other", "magpie-friday/b/other", "magpie-friday/a/sol", ""} {
 		if HasUpstreamName(key) {
 			t.Errorf("no name is kept under %q; HasUpstreamName says one is", key)
 		}
@@ -735,7 +735,7 @@ func TestUpstreamNameAsGivesAModelTheNameItWasGiven(t *testing.T) {
 }
 
 // The name a call goes out under is the one the vendor is asked for, and on
-// an Antigravity account that is not the model magpie knows: the family is
+// an Antigravity account that is not the model magpie-friday knows: the family is
 // asked for as the variant the effort picks, each by its own name. A ledger
 // reading the record back therefore judges the reply against the id that
 // really went out — read against the family, every level of it reads as
@@ -838,7 +838,7 @@ func TestSentNameInAsksAVariantIdForWhatTheEffortPicks(t *testing.T) {
 // and says nothing about the rule. So an account the user is signed in to
 // under a provider of its own id is asked for the variant, and a relay added
 // under a built-in account's id is that relay and is asked for the model
-// magpie knows, which is what the gateway's own dispatch (codeAssistID) reads
+// magpie-friday knows, which is what the gateway's own dispatch (codeAssistID) reads
 // the same way.
 func TestSentNameIsJudgedByTheAccountAndNotByTheProviderId(t *testing.T) {
 	prefsHome(t)
@@ -864,7 +864,7 @@ func TestSentNameIsJudgedByTheAccountAndNotByTheProviderId(t *testing.T) {
 	if got := SentNameOnIn(wires, "antigravity", "", "flash-9", "low"); got != "vendor-d/flash-9" {
 		t.Errorf("a relay under the account's own id, at low: the vendor is asked for %q; want vendor-d/flash-9", got)
 	}
-	// another account is asked for the model magpie knows as well
+	// another account is asked for the model magpie-friday knows as well
 	if got := SentNameOnIn(wires, "relay-1", "gemini", "flash-9", "low"); got != "vendor-c/flash-9" {
 		t.Errorf("another account on the same provider, at low: the vendor is asked for %q; want vendor-c/flash-9", got)
 	}

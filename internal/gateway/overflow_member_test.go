@@ -5,13 +5,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A conversation too long for one member's model is as long on every
 // account of it, but not too long for another member, a model or vendor
 // with a larger window (#700: Kimi Code on DeepSeek V4.1 Flash through
-// magpie, told the context was 176k — 0.85 of a request one member called
+// magpie-friday, told the context was 176k — 0.85 of a request one member called
 // too long — where before the overflow went to the next member, which
 // answered). The next member is asked; the agent is told it overflowed
 // only when no member left may hold it.

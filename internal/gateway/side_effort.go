@@ -1,11 +1,11 @@
 package gateway
 
 import (
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// The reasoning level picked in Settings for a model magpie asks on its
+// The reasoning level picked in Settings for a model magpie-friday asks on its
 // own, beside the model in use: Image recognition's and the searcher's
 // (MOMO on Discord, "外置模型能不能提供思考深度选项"). Only those calls
 // are asked so; every other request goes as it did.
@@ -33,7 +33,7 @@ func sideEffort(model, want string) string {
 }
 
 // visionEffort is the level the Image recognition model is asked to read
-// an image at: the one picked in Settings, else magpie's own, the least
+// an image at: the one picked in Settings, else magpie-friday's own, the least
 // it has (classifyEffort), as a description is wanted quickly.
 func visionEffort(model string) string {
 	if e := sideEffort(model, provider.HeldSettings().VisionEffort); e != "" {

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 func balCard(user, balance string) SubscriptionQuota {
@@ -125,7 +125,7 @@ func TestBalanceHistoryTwoCurrencies(t *testing.T) {
 	}
 	t0 := time.Date(2026, 10, 8, 8, 0, 0, 0, time.UTC)
 	key := quotaHistKey("deepseek", "main")
-	// what an earlier magpie kept: whichever amount came first
+	// what an earlier magpie-friday kept: whichever amount came first
 	writeBalanceHist(balanceHist{key: {{t0.Add(-30 * time.Minute), 11.2}, {t0.Add(-20 * time.Minute), -0.05}, {t0.Add(-10 * time.Minute), 11.15}}})
 	var last []SubscriptionQuota
 	for i, v := range []string{"11.12", "11.10", "11.08", "11.05"} {

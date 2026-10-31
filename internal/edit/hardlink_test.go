@@ -45,7 +45,7 @@ func TestWriteAtomicKeepsHardLink(t *testing.T) {
 	st, _ := os.Stat(overlay)
 	p := filepath.Join(d, "models.yml")
 	hardLink(t, overlay, p)
-	for _, text := range []string{"providers:\n  magpie:\n    api: openai-completions\n", "x: 1\n"} {
+	for _, text := range []string{"providers:\n  magpie-friday:\n    api: openai-completions\n", "x: 1\n"} {
 		if err := WriteAtomic(p, []byte(text)); err != nil {
 			t.Fatal(err)
 		}

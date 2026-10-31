@@ -8,12 +8,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // #1957 (parkavenue9639): Codex signed in to one account, another on in
-// magpie. Claude Code's /model described every codex/gpt-* by the account
-// Codex is signed in to, while magpie sent each request to the first in
+// magpie-friday. Claude Code's /model described every codex/gpt-* by the account
+// Codex is signed in to, while magpie-friday sent each request to the first in
 // its own order: the other one when the signed-in one is paused, or when
 // Codex is kept signed in to an account that isn't first. The note names
 // the account a request goes to first.
@@ -44,10 +44,10 @@ func TestViaMagpieNamesTheAccountFirstInOrder(t *testing.T) {
 				return o.Note
 			}
 		}
-		t.Fatal("no codex/gpt-5.5 among Claude Code's models via magpie")
+		t.Fatal("no codex/gpt-5.5 among Claude Code's models via magpie-friday")
 		return ""
 	}
-	if got := note(); got != "me@example.com · via magpie" {
+	if got := note(); got != "me@example.com · via magpie-friday" {
 		t.Fatalf("signed in to the first: %q", got)
 	}
 	// kept signed in to spare, me still first in the order
@@ -55,7 +55,7 @@ func TestViaMagpieNamesTheAccountFirstInOrder(t *testing.T) {
 		t.Fatal(err)
 	}
 	provider.ForgetAccounts()
-	if got := note(); got != "me@example.com · via magpie" {
+	if got := note(); got != "me@example.com · via magpie-friday" {
 		t.Fatalf("kept signed in to spare, me first: %q", got)
 	}
 	// let go, Codex is on me again; me paused, spare takes its requests
@@ -66,7 +66,7 @@ func TestViaMagpieNamesTheAccountFirstInOrder(t *testing.T) {
 		t.Fatal(err)
 	}
 	provider.ForgetAccounts()
-	if got := note(); got != "spare@example.com · via magpie" {
+	if got := note(); got != "spare@example.com · via magpie-friday" {
 		t.Fatalf("signed in to me, paused: %q", got)
 	}
 }

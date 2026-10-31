@@ -9,9 +9,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // openCounter is a desktop that counts the pages it was asked to open.
@@ -29,9 +29,9 @@ func (w *openCounter) OpenURL(u string) error {
 }
 
 // A plugin's sign-in page opens once. Grok Build's `grok login` opens its
-// page in the browser itself on macOS and Windows, and magpie opened it
+// page in the browser itself on macOS and Windows, and magpie-friday opened it
 // again: two pages every time (andyfmyth on X). A plugin that says the page
-// is open already gets none opened by magpie; one that doesn't gets one.
+// is open already gets none opened by magpie-friday; one that doesn't gets one.
 func TestPluginSignInPageOpensOnce(t *testing.T) {
 	bun := testenv.Bun(t)
 	dir := t.TempDir()

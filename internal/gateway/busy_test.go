@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // What a restart would cut short (#577): a reply streaming counts until
@@ -88,7 +88,7 @@ func TestBusy(t *testing.T) {
 	}
 }
 
-// /v1/magpie/concurrency tells the whole gateway's requests in flight with
+// /v1/magpie-friday/concurrency tells the whole gateway's requests in flight with
 // no limit set anywhere (#2132, a status bar polling it): 0 when idle,
 // never left out, the poll itself not counted, and the requests waiting
 // for a slot counted among them and told apart.
@@ -122,7 +122,7 @@ func TestConcurrencyTellsTheWholeGateway(t *testing.T) {
 
 	read := func() map[string]any {
 		t.Helper()
-		res, err := http.Get(gw.URL + "/v1/magpie/concurrency")
+		res, err := http.Get(gw.URL + "/v1/magpie-friday/concurrency")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -188,7 +188,7 @@ func TestConcurrencyTellsTheWholeGateway(t *testing.T) {
 	want("done", 0, 0)
 }
 
-// /v1/magpie/concurrency lists each request in flight (#2132, bigbitbox:
+// /v1/magpie-friday/concurrency lists each request in flight (#2132, bigbitbox:
 // a status bar's hover names which agent is asking): its agent, model,
 // session and start, and its phase only where the gateway knows it — out
 // at the vendor, or waiting for a slot. Two of one agent are both listed,
@@ -230,7 +230,7 @@ func TestConcurrencyListsEachRequest(t *testing.T) {
 	}
 	read := func() (list []active, raw string) {
 		t.Helper()
-		res, err := http.Get(gw.URL + "/v1/magpie/concurrency")
+		res, err := http.Get(gw.URL + "/v1/magpie-friday/concurrency")
 		if err != nil {
 			t.Fatal(err)
 		}

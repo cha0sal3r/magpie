@@ -17,10 +17,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/lastgood"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/lastgood"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
 )
 
 // ThisComputer is the Filter.Computer of the calls made here.
@@ -103,7 +103,7 @@ func validID(id string) bool {
 func ValidComputer(id string) bool { return validID(id) }
 
 // OwnDays are this computer's calls since the day of since, by day, as the
-// Usage page lists them: a call another magpie passed on here is left to
+// Usage page lists them: a call another magpie-friday passed on here is left to
 // that computer, which counts it itself, and where the request archive
 // keeps a call is this computer's own.
 func OwnDays(since time.Time) map[string][]SharedCall {

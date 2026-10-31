@@ -13,7 +13,7 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 func TestPublicAddr(t *testing.T) {
@@ -70,7 +70,7 @@ func resolveTo(t *testing.T, names map[string]string) {
 	t.Cleanup(func() { lookupIP = was })
 }
 
-// An image URL a caller sends to be edited is downloaded by magpie for an
+// An image URL a caller sends to be edited is downloaded by magpie-friday for an
 // images API that takes files only. From another computer (a gateway
 // key's holder) it is never downloaded from this computer or its network,
 // however the URL names it.
@@ -151,7 +151,7 @@ func TestEditImageURLThroughProxyIsPinnedAndRedirectsChecked(t *testing.T) {
 }
 
 // Where a request came from gives it nothing: one from this computer is
-// also what a reverse proxy or relay in front of magpie on the same host
+// also what a reverse proxy or relay in front of magpie-friday on the same host
 // sends for anyone it serves, so it may not name a private address either.
 // Only the user's own settings.json "fetchPrivate" lets one in, and what
 // is then downloaded must still be an image.

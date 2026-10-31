@@ -221,7 +221,7 @@ func TestPi(t *testing.T) {
 		t.Fatalf("opus: %+v", o)
 	}
 	if o := model(p, "claude/claude-opus-5-5"); o.Tokens != (Tokens{60, 40, 500, 0, 0}) {
-		t.Fatalf("magpie's opus: %+v", o)
+		t.Fatalf("magpie-friday's opus: %+v", o)
 	}
 	if !p.Start.Equal(at("2026-09-24T08:00:00Z")) || !p.Last.Equal(at("2026-09-24T08:04:00Z")) {
 		t.Fatalf("pi times %s %s", p.Start, p.Last)
@@ -306,7 +306,7 @@ func ocMakeV2(t *testing.T, path string) *sql.DB {
 		"CREATE TABLE kv (key text PRIMARY KEY, value text NOT NULL, time_created integer NOT NULL, time_updated integer NOT NULL)",
 		`INSERT INTO kv VALUES ('migration.v1-v2', '{"phase":"completed"}', 0, 0)`,
 		`INSERT INTO session_v2 (id, project_id, slug, directory, title, version, model, time_created, time_updated) VALUES
-			('` + ocMain + `', 'global', 'brave-otter', '/work/oc', 'Flaky test hunt', '2.0.18', '{"id":"codex/gpt-6-luna","providerID":"magpie","variant":"default"}', 1790416800000, 1790416800000),
+			('` + ocMain + `', 'global', 'brave-otter', '/work/oc', 'Flaky test hunt', '2.0.18', '{"id":"codex/gpt-6-luna","providerID":"magpie-friday","variant":"default"}', 1790416800000, 1790416800000),
 			('ses_1a2b3c4d5e6fCCCCCCCCCCCCCC', 'global', 'idle-crow', '/work/oc', NULL, '2.0.18', NULL, 1790413200000, 1790413200000)`,
 		`INSERT INTO session_v2 (id, project_id, parent_id, slug, directory, title, version, time_created, time_updated) VALUES
 			('` + ocChild + `', 'global', '` + ocMain + `', 'calm-heron', '/work/oc', NULL, '2.0.18', 1790416860000, 1790416860000)`,
@@ -319,7 +319,7 @@ func ocMakeV2(t *testing.T, path string) *sql.DB {
 		{ocMain, "msg_0001", "user", `{"text":"Why does  the login test\nflake?","time":{"created":1790416805000}}`},
 		{ocMain, "msg_0001s", "synthetic", `{"text":"Called the Read tool with the following input","time":{"created":1790416805000}}`},
 		{ocMain, "msg_0002", "assistant", `{"agent":"build","model":{"id":"gpt-6-astra","providerID":"openai","variant":"high"},"content":[{"type":"reasoning","text":"…"},{"type":"text","text":"Let me look."}],"cost":0.01,"tokens":{"input":1000,"output":100,"reasoning":20,"cache":{"read":5000,"write":0}},"time":{"created":1790416806000,"completed":1790416830000}}`},
-		{ocMain, "msg_0003", "assistant", `{"agent":"build","model":{"id":"codex/gpt-6-luna","providerID":"magpie","variant":"default"},"content":[{"type":"text","text":"It races the clock."}],"cost":0,"tokens":{"input":300,"output":50,"reasoning":10,"cache":{"read":2000,"write":0}},"time":{"created":1790416890000,"completed":1790416980000}}`},
+		{ocMain, "msg_0003", "assistant", `{"agent":"build","model":{"id":"codex/gpt-6-luna","providerID":"magpie-friday","variant":"default"},"content":[{"type":"text","text":"It races the clock."}],"cost":0,"tokens":{"input":300,"output":50,"reasoning":10,"cache":{"read":2000,"write":0}},"time":{"created":1790416890000,"completed":1790416980000}}`},
 		{ocMain, "msg_0003i", "idle", `{"outcome":"succeeded","time":{"created":1790416980000}}`},
 		{ocChild, "msg_0004", "assistant", `{"agent":"general","model":{"id":"claude-opus-5-5","providerID":"anthropic"},"content":[],"cost":0,"tokens":{"input":40,"output":60,"reasoning":0,"cache":{"read":700,"write":300}},"time":{"created":1790416860000,"completed":1790416890000}}`},
 	} {

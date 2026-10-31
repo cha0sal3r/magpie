@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
 // fakeOpenRouter answers for openrouter.ai: its chat models at /models,
@@ -142,7 +142,7 @@ func TestOpenRouterListsDecisionModels(t *testing.T) {
 
 // A System One provider at OpenRouter added by hand, with no list URL,
 // gets OpenRouter's decision models, not Jev Router alone; and one whose
-// list was fetched before magpie kept windows and input is fetched again
+// list was fetched before magpie-friday kept windows and input is fetched again
 // when lists are (ARNO: they showed neither).
 func TestOpenRouterDecisionListRefreshed(t *testing.T) {
 	h := t.TempDir()

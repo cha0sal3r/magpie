@@ -9,10 +9,10 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/backup"
-	"github.com/yetone/magpie/internal/lastgood"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/backup"
+	"github.com/cha0sal3r/magpie-friday/internal/lastgood"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // A providers.json that can't be read is never pushed as no providers: a
@@ -71,7 +71,7 @@ func TestSyncStopsOnUnreadableProviders(t *testing.T) {
 	if _, err := backup.Collect(true, "test"); !errors.Is(err, provider.ErrUnreadable) {
 		t.Fatalf("a backup of a broken providers.json: %v", err)
 	}
-	remote, err := backup.Open(fake.files["/dav/magpie/magpie.magpie-backup"], "correct horse")
+	remote, err := backup.Open(fake.files["/dav/magpie-friday/magpie-friday.magpie-friday-backup"], "correct horse")
 	if err != nil || len(remote.Providers) != 1 {
 		t.Fatalf("on the server: %v %+v", err, remote.Providers)
 	}
@@ -141,7 +141,7 @@ func TestSyncStopsOnUnreadableSettings(t *testing.T) {
 	if st := Status(); st.Error == "" {
 		t.Fatal("a's sync status doesn't say it stopped")
 	}
-	remote, err := backup.Open(fake.files["/dav/magpie/magpie.magpie-backup"], "correct horse")
+	remote, err := backup.Open(fake.files["/dav/magpie-friday/magpie-friday.magpie-friday-backup"], "correct horse")
 	if err != nil || remote.Settings == nil || remote.Settings.Theme != "dark" {
 		t.Fatalf("on the server: %v %+v", err, remote.Settings)
 	}

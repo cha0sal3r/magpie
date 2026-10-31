@@ -6,7 +6,7 @@ import (
 )
 
 // levels= names the reasoning levels agents are offered for a group
-// (#295): kept lowest first, only those magpie knows; empty is its
+// (#295): kept lowest first, only those magpie-friday knows; empty is its
 // members' shared levels again.
 func TestGroupSetLevels(t *testing.T) {
 	groupsHome(t)

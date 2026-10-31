@@ -20,10 +20,10 @@ import (
 // As with dsh, the Sessions page read these all along and the usage ledger
 // did not, so ZCode's tokens never reached the Usage page.
 //
-// A reply through magpie's gateway is left out here as OpenCode's is
+// A reply through magpie-friday's gateway is left out here as OpenCode's is
 // (ocGatewayProvider): ZCode records the provider it was told to use, and
-// the route magpie writes says "magpie", so unlike dsh's this one is a
-// provider id magpie itself chose and can be trusted to mean the gateway.
+// the route magpie-friday writes says "magpie-friday", so unlike dsh's this one is a
+// provider id magpie-friday itself chose and can be trusted to mean the gateway.
 
 // zcCallList is the last listing of ZCode's database, kept while the
 // database and its WAL are as they were. Its lock is the one ocCallList

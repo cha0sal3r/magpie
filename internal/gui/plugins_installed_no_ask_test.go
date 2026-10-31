@@ -6,13 +6,13 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
 )
 
 // The Plugins page's Installed list is what was added, each row naming the
 // subscriptions its plugin signs in to. Those names are what the plugins said
-// the last time magpie asked them — but asking them is the whole of the
+// the last time magpie-friday asked them — but asking them is the whole of the
 // providers RPC, which walks the plugins one at a time and has each fetch its
 // vendor's model list over the network. The page here has no use for those
 // models, so waiting on them made Installed take seconds to draw: one vendor
@@ -25,7 +25,7 @@ import (
 // since. So a row's names come from there, and asking the plugins is not on
 // the way to drawing the list.
 
-// pluginsSandbox points the magpie folders at a test's own, so the page reads
+// pluginsSandbox points the magpie-friday folders at a test's own, so the page reads
 // a plugins.json the test wrote.
 func pluginsSandbox(t *testing.T) string {
 	t.Helper()
@@ -51,7 +51,7 @@ func TestPluginsStateNamesWithoutAsking(t *testing.T) {
 		[]byte(`{"plugins":[{"spec":"`+spec+`"}]}`), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	// what the plugins said the last time magpie asked them
+	// what the plugins said the last time magpie-friday asked them
 	plugin.UseCached([]plugin.Provider{{ID: "github-copilot", Spec: spec, Name: "GitHub Copilot"}})
 	t.Cleanup(func() { plugin.UseCached(nil) })
 

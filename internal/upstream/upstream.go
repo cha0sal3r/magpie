@@ -1,10 +1,10 @@
 // Package upstream reads the vendors' own status pages (#971, emo172): a
 // request that fails while Anthropic's or OpenAI's API is down looks, in
-// magpie, like a sign-in or quota problem, and the user signs in again and
+// magpie-friday, like a sign-in or quota problem, and the user signs in again and
 // again for nothing. A vendor whose page says its API is degraded or down
 // is said so where its providers are listed.
 //
-// Only the page's own parts that the API magpie calls stands on are read
+// Only the page's own parts that the API magpie-friday calls stands on are read
 // (the Claude API and Claude Code, not claude.ai; OpenAI's Chat
 // Completions, Responses and Codex, not ChatGPT's or its desktop app's): a vendor's
 // app being down says nothing of its API. A page that couldn't be read is
@@ -24,12 +24,12 @@ import (
 	"time"
 )
 
-// Vendor is a vendor whose status page magpie knows.
+// Vendor is a vendor whose status page magpie-friday knows.
 type Vendor struct {
 	ID   string
 	Name string
 	// Page is the status page people read; Summary its Statuspage-style
-	// JSON (/api/v2/summary.json), "" when it has none magpie can read
+	// JSON (/api/v2/summary.json), "" when it has none magpie-friday can read
 	// (DeepSeek's, on Flashduty): the page is then only linked.
 	Page    string
 	Summary string
@@ -68,7 +68,7 @@ var Vendors = []Vendor{
 }
 
 // VendorOf is the vendor a provider calling these base URLs reaches, ""
-// for none magpie knows (a relay, a local server).
+// for none magpie-friday knows (a relay, a local server).
 func VendorOf(bases ...string) string {
 	for _, b := range bases {
 		h := hostOf(b)

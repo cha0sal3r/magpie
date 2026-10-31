@@ -9,16 +9,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
-// A request one magpie passes on to another (a Remote magpie provider)
-// keeps the session its agent named — magpie's X-Magpie-Session and the
-// agent's own session_id — so the other magpie records it under that
+// A request one magpie-friday passes on to another (a Remote magpie-friday provider)
+// keeps the session its agent named — magpie-friday's X-Magpie-Session and the
+// agent's own session_id — so the other magpie-friday records it under that
 // session and keeps the conversation apart from another with the same first
 // message; they were dropped for an agent that isn't Codex, such as Pi
-// (#672). The vendor behind the other magpie is sent neither.
+// (#672). The vendor behind the other magpie-friday is sent neither.
 func TestRemoteMagpieKeepsTheSession(t *testing.T) {
 	var mu sync.Mutex
 	var vendor []http.Header // as the vendor saw each request
@@ -40,7 +40,7 @@ func TestRemoteMagpieKeepsTheSession(t *testing.T) {
 	if err := provider.Save(provider.Provider{ID: "fake", Name: "Fake", Key: "k", Models: []string{"m1"}, Chat: up.URL, Responses: up.URL}); err != nil {
 		t.Fatal(err)
 	}
-	var arrived []http.Header // as the remote magpie was asked
+	var arrived []http.Header // as the remote magpie-friday was asked
 	h := New().Handler()
 	remote := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		mu.Lock()
@@ -91,7 +91,7 @@ func TestRemoteMagpieKeepsTheSession(t *testing.T) {
 		got := arrived[len(arrived)-1]
 		mu.Unlock()
 		if got.Get(SessionHeader) != "trace-A" || got.Get(tc.header) != tc.native {
-			t.Errorf("%s: the remote magpie was sent %s=%q %s=%q; want trace-A, %s", tc.path, SessionHeader, got.Get(SessionHeader), tc.header, got.Get(tc.header), tc.native)
+			t.Errorf("%s: the remote magpie-friday was sent %s=%q %s=%q; want trace-A, %s", tc.path, SessionHeader, got.Get(SessionHeader), tc.header, got.Get(tc.header), tc.native)
 		}
 		if r := there(i + 1); r.Session != "trace-A" || r.NativeSession != tc.native || r.Agent != tc.agent {
 			t.Errorf("%s: the remote recorded agent %q session %q native %q; want %s, trace-A, %s", tc.path, r.Agent, r.Session, r.NativeSession, tc.agent, tc.native)
@@ -101,7 +101,7 @@ func TestRemoteMagpieKeepsTheSession(t *testing.T) {
 	defer mu.Unlock()
 	for _, v := range vendor {
 		for k := range v {
-			if lk := strings.ToLower(k); strings.HasPrefix(lk, "x-magpie-") || lk == "session_id" || lk == "x-conversation-id" {
+			if lk := strings.ToLower(k); strings.HasPrefix(lk, "x-magpie-friday-") || lk == "session_id" || lk == "x-conversation-id" {
 				t.Errorf("the vendor was sent %s", k)
 			}
 		}

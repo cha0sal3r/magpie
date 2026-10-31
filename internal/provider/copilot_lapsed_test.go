@@ -14,7 +14,7 @@ import (
 )
 
 // lapsedCopilot is a machine with the editors signed in to octocat (gho_x,
-// taken) and magpie to hubot (gho_kept), whose trade for a session token
+// taken) and magpie-friday to hubot (gho_kept), whose trade for a session token
 // answers what status says.
 func lapsedCopilot(t *testing.T) *atomic.Int32 {
 	t.Helper()
@@ -219,7 +219,7 @@ func TestCopilotStandInIsNotSignedOut(t *testing.T) {
 
 // The editors' token refused with the CLI signed in to another account:
 // nothing stands in, so the editors' own account is signed out, and
-// signed in again from magpie it is kept and in use.
+// signed in again from magpie-friday it is kept and in use.
 func TestCopilotEditorRefusedSignsOut(t *testing.T) {
 	staleEditor(t, "hubot")
 	t.Cleanup(resetCopilotState)
@@ -244,7 +244,7 @@ func TestCopilotEditorRefusedSignsOut(t *testing.T) {
 	}
 	p, _ = find(All(), "copilot")
 	if _, err := p.Fetch(context.Background()); err != nil {
-		t.Fatalf("with magpie's sign-in: %v", err)
+		t.Fatalf("with magpie-friday's sign-in: %v", err)
 	}
 }
 
@@ -293,7 +293,7 @@ func TestCopilotUsageRefusedSignsOut(t *testing.T) {
 }
 
 // The Copilot CLI's own sign-in revoked (401 from GitHub): its account is
-// signed out, and signed in again from magpie the new token is kept and
+// signed out, and signed in again from magpie-friday the new token is kept and
 // used in its place, the account listed once.
 func TestCopilotCLIRefusedSignsOut(t *testing.T) {
 	home := signIn(t)

@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // lastRecord is the newest entry of the usage log.
@@ -88,14 +88,14 @@ func TestAnsweredRequestKeepsItsIDAndEndpoint(t *testing.T) {
 	rec := httptest.NewRecorder()
 	body := `{"model":"fake/sol","messages":[{"role":"user","content":"hi"}]}`
 	req := httptest.NewRequest("POST", "/v1/chat/completions", strings.NewReader(body))
-	req.Header.Set(SessionHeader, "magpie-override")
+	req.Header.Set(SessionHeader, "magpie-friday-override")
 	req.Header.Set("X-Session-Id", "client-session")
 	New().Handler().ServeHTTP(rec, req)
 	if rec.Code != 200 {
 		t.Fatalf("%d %s", rec.Code, rec.Body)
 	}
 	got := lastRecord(t)
-	if got.Session != "magpie-override" || got.NativeSession != "client-session" {
+	if got.Session != "magpie-friday-override" || got.NativeSession != "client-session" {
 		t.Fatalf("session headers lost: %+v", got)
 	}
 	if got.ResponseID == "" || got.ResponseID != clientResponseID(t, provider.Chat, rec.Body.String(), false) || got.RequestID != "chatcmpl-77" || got.Endpoint != "/v1/chat/completions" || got.Error != "" || got.ErrType != "" {
@@ -103,7 +103,7 @@ func TestAnsweredRequestKeepsItsIDAndEndpoint(t *testing.T) {
 	}
 }
 
-// A request magpie turns away before any vendor is asked — a model it knows
+// A request magpie-friday turns away before any vendor is asked — a model it knows
 // nothing of — is in the log too, as the failure it was.
 func TestTurnedAwayRequestIsLogged(t *testing.T) {
 	fresh(t)

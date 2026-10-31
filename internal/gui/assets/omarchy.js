@@ -1,4 +1,4 @@
-// On Omarchy (omarchy.org) magpie's windows take the look of Omarchy's own
+// On Omarchy (omarchy.org) magpie-friday's windows take the look of Omarchy's own
 // panels: the current theme's palette and font, square corners and the
 // active border's colour (omarchy.css, under html.omarchy). The theme comes
 // with boot.js before the first paint and is asked again every few seconds

@@ -9,7 +9,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // calendarSchema is the schema the OpenAI SDK sends for the docs'
@@ -21,7 +21,7 @@ const calendarAnswer = `{"name":"Science Fair","date":"Friday","participants":["
 
 // sdkResponsesParse is the body the OpenAI Python SDK's
 // client.responses.parse(text_format=CalendarEvent) posts (frostming on
-// Discord: through magpie the answer came back unstructured).
+// Discord: through magpie-friday the answer came back unstructured).
 const sdkResponsesParse = `{"input":[{"role":"system","content":"Extract the event information."},{"role":"user","content":"Alice and Bob are going to a science fair on Friday."}],"model":"%s","text":{"format":{"type":"json_schema","strict":true,"name":"CalendarEvent","schema":` + calendarSchema + `}}}`
 
 // sdkChatParse is the body client.chat.completions.parse(response_format=
@@ -97,7 +97,7 @@ func sameFormat(t *testing.T, a, b string) bool {
 // A client's structured output reaches the upstream in the upstream's own
 // words, whichever API the client spoke and the upstream speaks
 // (frostming: a Responses request's text.format to OpenRouter, which
-// magpie speaks Chat to, came back as plain text).
+// magpie-friday speaks Chat to, came back as plain text).
 func TestStructuredOutputCrossesEveryAPI(t *testing.T) {
 	fresh(t)
 	up := &formatVendor{}

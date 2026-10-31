@@ -32,7 +32,7 @@
 .msk-ctip[hidden] { display: none; }
 .msk-flow-none { font-size: 12px; line-height: 1.5; color: var(--muted); text-align: center; }
 
-/* agents → this computer → providers: hairlines on a faint grid, magpie's
+/* agents → this computer → providers: hairlines on a faint grid, magpie-friday's
    bird where they cross the line (the lines' svg is the middle's own child;
    the bird's, inside .msk-hub, is centred by it) */
 .msk-fl { min-width: 0; }

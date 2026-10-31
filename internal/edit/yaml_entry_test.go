@@ -12,7 +12,7 @@ import (
 
 // A key set or removed at the top of a YAML file goes in or out with the
 // lines that belong to the entry before it, never between a block key and its
-// children (magpie goose effort off on a config.yaml ending in extensions:).
+// children (magpie-friday goose effort off on a config.yaml ending in extensions:).
 func TestYAMLTopAfterBlockEntry(t *testing.T) {
 	cases := []struct{ name, in, want string }{
 		{"empty", "", "GOOSE_THINKING_EFFORT: off\n"},

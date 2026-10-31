@@ -1,9 +1,9 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// Codex connected to magpie while its requests for 127.0.0.1 go through a
+// Codex connected to magpie-friday while its requests for 127.0.0.1 go through a
 // proxy that doesn't pass them on (Muma102kMichael on X: every project and
 // every new chat 502) is not shown connected. Its row says a proxy is in the
 // way; its pill says how to fix it, in a dialog, and the dialog has
-// Disconnect from magpie, which asks to put Codex's config back. The window
+// Disconnect from magpie-friday, which asks to put Codex's config back. The window
 // at 560px and the tray panel at 440px; nothing runs off the side. English,
 // Chinese (both), Japanese and German, Chromium and WebKit.
 const assert = require("node:assert/strict");
@@ -13,7 +13,7 @@ const { test } = require("node:test");
 const { chromium, webkit } = require("playwright");
 
 const assets = path.resolve(__dirname, "../assets");
-const detail = "Codex sends its requests for magpie (127.0.0.1:3425/v1) through the proxy at http://127.0.0.1:7890, set in Windows' proxy settings, and that proxy doesn't pass them on to magpie: every turn fails, with 502 Bad Gateway, whichever model it is on. Have the proxy send 127.0.0.1 direct (a DIRECT rule for 127.0.0.0/8, or rule mode rather than global), or add 127.0.0.1 to \"Don't use the proxy server for addresses beginning with\" in Windows' proxy settings (127.* there is not enough for Codex), then quit and reopen Codex. Until then, Disconnect from magpie puts Codex's config back as it was.";
+const detail = "Codex sends its requests for magpie-friday (127.0.0.1:3425/v1) through the proxy at http://127.0.0.1:7890, set in Windows' proxy settings, and that proxy doesn't pass them on to magpie-friday: every turn fails, with 502 Bad Gateway, whichever model it is on. Have the proxy send 127.0.0.1 direct (a DIRECT rule for 127.0.0.0/8, or rule mode rather than global), or add 127.0.0.1 to \"Don't use the proxy server for addresses beginning with\" in Windows' proxy settings (127.* there is not enough for Codex), then quit and reopen Codex. Until then, Disconnect from magpie-friday puts Codex's config back as it was.";
 const codex = { id: "codex", name: "Codex", icon: "codex", path: "/c", wired: true,
   fields: [{ key: "model", label: "model", value: "fake/m1", options: [{ value: "fake/m1", label: "m1", ref: "fake/m1" }] }] };
 const filler = Array.from({ length: 4 }, (_, i) => ({ id: "pi" + i, name: "Pi " + i, path: "/p", fields: [{ key: "model", label: "model", value: "", options: [] }] }));
@@ -42,11 +42,11 @@ function serve(lang, calls) {
 }
 
 const words = {
-  en: { why: "Codex reaches magpie through a proxy that doesn't pass its requests on", fix: "How to fix", off: "Disconnect from magpie", ask: "Disconnect Codex from magpie?" },
-  zh: { why: "Codex 经代理连 magpie，但这个代理没把它的请求转给 magpie", fix: "如何修复", off: "断开 magpie（还原配置）", ask: null },
-  "zh-TW": { why: "Codex 經代理連 magpie，但這個代理沒把它的請求轉給 magpie", fix: "如何修復", off: "斷開 magpie（還原設定）", ask: null },
-  ja: { why: "Codex はプロキシ経由で magpie につなぎますが、そのプロキシがリクエストを magpie に渡していません", fix: "直し方", off: "magpie から切断", ask: null },
-  de: { why: "Codex erreicht magpie über einen Proxy, der seine Anfragen nicht an magpie weitergibt", fix: "So beheben", off: "Von magpie trennen", ask: null },
+  en: { why: "Codex reaches magpie-friday through a proxy that doesn't pass its requests on", fix: "How to fix", off: "Disconnect from magpie-friday", ask: "Disconnect Codex from magpie-friday?" },
+  zh: { why: "Codex 经代理连 magpie-friday，但这个代理没把它的请求转给 magpie-friday", fix: "如何修复", off: "断开 magpie-friday（还原配置）", ask: null },
+  "zh-TW": { why: "Codex 經代理連 magpie-friday，但這個代理沒把它的請求轉給 magpie-friday", fix: "如何修復", off: "斷開 magpie-friday（還原設定）", ask: null },
+  ja: { why: "Codex はプロキシ経由で magpie-friday につなぎますが、そのプロキシがリクエストを magpie-friday に渡していません", fix: "直し方", off: "magpie-friday から切断", ask: null },
+  de: { why: "Codex erreicht magpie-friday über einen Proxy, der seine Anfragen nicht an magpie-friday weitergibt", fix: "So beheben", off: "Von magpie-friday trennen", ask: null },
 };
 const row = `.row.agent[data-id="codex"]`;
 const noSideScroll = (page) => page.evaluate(() => document.scrollingElement.scrollWidth <= innerWidth);

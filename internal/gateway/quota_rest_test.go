@@ -6,12 +6,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // An account out of quota rests until it says it's back, however far off
 // that is, and the trace says so (#147: ChatGPT's resets_at three hours
-// off was a rest of "59 minutes", the Retry-After magpie made of it cut to
+// off was a rest of "59 minutes", the Retry-After magpie-friday made of it cut to
 // an hour); a rate limit's Retry-After and a failure's backoff stay short,
 // and a Codex reset spent lifts its rest out of quota, not one for a rate
 // limit or a failure.

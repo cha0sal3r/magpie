@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // stubLookup answers names from m for the test, and forgets what earlier
@@ -29,7 +29,7 @@ func stubLookup(t *testing.T, m map[string]string) {
 	t.Cleanup(func() { lanLookup = old; clear(lanCache.m) })
 }
 
-// #982: with a proxy set, a Remote magpie on the user's network is asked
+// #982: with a proxy set, a Remote magpie-friday on the user's network is asked
 // directly; a vendor still goes through the proxy, and so does a provider
 // with a proxy of its own.
 func TestLANGoesAroundTheProxy(t *testing.T) {
@@ -56,8 +56,8 @@ func TestLANGoesAroundTheProxy(t *testing.T) {
 
 // The reporter's case end to end: a proxy that answers 502 Bad Gateway to
 // whatever it is asked (as Clash does for a host it can't reach), set in
-// magpie, and another magpie at this computer's LAN address. The list
-// comes from the other magpie, not the proxy's 502.
+// magpie-friday, and another magpie-friday at this computer's LAN address. The list
+// comes from the other magpie-friday, not the proxy's 502.
 func TestLANModelListNotThroughProxy(t *testing.T) {
 	var lan net.IP
 	addrs, _ := net.InterfaceAddrs()
@@ -79,7 +79,7 @@ func TestLANModelListNotThroughProxy(t *testing.T) {
 		t.Skip("can't listen on", lan, err)
 	}
 	remote := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Header.Get("Authorization") != "Bearer sk-magpie-key" {
+		if r.Header.Get("Authorization") != "Bearer sk-magpie-friday-key" {
 			http.Error(w, "no API key was sent", http.StatusUnauthorized)
 			return
 		}
@@ -94,7 +94,7 @@ func TestLANModelListNotThroughProxy(t *testing.T) {
 	clear(lanCache.m)
 	c := &http.Client{Transport: Dispatch(&http.Transport{Proxy: Func})}
 	req, _ := http.NewRequest("GET", remote.URL+"/v1/models", nil)
-	req.Header.Set("Authorization", "Bearer sk-magpie-key")
+	req.Header.Set("Authorization", "Bearer sk-magpie-friday-key")
 	res, err := c.Do(req)
 	if err != nil {
 		t.Fatal(err)
@@ -105,6 +105,6 @@ func TestLANModelListNotThroughProxy(t *testing.T) {
 		t.Fatalf("%s: %s %s", remote.URL, res.Status, b)
 	}
 	if !strings.Contains(string(b), "codex/gpt-6.1-sol") {
-		t.Fatalf("not the other magpie's list: %s", b)
+		t.Fatalf("not the other magpie-friday's list: %s", b)
 	}
 }

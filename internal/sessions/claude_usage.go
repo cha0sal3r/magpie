@@ -96,7 +96,7 @@ func (r *claudeUsageState) fill(entries []claudeWindowEntry) {
 }
 
 // A summary's window is kept in sessions.json with it, so a session that grew
-// while magpie was not running is read on, not again from its first line: a
+// while magpie-friday was not running is read on, not again from its first line: a
 // live 2 GB one took seconds of the first Sessions list after every update
 // (#3493). Only a few bounded windows are kept at once (trimSummaryRevisions).
 func (r *claudeUsageState) MarshalJSON() ([]byte, error) { return json.Marshal(r.window()) }

@@ -30,7 +30,7 @@ func fetchPartnersNow() {
 
 func partnerFeedServer(t *testing.T, body *atomic.Value) *httptest.Server {
 	srv := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		if r.Header.Get("User-Agent") != "magpie" {
+		if r.Header.Get("User-Agent") != "magpie-friday" {
 			t.Errorf("User-Agent %q", r.Header.Get("User-Agent"))
 		}
 		_, _ = rw.Write([]byte(body.Load().(string)))
@@ -49,7 +49,7 @@ func partnerIDs(ps []Partner) string {
 
 // The add sheet's Partners are what usemagpie.ai lists, checked: an entry
 // that would send a key over http, take a built-in preset's id or set
-// what only magpie's own presets may is left out, and one outside its
+// what only magpie-friday's own presets may is left out, and one outside its
 // window isn't listed.
 func TestPartnersFromTheFeed(t *testing.T) {
 	t.Setenv("XDG_CACHE_HOME", t.TempDir())
@@ -69,7 +69,7 @@ func TestPartnersFromTheFeed(t *testing.T) {
 	future := time.Now().Add(time.Hour).UTC().Format(time.RFC3339)
 	var body atomic.Value
 	body.Store(`{"partners":[
-		{"id":"acme","name":"Acme AI","chat":"https://api.acme.example/v1","keysUrl":"https://acme.example/keys?ref=magpie",
+		{"id":"acme","name":"Acme AI","chat":"https://api.acme.example/v1","keysUrl":"https://acme.example/keys?ref=magpie-friday",
 		 "website":"https://usemagpie.ai/go/acme/site","siteHost":"www.acme.example",
 		 "iconUrl":"https://acme.example/logo.png","notes":{"en":"Fast relay","zh":"快速中转"},"langs":["zh"],
 		 "decide":"https://api.acme.example/decide","noKey":true},
@@ -118,7 +118,7 @@ func TestPartnersFromTheFeed(t *testing.T) {
 
 	// a provider is added from it as from a preset
 	p, err := FromPreset("acme")
-	if err != nil || p.Chat != "https://api.acme.example/v1" || p.KeysURL != "https://acme.example/keys?ref=magpie" || p.Decide != "" {
+	if err != nil || p.Chat != "https://api.acme.example/v1" || p.KeysURL != "https://acme.example/keys?ref=magpie-friday" || p.Decide != "" {
 		t.Fatalf("FromPreset(acme) = %+v, %v", p, err)
 	}
 	if pr := Preset("acme"); pr == nil || !pr.Sponsored {
@@ -395,7 +395,7 @@ func TestNoticePartners(t *testing.T) {
 	}
 }
 
-// The magpie serving the gateway fetches the list when it starts and
+// The magpie-friday serving the gateway fetches the list when it starts and
 // again when it is due, with no page asking: an app left open on another
 // page still learns of a partner added within the hour.
 func TestPartnersKeptFreshUnasked(t *testing.T) {

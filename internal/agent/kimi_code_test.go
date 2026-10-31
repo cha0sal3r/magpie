@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // #290: a kimi-cli user who moved to the new Kimi Code has both ~/.kimi and
@@ -47,14 +47,14 @@ max_context_size = 262144
 		t.Fatalf("path: %s, want %s", a.Path, path)
 	}
 	f := a.Field("model")
-	if err := f.Set("magpie/relay/gemini-3.8-flash"); err != nil {
+	if err := f.Set("magpie-friday/relay/gemini-3.8-flash"); err != nil {
 		t.Fatal(err)
 	}
-	if v, _ := edit.GetTOMLTop(path, "default_model"); v != "magpie/relay/gemini-3.8-flash" {
+	if v, _ := edit.GetTOMLTop(path, "default_model"); v != "magpie-friday/relay/gemini-3.8-flash" {
 		t.Fatalf("default_model in ~/.kimi-code: %q", v)
 	}
-	m, err := edit.GetTOMLTable(path, `models."magpie/relay/gemini-3.8-flash"`)
-	if err != nil || m == nil || m["provider"] != "magpie" || !kimiToolUse(path) {
+	m, err := edit.GetTOMLTable(path, `models."magpie-friday/relay/gemini-3.8-flash"`)
+	if err != nil || m == nil || m["provider"] != "magpie-friday" || !kimiToolUse(path) {
 		t.Fatalf("model table: %v %v", m, err)
 	}
 	if b, _ := os.ReadFile(old); string(b) != cfg {
@@ -63,7 +63,7 @@ max_context_size = 262144
 	if err := f.Set(""); err != nil {
 		t.Fatal(err)
 	}
-	if b, _ := os.ReadFile(path); strings.Contains(string(b), "magpie") || !strings.Contains(string(b), `default_model = "kimi-code/kimi-for-coding"`) {
+	if b, _ := os.ReadFile(path); strings.Contains(string(b), "magpie-friday") || !strings.Contains(string(b), `default_model = "kimi-code/kimi-for-coding"`) {
 		t.Fatalf("reset:\n%s", b)
 	}
 
@@ -79,10 +79,10 @@ max_context_size = 262144
 		t.Fatalf("kimi-cli only: %s %v", d, legacy)
 	}
 	// kimi-cli refuses a capability it doesn't know
-	if err := kimi(home).Field("model").Set("magpie/relay/gemini-3.8-flash"); err != nil {
+	if err := kimi(home).Field("model").Set("magpie-friday/relay/gemini-3.8-flash"); err != nil {
 		t.Fatal(err)
 	}
-	if m, _ := edit.GetTOMLTable(old, `models."magpie/relay/gemini-3.8-flash"`); m == nil || kimiToolUse(old) {
+	if m, _ := edit.GetTOMLTable(old, `models."magpie-friday/relay/gemini-3.8-flash"`); m == nil || kimiToolUse(old) {
 		t.Fatalf("kimi-cli's model table: %v", m)
 	}
 	os.RemoveAll(filepath.Join(home, ".kimi"))

@@ -10,12 +10,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// Another computer on the network draws with the magpie shared there
+// Another computer on the network draws with the magpie-friday shared there
 // (#545): a plain client with the gateway's key, at its images API, and a
-// magpie that has it as a Remote magpie, whose image models it lists and
+// magpie-friday that has it as a Remote magpie-friday, whose image models it lists and
 // draws with there. Neither gets an image only this computer can open.
 func TestLANDraws(t *testing.T) {
 	_, e := easeled(t)
@@ -47,10 +47,10 @@ func TestLANDraws(t *testing.T) {
 
 	// a plain client: no key, turned away; with it, the image's bytes, by
 	// the model named or the one the Settings draw with
-	if code, _, body := ask("/v1/images/generations", "", `{"prompt":"a magpie"}`); code != 401 {
+	if code, _, body := ask("/v1/images/generations", "", `{"prompt":"a magpie-friday"}`); code != 401 {
 		t.Errorf("no key: %d %s", code, body)
 	}
-	for _, body := range []string{`{"model":"art/gpt-image-1","prompt":"a magpie"}`, `{"prompt":"a magpie"}`} {
+	for _, body := range []string{`{"model":"art/gpt-image-1","prompt":"a magpie-friday"}`, `{"prompt":"a magpie-friday"}`} {
 		code, a, raw := ask("/v1/images/generations", secrets[0], body)
 		if code != 200 || len(a.Data) != 1 || a.Data[0].B64 != want || strings.Contains(raw, "127.0.0.1") || strings.Contains(raw, "localhost") {
 			t.Errorf("%s: %d %s", body, code, raw)
@@ -60,7 +60,7 @@ func TestLANDraws(t *testing.T) {
 		t.Errorf("edit: %d %s", code, raw)
 	}
 
-	// a magpie with it as a Remote magpie, signed with the key
+	// a magpie-friday with it as a Remote magpie-friday, signed with the key
 	id, err := provider.Add(provider.Provider{ID: "office", Name: "Office", Key: secrets[0], Preset: provider.RemoteMagpiePreset, Chat: strings.TrimPrefix(host.URL, "http://")})
 	if err != nil {
 		t.Fatal(err)
@@ -74,24 +74,24 @@ func TestLANDraws(t *testing.T) {
 		draws = append(draws, m.ID)
 	}
 	if !slices.Contains(draws, "art/gpt-image-1") {
-		t.Fatalf("the shared magpie's image models aren't listed here: %v", draws)
+		t.Fatalf("the shared magpie-friday's image models aren't listed here: %v", draws)
 	}
 	before := len(e.got("/v1/images/generations"))
-	code, body := post(t, "/v1/images/generations", `{"model":"office/art/gpt-image-1","prompt":"a magpie"}`)
+	code, body := post(t, "/v1/images/generations", `{"model":"office/art/gpt-image-1","prompt":"a magpie-friday"}`)
 	var a imagesAnswer
 	json.Unmarshal([]byte(body), &a)
 	if code != 200 || len(a.Data) != 1 || a.Data[0].B64 != want || a.Model != "office/art/gpt-image-1" {
-		t.Errorf("through the remote magpie: %d %s", code, body)
+		t.Errorf("through the remote magpie-friday: %d %s", code, body)
 	}
 	if n := len(e.got("/v1/images/generations")); n != before+1 {
 		t.Errorf("the vendor was asked %d times", n-before)
 	}
 }
 
-// A magpie with another as its Remote magpie makes videos with the video
+// A magpie-friday with another as its Remote magpie-friday makes videos with the video
 // models shared there (#545): they are listed as such, not as image models,
-// and the video is started, asked after and fetched at the other magpie's
-// videos API, under an id of this magpie's.
+// and the video is started, asked after and fetched at the other magpie-friday's
+// videos API, under an id of this magpie-friday's.
 func TestRemoteMagpieVideos(t *testing.T) {
 	grokSignedIn(t)
 	g := newGrokMedia(t)
@@ -118,14 +118,14 @@ func TestRemoteMagpieVideos(t *testing.T) {
 		draws = append(draws, m.ID)
 	}
 	if !slices.Contains(films, "grok/grok-imagine-video") {
-		t.Fatalf("the shared magpie's video models aren't listed here: %v", films)
+		t.Fatalf("the shared magpie-friday's video models aren't listed here: %v", films)
 	}
 	if slices.ContainsFunc(draws, func(id string) bool { return strings.Contains(id, "video") }) || !slices.Contains(draws, "grok/grok-imagine-image") {
 		t.Errorf("image models here: %v", draws)
 	}
 
 	s := New()
-	code, obj, raw, _ := request(t, s, "POST", "/v1/videos", "application/json", `{"model":"office/grok/grok-imagine-video","prompt":"a magpie takes off","seconds":6,"size":"1280x720"}`)
+	code, obj, raw, _ := request(t, s, "POST", "/v1/videos", "application/json", `{"model":"office/grok/grok-imagine-video","prompt":"a magpie-friday takes off","seconds":6,"size":"1280x720"}`)
 	vid, _ := obj["id"].(string)
 	if code != 200 || !strings.HasPrefix(vid, "video_office.") || obj["model"] != "office/grok/grok-imagine-video" {
 		t.Fatalf("start: %d %s", code, raw)

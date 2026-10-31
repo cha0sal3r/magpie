@@ -1,10 +1,10 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// magpie's image recognition as an MCP server (JonahFu on X): Settings ›
+// magpie-friday's image recognition as an MCP server (JonahFu on X): Settings ›
 // Models › Image recognition has an "MCP server" row with the gateway's
-// address of it, /mcp/magpie/vision, to copy into any agent, and says a
+// address of it, /mcp/magpie-friday/vision, to copy into any agent, and says a
 // gateway key, and the image as a URL, go with it from another computer.
 // An image an agent asked it about reads in Routing as that agent's MCP
-// call, not as a description for one of magpie's models. In every language.
+// call, not as a description for one of magpie-friday's models. In every language.
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
@@ -12,19 +12,19 @@ const { test } = require("node:test");
 const { chromium, webkit } = require("playwright");
 
 const assets = path.resolve(__dirname, "../assets");
-const address = "http://127.0.0.1:3999/mcp/magpie/vision";
+const address = "http://127.0.0.1:3999/mcp/magpie-friday/vision";
 const words = {
-  en: { name: "Image recognition MCP server", sub: /analyze_image.*Authorization: Bearer <key>.*data URL/, story: /Claude Code called magpie's analyze_image MCP tool: codex\/gpt-6\.1-sol looked at the image for it/ },
-  zh: { name: "识图 MCP 服务器", sub: /analyze_image.*Authorization: Bearer <key>.*data URL/, story: /Claude Code 调用了 magpie 的 analyze_image MCP 工具：由 codex\/gpt-6\.1-sol 代为查看图片/ },
-  "zh-TW": { name: "識圖 MCP 伺服器", sub: /analyze_image.*Authorization: Bearer <key>.*data URL/, story: /Claude Code 呼叫了 magpie 的 analyze_image MCP 工具：由 codex\/gpt-6\.1-sol 代為查看圖片/ },
-  ja: { name: "画像認識 MCP サーバー", sub: /analyze_image.*Authorization: Bearer <key>.*data URL/, story: /Claude Code が magpie の analyze_image MCP ツールを呼び出しました。codex\/gpt-6\.1-sol が代わりに画像を見ました/ },
-  de: { name: "Bilderkennung als MCP-Server", sub: /analyze_image.*Authorization: Bearer <key>.*Data-URL/, story: /Claude Code hat das analyze_image-MCP-Tool von magpie aufgerufen: codex\/gpt-6\.1-sol hat sich das Bild dafür angesehen/ },
+  en: { name: "Image recognition MCP server", sub: /analyze_image.*Authorization: Bearer <key>.*data URL/, story: /Claude Code called magpie-friday's analyze_image MCP tool: codex\/gpt-6\.1-sol looked at the image for it/ },
+  zh: { name: "识图 MCP 服务器", sub: /analyze_image.*Authorization: Bearer <key>.*data URL/, story: /Claude Code 调用了 magpie-friday 的 analyze_image MCP 工具：由 codex\/gpt-6\.1-sol 代为查看图片/ },
+  "zh-TW": { name: "識圖 MCP 伺服器", sub: /analyze_image.*Authorization: Bearer <key>.*data URL/, story: /Claude Code 呼叫了 magpie-friday 的 analyze_image MCP 工具：由 codex\/gpt-6\.1-sol 代為查看圖片/ },
+  ja: { name: "画像認識 MCP サーバー", sub: /analyze_image.*Authorization: Bearer <key>.*data URL/, story: /Claude Code が magpie-friday の analyze_image MCP ツールを呼び出しました。codex\/gpt-6\.1-sol が代わりに画像を見ました/ },
+  de: { name: "Bilderkennung als MCP-Server", sub: /analyze_image.*Authorization: Bearer <key>.*Data-URL/, story: /Claude Code hat das analyze_image-MCP-Tool von magpie-friday aufgerufen: codex\/gpt-6\.1-sol hat sich das Bild dafür angesehen/ },
 };
 
 const now = new Date();
 const day = [now.getFullYear(), now.getMonth() + 1, now.getDate()].map((n) => String(n).padStart(2, "0")).join("-");
 const routes = [{
-  id: 7, seq: 7, time: new Date(now.getTime() - 60e3).toISOString(), agent: "magpie", model: "codex/gpt-6.1-sol", provider: "codex",
+  id: 7, seq: 7, time: new Date(now.getTime() - 60e3).toISOString(), agent: "magpie-friday", model: "codex/gpt-6.1-sol", provider: "codex",
   kind: "vision", for: { agent: "claude-code", mcp: true },
   order: [{ id: "codex", provider: "codex", name: "Codex", who: "a@b.c", kind: "account", model: "gpt-6.1-sol" }],
   tries: [{ id: "codex", model: "gpt-6.1-sol", start: new Date(now.getTime() - 60e3).toISOString(), done: true, status: 200, ms: 900 }],
@@ -36,7 +36,7 @@ function serve(lang) {
     visionModels: [{ id: "codex/gpt-6.1-sol", name: "GPT-6.1 Sol", provider: "codex", providerName: "Codex", icon: "openai" }] };
   const state = {
     agents: [], profiles: [], settings,
-    clients: [{ id: "claude-code", name: "Claude Code", icon: "claude-color" }, { id: "magpie", name: "magpie", icon: "magpie" }],
+    clients: [{ id: "claude-code", name: "Claude Code", icon: "claude-color" }, { id: "magpie-friday", name: "magpie-friday", icon: "magpie-friday" }],
   };
   return async (r) => {
     const url = new URL(r.request().url());

@@ -1,9 +1,9 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // The Routing stage marks each agent with its colour: a dot before its
-// name, the wire its requests take, the magpie flying them (hueOf). An
+// name, the wire its requests take, the magpie-friday flying them (hueOf). An
 // agent with no maker's colour is given one of the spares by its id, and
 // "openai" (a caller that names itself OpenAI) drew rose #e11d48: zhouatie
-// on X saw a red dot on its node and a red dotted wire from magpie and read
+// on X saw a red dot on its node and a red dotted wire from magpie-friday and read
 // them as something wrong ("这个红色颜色，让人以为是状态异常"). Red on this
 // page means a failure (an answer ringed red, a request that failed), so no
 // agent's colour may look like it: every colour hueOf can give sits well

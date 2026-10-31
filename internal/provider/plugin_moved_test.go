@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // movedPlugin sets up a built-in moved onto its plugin, id's accounts as
@@ -63,7 +63,7 @@ func listed(agent string) string {
 }
 
 // The agent's own account, moved onto its plugin, is still the agent's:
-// named as the agent is signed in now, removed in magpie it is only hidden
+// named as the agent is signed in now, removed in magpie-friday it is only hidden
 // (the agent stays signed in), and it shows again once the agent signs in
 // to another account, as the built-in's did.
 func TestMovedOwnAccount(t *testing.T) {
@@ -259,7 +259,7 @@ func TestMovedSignInAsBuiltIn(t *testing.T) {
 	}
 }
 
-// magpie accounts lists a moved built-in's accounts where the built-in's
+// magpie-friday accounts lists a moved built-in's accounts where the built-in's
 // stood, not after every other: Grok's before Zed's, whichever order the
 // plugins come in.
 func TestAllLoginsMovedKeepTheirPlace(t *testing.T) {

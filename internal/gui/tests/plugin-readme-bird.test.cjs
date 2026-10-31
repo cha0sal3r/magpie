@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// A plugin's README loads under magpie's bird: it drops onto the skeleton's
+// A plugin's README loads under magpie-friday's bird: it drops onto the skeleton's
 // lines, each one bending under it as it bounces down them. When the README
 // comes the bird flies off and the box goes. With reduced motion the lines
 // stay straight and the bird sits still on the first.

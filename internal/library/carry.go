@@ -17,7 +17,7 @@ import (
 
 // Bundle is the library as a backup carries it to another computer: the
 // instruction sets and the one on, what each agent gets besides, the MCP
-// servers and the skills with their files. What magpie wrote into each
+// servers and the skills with their files. What magpie-friday wrote into each
 // agent (Applied) is this computer's own and stays out. It is made the
 // same way every time — no times, everything in order — so two computers
 // with the same library carry the same bundle.
@@ -84,7 +84,7 @@ func Collect() (*Bundle, error) {
 		b.Extra = nil
 	}
 	for _, s := range sorted(l.MCP, func(s *Server) string { return s.Name }) {
-		c := *carried(s) // magpie's own by name, each computer's own binary
+		c := *carried(s) // magpie-friday's own by name, each computer's own binary
 		c.Agents = orNone(slices.Sorted(slices.Values(s.Agents)))
 		b.MCP = append(b.MCP, &c)
 	}
@@ -308,7 +308,7 @@ func filled(m, have map[string]string, secret func(string) bool) map[string]stri
 
 // Put makes the library what b says — its instructions, servers and
 // skills in place of the ones here — and writes it into the agents, which
-// keep whatever of theirs isn't magpie's. The skills are written aside
+// keep whatever of theirs isn't magpie-friday's. The skills are written aside
 // first, and only once all of them are there does any go in; a skill
 // replaced or taken out is kept with the backups, and so is an
 // instructions file that changes. A skill that comes linked to a folder

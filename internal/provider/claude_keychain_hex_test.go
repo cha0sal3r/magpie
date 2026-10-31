@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
-// A sign-in magpie wrote on several lines, read through the cache from the
+// A sign-in magpie-friday wrote on several lines, read through the cache from the
 // keychain as hex, is written again on one line without the read hanging:
 // the write used to cache it under the lock the read held, and every later
 // read of Claude Code's sign-in waited on it for good.

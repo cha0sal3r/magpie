@@ -11,8 +11,8 @@ import (
 )
 
 // Gateway is the asynchronous request-hook entry a package runs in Bun:
-// package.json magpie.hooks, or a *.hooks.{js,mjs,ts,mts} file. Unlike
-// middleware (magpie.middleware/magpie.gateway, *.gateway.js), it can await
+// package.json magpie-friday.hooks, or a *.hooks.{js,mjs,ts,mts} file. Unlike
+// middleware (magpie-friday.middleware/magpie-friday.gateway, *.gateway.js), it can await
 // I/O and observe the completed exchange; the names never overlap, so one
 // file is never loaded as both.
 func Gateway(target string) string {

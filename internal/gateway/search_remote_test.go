@@ -10,18 +10,18 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// A Remote magpie searches the web for the models it serves, and its list
+// A Remote magpie-friday searches the web for the models it serves, and its list
 // says how (Player on Discord: Claude Code's WebSearch on remoteMagpie's
-// glm-5.3 went to this magpie's searcher, another model, and Settings'
+// glm-5.3 went to this magpie-friday's searcher, another model, and Settings'
 // Searcher didn't offer the remote's models). Claude Code's web search
 // goes on to it as it was offered; the models it searches natively for
 // are ones Settings may name, and a search run for another model is
-// marked, so the other magpie only lets the model itself search for it.
+// marked, so the other magpie-friday only lets the model itself search for it.
 func TestRemoteMagpieSearches(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
 	t.Setenv("XDG_CACHE_HOME", t.TempDir())
@@ -63,7 +63,7 @@ func TestRemoteMagpieSearches(t *testing.T) {
 		}
 	}
 	h := New().Handler()
-	var hops []string // what the remote magpie was sent, and how
+	var hops []string // what the remote magpie-friday was sent, and how
 	remote := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
 			b, _ := io.ReadAll(r.Body)
@@ -111,7 +111,7 @@ func TestRemoteMagpieSearches(t *testing.T) {
 	hops, vendor = nil, nil
 	mu.Unlock()
 	if len(sent) != 1 || !strings.Contains(sent[0], `"web_search_20250305"`) || strings.HasPrefix(sent[0], "1") {
-		t.Fatalf("the remote magpie was sent %q", sent)
+		t.Fatalf("the remote magpie-friday was sent %q", sent)
 	}
 	if len(asked) != 1 || !strings.Contains(asked[0], `"web_search_20250305"`) {
 		t.Fatalf("the vendor was sent %q", asked)
@@ -126,7 +126,7 @@ func TestRemoteMagpieSearches(t *testing.T) {
 		}
 	}
 	if choice == nil {
-		t.Fatalf("the remote magpie isn't a searcher: %v", Searchers())
+		t.Fatalf("the remote magpie-friday isn't a searcher: %v", Searchers())
 	}
 	if choice.Small != "zhipu/glm-5.3" || slices.ContainsFunc(choice.Models, func(m catalog.Model) bool { return m.ID == "plain/m1" }) {
 		t.Fatalf("it searches with %s of %v", choice.Small, choice.Models)
@@ -149,12 +149,12 @@ func TestRemoteMagpieSearches(t *testing.T) {
 	mu.Lock()
 	defer mu.Unlock()
 	if len(hops) != 1 || !strings.HasPrefix(hops[0], "1 ") {
-		t.Fatalf("the remote magpie was sent %q", hops)
+		t.Fatalf("the remote magpie-friday was sent %q", hops)
 	}
 }
 
-// A request another magpie marks as a search is one the model searches
-// for alone: this magpie runs no searcher of its own for it.
+// A request another magpie-friday marks as a search is one the model searches
+// for alone: this magpie-friday runs no searcher of its own for it.
 func TestSearchingFromAnotherMagpie(t *testing.T) {
 	var seen bool
 	h := withCaller(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -163,7 +163,7 @@ func TestSearchingFromAnotherMagpie(t *testing.T) {
 	for _, c := range []struct {
 		ua   string
 		want bool
-	}{{"magpie/0.1.983", true}, {"curl/8", false}} {
+	}{{"magpie-friday/0.1.983", true}, {"curl/8", false}} {
 		r := httptest.NewRequest(http.MethodPost, "/v1/messages", nil)
 		r.Header.Set("User-Agent", c.ua)
 		r.Header.Set(SearchingHeader, "1")

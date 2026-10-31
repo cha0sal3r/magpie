@@ -6,7 +6,7 @@ package provider
 // "ModelDeprecated","message":"Model exo-free has been deprecated."}}).
 // The gateway tells Retire when a provider answers so; the model is then
 // left out of the catalog — /v1/models, every agent's model list, the
-// routing groups magpie finds — for that provider only, until it answers
+// routing groups magpie-friday finds — for that provider only, until it answers
 // a request again or retiredFor has passed. A request that names it as
 // "provider/model" is still sent, so the vendor's answer is what the
 // agent is told, and a model back in service is seen at once.
@@ -18,7 +18,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
 // retiredFor is how long a model retired so stays out of the lists: the
@@ -36,7 +36,7 @@ var retired struct {
 	// checked is when the file was last looked at: within retiredLook it
 	// isn't looked at again. Every answered request asks Unretire, and a
 	// look at the disk each time was a stat per request; this process's
-	// own writes keep retired.at current, and another magpie's is seen
+	// own writes keep retired.at current, and another magpie-friday's is seen
 	// within retiredLook.
 	checked time.Time
 	looks   int // looks at the disk, for tests
@@ -47,7 +47,7 @@ var retiredLook = time.Second
 func retiredPath() string { return filepath.Join(filepath.Dir(Path()), "retired.json") }
 
 // readRetired brings retired.at up to the file, when the file changed since
-// it was read: after a restart, or written by another magpie. Called with
+// it was read: after a restart, or written by another magpie-friday. Called with
 // retired held.
 func readRetired() {
 	path := retiredPath()

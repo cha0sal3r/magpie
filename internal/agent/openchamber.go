@@ -13,10 +13,10 @@ package agent
 // Each new session is sent the model it picks, in this order: the project's
 // defaultModel (settings.json projects[]), the profile's defaultModel, the
 // agent's own, and only then OpenCode's model — so a defaultModel of its own
-// wins over the one magpie sets for OpenCode. Its small model (titles, commit
+// wins over the one magpie-friday sets for OpenCode. Its small model (titles, commit
 // messages) is smallModelOverride once smallModelUseDefault is false, else
 // OpenCode's small_model. A model is "provider/model" as OpenCode names it,
-// so one of magpie's needs magpie's provider in the OpenCode config.
+// so one of magpie-friday's needs magpie-friday's provider in the OpenCode config.
 
 import (
 	"encoding/json"
@@ -29,8 +29,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // openChamberDir is where OpenChamber keeps its settings.
@@ -151,8 +151,8 @@ func (s ocStore) projectModels() map[string]string {
 	return out
 }
 
-// openChamberOnMagpie says whether OpenChamber sends one of magpie's
-// models: OpenCode's config must keep magpie's provider for it.
+// openChamberOnMagpie says whether OpenChamber sends one of magpie-friday's
+// models: OpenCode's config must keep magpie-friday's provider for it.
 func openChamberOnMagpie() bool {
 	home, _ := os.UserHomeDir()
 	s := ocStore{openChamberDir(home)}
@@ -170,7 +170,7 @@ func openChamber(home, cfg string) *Agent {
 			return append(ownOptions(auth, cur[key]), viaMagpie("opencode", magpieID+"/")...)
 		}
 	}
-	// stepped off magpie: its provider goes too, when nothing else in the
+	// stepped off magpie-friday: its provider goes too, when nothing else in the
 	// OpenCode config names one of its models
 	tidy := func() error {
 		m, _ := edit.GetJSON(ocPath, "model")

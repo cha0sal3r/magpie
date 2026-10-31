@@ -11,7 +11,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // citedBlock is a text block of an Anthropic reply, with its citations.
@@ -77,7 +77,7 @@ func textBlocksOf(t *testing.T, body string, stream bool) ([]citedBlock, []strin
 	return blocks, types
 }
 
-// The pages a search magpie ran found are cited in the answer's text as
+// The pages a search magpie-friday ran found are cited in the answer's text as
 // Anthropic's own web search cites them (H20 on Discord: text blocks came
 // back with no citations): each line naming a page's URL is a text block
 // whose citations are web_search_result_location entries, the lines

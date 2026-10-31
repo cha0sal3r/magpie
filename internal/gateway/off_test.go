@@ -5,13 +5,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A provider switched off (#163) is kept, but agents are given none of its
 // models, no request, group or fallback goes to it, and one naming it is
 // told it is switched off; switched on, all of it comes back. A group
-// magpie found with it stays, served by the providers still on.
+// magpie-friday found with it stays, served by the providers still on.
 func TestProviderOff(t *testing.T) {
 	fresh(t)
 	a, b := &keyed{}, &keyed{}
@@ -64,11 +64,11 @@ func TestProviderOff(t *testing.T) {
 
 	s := New()
 	code, body := postAs(t, s, "", `{"model":"b/vendor/m","messages":[{"role":"user","content":"hi"}]}`)
-	if code != 404 || !strings.Contains(body, "switched off in Magpie") || len(b.tried) != 0 {
+	if code != 404 || !strings.Contains(body, "switched off in magpie-friday") || len(b.tried) != 0 {
 		t.Fatalf("b/vendor/m with b off: %d %s, b tried %v", code, body, b.tried)
 	}
 	code, body = postAs(t, s, "", `{"model":"only-b","messages":[{"role":"user","content":"hi"}]}`)
-	if code != 404 || !strings.Contains(body, "switched off in Magpie") || len(b.tried) != 0 {
+	if code != 404 || !strings.Contains(body, "switched off in magpie-friday") || len(b.tried) != 0 {
 		t.Fatalf("only-b with b off: %d %s, b tried %v", code, body, b.tried)
 	}
 	code, body = postAs(t, s, "", `{"model":"group/mine","messages":[{"role":"user","content":"hi"}]}`)
@@ -121,7 +121,7 @@ func TestProviderOffStandIn(t *testing.T) {
 	}
 	now = "b/m"
 	code, body = postAs(t, s, "", `{"model":"b/m","messages":[{"role":"user","content":"hi"}]}`)
-	if code != 404 || !strings.Contains(body, "switched off in Magpie") || len(b.tried) != 0 {
+	if code != 404 || !strings.Contains(body, "switched off in magpie-friday") || len(b.tried) != 0 {
 		t.Fatalf("b/m with its agent still on it: %d %s, b tried %v", code, body, b.tried)
 	}
 }

@@ -7,14 +7,14 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // Prime Agent (#1528) is an agent of its own, wired as Pi is but in
-// ~/.prime/agent: a model through magpie sets settings.json's
-// defaultProvider/defaultModel and magpie's provider in models.json there,
+// ~/.prime/agent: a model through magpie-friday sets settings.json's
+// defaultProvider/defaultModel and magpie-friday's provider in models.json there,
 // beside the user's own providers and settings. The provider's key names
 // Prime Agent, whose requests carry no User-Agent; Disconnect puts both
 // files back as they were, byte for byte.
@@ -37,7 +37,7 @@ func TestPrimeAgent(t *testing.T) {
 	os.MkdirAll(dir, 0o755)
 	// the user's own, as they wrote them: comments aside, Prime Agent
 	// takes Pi's JSON
-	userSettings := "{\n  \"theme\": \"dark\",\n  \"defaultProvider\": \"xai\",\n  \"defaultModel\": \"grok-4.6\",\n  \"allowedModels\": [\"xai/grok-4.6\", \"magpie/relay/glm-4.6\"],\n  \"subagentDefaultModel\": \"xai/grok-4.6\"\n}\n"
+	userSettings := "{\n  \"theme\": \"dark\",\n  \"defaultProvider\": \"xai\",\n  \"defaultModel\": \"grok-4.6\",\n  \"allowedModels\": [\"xai/grok-4.6\", \"magpie-friday/relay/glm-4.6\"],\n  \"subagentDefaultModel\": \"xai/grok-4.6\"\n}\n"
 	userModels := "{\n  \"providers\": {\n    \"mine\": {\n      \"baseUrl\": \"http://127.0.0.1:9/v1\",\n      \"api\": \"openai-completions\",\n      \"apiKey\": \"MINE_KEY\",\n      \"models\": [{\"id\": \"m1\", \"contextWindow\": 64000}]\n    }\n  }\n}\n"
 	writeFile(t, settings, userSettings)
 	writeFile(t, models, userModels)
@@ -48,7 +48,7 @@ func TestPrimeAgent(t *testing.T) {
 	if err := a.Connect(); err != nil {
 		t.Fatal(err)
 	}
-	for k, want := range map[string]string{"defaultProvider": "magpie", "defaultModel": "relay/glm-4.6",
+	for k, want := range map[string]string{"defaultProvider": "magpie-friday", "defaultModel": "relay/glm-4.6",
 		"theme": "dark", "subagentDefaultModel": "xai/grok-4.6", "allowedModels.0": "xai/grok-4.6"} {
 		if v, _ := edit.GetJSON(settings, k); v != want {
 			t.Fatalf("%s = %q:\n%s", k, v, readFile(settings))
@@ -63,8 +63,8 @@ func TestPrimeAgent(t *testing.T) {
 	if mine := file.Providers["mine"]; mine == nil || mine["apiKey"] != "MINE_KEY" {
 		t.Fatalf("their provider:\n%s", readFile(models))
 	}
-	got := file.Providers["magpie"]
-	if got["baseUrl"] != gateway.URL()+"/v1" || got["api"] != "openai-completions" || got["apiKey"] != "magpie-prime-agent" {
+	got := file.Providers["magpie-friday"]
+	if got["baseUrl"] != gateway.URL()+"/v1" || got["api"] != "openai-completions" || got["apiKey"] != "magpie-friday-prime-agent" {
 		t.Fatalf("models:\n%s", readFile(models))
 	}
 	// Pi's block, but for the key: the fields Prime Agent's models.json
@@ -78,15 +78,15 @@ func TestPrimeAgent(t *testing.T) {
 	if c := a.Check(); c != "" {
 		t.Fatal(c)
 	}
-	// a key magpie no longer gives it is off
-	edit.SetJSON(models, edit.KV{Path: "providers.magpie.apiKey", Value: gateway.Token})
+	// a key magpie-friday no longer gives it is off
+	edit.SetJSON(models, edit.KV{Path: "providers.magpie-friday.apiKey", Value: gateway.Token})
 	if a.Check() == "" {
 		t.Fatal("the shared key reads as Prime Agent's")
 	}
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	if k, _ := edit.GetJSON(models, "providers.magpie.apiKey"); k != "magpie-prime-agent" || a.Check() != "" {
+	if k, _ := edit.GetJSON(models, "providers.magpie-friday.apiKey"); k != "magpie-friday-prime-agent" || a.Check() != "" {
 		t.Fatalf("sync left %q: %s", k, a.Check())
 	}
 	for _, other := range []string{".pi", ".omo"} {
@@ -96,7 +96,7 @@ func TestPrimeAgent(t *testing.T) {
 	}
 
 	// its requests, which say nothing of it but the key, are its: the
-	// gateway reads the agent off magpie-<id> (gateway.agentOf)
+	// gateway reads the agent off magpie-friday-<id> (gateway.agentOf)
 	if got := usage.AgentOf("prime-agent"); got != "prime-agent" {
 		t.Fatalf("usage: %q", got)
 	}
@@ -131,7 +131,7 @@ func TestPrimeAgentRoundTrip(t *testing.T) {
 			t.Fatalf("not connected:\n%s", readFile(a.Path))
 		}
 		// a model outside enabledModels would never start
-		if v, _ := edit.GetJSON(a.Path, "enabledModels"); !bytes.Contains([]byte(v), []byte("magpie/")) {
+		if v, _ := edit.GetJSON(a.Path, "enabledModels"); !bytes.Contains([]byte(v), []byte("magpie-friday/")) {
 			t.Fatalf("enabledModels: %s", v)
 		}
 		if err := a.Disconnect(); err != nil {
@@ -141,7 +141,7 @@ func TestPrimeAgentRoundTrip(t *testing.T) {
 			t.Fatalf("round %d:\n%s", i, b)
 		}
 		// models.json wasn't there, and isn't again; nor is a copy left
-		for _, f := range []string{"models.json", "models.json.before-magpie", "settings.json.before-magpie"} {
+		for _, f := range []string{"models.json", "models.json.before-magpie-friday", "settings.json.before-magpie-friday"} {
 			if _, err := os.Stat(filepath.Join(dir, f)); !os.IsNotExist(err) {
 				t.Fatalf("round %d: %s left: %v", i, f, err)
 			}
@@ -150,7 +150,7 @@ func TestPrimeAgentRoundTrip(t *testing.T) {
 }
 
 // What the user changes while it is connected stands: Disconnect takes
-// magpie out of it and leaves their change, rather than putting back the
+// magpie-friday out of it and leaves their change, rather than putting back the
 // copy from before.
 func TestPrimeAgentKeepsWhatChangedWhileConnected(t *testing.T) {
 	home := syncHome(t)
@@ -171,7 +171,7 @@ func TestPrimeAgentKeepsWhatChangedWhileConnected(t *testing.T) {
 			t.Fatalf("%s = %q:\n%s", k, v, readFile(settings))
 		}
 	}
-	if _, err := os.Stat(settings + ".before-magpie"); !os.IsNotExist(err) {
+	if _, err := os.Stat(settings + ".before-magpie-friday"); !os.IsNotExist(err) {
 		t.Fatalf("copy left: %v", err)
 	}
 }
@@ -225,7 +225,7 @@ func TestPrimeAgentRoundTripWithBOM(t *testing.T) {
 	if b, _ := os.ReadFile(a.Path); !bytes.Equal(b, userSettings) {
 		t.Fatalf("not put back:\n%q", b)
 	}
-	if _, err := os.Stat(a.Path + ".before-magpie"); !os.IsNotExist(err) {
+	if _, err := os.Stat(a.Path + ".before-magpie-friday"); !os.IsNotExist(err) {
 		t.Fatalf("the copy from before is left: %v", err)
 	}
 }

@@ -9,8 +9,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // wbSearchReply is what WorkBuddy AI's /agenttool/v1/search answered a
@@ -21,7 +21,7 @@ const wbSearchReply = `{"query":"Go 1.26 release notes","type":"text2text","prov
 	`],"total_results":2,"response_time_ms":2428}`
 
 // wbSearchSite is a WorkBuddy site as a Claude Code WebSearch turn on it
-// goes: its config lists hy3; hy3 calls magpie's web_search once, then
+// goes: its config lists hy3; hy3 calls magpie-friday's web_search once, then
 // answers from what it was given; its search service answers as the real
 // one did, or with refusal while that is set.
 type wbSearchSite struct {
@@ -88,7 +88,7 @@ func (s *wbSearchSite) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // WorkBuddy searches for its models with its own search service, as
-// WorkBuddy's client does (#1798): magpie shapes the request, the plugin's
+// WorkBuddy's client does (#1798): magpie-friday shapes the request, the plugin's
 // fetch signs and sends it. The service's refusal is told, not taken for
 // no results; with provider search off in Settings it isn't asked.
 func TestWorkBuddyPluginSearches(t *testing.T) {

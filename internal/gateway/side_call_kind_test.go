@@ -8,12 +8,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A call Codex makes on a hidden thread of its own — the title of a new
 // chat — comes without x-openai-subagent; its turn metadata names the
-// thread's source (#314). magpie's own web search says so too.
+// thread's source (#314). magpie-friday's own web search says so too.
 func TestCallKindThreadSource(t *testing.T) {
 	for want, h := range map[string]map[string]string{
 		"thread_title":    {"x-codex-turn-metadata": `{"session_id":"s","thread_source":"thread_title","turn_id":"t"}`},
@@ -37,7 +37,7 @@ func TestCallKindThreadSource(t *testing.T) {
 	}
 }
 
-// The searches magpie runs for a model that can't search are its own
+// The searches magpie-friday runs for a model that can't search are its own
 // calls, on the model it searches with: the Routing view is told they are
 // web searches, and for which agent's model (a DeepSeek chat in Codex
 // showed Codex's GPT answering, #314).

@@ -5,11 +5,11 @@ package agent
 // Python kimi-cli's in ~/.kimi ($KIMI_SHARE_DIR), in the same shape (see
 // KimiDir): the model sessions start with as default_model, a key
 // of its [models."<key>"] tables, each naming a [providers.<name>] table and
-// the model to ask it for. magpie adds itself as the provider "magpie" (the
+// the model to ask it for. magpie-friday adds itself as the provider "magpie-friday" (the
 // gateway, spoken to as Kimi's own chat completions, so the thinking goes
 // both ways as reasoning_content) and one model table per catalog model,
-// keyed "magpie/<provider>/<model>", so the catalog joins Kimi's /model
-// picker. The default the user had is stashed and put back when magpie steps
+// keyed "magpie-friday/<provider>/<model>", so the catalog joins Kimi's /model
+// picker. The default the user had is stashed and put back when magpie-friday steps
 // out. Kimi refuses a config whose default_model or a model's provider is
 // missing, so the provider goes in before the models and the default after,
 // and out the other way round.
@@ -21,13 +21,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
-// kimiModelTable is the header prefix of every model table magpie writes.
+// kimiModelTable is the header prefix of every model table magpie-friday writes.
 var kimiModelTable = `models."` + magpieID + "/"
 
-// kimiContext is what Kimi is told of a model whose context magpie doesn't
+// kimiContext is what Kimi is told of a model whose context magpie-friday doesn't
 // know: it has to be told one, and compacts as it nears it.
 const kimiContext = 128000
 
@@ -58,9 +58,9 @@ func kimiDir(at place) (dir string, legacy bool) {
 	return code, false
 }
 
-// kimiModelTables are magpie's model tables; the new Kimi Code is told of
+// kimiModelTables are magpie-friday's model tables; the new Kimi Code is told of
 // tool calling too, which kimi-cli has no word for and refuses. wrote is
-// what magpie wrote in them last (kimiOwn), and the tables come back with
+// what magpie-friday wrote in them last (kimiOwn), and the tables come back with
 // what this write puts there.
 func kimiModelTables(path string, legacy bool, wrote map[string]map[string]string) ([]edit.Table, map[string]map[string]string) {
 	var out []edit.Table
@@ -108,7 +108,7 @@ func kimiModelTables(path string, legacy bool, wrote map[string]map[string]strin
 		}
 		if !legacy {
 			// the new Kimi Code's cap on a reply (max_completion_tokens),
-			// where magpie knows the model's; kimi-cli has no such key
+			// where magpie-friday knows the model's; kimi-cli has no such key
 			if was["max_output_size"] != "" && !kimiInt(was["max_output_size"]) {
 				delete(was, "max_output_size")
 			}
@@ -130,9 +130,9 @@ func kimiModelTables(path string, legacy bool, wrote map[string]map[string]strin
 	return out, now
 }
 
-// kimiOwn is the value of key in one of magpie's model tables: one the user
-// set there themselves (was, other than what magpie wrote last) stays,
-// else magpie's own (mine, "" for none), and by says it is magpie's.
+// kimiOwn is the value of key in one of magpie-friday's model tables: one the user
+// set there themselves (was, other than what magpie-friday wrote last) stays,
+// else magpie-friday's own (mine, "" for none), and by says it is magpie-friday's.
 func kimiOwn(was, wrote map[string]string, key, mine string) (v string, by bool) {
 	if v, ok := was[key]; ok && v != "" && v != wrote[key] {
 		return v, false
@@ -154,7 +154,7 @@ func setWrote(m map[string]map[string]string, table, key, v string) {
 	m[table][key] = v
 }
 
-// kimiWroteKey is where the stash keeps what magpie last wrote in its model
+// kimiWroteKey is where the stash keeps what magpie-friday last wrote in its model
 // tables of the config at path, as JSON: {table: {key: value}}.
 func kimiWroteKey(path string) string { return "kimi:" + path + ":wrote" }
 
@@ -197,7 +197,7 @@ func kimiEfforts(efforts []string, was string) []edit.KV {
 
 func kimi(home string) *Agent { return kimiIn(here(home)) }
 
-// kimiProvider writes magpie's keys into its provider table, each in place
+// kimiProvider writes magpie-friday's keys into its provider table, each in place
 // when the table is there, so the rest of it stays: custom_headers, env or a
 // default_model the user set on it (Kimi Code's ProviderConfig,
 // packages/agent-core-v2/src/app/kosongConfig/configSection.ts), which a
@@ -284,14 +284,14 @@ func kimiIn(at place) *Agent {
 				return err.Error()
 			}
 			if m == nil {
-				return "Kimi Code's [models." + strconv.Quote(v) + "] (config.toml) is gone, so it no longer reaches magpie"
+				return "Kimi Code's [models." + strconv.Quote(v) + "] (config.toml) is gone, so it no longer reaches magpie-friday"
 			}
 			t, err := edit.GetTOMLTable(path, providerTable)
 			if err != nil {
 				return err.Error()
 			}
 			if t == nil {
-				return "Kimi Code's [" + providerTable + "] (config.toml) is gone, so it no longer reaches magpie"
+				return "Kimi Code's [" + providerTable + "] (config.toml) is gone, so it no longer reaches magpie-friday"
 			}
 			return wiringOff("Kimi Code", path, func(k string) (string, bool) { v, ok := t[k]; return v, ok },
 				"base_url", at.v1(), "api_key", at.gwKey())

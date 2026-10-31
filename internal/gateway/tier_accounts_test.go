@@ -18,8 +18,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // tierAccounts signs Codex in to a Plus ChatGPT account, first, with a Pro
@@ -143,7 +143,7 @@ func TestUltrafastGoesToAnAccountOfferingIt(t *testing.T) {
 		t.Errorf("pro out: ultrafast tried %s", got)
 	}
 
-	// an agent asking through magpie's own endpoint is ordered the same
+	// an agent asking through magpie-friday's own endpoint is ordered the same
 	proOut = false
 	if code, body := post(t, "/v1/responses", `{"model":"codex/gpt-6-luna","input":"ping","service_tier":"ultrafast"}`); code != 200 || !strings.HasPrefix(strings.Join(tried(), ","), "acct-pro:") {
 		t.Errorf("/v1/responses: status %d: %s", code, body)

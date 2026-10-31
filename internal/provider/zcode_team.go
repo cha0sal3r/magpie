@@ -38,7 +38,7 @@ package provider
 // ZCode keeps no team key in its credential store: it finds it when it is
 // switched to the team's plan (~/.zcode/v2/setting.json's
 // providerFamilyConnectionSelections, resolveAccountTeamPlanRuntimeApiKey),
-// and so does magpie for ZCode's own account.
+// and so does magpie-friday for ZCode's own account.
 
 import (
 	"context"
@@ -50,7 +50,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
 )
 
 func (k zcodeKey) team() bool { return k.Org != "" && k.Project != "" }
@@ -160,7 +160,7 @@ func zcodeOwnTeam(store map[string]string, secret []byte) (zcodeKey, bool) {
 // zhipuPersonalResets is how many resets a GLM Coding Plan of a person's
 // own holds, as bigmodel.cn's usage page lists them (#1191), asked with
 // the plan's key where its term is (zhipuTerm). Only read: a reset is
-// spent on the vendor's own page, never from magpie.
+// spent on the vendor's own page, never from magpie-friday.
 func zhipuPersonalResets(ctx context.Context, root, key string) *ResetCredits {
 	return zhipuResets(ctx, root+"/api/biz/customer-package-reset/list?targetType=PERSONAL", key, nil)
 }
@@ -207,7 +207,7 @@ func zhipuResets(ctx context.Context, u, auth string, hdr map[string]string) *Re
 }
 
 // zhipuTeamOf is the team project a GLM key belongs to, when that key is a
-// ZCode account's team key magpie holds.
+// ZCode account's team key magpie-friday holds.
 func zhipuTeamOf(key string) (org, project string) {
 	for _, l := range zcodeLogins() {
 		if l.key.team() && l.key.Key == key {

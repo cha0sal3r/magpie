@@ -85,7 +85,7 @@ func catchUpReported(path string) error {
 //
 // Nothing else the gateway does on a call happens: no observer sees it
 // (the call is the client's, which can send its own), and no caller key's
-// budget is spent, since the call didn't go through magpie.
+// budget is spent, since the call didn't go through magpie-friday.
 func IngestReported(recs []Record) ([]bool, error) {
 	reported.ingest.Lock()
 	defer reported.ingest.Unlock()

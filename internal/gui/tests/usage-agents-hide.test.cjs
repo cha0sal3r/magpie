@@ -1,12 +1,12 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // The Usage page's Agents list hides the clients a reader doesn't care
 // about (ikunbots on X: Go-http-client, AsyncOpenAI, curl, python-httpx and
-// magpie beside Pi and their own agent). A row's actions (its "…" button,
+// magpie-friday beside Pi and their own agent). A row's actions (its "…" button,
 // or a right-click) hide it from the list; the totals and the chart still
 // count it. A quiet line under the list says how many are hidden and opens
 // them, each with Unhide. What is hidden is saved (POST /api/usage/arrange,
 // agentsHidden) and stays hidden when the page is opened again. No click
-// moves the page. Every language, a wide window, a narrow one and magpie
+// moves the page. Every language, a wide window, a narrow one and magpie-friday
 // web on a phone; no backend, the API is faked.
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
@@ -30,7 +30,7 @@ const TOTAL = AGENTS.reduce((n, g) => n + g.input + g.output, 0);
 const USAGE = {
   calls: 60, errors: 0, input: TOTAL - 600, output: 600, reasoning: 0, cache_read: 0, cache_write: 0, unpriced: 0, cost: 0, bucket: "day",
   series: [],
-  path: "~/.config/magpie/usage.jsonl",
+  path: "~/.config/magpie-friday/usage.jsonl",
   agents: AGENTS,
   models: [{ ...G("m", "glm-5", TOTAL), model: "glm-5" }],
 };
@@ -43,7 +43,7 @@ function server(lang, web, saved, posts) {
     const settings = () => ({ lang, theme: "light", usageAgentsHidden: saved.hidden });
     if (url.pathname === "/boot.js") return route.fulfill({ contentType: "text/javascript", body: `window.bootPrefs = {lang:"${lang}",theme:"light",web:${web}};` });
     if (url.pathname === "/wails/runtime.js") return route.fulfill({ contentType: "text/javascript", body: "export const Window = {};" });
-    // the clients magpie knows, curl among them, as /api/state lists them:
+    // the clients magpie-friday knows, curl among them, as /api/state lists them:
     // the others it doesn't know can be counted as one of them (#1958)
     if (url.pathname === "/api/state") return json({ agents: [], clients: [{ id: "pi", name: "Pi", icon: "pi" }, { id: "curl", name: "curl", icon: "curl" }], profiles: [], settings: settings(), fx: { rate: 7.2, at: new Date().toISOString() } });
     if (url.pathname === "/api/usage/arrange") {

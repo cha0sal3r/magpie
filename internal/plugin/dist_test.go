@@ -73,7 +73,7 @@ func npmHasNothing(t *testing.T) {
 	t.Setenv("BUN_CONFIG_REGISTRY", npmRegistry+"/")
 }
 
-// A plugin merged into the community repo reaches magpie before npm has
+// A plugin merged into the community repo reaches magpie-friday before npm has
 // it: its first npm version waits for an owner's 2FA, which kept reviewed
 // plugins unmerged (magpie-community/plugins#84, Open Design). The market
 // shows its version and README, and adding it installs the dist branch's

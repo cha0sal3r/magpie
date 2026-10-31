@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // pluginCheckinSandbox is the fake plugin with its own check-in, signed in
@@ -55,7 +55,7 @@ func pressed(t *testing.T, file string) []string {
 	return strings.Fields(string(b))
 }
 
-// A plugin's own check-in (auth.checkin; Lemon on Discord) runs as magpie's
+// A plugin's own check-in (auth.checkin; Lemon on Discord) runs as magpie-friday's
 // own do: each account once a Beijing day while it is on, a failure asked
 // again after wbCheckinRetry, a captcha left for the user (never retried
 // that day), and what came of each kept, on its card and in Settings.
@@ -170,7 +170,7 @@ func TestPluginCheckinRunsAsTheBuiltinsDo(t *testing.T) {
 	}
 }
 
-// A plugin that checks in itself takes over from magpie's own check-in
+// A plugin that checks in itself takes over from magpie-friday's own check-in
 // through its fetch, so an account isn't checked in twice; and its switch
 // follows the vendor's, which it took over, until set on its own.
 func TestPluginCheckinTakesOverTheVendors(t *testing.T) {
@@ -194,11 +194,11 @@ func TestPluginCheckinTakesOverTheVendors(t *testing.T) {
 	if _, err := plugin.Providers(ctx); err != nil {
 		t.Fatal(err)
 	}
-	// a plugin without auth.checkin: magpie claims Qoder's credits itself
+	// a plugin without auth.checkin: magpie-friday claims Qoder's credits itself
 	if n := len(qoderCheckinAccounts()); n != 1 || HasPluginCheckin() {
 		t.Fatalf("without the hook: %d Qoder accounts, plugins that check in %v", n, HasPluginCheckin())
 	}
-	// with it, the plugin does, and magpie's own lists none
+	// with it, the plugin does, and magpie-friday's own lists none
 	t.Setenv("FAKE_CHECKIN", filepath.Join(t.TempDir(), "presses"))
 	plugin.Restart()
 	if _, err := plugin.Providers(ctx); err != nil {
@@ -490,7 +490,7 @@ func pluginCheckinCounter(id string, outcome *string, calls *int) pluginCheckinP
 }
 
 // #2696 (LoKi, mufanmu): the Qoder plugins' check-in is rechecked as
-// magpie's own Qoder check-in is. A campaign can open mid-day, so a done or
+// magpie-friday's own Qoder check-in is. A campaign can open mid-day, so a done or
 // inactive read before it was kept for the whole Beijing day, even on a
 // press. Now the loop asks again 30 minutes after the last answer, not
 // before, and a press asks at once.
@@ -574,9 +574,9 @@ func TestPluginCheckinOthersSettledForTheDay(t *testing.T) {
 
 // #3326 (connoryang331): at 00:00:28 Beijing AutoClaw CN, WorkBuddy,
 // CodeArts, Trae CN, MiniMax and Raccoon answered "already in" (done) for
-// accounts whose day's credits were still to claim; magpie kept it as the
+// accounts whose day's credits were still to claim; magpie-friday kept it as the
 // day's, the loop never asked again, and a press answered from the record.
-// An answer magpie saw no claim for, given before noon Beijing, is asked
+// An answer magpie-friday saw no claim for, given before noon Beijing, is asked
 // again every 30 minutes; a press asks at once.
 func TestPluginCheckinEarlyDoneAskedAgain(t *testing.T) {
 	early := time.Date(2026, 10, 23, 0, 0, 28, 0, beijing)
@@ -646,7 +646,7 @@ func TestPluginCheckinEarlyDoneAskedAgain(t *testing.T) {
 			t.Fatalf("%d asks, last %+v", calls, last)
 		}
 	})
-	t.Run("done after magpie's claim", func(t *testing.T) {
+	t.Run("done after magpie-friday's claim", func(t *testing.T) {
 		claudeHome(t)
 		outcome, calls := CheckinClaimed, 0
 		// Qoder's is rechecked after a claim, and then answers done

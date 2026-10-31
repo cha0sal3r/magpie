@@ -5,10 +5,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// magpie group copy <id> [name] duplicates a group (lc on Discord): its
+// magpie-friday group copy <id> [name] duplicates a group (lc on Discord): its
 // models and routing under "<name> copy", or the name given, and says what
 // agents pick it as. A found group copies too, as one of the user's; a
 // removed one is brought back first.
@@ -46,7 +46,7 @@ func TestGroupCopyCLI(t *testing.T) {
 	if err := groupCmd([]string{"group", "copy", "nope"}); err == nil {
 		t.Error("copied a group that isn't")
 	}
-	if err := groupCmd([]string{"group", "copy"}); err == nil || !strings.Contains(err.Error(), "magpie group copy <id>") {
+	if err := groupCmd([]string{"group", "copy"}); err == nil || !strings.Contains(err.Error(), "magpie-friday group copy <id>") {
 		t.Errorf("no id: %v", err)
 	}
 }

@@ -1,6 +1,6 @@
 # Community PRs: what is closed unreviewed, and who is blocked
 
-magpie merges community PRs through agents. Two things keep that from
+magpie-friday merges community PRs through agents. Two things keep that from
 wearing the project down: a PR that could harm users is caught before any
 review of what it does, and an author who keeps sending work that costs
 more to review than it gives is stopped.

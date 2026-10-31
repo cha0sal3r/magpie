@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/klauspost/compress/zstd"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Bound a single body and its read time without limiting how long a client
@@ -20,8 +20,8 @@ import (
 //
 // The limit is on the decoded body. Codex sends the whole conversation on
 // every turn, its screenshots inline as base64, and zstd-compressed to a
-// ChatGPT account, which magpie compresses again on the way out: a long
-// session that read many images went past 128 MB decoded and got magpie's
+// ChatGPT account, which magpie-friday compresses again on the way out: a long
+// session that read many images went past 128 MB decoded and got magpie-friday's
 // 413 on every retry, while the same turn is a fraction of that on the
 // wire (NeoPengZhile, #1422). 512 MB leaves such a session room and still
 // bounds what one request may hold in memory.
@@ -71,7 +71,7 @@ func (b *idleBody) Read(p []byte) (int, error) {
 	return n, err
 }
 
-// errBodyEncoding is a Content-Encoding magpie can't decode.
+// errBodyEncoding is a Content-Encoding magpie-friday can't decode.
 var errBodyEncoding = errors.New("unsupported Content-Encoding")
 
 // decodedBody reads r.Body through its Content-Encoding: Codex sends its
@@ -97,7 +97,7 @@ func decodedBody(r *http.Request) (io.ReadCloser, error) {
 		}
 		rd = g
 	default:
-		return nil, fmt.Errorf("%w: magpie can't read a %q body; send it as identity, gzip or zstd", errBodyEncoding, enc)
+		return nil, fmt.Errorf("%w: magpie-friday can't read a %q body; send it as identity, gzip or zstd", errBodyEncoding, enc)
 	}
 	r.Header.Del("Content-Encoding")
 	return rd, nil
@@ -199,7 +199,7 @@ func readBoundedRequestBody(w http.ResponseWriter, r *http.Request, limits reque
 }
 
 // sizedReadFirst is the most readSized sets aside before a byte has come:
-// a client that says more than it sends makes magpie hold no more than
+// a client that says more than it sends makes magpie-friday hold no more than
 // this, or twice what it sent.
 const sizedReadFirst = 1 << 20
 
@@ -248,12 +248,12 @@ func readSized(r io.Reader, declared int64) ([]byte, error) {
 	}
 }
 
-// overLimit says a body is over magpie's own limit, and that it is
-// magpie's, not the provider's: an agent shows the message as it comes,
+// overLimit says a body is over magpie-friday's own limit, and that it is
+// magpie-friday's, not the provider's: an agent shows the message as it comes,
 // and a bare "Payload Too Large" read as the model's or the vendor's
 // (#1422). writeError adds what to do about it.
 func overLimit(limit int64) error {
-	return fmt.Errorf("request body is over magpie's gateway limit of %s (decoded); the provider was not asked", sizeWord(limit))
+	return fmt.Errorf("request body is over magpie-friday's gateway limit of %s (decoded); the provider was not asked", sizeWord(limit))
 }
 
 // sizeWord is a byte count in MB, or in KB or bytes when it is smaller,

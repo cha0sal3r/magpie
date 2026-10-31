@@ -4,18 +4,18 @@ package agent
 // ~/.qoder by default. A provider of one's own is an entry of "providers",
 // its models picked as "<provider>/<model>":
 //
-//	{"providers":{"magpie":{"displayName":"magpie","protocol":"openai",
-//	   "baseUrl":"http://127.0.0.1:3425/v1","apiKey":"magpie","model":…,
+//	{"providers":{"magpie-friday":{"displayName":"magpie-friday","protocol":"openai",
+//	   "baseUrl":"http://127.0.0.1:3425/v1","apiKey":"magpie-friday","model":…,
 //	   "models":[{"model":…,"displayName":…,"contextWindow":…,"maxOutputTokens":…,
 //	     "capabilities":{"tools":true,"vision":…,"thinking":{"modes":["enabled"],
 //	       "supportsEffort":true,"supportedEffortLevels":[…]}}}]}},
-//	 "model":{"name":"magpie/<model>","reasoningEffort":…,
-//	   "preferences":{"magpie/<model>":{"reasoning":{"effort":…}}}}}
+//	 "model":{"name":"magpie-friday/<model>","reasoningEffort":…,
+//	   "preferences":{"magpie-friday/<model>":{"reasoning":{"effort":…}}}}}
 //
 // Each model's effort is its own, in model.preferences (1.1.6x); the one in
 // model.reasoningEffort is asked for only by a model with none there, and
 // Qoder moves it into the preferences of the model it starts on, and drops
-// it, so it counts once. magpie sets the model's preference, and keeps
+// it, so it counts once. magpie-friday sets the model's preference, and keeps
 // reasoningEffort for the Qoders before preferences.
 //
 // An openai provider is asked at baseUrl + /chat/completions, with
@@ -34,8 +34,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 func qoder(home string) *Agent {
@@ -76,7 +76,7 @@ func qoderAt(at place, b qoderBuild) *Agent {
 	path := filepath.Join(dir, "settings.json")
 	key := b.id + ":" + path + ":"
 	slot := "providers." + magpieID
-	// magpie's provider, with what the user set on it in Qoder kept
+	// magpie-friday's provider, with what the user set on it in Qoder kept
 	qoderProvider := func(agent, model string) any {
 		return qoderKept(path, slot, qoderProviderAt(agent, model, at.v1()))
 	}
@@ -125,7 +125,7 @@ func qoderAt(at place, b qoderBuild) *Agent {
 		// alone, with no CLI installed (#1495): neither is a sign of the
 		// CLI. Its command, or a settings.json with any other key, is.
 		// The Qoder app (Qoder-win-x64-user.exe, Qoder.app, not the IDE)
-		// runs the CLI as its agent with the same folder, so magpie's
+		// runs the CLI as its agent with the same folder, so magpie-friday's
 		// provider reaches it too; its settings.json can hold only
 		// enabledPlugins (its bundled qoder-context plugin), and its status
 		// file says it is there (#2138).
@@ -173,7 +173,7 @@ func qoderAt(at place, b qoderBuild) *Agent {
 					}
 					return setEffort(v, was)
 				}
-				// out of magpie: its provider goes, and the model the user
+				// out of magpie-friday: its provider goes, and the model the user
 				// had comes back when none is asked for
 				if onMagpie() || qoderKeyed(get(slot+".apiKey"), b.id) {
 					if err := edit.DelJSON(path, slot); err != nil {
@@ -270,13 +270,13 @@ func qoderPreferences(prefs, model, effort string) (out map[string]any, drop boo
 	return out, len(out) == 0
 }
 
-// qoderKept is want, magpie's provider in Qoder's settings.json at path,
+// qoderKept is want, magpie-friday's provider in Qoder's settings.json at path,
 // with what the user set on the one at slot kept: Qoder (1.1.70) reads a
 // provider's routing (the model for compact, summary, subagent …), its
 // firstPayloadTimeoutMs and streamIdleTimeoutMs, type, authType and
-// anthropic block, none of which magpie writes, and a sync wrote them away
+// anthropic block, none of which magpie-friday writes, and a sync wrote them away
 // on every start, as T3 Code's did (#2030). A name the user gave it is
-// theirs too. Its address, key, model and model list are magpie's.
+// theirs too. Its address, key, model and model list are magpie-friday's.
 func qoderKept(path, slot string, want map[string]any) any {
 	if name, ok := edit.GetJSON(path, slot+".displayName"); ok && strings.TrimSpace(name) != "" {
 		want["displayName"] = name
@@ -287,7 +287,7 @@ func qoderKept(path, slot string, want map[string]any) any {
 // qoderLevels are the efforts Qoder can ask for.
 var qoderLevels = []string{"low", "medium", "high", "xhigh", "max"}
 
-// qoderProvider is magpie's entry in Qoder's providers, every magpie model
+// qoderProvider is magpie-friday's entry in Qoder's providers, every magpie-friday model
 // in it, model the one it starts on.
 func qoderProvider(agent, model string) map[string]any {
 	return qoderProviderAt(agent, model, gatewayV1())
@@ -318,11 +318,11 @@ func qoderProviderAt(agent, model, v1 string) map[string]any {
 		}
 		ms = append(ms, e)
 	}
-	return map[string]any{"displayName": "magpie", "protocol": "openai", "baseUrl": v1,
+	return map[string]any{"displayName": "magpie-friday", "protocol": "openai", "baseUrl": v1,
 		"apiKey": agentKeyAt(agent, v1), "model": model, "models": ms}
 }
 
-// qoderKeyed: key is one magpie gives Qoder's provider — its own,
+// qoderKeyed: key is one magpie-friday gives Qoder's provider — its own,
 // gateway.TokenFor, since Qoder's requests carry Bun's User-Agent and
 // nothing of Qoder's, gateway.Token, which it was given before, or the LAN
 // sharing key one in a WSL distro is given (agentKeyAt); a sync gives it

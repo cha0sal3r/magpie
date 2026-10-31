@@ -10,12 +10,12 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // clientOnlyRelay is a relay that serves only the agents its plan is sold
 // for, telling them by their User-Agent as sub2api's codex_cli_only and
-// packy's Claude Code-only plans do: 403 to anyone else, magpie's own test
+// packy's Claude Code-only plans do: 403 to anyone else, magpie-friday's own test
 // request among them (耍赖天都爱 on Discord).
 type clientOnlyRelay struct {
 	mu   sync.Mutex
@@ -59,7 +59,7 @@ func (f *clientOnlyRelay) last() (http.Header, map[string]any, string) {
 // A model's test can be asked as Codex or Claude Code asks, for a relay
 // that serves only them: as Codex, on Responses, streamed and not stored,
 // with Codex's headers; as Claude Code, only once Claude Code has come
-// through magpie, with the headers it came with — never its session or
+// through magpie-friday, with the headers it came with — never its session or
 // the betas of one request — and never of Anthropic's own API.
 func TestModelTestAsClient(t *testing.T) {
 	fresh(t)
@@ -79,7 +79,7 @@ func TestModelTestAsClient(t *testing.T) {
 		return p.TestModels(provider.TestAs(context.Background(), client), []string{model})[0]
 	}
 
-	// as magpie asks: turned away, though Codex's own requests are served
+	// as magpie-friday asks: turned away, though Codex's own requests are served
 	if r := test("", "gpt-5.5"); r.OK || r.Status != 403 {
 		t.Fatalf("plain test: %+v", r)
 	}
@@ -120,7 +120,7 @@ func TestModelTestAsClient(t *testing.T) {
 	}
 	New().Handler().ServeHTTP(rec, req)
 	if rec.Code != 200 {
-		t.Fatalf("Claude Code through magpie: %d %s", rec.Code, rec.Body.String())
+		t.Fatalf("Claude Code through magpie-friday: %d %s", rec.Code, rec.Body.String())
 	}
 
 	r = test(provider.ClientClaudeCode, "claude-opus-4-8")
@@ -157,7 +157,7 @@ func TestModelTestAsClient(t *testing.T) {
 	}
 }
 
-// Claude Code through magpie on a model a relay doesn't serve on Messages
+// Claude Code through magpie-friday on a model a relay doesn't serve on Messages
 // — a Chat-only provider here, a subscription or a translated model alike —
 // still lets a relay's models be tested as Claude Code: what a test asks
 // with is Claude Code's headers, whatever served its request (neiko on

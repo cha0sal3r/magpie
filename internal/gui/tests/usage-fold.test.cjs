@@ -3,7 +3,7 @@
 // Usage page — the one that answered last, else the first — and the others
 // in brief, their bars without when they reset (whqtian on Discord: 只显示
 // 一个账号即可，其他的可以点击展开; ARNO: 以前每个账号所占的空间很小，基本
-// 能一页看到所有账号… 关了magpie后又得一个个展开); the tray panel leaves the
+// 能一页看到所有账号… 关了magpie-friday后又得一个个展开); the tray panel leaves the
 // ones in brief out, behind "Show N more accounts". Each account opens or
 // folds on its own, and stays so across a reload, by provider and account;
 // the card's button opens the rest; a provider with one account has no

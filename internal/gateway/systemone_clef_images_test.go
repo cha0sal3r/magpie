@@ -8,10 +8,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// A Clef asked through magpie's System One API gets the images the request
+// A Clef asked through magpie-friday's System One API gets the images the request
 // embeds, as Workers AI takes them (ARNO on Discord: clef模型是支持图像输入的):
 // a request of a few MiB isn't refused, and the images reach the Clef's
 // own path as they were sent.
@@ -46,7 +46,7 @@ func TestSystemOneClefImages(t *testing.T) {
 	})
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest("POST", "/v1/systemone", strings.NewReader(string(body)))
-	req.Header.Set("Authorization", "Bearer magpie")
+	req.Header.Set("Authorization", "Bearer magpie-friday")
 	New().Handler().ServeHTTP(rec, req)
 	if rec.Code != 200 || !strings.Contains(rec.Body.String(), `"noul":0.97`) {
 		t.Fatalf("%d %.300s", rec.Code, rec.Body)

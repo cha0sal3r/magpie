@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
 func TestContextSetByUser(t *testing.T) {
@@ -191,7 +191,7 @@ func TestProviderWindowNoLargerThanTheModels(t *testing.T) {
 // to 1M for all of its models (Advanced → Context window) still told its
 // claude-sonnet-4-5 200K, the window models.dev gives that id under other
 // vendors. A relay's list says nothing of its window, and a guess from
-// another vendor's entry is magpie's default, not the provider's own word,
+// another vendor's entry is magpie-friday's default, not the provider's own word,
 // so the user's 1M is told. The models.dev bytes are anthropic's own entry
 // for the model, as it has it today. A window set lower than the guess
 // still holds, and a vendor's own list still caps "*" (#2112, above).

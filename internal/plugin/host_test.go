@@ -16,7 +16,7 @@ import (
 )
 
 // fakeHost is a host whose stdout the test writes, so its real read and
-// dispatch run without Bun. What magpie writes to the child (fetch, credit,
+// dispatch run without Bun. What magpie-friday writes to the child (fetch, credit,
 // abort) is drained into f.sent, so a test can see the control traffic without
 // a writer goroutine parked on a pipe.
 type fakeHost struct {
@@ -61,7 +61,7 @@ func newFakeHostLine(t *testing.T, maxLine int) *fakeHost {
 	return f
 }
 
-// drain records what magpie wrote to the child, until the host is gone.
+// drain records what magpie-friday wrote to the child, until the host is gone.
 func (f *fakeHost) drain() {
 	for {
 		select {
@@ -82,14 +82,14 @@ func (f *fakeHost) drain() {
 	}
 }
 
-// wrote is every message magpie wrote to the child so far.
+// wrote is every message magpie-friday wrote to the child so far.
 func (f *fakeHost) wrote() []map[string]any {
 	f.outMu.Lock()
 	defer f.outMu.Unlock()
 	return append([]map[string]any(nil), f.sent...)
 }
 
-// methods are the methods magpie wrote, in order.
+// methods are the methods magpie-friday wrote, in order.
 func (f *fakeHost) methods() []string {
 	var out []string
 	for _, m := range f.wrote() {
@@ -99,7 +99,7 @@ func (f *fakeHost) methods() []string {
 	return out
 }
 
-// credited is how many bytes magpie gave back as credit so far.
+// credited is how many bytes magpie-friday gave back as credit so far.
 func (f *fakeHost) credited() int {
 	var n int
 	for _, m := range f.wrote() {
@@ -509,7 +509,7 @@ func TestHostShutdownWithoutAnswerEndsRead(t *testing.T) {
 	}
 }
 
-// TestHostStreamBoundsTheHeadEnvelope: a head's headers are capped by magpie's
+// TestHostStreamBoundsTheHeadEnvelope: a head's headers are capped by magpie-friday's
 // own envelope — entries and serialized bytes — so a vendor's unbounded header
 // set is not a free zero-charge line. A head just under both is taken.
 func TestHostStreamBoundsTheHeadEnvelope(t *testing.T) {

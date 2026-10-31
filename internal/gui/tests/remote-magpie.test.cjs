@@ -1,10 +1,10 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// Another computer's magpie has a heading of its own in the add sheet,
+// Another computer's magpie-friday has a heading of its own in the add sheet,
 // after On this machine, not among the Relays (Avalon on Discord: "供应商添加
-// 中没有Remote magpie 的选项"), and searching for remote, magpie or 远程
+// 中没有Remote magpie-friday 的选项"), and searching for remote, magpie-friday or 远程
 // finds it there, at a narrow width with no sideways scroll. It is added
-// with its address and key alone: the Remote magpie editor asks for the address above the key,
-// with a hint on where the other magpie shows it and that each request
+// with its address and key alone: the Remote magpie-friday editor asks for the address above the key,
+// with a hint on where the other magpie-friday shows it and that each request
 // goes on in the API the agent spoke. Adding without one says so in its
 // own words and sends nothing; with one, the address goes as the preset's
 // endpoint, however it was typed (the backend puts every API on it).
@@ -22,13 +22,13 @@ const presets = [
   { id: "openai", name: "OpenAI", icon: "openai", kind: "vendor", chat: "https://api.openai.com/v1", added: false },
   { id: "openrouter", name: "OpenRouter", icon: "openai", kind: "relay", chat: "https://openrouter.ai/api/v1", added: true },
   { id: "ollama", name: "Ollama", icon: "ollama", kind: "local", chat: "http://localhost:11434/v1", noKey: true, added: false },
-  { id: "remote-magpie", name: "Remote magpie", icon: "magpie", kind: "remote", added: false,
-    note: "another computer's magpie, shared on its network", endpoint: "http://192.168.1.20:3425",
-    endpointHint: "The address and API key the other computer's magpie shows in Settings → Network and sharing, under Share on local network. Its models and routing groups are listed here; each request goes on in the API the agent spoke.",
-    endpointNeeded: "The other magpie's address is needed" },
+  { id: "remote-magpie-friday", name: "Remote magpie-friday", icon: "magpie-friday", kind: "remote", added: false,
+    note: "another computer's magpie-friday, shared on its network", endpoint: "http://192.168.1.20:3425",
+    endpointHint: "The address and API key the other computer's magpie-friday shows in Settings → Network and sharing, under Share on local network. Its models and routing groups are listed here; each request goes on in the API the agent spoke.",
+    endpointNeeded: "The other magpie-friday's address is needed" },
 ];
 const providers = [{ id: "openrouter", name: "OpenRouter", icon: "openai", preset: "openrouter", models: [], agents: [], key: { set: true, masked: "sk-…ab12" } },
-  { id: "office", name: "Office", icon: "magpie", preset: "remote-magpie", chat: "http://office/v1", responses: "http://office/v1", anthropic: "http://office", decide: "http://office/v1",
+  { id: "office", name: "Office", icon: "magpie-friday", preset: "remote-magpie-friday", chat: "http://office/v1", responses: "http://office/v1", anthropic: "http://office", decide: "http://office/v1",
     deciders: ["judge/custom-a", "judge/custom-b"], models: [{ id: "lib/m1", name: "Chat", on: true }, { id: "judge/custom-a", name: "custom-a · judge", on: false }, { id: "judge/custom-b", name: "custom-b · judge", on: false }], agents: [], key: { set: true, masked: "sk-…ab12" } },
 ];
 
@@ -55,9 +55,9 @@ function server(lang, saves) {
 }
 
 const L = {
-  en: { field: "Endpoint", hint: /Settings → Network and sharing, under Share on local network.*the API the agent spoke/, needed: "The other magpie's address is needed", note: "another computer's magpie, shared on its network", add: "Add",
+  en: { field: "Endpoint", hint: /Settings → Network and sharing, under Share on local network.*the API the agent spoke/, needed: "The other magpie-friday's address is needed", note: "another computer's magpie-friday, shared on its network", add: "Add",
     decide: ["Jev endpoint", "System One endpoint"] },
-  zh: { field: "终结点", hint: /设置 → 网络与共享 → 局域网共享.*原样转发/, needed: "需要填写另一台 magpie 的地址", note: "远程：另一台电脑上的 magpie，局域网共享", add: "添加",
+  zh: { field: "终结点", hint: /设置 → 网络与共享 → 局域网共享.*原样转发/, needed: "需要填写另一台 magpie-friday 的地址", note: "远程：另一台电脑上的 magpie-friday，局域网共享", add: "添加",
     decide: ["Jev 端点", "System One 端点"] },
 };
 
@@ -67,12 +67,12 @@ const sections = (page) => page.evaluate(() => [...document.querySelectorAll("#a
   [...k.nextElementSibling.querySelectorAll(".tile .n")].map((n) => n.textContent),
 ]));
 const H = {
-  en: { remote: ["Another computer's magpie", "shared on its network"], local: "On this machine", relays: "Relays", finds: ["remote", "Magpie"] },
-  zh: { remote: ["另一台电脑上的 magpie", "在它的局域网上共享"], local: "本机", relays: "中转", finds: ["remote", "magpie", "远程"] },
+  en: { remote: ["Another computer's magpie-friday", "shared on its network"], local: "On this machine", relays: "Relays", finds: ["remote", "Magpie"] },
+  zh: { remote: ["另一台电脑上的 magpie-friday", "在它的局域网上共享"], local: "本机", relays: "中转", finds: ["remote", "magpie-friday", "远程"] },
 };
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
-  test(engine + ": Remote magpie has its own heading in the add sheet", async (t) => {
+  test(engine + ": Remote magpie-friday has its own heading in the add sheet", async (t) => {
     const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: "chromium" }));
     t.after(() => browser.close());
     for (const lang of ["en", "zh"]) {
@@ -89,9 +89,9 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         const all = await sections(page);
         const at = all.findIndex(([b]) => b === h.remote[0]);
         assert(at >= 0, "no heading of its own: " + JSON.stringify(all));
-        assert.deepEqual(all[at], [...h.remote, ["Remote magpie"]]);
+        assert.deepEqual(all[at], [...h.remote, ["Remote magpie-friday"]]);
         assert.equal(all[at - 1][0], h.local, "right after On this machine");
-        for (const [b, , names] of all) if (b !== h.remote[0]) assert(!names.includes("Remote magpie"), "also under " + b);
+        for (const [b, , names] of all) if (b !== h.remote[0]) assert(!names.includes("Remote magpie-friday"), "also under " + b);
         assert.deepEqual(all.find(([b]) => b === h.relays)[2], ["OpenRouter"]);
         assert.equal(await page.evaluate(() => document.scrollingElement.scrollWidth <= innerWidth), true, "no sideways scroll");
 
@@ -99,7 +99,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         for (const word of h.finds) {
           await q.fill(word);
           await page.waitForFunction(() => document.querySelectorAll("#addSheet .tile").length === 1);
-          assert.deepEqual(await sections(page), [[...h.remote, ["Remote magpie"]]], word);
+          assert.deepEqual(await sections(page), [[...h.remote, ["Remote magpie-friday"]]], word);
         }
         assert.deepEqual(errors, []);
         await page.context().close();
@@ -109,7 +109,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
 }
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
-  test(engine + ": Remote magpie asks for the other magpie's address", async (t) => {
+  test(engine + ": Remote magpie-friday asks for the other magpie-friday's address", async (t) => {
     assert(["chromium", "webkit"].includes(engine), "BROWSER must be chromium or webkit");
     const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: "chromium" }));
     t.after(() => browser.close());
@@ -126,7 +126,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         // list after refresh: Jev Router still belongs to chat.
         const classifications = await page.evaluate(() => {
           const remote = {
-            preset: "remote-magpie", chat: "http://office/v1", decide: "http://office/v1",
+            preset: "remote-magpie-friday", chat: "http://office/v1", decide: "http://office/v1",
             deciders: ["judge/custom", "judge/@cf/cloudflare/clef"],
           };
           return [
@@ -163,7 +163,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         }
         await page.locator("#addProvider").click();
         const sheet = page.locator("#addSheet");
-        const tile = sheet.locator(".tile", { has: page.locator(".n", { hasText: /^Remote magpie$/ }) });
+        const tile = sheet.locator(".tile", { has: page.locator(".n", { hasText: /^Remote magpie-friday$/ }) });
         assert.equal(await tile.getAttribute("title"), w.note);
         // the sheet's last row, under the fold at this height: the reader's
         // wheel brings it up (a scroll from code, Playwright's own included,
@@ -177,7 +177,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         }
         await tile.click();
         const ed = page.locator(".editor.new");
-        await ed.locator(".ehead b", { hasText: "Remote magpie" }).waitFor();
+        await ed.locator(".ehead b", { hasText: "Remote magpie-friday" }).waitFor();
 
         // the field, above the key, focused first; the OpenAI preset has none
         const label = ed.locator("label", { hasText: new RegExp("^" + w.field + "$") });
@@ -195,7 +195,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         assert(ey < ky, "the endpoint above the key");
 
         // no endpoint: said, nothing sent, the page where it was
-        await key.fill("sk-magpie-x");
+        await key.fill("sk-magpie-friday-x");
         const y = await page.evaluate(() => document.scrollingElement.scrollTop);
         await ed.locator(".bar button.primary", { hasText: w.add }).click();
         assert.equal(await ed.locator(".editor-error").textContent(), w.needed);
@@ -209,8 +209,8 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         await page.waitForFunction(() => !document.querySelector(".editor.new"));
         assert.equal(saves.length, 1);
         const s = saves[0];
-        assert.equal(s.preset, "remote-magpie");
-        assert.equal(s.key, "sk-magpie-x");
+        assert.equal(s.preset, "remote-magpie-friday");
+        assert.equal(s.key, "sk-magpie-friday-x");
         assert.equal(s.chat, "192.168.1.20:3425");
 
         // another preset's editor has no endpoint field

@@ -26,7 +26,7 @@ package provider
 // models the account is served, where /models/session still names the
 // same few for every plan (gpt-5.3-codex, gpt-5.4, gpt-5.4-mini,
 // claude-haiku-4.5): a Student plan was refused each of those (#256), and
-// an Individual one is picked gpt-6-luna. magpie asks /auto first, at
+// an Individual one is picked gpt-6-luna. magpie-friday asks /auto first, at
 // Copilot Chat's default tier ("balance"), and /models/session only when
 // /auto doesn't answer: a pick of /auto's the account was refused has the
 // model it may pick by hand stand in. Each pick a request is sent with is
@@ -45,7 +45,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
 // CopilotAuto is the model id that has Copilot pick the model.
@@ -60,11 +60,11 @@ const copilotAutoVersion = "2025-10-01"
 const copilotAutoV2Version = "2026-08-01"
 
 // copilotAutoReuse is how long an Auto session is used for: /auto's lasts a
-// day, which Copilot Chat keeps for one conversation; magpie, one for the
+// day, which Copilot Chat keeps for one conversation; magpie-friday, one for the
 // account, has Copilot pick again within the hour.
 const copilotAutoReuse = time.Hour
 
-// copilotAutoModel is Auto as magpie lists it.
+// copilotAutoModel is Auto as magpie-friday lists it.
 var copilotAutoModel = catalog.Model{ID: CopilotAuto, Name: "Auto"}
 
 type copilotAutoSession struct {
@@ -433,7 +433,7 @@ func copilotAutoHeld(token string, a *copilotAutoSession) bool {
 }
 
 // copilotSeen keeps the endpoints of every chat model Copilot's list
-// named, listed by magpie or not: the model Auto picks may be one the
+// named, listed by magpie-friday or not: the model Auto picks may be one the
 // account can't pick by hand, and is served on its own APIs all the same.
 var (
 	copilotSeenMu sync.Mutex
@@ -450,7 +450,7 @@ func copilotSeenAPIs(model string) []Protocol {
 	return out
 }
 
-// ForgetCopilotForTest drops what magpie keeps of each Copilot account for
+// ForgetCopilotForTest drops what magpie-friday keeps of each Copilot account for
 // the process's life — its session (and the API endpoint it named), Auto's
 // session, the models it was refused, may pick or saw — so a test run
 // again (-count) asks the fake GitHub it serves rather than the last run's.

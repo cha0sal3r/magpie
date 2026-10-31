@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/codexcat"
+	"github.com/cha0sal3r/magpie-friday/internal/codexcat"
 )
 
 // The conversation goes in the session headers Codex CLI 0.162 sends,

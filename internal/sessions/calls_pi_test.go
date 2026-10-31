@@ -17,8 +17,8 @@ import (
 // testdata/omp-calls; the system prompt's line left out, the sandbox's
 // folder written /work/relay): two calls, a fork of that session with one
 // more, and a session whose two calls failed (Connection error.) before it
-// went on through magpie's entry, those lines as the owner's own Pi wrote
-// them, the reply's text left out. The calls through magpie are the
+// went on through magpie-friday's entry, those lines as the owner's own Pi wrote
+// them, the reply's text left out. The calls through magpie-friday are the
 // gateway's to count; a failed call is none; the fork's copy of its
 // parent's calls are the parent's.
 func TestPiCalls(t *testing.T) {
@@ -30,8 +30,8 @@ func TestPiCalls(t *testing.T) {
 	by := map[string][]Call{}
 	for _, c := range Calls(time.Time{}) {
 		by[c.Agent] = append(by[c.Agent], c)
-		if c.Upstream == "magpie" || c.Upstream == "dead" {
-			t.Errorf("a call through magpie or one that failed: %+v", c)
+		if c.Upstream == "magpie-friday" || c.Upstream == "dead" {
+			t.Errorf("a call through magpie-friday or one that failed: %+v", c)
 		}
 	}
 	want := []struct {
@@ -88,7 +88,7 @@ func TestPiCalls(t *testing.T) {
 
 // What a Pi session counts beside its replies is a call too: a tool's
 // model work, a "usage" entry's call (a cache warm) on the provider it
-// names; a compaction's on the model in use, here magpie's, is the
+// names; a compaction's on the model in use, here magpie-friday's, is the
 // gateway's (testdata/pi).
 func TestPiCallsBesideReplies(t *testing.T) {
 	_, _ = setupMore(t)

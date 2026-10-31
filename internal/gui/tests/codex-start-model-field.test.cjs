@@ -2,12 +2,12 @@
 // #1582 (SwimmingLiu): Codex connected, an API provider A (Anthropic
 // protocol) on beside two Codex OAuth accounts. The button beside Codex's
 // switch edits its model, its menu Codex's own models (direct) with A's
-// (via magpie). With A switched off and the Agents page refreshed, Codex's
-// model has no option of magpie's left, and the same button became the
+// (via magpie-friday). With A switched off and the Agents page refreshed, Codex's
+// model has no option of magpie-friday's left, and the same button became the
 // subagent model's (子代理模型), editing subagent_model. The button is the
 // model's whatever the providers: a provider switched off only changes what
 // it lists. An agent whose model lists nothing (Ante's, with none of
-// magpie's models) still starts from the field it connects through. No
+// magpie-friday's models) still starts from the field it connects through. No
 // click moves the page; in English and Chinese, no backend: the API is
 // faked here.
 const assert = require("node:assert/strict");
@@ -23,10 +23,10 @@ const own = [
   { value: "gpt-5.5", label: "GPT-5.5", group: "OpenAI", direct: "OpenAI" },
   { value: "gpt-5.4", label: "GPT-5.4", group: "OpenAI", direct: "OpenAI" },
 ];
-const fromA = [{ value: "a/claude-x", label: "Claude X", group: "A", ref: "a/claude-x", note: "A · via magpie" }];
+const fromA = [{ value: "a/claude-x", label: "Claude X", group: "A", ref: "a/claude-x", note: "A · via magpie-friday" }];
 // both ChatGPT accounts' models, offered to its subagents (subagent_model)
 const seats = ["one@example.com", "two@example.com"].flatMap((who, i) => [
-  { value: `codex${i || ""}/gpt-5.5`, label: "GPT-5.5", note: `${who} · via magpie`, group: "ChatGPT", ref: `codex${i || ""}/gpt-5.5`, icon: "openai" },
+  { value: `codex${i || ""}/gpt-5.5`, label: "GPT-5.5", note: `${who} · via magpie-friday`, group: "ChatGPT", ref: `codex${i || ""}/gpt-5.5`, icon: "openai" },
 ]);
 const state = (aOn) => ({
   agents: [
@@ -39,12 +39,12 @@ const state = (aOn) => ({
         { key: "subagent_model", label: "subagent model", value: "", options: seats },
       ],
     },
-    // Ante: its model lists only magpie's, none while no provider is on;
+    // Ante: its model lists only magpie-friday's, none while no provider is on;
     // the row starts from the provider field it connects through
     {
       id: "ante", name: "Ante", path: "/fixture/ante.json", icon: "generic", wired: true,
       fields: [
-        { key: "provider", label: "provider", value: "magpie", options: [{ value: "magpie", label: "magpie", icon: "magpie" }] },
+        { key: "provider", label: "provider", value: "magpie-friday", options: [{ value: "magpie-friday", label: "magpie-friday", icon: "magpie-friday" }] },
         { key: "model", label: "model", value: "", options: [] },
       ],
     },
@@ -112,7 +112,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         assert.deepEqual(await page.evaluate(() => [document.scrollingElement.scrollTop, document.querySelector("#view-agents")?.scrollTop]), top, "the click moved the page");
       };
 
-      // 1. A on: the model's menu, Codex direct and A via magpie
+      // 1. A on: the model's menu, Codex direct and A via magpie-friday
       await page.goto("http://magpie.test/?view=agents");
       await page.locator(`${row} .ag-conn`).waitFor();
       await look(true);
@@ -127,7 +127,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       await page.waitForFunction((r) => /GPT-5\.4/.test(document.querySelector(r + " > .field.ag-start")?.textContent || ""), row);
       assert.deepEqual(posts, [{ agent: "codex", field: "model", value: "gpt-5.4" }]);
 
-      // Ante, its model with nothing to list: still started from magpie's provider
+      // Ante, its model with nothing to list: still started from magpie-friday's provider
       assert.equal(await page.locator('.row.agent[data-id="ante"] > .field.ag-start').getAttribute("data-key"), "provider");
 
       // 3. A on again: the same

@@ -4,16 +4,16 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// Usage is what the day's event says magpie is used with, when the user
+// Usage is what the day's event says magpie-friday is used with, when the user
 // shares it: built-in ids only. A provider of the user's own is "custom",
 // and so is a model on one; a plugin no one knows is "plugin".
 type Usage struct {
-	Agents    []string // the agents connected to magpie: claude, codex
+	Agents    []string // the agents connected to magpie-friday: claude, codex
 	Providers []string // the providers on: deepseek, codex (a subscription), plugin:kiro
 	Models    []string // the models the connected agents are set to: deepseek/deepseek-v4, custom, group
 	Groups    int      // routing groups shown
@@ -85,7 +85,7 @@ func agentLabel(id string) string {
 
 // modelLabel is an agent's model as stats name it: the provider's label
 // and the vendor's model id, "group" for a routing group, and the label
-// alone for a provider of the user's own; "" for one magpie can't find.
+// alone for a provider of the user's own; "" for one magpie-friday can't find.
 // On a key's provider the model id is the user's to type (an Ollama
 // model they named, a fine-tune with their organisation in it), so it
 // goes only when models.dev knows it, else as "other"; a subscription's

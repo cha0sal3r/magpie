@@ -1,23 +1,23 @@
 {
-  "name": "magpie-x-search",
+  "name": "magpie-friday-x-search",
   "version": "1.2.0",
-  "description": "MCP server for native Grok X search through local magpie OAuth, callable by any model.",
+  "description": "MCP server for native Grok X search through local magpie-friday OAuth, callable by any model.",
   "license": "MIT",
   "author": "cyberElar",
-  "homepage": "https://github.com/cyberElar/magpie-x-search#readme",
+  "homepage": "https://github.com/cyberElar/magpie-friday-x-search#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cyberElar/magpie-x-search.git"
+    "url": "git+https://github.com/cyberElar/magpie-friday-x-search.git"
   },
   "bugs": {
-    "url": "https://github.com/cyberElar/magpie-x-search/issues"
+    "url": "https://github.com/cyberElar/magpie-friday-x-search/issues"
   },
-  "keywords": ["mcp", "x-search", "twitter", "grok", "magpie", "oauth", "stdio"],
+  "keywords": ["mcp", "x-search", "twitter", "grok", "magpie-friday", "oauth", "stdio"],
   "engines": {
     "node": ">=22"
   },
   "bin": {
-    "magpie-x-search": "launcher.cjs"
+    "magpie-friday-x-search": "launcher.cjs"
   },
   "files": ["launcher.cjs", "x_search_mcp.py", "search_backend.py", "search_cache.py"],
   "scripts": {

@@ -8,13 +8,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A provider of the user's own, at its address on the API it speaks, is
-// added from the TUI as the app's custom provider editor and magpie provider
+// added from the TUI as the app's custom provider editor and magpie-friday provider
 // add <name> url=… add it (hezz1891 on Discord: on a server, the TUI had
-// vendors magpie knows alone).
+// vendors magpie-friday knows alone).
 func TestTUIAddsACustomProvider(t *testing.T) {
 	home(t)
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -108,7 +108,7 @@ func TestTUIAddsACustomProvider(t *testing.T) {
 }
 
 // w on a provider of the user's own asks each base URL it has, the one
-// now typed in, as magpie provider set <id> url=… changes it
+// now typed in, as magpie-friday provider set <id> url=… changes it
 // (luluxiu_1_4392 on Discord: on Linux, the TUI had no way to): enter
 // alone keeps one, a URL that isn't one is refused, and the others stay.
 func TestTUIEditsACustomProvidersBaseURL(t *testing.T) {

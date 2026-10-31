@@ -39,7 +39,7 @@ func TestRestoreRewrittenPlaceholder(t *testing.T) {
 		{"拨打 {{" + upper + "}} 即可", "拨打 " + phone + " 即可"},
 		{`{"to":"` + body + `"}`, `{"to":"` + phone + `"}`},
 		{"a {" + body + " b", "a {" + phone + " b"}, // a lone { is the text's
-		// not one of magpie's: another hash, inside a longer word
+		// not one of magpie-friday's: another hash, inside a longer word
 		{"{{PHONE_zzzzzzzz}} x" + body + " " + body + "x", "{{PHONE_zzzzzzzz}} x" + body + " " + body + "x"},
 	} {
 		if got := Restore(c.in, false); got != c.want {
@@ -157,7 +157,7 @@ func TestWriterStreamToolArgsRewritten(t *testing.T) {
 
 // A keepalive comment goes to the agent as it is written, not with the
 // event after it, even while an event is held for the rest of a
-// placeholder: held, a proxy in front of magpie heard nothing while the
+// placeholder: held, a proxy in front of magpie-friday heard nothing while the
 // vendor reasoned silently and hung up (#2402). The placeholder split
 // around it still comes back whole.
 func TestWriterStreamKeepaliveNotHeld(t *testing.T) {

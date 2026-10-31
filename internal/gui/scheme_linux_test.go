@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 func TestRegisterScheme(t *testing.T) {
@@ -25,7 +25,7 @@ func TestRegisterScheme(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Setenv("FLATPAK_ID", "")
 			if tc.flatpak {
-				t.Setenv("FLATPAK_ID", "ai.usemagpie.Magpie")
+				t.Setenv("FLATPAK_ID", "ai.usemagpie.magpie-friday")
 			}
 			root := t.TempDir()
 			data := filepath.Join(root, "data")
@@ -42,8 +42,8 @@ func TestRegisterScheme(t *testing.T) {
 				testenv.Program(t, filepath.Join(bin, name), script)
 			}
 			dir := filepath.Join(data, "applications")
-			path := filepath.Join(dir, "magpie.desktop")
-			const old = "[Desktop Entry]\nExec=/usr/bin/magpie %u\nMimeType=x-scheme-handler/magpie;\n"
+			path := filepath.Join(dir, "magpie-friday.desktop")
+			const old = "[Desktop Entry]\nExec=/usr/bin/magpie-friday %u\nMimeType=x-scheme-handler/magpie-friday;\n"
 			if tc.existing {
 				if err := os.MkdirAll(dir, 0o755); err != nil {
 					t.Fatal(err)
@@ -76,7 +76,7 @@ func TestRegisterScheme(t *testing.T) {
 				t.Fatal(err)
 			}
 			got, err := os.ReadFile(path)
-			if err != nil || !strings.Contains(string(got), "Exec="+exe+" %u\n") || !strings.Contains(string(got), "MimeType=x-scheme-handler/magpie;\n") {
+			if err != nil || !strings.Contains(string(got), "Exec="+exe+" %u\n") || !strings.Contains(string(got), "MimeType=x-scheme-handler/magpie-friday;\n") {
 				t.Fatalf("desktop entry: %q, %v", got, err)
 			}
 			checkDesktopBinding(t, data, string(got))
@@ -84,7 +84,7 @@ func TestRegisterScheme(t *testing.T) {
 			if err := registerScheme(); err != nil {
 				t.Fatal(err)
 			}
-			want := "update-desktop-database\n" + dir + "\nxdg-mime\ndefault\nmagpie.desktop\nx-scheme-handler/magpie\n"
+			want := "update-desktop-database\n" + dir + "\nxdg-mime\ndefault\nmagpie.desktop\nx-scheme-handler/magpie-friday\n"
 			if got, err := os.ReadFile(calls); err != nil || string(got) != want {
 				t.Fatalf("registration calls: %q, want %q (%v)", got, want, err)
 			}
@@ -96,10 +96,10 @@ func TestRegisterScheme(t *testing.T) {
 // is installed, so neither the dock nor the app grid draws a gear (#2626).
 func checkDesktopBinding(t *testing.T, data, entry string) {
 	t.Helper()
-	if !strings.Contains(entry, "\nStartupWMClass="+programName+"\n") || !strings.Contains(entry, "\nIcon=magpie\n") {
+	if !strings.Contains(entry, "\nStartupWMClass="+programName+"\n") || !strings.Contains(entry, "\nIcon=magpie-friday\n") {
 		t.Fatalf("desktop entry doesn't bind the window %q and its icon: %q", programName, entry)
 	}
-	icon, err := os.ReadFile(filepath.Join(data, "icons", "hicolor", "256x256", "apps", "magpie.png"))
+	icon, err := os.ReadFile(filepath.Join(data, "icons", "hicolor", "256x256", "apps", "magpie-friday.png"))
 	if err != nil || !bytes.Equal(icon, desktopIcon) {
 		t.Fatalf("icon not installed: %d bytes, %v", len(icon), err)
 	}
@@ -108,7 +108,7 @@ func checkDesktopBinding(t *testing.T, data, entry string) {
 	}
 }
 
-// An entry an older magpie (or install.sh) wrote for this executable has no
+// An entry an older magpie-friday (or install.sh) wrote for this executable has no
 // StartupWMClass; it is written again, once, and the icon put beside it.
 func TestRegisterSchemeBindsAnOlderEntry(t *testing.T) {
 	t.Setenv("FLATPAK_ID", "")
@@ -130,9 +130,9 @@ func TestRegisterSchemeBindsAnOlderEntry(t *testing.T) {
 		t.Fatal(err)
 	}
 	dir := filepath.Join(data, "applications")
-	path := filepath.Join(dir, "magpie.desktop")
-	older := "[Desktop Entry]\nType=Application\nName=magpie\nComment=Every agent's model. One place.\nExec=" + exe +
-		" %u\nIcon=magpie\nCategories=Development;Utility;\nMimeType=x-scheme-handler/magpie;\nTerminal=false\n"
+	path := filepath.Join(dir, "magpie-friday.desktop")
+	older := "[Desktop Entry]\nType=Application\nName=magpie-friday\nComment=Every agent's model. One place.\nExec=" + exe +
+		" %u\nIcon=magpie-friday\nCategories=Development;Utility;\nMimeType=x-scheme-handler/magpie-friday;\nTerminal=false\n"
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -169,7 +169,7 @@ func TestKeepWebData(t *testing.T) {
 		moved         bool
 	}{
 		{"webkit data under the executable's name", true, false, true},
-		{"magpie's folder there already", true, true, false},
+		{"magpie-friday's folder there already", true, true, false},
 		{"a folder that isn't WebKit's", false, false, false},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -186,7 +186,7 @@ func TestKeepWebData(t *testing.T) {
 			if err := os.WriteFile(filepath.Join(from, sub, "file__0.localstorage"), []byte("favourites"), 0o644); err != nil {
 				t.Fatal(err)
 			}
-			if tc.there { // even empty, it is magpie's, which a rename would replace
+			if tc.there { // even empty, it is magpie-friday's, which a rename would replace
 				if err := os.MkdirAll(to, 0o755); err != nil {
 					t.Fatal(err)
 				}

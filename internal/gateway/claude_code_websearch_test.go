@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // ccRelayReply is an Anthropic stream saying one word.
@@ -37,8 +37,8 @@ func ccOnly(body []byte) (int, string) {
 }
 
 // Claude Code's WebSearch (#359) on an Anthropic relay that doesn't search
-// by itself, as magpie sees it, is built again rather than relayed — with
-// magpie's search when a provider that searches is set up, without the
+// by itself, as magpie-friday sees it, is built again rather than relayed — with
+// magpie-friday's search when a provider that searches is set up, without the
 // server tool when none is — and still carries Claude Code's metadata, as
 // a relay that serves only Claude Code checks for it.
 func TestClaudeCodeWebSearchKeepsMetadata(t *testing.T) {
@@ -88,11 +88,11 @@ func TestClaudeCodeWebSearchKeepsMetadata(t *testing.T) {
 		}
 		check(t, f)
 		if strings.Contains(string(f.got), "web_search_20250305") {
-			t.Errorf("server tool sent to a relay magpie doesn't know searches: %s", f.got)
+			t.Errorf("server tool sent to a relay magpie-friday doesn't know searches: %s", f.got)
 		}
 	})
 
-	t.Run("magpie searches", func(t *testing.T) {
+	t.Run("magpie-friday searches", func(t *testing.T) {
 		f := &fake{t: t, reply: ccRelayReply, refuse: ccOnly}
 		setHome(t, t.TempDir())
 		setup(t, provider.Anthropic, f)
@@ -118,7 +118,7 @@ func TestClaudeCodeWebSearchKeepsMetadata(t *testing.T) {
 		}
 		check(t, f)
 		if !strings.Contains(string(f.got), `"name":"web_search"`) {
-			t.Errorf("magpie's search not offered: %s", f.got)
+			t.Errorf("magpie-friday's search not offered: %s", f.got)
 		}
 	})
 

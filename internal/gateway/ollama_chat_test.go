@@ -79,7 +79,7 @@ func ndjson(t *testing.T, body string) []gjson.Result {
 }
 
 // Zed's Ollama provider (super_lalalalala on Discord) chats on
-// /api/chat, which magpie answered 404: it is served now, as
+// /api/chat, which magpie-friday answered 404: it is served now, as
 // /v1/chat/completions is, with Zed's own request (crates/ollama
 // ChatRequest: stream true, keep_alive, options num_ctx/num_predict/
 // temperature, think, tools; an assistant's tool call with an id, a tool
@@ -220,7 +220,7 @@ func TestOllamaGenerate(t *testing.T) {
 	}
 }
 
-// A model magpie doesn't serve, and a provider's refusal, are told as
+// A model magpie-friday doesn't serve, and a provider's refusal, are told as
 // Ollama tells an error: {"error": "…"} with the status.
 func TestOllamaChatErrors(t *testing.T) {
 	fresh(t)

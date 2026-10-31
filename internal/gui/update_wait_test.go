@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/update"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/update"
 )
 
 // fakeBusy stands in for the gateway's Busy in these tests.
@@ -166,7 +166,7 @@ func TestRestartWhenIdleIntoTheNewest(t *testing.T) {
 	u := &updater{}
 	quick(t, busy, u)
 	waitRecheck = (*updater).recheck
-	body := []byte("new magpie")
+	body := []byte("new magpie-friday")
 	sum := sha256.Sum256(body)
 	var latest atomic.Value
 	latest.Store("0.1.11")

@@ -10,19 +10,19 @@ import (
 	"testing"
 )
 
-// magpie healthcheck, a container's HEALTHCHECK, passes only while a
-// magpie gateway answers at MAGPIE_ADDR.
+// magpie-friday healthcheck, a container's HEALTHCHECK, passes only while a
+// magpie-friday gateway answers at MAGPIE_ADDR.
 func TestHealthcheck(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
 	t.Setenv("USERPROFILE", os.Getenv("HOME"))
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
 	magpie := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`{"name":"magpie","version":"dev"}`))
+		w.Write([]byte(`{"name":"magpie-friday","version":"dev"}`))
 	}))
 	defer magpie.Close()
 	t.Setenv("MAGPIE_ADDR", strings.TrimPrefix(magpie.URL, "http://"))
 	if err := run([]string{"healthcheck"}); err != nil {
-		t.Fatal("magpie answering:", err)
+		t.Fatal("magpie-friday answering:", err)
 	}
 
 	other := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +47,7 @@ func TestHealthcheck(t *testing.T) {
 }
 
 // The Docker image sets HOME and the XDG folders inside its volume, which
-// a volume an older image made doesn't have yet: magpie makes them.
+// a volume an older image made doesn't have yet: magpie-friday makes them.
 func TestMakeDirs(t *testing.T) {
 	vol := t.TempDir()
 	for k, d := range map[string]string{"HOME": "home", "XDG_CONFIG_HOME": "config", "XDG_CACHE_HOME": "cache", "XDG_DATA_HOME": "data", "XDG_STATE_HOME": "state"} {

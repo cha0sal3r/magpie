@@ -25,7 +25,7 @@ import (
 	"strings"
 	"sync/atomic"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
 // MemberEfforts are the levels a group's member may be fixed at, lowest
@@ -107,7 +107,7 @@ func WithMemberEffort(model, effort string) string {
 // cleanMember spells a member as it is kept: its effort lowercase, a found
 // group by group/auto-<slug> (CanonicalRef).
 func cleanMember(entries []Entry, id string) string {
-	id = CanonicalRef(id) // a found group by the id magpie keeps it by
+	id = CanonicalRef(id) // a found group by the id magpie-friday keeps it by
 	m, e := memberEffortIn(entries, id)
 	return WithMemberEffort(m, e)
 }
@@ -125,7 +125,7 @@ func fixedLevels(fixed []string) []string {
 
 // CleanLevels are the reasoning levels a group names for itself
 // (Group.Levels) as they are kept: lowercase, each once, lowest first.
-// Only the levels magpie knows are taken.
+// Only the levels magpie-friday knows are taken.
 func CleanLevels(in []string) ([]string, error) {
 	var want []string
 	for _, l := range in {
@@ -134,7 +134,7 @@ func CleanLevels(in []string) ([]string, error) {
 			continue
 		}
 		if !slices.Contains(Levels, l) {
-			return nil, fmt.Errorf("%q is not a reasoning level magpie knows (they are %s)", l, strings.Join(Levels, ", "))
+			return nil, fmt.Errorf("%q is not a reasoning level magpie-friday knows (they are %s)", l, strings.Join(Levels, ", "))
 		}
 		want = append(want, l)
 	}

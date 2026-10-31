@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 func TestCline(t *testing.T) {
@@ -80,7 +80,7 @@ func TestCline(t *testing.T) {
 	if f.Get() != "claude-opus-5" || e.Get() != "high" {
 		t.Fatalf("get: %q %q", f.Get(), e.Get())
 	}
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	c, raw := read()
@@ -88,16 +88,16 @@ func TestCline(t *testing.T) {
 	if c.LastUsed != "openai-compatible" || s["model"] != "deepseek/pro" || s["baseUrl"] != gatewayV1() || s["apiKey"] != gateway.Token ||
 		s["headers"].(map[string]any)["User-Agent"] != "cline" || s["reasoning"].(map[string]any)["effort"] != "high" ||
 		c.Providers["anthropic"].Settings["apiKey"] != "sk-a" {
-		t.Fatalf("magpie:\n%s", raw)
+		t.Fatalf("magpie-friday:\n%s", raw)
 	}
-	// Cline's openai-compatible lists only gpt-4o: magpie's models take
+	// Cline's openai-compatible lists only gpt-4o: magpie-friday's models take
 	// its place in models.json, the user's other entries kept
 	ml, mraw := models()
 	if m := ml["openai-compatible"]; m.Provider["baseUrl"] != gatewayV1() || m.Provider["defaultModelId"] != "deepseek/pro" ||
 		m.Models["deepseek/pro"] == nil || m.Models["deepseek/flash"] == nil || m.Models["mine"] != nil || ml["ollama"].Models["q"] == nil {
 		t.Fatalf("models:\n%s", mraw)
 	}
-	if f.Get() != "magpie/deepseek/pro" || e.Get() != "high" || a.Check() != "" {
+	if f.Get() != "magpie-friday/deepseek/pro" || e.Get() != "high" || a.Check() != "" {
 		t.Fatalf("get: %q %q %q", f.Get(), e.Get(), a.Check())
 	}
 	st, sec := vscode()
@@ -106,9 +106,9 @@ func TestCline(t *testing.T) {
 		st["telemetrySetting"] != "disabled" || sec["openAiApiKey"] != gateway.Token || sec["anthropicApiKey"] != "sk-a" {
 		t.Fatalf("vscode: %v %v", st, sec)
 	}
-	// another magpie model keeps what was stashed first; the effort is set
-	// on magpie's provider
-	if err := f.Set("magpie/deepseek/flash"); err != nil {
+	// another magpie-friday model keeps what was stashed first; the effort is set
+	// on magpie-friday's provider
+	if err := f.Set("magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
 	if err := e.Set("low"); err != nil {
@@ -164,14 +164,14 @@ func TestCline(t *testing.T) {
 		t.Fatalf("vscode own: %v %v", st, sec)
 	}
 
-	// reset from magpie, with no Cline settings before it: nothing of
-	// magpie's is left
+	// reset from magpie-friday, with no Cline settings before it: nothing of
+	// magpie-friday's is left
 	os.Remove(path)
 	os.Remove(mpath)
 	if f.Get() != "" {
 		t.Fatalf("empty get: %q", f.Get())
 	}
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	c, raw = read()
@@ -202,11 +202,11 @@ func TestCline(t *testing.T) {
 	}
 }
 
-// What the user set on magpie's entry in Cline's models.json stays through
+// What the user set on magpie-friday's entry in Cline's models.json stays through
 // every sync and pick (#2030's siblings): a key of the provider's, and on a
-// model magpie lists what magpie doesn't write (an override from the VS Code
+// model magpie-friday lists what magpie-friday doesn't write (an override from the VS Code
 // extension's model editor). The address, default model and model list stay
-// magpie's.
+// magpie-friday's.
 func TestClineKeepsTheUsersSettings(t *testing.T) {
 	home := syncHome(t)
 	t.Setenv("CLINE_DIR", "")
@@ -214,7 +214,7 @@ func TestClineKeepsTheUsersSettings(t *testing.T) {
 	mpath := filepath.Join(home, ".cline", "data", "settings", "models.json")
 	a := cline(home)
 	f := a.Field("model")
-	if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	slot := "providers." + clineSlot
@@ -251,13 +251,13 @@ func TestClineKeepsTheUsersSettings(t *testing.T) {
 		if e.Provider["modelsSourceUrl"] != "https://x/models" || e.Provider["protocol"] != "openai-chat" || e.Models["relay/glm-4.6"]["temperature"] != 0.3 {
 			t.Errorf("%s: the user's settings not kept:\n%s", when, raw)
 		}
-		if e.Provider["baseUrl"] == "http://127.0.0.1:1/v1" || e.Provider["name"] != "magpie" || e.Models["gone/old"] != nil ||
+		if e.Provider["baseUrl"] == "http://127.0.0.1:1/v1" || e.Provider["name"] != "magpie-friday" || e.Models["gone/old"] != nil ||
 			e.Models["deepseek/pro"] == nil || e.Models["relay/glm-4.6"]["name"] == nil {
-			t.Errorf("%s: magpie's own parts not written:\n%s", when, raw)
+			t.Errorf("%s: magpie-friday's own parts not written:\n%s", when, raw)
 		}
 	}
 	check("sync")
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	check("pick")

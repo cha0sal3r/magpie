@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A Codex turn with its tool search (#258), as Codex 0.159 sends it: the
@@ -27,7 +27,7 @@ const searchInput = `"input":[
 	{"type":"function_call_output","call_id":"c1","output":"created"}
 ]`
 
-// A model magpie translates for is offered the search as a function and,
+// A model magpie-friday translates for is offered the search as a function and,
 // once it has searched, the tools found; the search and its result read as
 // a call and its result.
 func TestToolSearchTranslated(t *testing.T) {

@@ -9,13 +9,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/codexcat"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/codexcat"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 	"gopkg.in/yaml.v3"
 )
 
@@ -135,7 +135,7 @@ func TestCrushModelsCarryMaxTokens(t *testing.T) {
 
 // An output limit above the model's window (models.dev lists deepseek-chat's
 // 384000 against 128000 of context) is cut to the window for every agent
-// magpie hands an output limit; one whose window isn't known keeps its
+// magpie-friday hands an output limit; one whose window isn't known keeps its
 // output. ZCode and WorkBuddy cap it at zcodeMaxOutput besides, Crush falls
 // back to 16384 without a known output, OpenCode is handed no limit without
 // a window, and AtomCode and Snow CLI, each told a window of its own when
@@ -221,18 +221,18 @@ func TestMaxTokensWithinContextWindow(t *testing.T) {
 	check(`"context":64000,"output":384000`, 64000, 64000)
 }
 
-// A provider added after a magpie model was picked reaches the lists agents
-// keep of magpie's models; a file magpie wrote nothing into stays as it is.
+// A provider added after a magpie-friday model was picked reaches the lists agents
+// keep of magpie-friday's models; a file magpie-friday wrote nothing into stays as it is.
 func TestSyncCatalogRewritesAgentLists(t *testing.T) {
 	home := syncHome(t)
 	piModels := filepath.Join(home, ".pi", "agent", "models.json")
-	writeFile(t, piModels, `{"providers":{"mine":{"baseUrl":"http://x"},"magpie":{"name":"magpie","models":[]}}}`)
+	writeFile(t, piModels, `{"providers":{"mine":{"baseUrl":"http://x"},"magpie-friday":{"name":"magpie-friday","models":[]}}}`)
 	crushCfg := filepath.Join(home, ".config", "crush", "crush.json")
 	crushBody := `{"providers":{"mine":{"base_url":"http://x"}}}`
 	writeFile(t, crushCfg, crushBody)
 	codexDir := filepath.Join(home, ".codex")
-	codexCat := filepath.Join(codexDir, "magpie-models.json")
-	writeFile(t, filepath.Join(codexDir, "config.toml"), "model = \"relay/glm-4.6\"\nmodel_provider = \"magpie\"\nmodel_catalog_json = '"+codexCat+"'\n")
+	codexCat := filepath.Join(codexDir, "magpie-friday-models.json")
+	writeFile(t, filepath.Join(codexDir, "config.toml"), "model = \"relay/glm-4.6\"\nmodel_provider = \"magpie-friday\"\nmodel_catalog_json = '"+codexCat+"'\n")
 	writeFile(t, codexCat, `{"models":[]}`)
 
 	if err := provider.Save(provider.Provider{ID: "added", Name: "Added", Key: "k", Chat: "http://127.0.0.1:1/v1", Models: []string{"m2"}}); err != nil {
@@ -246,7 +246,7 @@ func TestSyncCatalogRewritesAgentLists(t *testing.T) {
 		t.Errorf("pi models.json:\n%s", pi)
 	}
 	if got := readFile(crushCfg); got != crushBody {
-		t.Errorf("crush config without magpie changed:\n%s", got)
+		t.Errorf("crush config without magpie-friday changed:\n%s", got)
 	}
 	cx := readFile(codexCat)
 	if !strings.Contains(cx, `"slug": "added/m2"`) || !strings.Contains(cx, `"context_window": 204800`) {
@@ -264,7 +264,7 @@ func TestSyncCatalogRewritesAgentLists(t *testing.T) {
 }
 
 // Signed in, Codex asks the gateway for its list and keeps it until it
-// ages; a cache from before magpie's list changed is aged at once, one of
+// ages; a cache from before magpie-friday's list changed is aged at once, one of
 // the list as it is stays as it is.
 func TestSyncCatalogAgesCodexCache(t *testing.T) {
 	home := syncHome(t)
@@ -301,8 +301,8 @@ func must(b []byte, err error) []byte {
 }
 
 // OpenCode is handed each model's window, so it compacts when the model
-// needs it; and a sync puts magpie's provider back when a model of
-// magpie's is chosen but the provider is gone from the file.
+// needs it; and a sync puts magpie-friday's provider back when a model of
+// magpie-friday's is chosen but the provider is gone from the file.
 func TestOpenCodeModelsCarryContextAndSyncRestores(t *testing.T) {
 	home := syncHome(t)
 	b, _ := json.Marshal(magpieProviderJSON("opencode"))
@@ -310,14 +310,14 @@ func TestOpenCodeModelsCarryContextAndSyncRestores(t *testing.T) {
 		t.Fatalf("%s", b)
 	}
 	cfg := filepath.Join(home, ".config", "opencode", "opencode.json")
-	writeFile(t, cfg, `{"model":"magpie/relay/glm-4.6","provider":{"mine":{"name":"mine"}}}`)
+	writeFile(t, cfg, `{"model":"magpie-friday/relay/glm-4.6","provider":{"mine":{"name":"mine"}}}`)
 	if err := opencode(home, filepath.Join(home, ".config")).Sync(); err != nil {
 		t.Fatal(err)
 	}
-	if s := readFile(cfg); !strings.Contains(s, `"magpie"`) || !strings.Contains(s, `"mine"`) || !strings.Contains(s, `204800`) {
+	if s := readFile(cfg); !strings.Contains(s, `"magpie-friday"`) || !strings.Contains(s, `"mine"`) || !strings.Contains(s, `204800`) {
 		t.Fatalf("%s", s)
 	}
-	// one that doesn't use magpie gets nothing
+	// one that doesn't use magpie-friday gets nothing
 	body := `{"model":"mine/x","provider":{"mine":{"name":"mine"}}}`
 	writeFile(t, cfg, body)
 	if err := opencode(home, filepath.Join(home, ".config")).Sync(); err != nil {
@@ -328,56 +328,56 @@ func TestOpenCodeModelsCarryContextAndSyncRestores(t *testing.T) {
 	}
 }
 
-// A model of magpie's chosen for OpenCode that a provider of the file's own
-// already sends to magpie is named there, and magpie's flat provider isn't
+// A model of magpie-friday's chosen for OpenCode that a provider of the file's own
+// already sends to magpie-friday is named there, and magpie-friday's flat provider isn't
 // added beside it with the same models again.
 func TestOpenCodeKeepsItsOwnGatewayProviders(t *testing.T) {
 	home := syncHome(t)
 	cfg := filepath.Join(home, ".config", "opencode", "opencode.json")
 	writeFile(t, cfg, `{
   "provider": {
-    "magpie-relay": {"npm": "@ai-sdk/openai-compatible", "options": {"baseURL": "http://localhost:3425/v1/"}, "models": {"relay/glm-4.6": {}}},
+    "magpie-friday-relay": {"npm": "@ai-sdk/openai-compatible", "options": {"baseURL": "http://localhost:3425/v1/"}, "models": {"relay/glm-4.6": {}}},
     "elsewhere": {"options": {"baseURL": "https://example.com/v1"}, "models": {"relay/glm-4.6": {}}}
   },
-  "model": "magpie-relay/relay/glm-4.6"
+  "model": "magpie-friday-relay/relay/glm-4.6"
 }`)
 	oc := opencode(home, filepath.Join(home, ".config"))
-	if err := oc.Fields[0].Set("magpie/relay/glm-4.6"); err != nil {
+	if err := oc.Fields[0].Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
-	if v, _ := edit.GetJSON(cfg, "model"); v != "magpie-relay/relay/glm-4.6" {
+	if v, _ := edit.GetJSON(cfg, "model"); v != "magpie-friday-relay/relay/glm-4.6" {
 		t.Fatalf("model = %q", v)
 	}
-	if _, ok := edit.GetJSON(cfg, "provider.magpie"); ok {
-		t.Fatal("magpie's provider added beside the file's own")
+	if _, ok := edit.GetJSON(cfg, "provider.magpie-friday"); ok {
+		t.Fatal("magpie-friday's provider added beside the file's own")
 	}
-	// a model none of them lists still gets magpie's provider
-	os.WriteFile(cfg, []byte(`{"provider": {"magpie-relay": {"options": {"baseURL": "http://127.0.0.1:3425/v1"}, "models": {}}}}`), 0o644)
-	if err := oc.Fields[0].Set("magpie/relay/glm-4.6"); err != nil {
+	// a model none of them lists still gets magpie-friday's provider
+	os.WriteFile(cfg, []byte(`{"provider": {"magpie-friday-relay": {"options": {"baseURL": "http://127.0.0.1:3425/v1"}, "models": {}}}}`), 0o644)
+	if err := oc.Fields[0].Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
-	if v, _ := edit.GetJSON(cfg, "model"); v != "magpie/relay/glm-4.6" {
+	if v, _ := edit.GetJSON(cfg, "model"); v != "magpie-friday/relay/glm-4.6" {
 		t.Fatalf("model = %q", v)
 	}
-	if _, ok := edit.GetJSON(cfg, "provider.magpie"); !ok {
-		t.Fatal("magpie's provider not added")
+	if _, ok := edit.GetJSON(cfg, "provider.magpie-friday"); !ok {
+		t.Fatal("magpie-friday's provider not added")
 	}
 }
 
-// MiMo Code shares OpenCode's config shape: a sync writes magpie's provider
+// MiMo Code shares OpenCode's config shape: a sync writes magpie-friday's provider
 // into its own mimocode.json, and reads its own model list.
 func TestMiMoCodeMirrorsOpenCode(t *testing.T) {
 	home := syncHome(t)
 	cfg := filepath.Join(home, ".config", "mimocode", "mimocode.json")
-	writeFile(t, cfg, `{"model":"magpie/relay/glm-4.6","provider":{"mine":{"name":"mine"}}}`)
+	writeFile(t, cfg, `{"model":"magpie-friday/relay/glm-4.6","provider":{"mine":{"name":"mine"}}}`)
 	if err := mimocode(home, filepath.Join(home, ".config")).Sync(); err != nil {
 		t.Fatal(err)
 	}
 	s := readFile(cfg)
-	if !strings.Contains(s, `"magpie"`) || !strings.Contains(s, `"mine"`) || !strings.Contains(s, `204800`) {
+	if !strings.Contains(s, `"magpie-friday"`) || !strings.Contains(s, `"mine"`) || !strings.Contains(s, `204800`) {
 		t.Fatalf("%s", s)
 	}
-	// one that doesn't use magpie gets nothing
+	// one that doesn't use magpie-friday gets nothing
 	body := `{"model":"mine/x","provider":{"mine":{"name":"mine"}}}`
 	writeFile(t, cfg, body)
 	if err := mimocode(home, filepath.Join(home, ".config")).Sync(); err != nil {
@@ -394,7 +394,7 @@ func TestMiMoCodeMirrorsOpenCode(t *testing.T) {
 func TestMiMoCodeConfigAsTheAppFindsIt(t *testing.T) {
 	home := syncHome(t)
 	plain := filepath.Join(home, ".config", "mimocode", "config.json")
-	writeFile(t, plain, `{"model":"magpie/relay/glm-4.6","provider":{"mine":{"name":"mine"}}}`)
+	writeFile(t, plain, `{"model":"magpie-friday/relay/glm-4.6","provider":{"mine":{"name":"mine"}}}`)
 	a := mimocode(home, filepath.Join(home, ".config"))
 	if a.Path != plain {
 		t.Fatalf("config at %s, want %s", a.Path, plain)
@@ -402,7 +402,7 @@ func TestMiMoCodeConfigAsTheAppFindsIt(t *testing.T) {
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	if s := readFile(plain); !strings.Contains(s, `"magpie"`) || !strings.Contains(s, `"mine"`) {
+	if s := readFile(plain); !strings.Contains(s, `"magpie-friday"`) || !strings.Contains(s, `"mine"`) {
 		t.Fatalf("%s", s)
 	}
 	// its own name comes first

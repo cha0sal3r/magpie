@@ -127,7 +127,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       await panel.evaluate(() => {
         const li = document.createElement("li");
         li.id = "pickRow";
-        li.textContent = "GPT-6-Astra via magpie dev.one@example.com";
+        li.textContent = "GPT-6-Astra via magpie-friday dev.one@example.com";
         li.title = "dev.one@example.com";
         document.querySelector("#pop #list").append(li);
       });
@@ -138,7 +138,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       assert.equal((await btn.textContent()).trim(), w.hide);
       await panel.waitForFunction(() => !document.querySelector("#panelQuota .pii"));
       await panel.waitForFunction(() => !document.querySelector("#pickRow .pii"));
-      assert.equal(await panel.locator("#pickRow").textContent(), "GPT-6-Astra via magpie dev.one@example.com");
+      assert.equal(await panel.locator("#pickRow").textContent(), "GPT-6-Astra via magpie-friday dev.one@example.com");
       assert.ok(await panel.evaluate(() => [...document.querySelectorAll("#panelQuota .pq-user")].some((e) => e.textContent === "李雷")));
       // and back as they were in the window
       assert.equal(await page.locator("#sample").textContent(), "李雷 checked in · Sleeper Lee · ZCode");

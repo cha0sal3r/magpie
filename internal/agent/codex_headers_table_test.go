@@ -7,16 +7,16 @@ import (
 
 // wztlink1013 on Discord (Windows, Codex 0.162.0): switching Codex's model
 // on the Agents page failed with "config.toml: edited TOML is invalid: toml:
-// key http_headers should be a table, not a value". The config held magpie's
+// key http_headers should be a table, not a value". The config held magpie-friday's
 // provider headers as their own table, which a rewrite of
-// [model_providers.magpie] leaves in place, and the inline http_headers
+// [model_providers.magpie-friday] leaves in place, and the inline http_headers
 // written beside it defined the key twice. The header is now set in that
 // table, the user's other headers and comments kept.
 func TestCodexMagpieHeadersAsOwnTable(t *testing.T) {
 	for _, crlf := range []bool{false, true} {
 		config := "model = \"gpt-5.5\"\n\n" +
-			"[model_providers.magpie]\nname = \"magpie\"\nbase_url = \"http://127.0.0.1:1/v1\"\nwire_api = \"responses\"\n\n" +
-			"[model_providers.magpie.http_headers]\n# my proxy\n\"x-org\" = \"acme\"\n\"x-openai-actor-authorization\" = \"magpie\"\n"
+			"[model_providers.magpie-friday]\nname = \"magpie-friday\"\nbase_url = \"http://127.0.0.1:1/v1\"\nwire_api = \"responses\"\n\n" +
+			"[model_providers.magpie-friday.http_headers]\n# my proxy\n\"x-org\" = \"acme\"\n\"x-openai-actor-authorization\" = \"magpie-friday\"\n"
 		if crlf {
 			config = strings.ReplaceAll(config, "\n", "\r\n")
 		}
@@ -29,7 +29,7 @@ func TestCodexMagpieHeadersAsOwnTable(t *testing.T) {
 		if strings.Contains(cfg, "http_headers = {") {
 			t.Fatalf("crlf %v: inline http_headers beside the table:\n%s", crlf, cfg)
 		}
-		for _, w := range []string{"[model_providers.magpie.http_headers]", "# my proxy", `"x-org" = "acme"`, `"x-openai-actor-authorization" = "magpie"`} {
+		for _, w := range []string{"[model_providers.magpie-friday.http_headers]", "# my proxy", `"x-org" = "acme"`, `"x-openai-actor-authorization" = "magpie-friday"`} {
 			if !strings.Contains(cfg, w) {
 				t.Fatalf("crlf %v: no %q:\n%s", crlf, w, cfg)
 			}

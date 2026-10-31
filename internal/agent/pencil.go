@@ -12,14 +12,14 @@ package agent
 // Its settings offer a custom provider on OpenAI Completions, OpenAI
 // Responses or Anthropic Messages (docs.pen.dev, Authentication) — Pi's
 // openai-completions, openai-responses and anthropic-messages — set for the
-// provider as a whole. So magpie's models are Pi's entries (piModelJSON)
+// provider as a whole. So magpie-friday's models are Pi's entries (piModelJSON)
 // with every model on the provider's openai-completions at the gateway's
 // /v1, which the gateway takes for every model: a model's own api and
 // baseUrl, which Pi reads but Pencil's own editor never writes, are left
 // out. Each model carries every field Pencil writes for one. The model is
-// picked in Pencil's agent composer, not in a file magpie knows of, so what
-// magpie sets is whether its models are in that picker; the user's other
-// providers stay as they are. Its requests carry magpie-pencil, as its
+// picked in Pencil's agent composer, not in a file magpie-friday knows of, so what
+// magpie-friday sets is whether its models are in that picker; the user's other
+// providers stay as they are. Its requests carry magpie-friday-pencil, as its
 // User-Agent isn't known.
 
 import (
@@ -27,8 +27,8 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 func pencil(home string) *Agent {
@@ -69,7 +69,7 @@ func pencil(home string) *Agent {
 				return edit.SetJSON(path, edit.KV{Path: key, Value: theirsKept(path, key, func() any { return pencilProviderJSON(gateway.URL()) }, "models")()})
 			},
 			Options: func(map[string]string) []Option {
-				return []Option{{Value: magpieID, Label: "magpie", Icon: "magpie", Note: "every magpie model in Pencil's model picker"}}
+				return []Option{{Value: magpieID, Label: "magpie-friday", Icon: "magpie-friday", Note: "every magpie-friday model in Pencil's model picker"}}
 			},
 		}},
 	}
@@ -91,11 +91,11 @@ func pencilApp(home string) bool {
 	return false
 }
 
-// pencilProviderJSON is magpie's provider in Pencil's models.json: Pi's
+// pencilProviderJSON is magpie-friday's provider in Pencil's models.json: Pi's
 // entries (piModelJSON), on the provider's openai-completions throughout,
 // each with the fields Pencil writes for a model — Pi's defaults where
-// magpie knows no better (a 128K window, 16K out) and no cost, magpie's
-// spend being counted by magpie.
+// magpie-friday knows no better (a 128K window, 16K out) and no cost, magpie-friday's
+// spend being counted by magpie-friday.
 func pencilProviderJSON(gw string) map[string]any {
 	ms := []map[string]any{}
 	for _, m := range magpieModels("pencil") {
@@ -113,11 +113,11 @@ func pencilProviderJSON(gw string) map[string]any {
 		e["compat"] = map[string]any{}
 		ms = append(ms, e)
 	}
-	return map[string]any{"name": "magpie", "baseUrl": gw + "/v1", "api": "openai-completions",
+	return map[string]any{"name": "magpie-friday", "baseUrl": gw + "/v1", "api": "openai-completions",
 		"apiKey": agentKeyAt("pencil", gw), "models": ms}
 }
 
 // what pencil says after a change (notice.go)
 var (
-	noticePencil = newNotice("Pencil reads its custom models at start-up — restart Pencil to see magpie's models in its model picker.")
+	noticePencil = newNotice("Pencil reads its custom models at start-up — restart Pencil to see magpie-friday's models in its model picker.")
 )

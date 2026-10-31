@@ -6,11 +6,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// magpie provider zed, once Zed is moved onto its plugin, reads as the
+// magpie-friday provider zed, once Zed is moved onto its plugin, reads as the
 // built-in did: the account from Zed's own sign-in, and no plugin:// URL
 // the user can't reach.
 func TestShowMovedProvider(t *testing.T) {
@@ -20,7 +20,7 @@ func TestShowMovedProvider(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", filepath.Join(home, ".config"))
 	t.Setenv("XDG_CACHE_HOME", filepath.Join(home, ".cache"))
 	t.Setenv("MAGPIE_BUN", "")
-	dir := filepath.Join(home, ".config", "magpie")
+	dir := filepath.Join(home, ".config", "magpie-friday")
 	for name, body := range map[string]string{
 		"plugins.json":     `{"plugins":[{"spec":"opencode-zed-auth"}]}`,
 		"plugin-auth.json": `{"zed":{"type":"oauth","access":"a","refresh":"r","expires":0,"accountId":"me@zed"}}`,
@@ -45,6 +45,6 @@ func TestShowMovedProvider(t *testing.T) {
 		t.Fatal(err)
 	}
 	if strings.Contains(out, "plugin://") || strings.Contains(out, "plugin's") || !strings.Contains(out, "from zed's own sign-in") {
-		t.Fatalf("magpie provider zed:\n%s", out)
+		t.Fatalf("magpie-friday provider zed:\n%s", out)
 	}
 }

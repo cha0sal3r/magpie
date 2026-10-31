@@ -8,11 +8,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 	"gopkg.in/yaml.v3"
 )
 
@@ -43,12 +43,12 @@ func TestHermes(t *testing.T) {
 	if f.Get() != "anthropic/claude-opus-5" {
 		t.Fatalf("get: %q", f.Get())
 	}
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	c, m, raw := read()
-	mp, _ := providers(c)["magpie"].(map[string]any)
-	if m["default"] != "deepseek/pro" || m["provider"] != "magpie" || m["base_url"] != "https://openrouter.ai/api/v1" ||
+	mp, _ := providers(c)["magpie-friday"].(map[string]any)
+	if m["default"] != "deepseek/pro" || m["provider"] != "magpie-friday" || m["base_url"] != "https://openrouter.ai/api/v1" ||
 		providers(c)["mine"] == nil || mp == nil || mp["api_mode"] != "chat_completions" || !strings.HasSuffix(mp["base_url"].(string), "/v1") ||
 		!strings.Contains(raw, "# mine") {
 		t.Fatalf("config:\n%s", raw)
@@ -60,22 +60,22 @@ func TestHermes(t *testing.T) {
 	if !ids["deepseek/pro"] || !ids["deepseek/flash"] {
 		t.Fatalf("models: %v", ids)
 	}
-	if f.Get() != "magpie/deepseek/pro" {
+	if f.Get() != "magpie-friday/deepseek/pro" {
 		t.Fatalf("get: %q", f.Get())
 	}
-	// another magpie model keeps what was stashed first
-	if err := f.Set("magpie/deepseek/flash"); err != nil {
+	// another magpie-friday model keeps what was stashed first
+	if err := f.Set("magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
 
-	// its own model: the user's provider comes back, magpie's entry stays
-	// beside it, so Hermes's session picker still offers magpie's models
+	// its own model: the user's provider comes back, magpie-friday's entry stays
+	// beside it, so Hermes's session picker still offers magpie-friday's models
 	// and it is still connected (lijiho96940561 on X)
 	if err := f.Set("moonshotai/kimi-k3"); err != nil {
 		t.Fatal(err)
 	}
 	c, m, raw = read()
-	if m["default"] != "moonshotai/kimi-k3" || m["provider"] != "openrouter" || providers(c)["magpie"] == nil || providers(c)["mine"] == nil {
+	if m["default"] != "moonshotai/kimi-k3" || m["provider"] != "openrouter" || providers(c)["magpie-friday"] == nil || providers(c)["mine"] == nil {
 		t.Fatalf("own:\n%s", raw)
 	}
 	a := hermes(home)
@@ -85,7 +85,7 @@ func TestHermes(t *testing.T) {
 
 	// the default changed in Hermes itself (`hermes model`): still connected,
 	// not told as drift
-	if err := a.Apply("model", "magpie/deepseek/flash"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
 	if err := edit.SetYAML(path, edit.KV{Path: "model.provider", Value: "anthropic"}, edit.KV{Path: "model.default", Value: "claude-opus-5"}); err != nil {
@@ -95,42 +95,42 @@ func TestHermes(t *testing.T) {
 		t.Fatalf("changed in Hermes: wired %v, drift %+v", a.Wired(), a.Drift())
 	}
 
-	// Disconnect takes magpie's entry out
+	// Disconnect takes magpie-friday's entry out
 	if err := a.Disconnect(); err != nil {
 		t.Fatal(err)
 	}
 	c, m, raw = read()
-	if m["default"] != "claude-opus-5" || m["provider"] != "anthropic" || providers(c)["magpie"] != nil || providers(c)["mine"] == nil || a.Wired() {
+	if m["default"] != "claude-opus-5" || m["provider"] != "anthropic" || providers(c)["magpie-friday"] != nil || providers(c)["mine"] == nil || a.Wired() {
 		t.Fatalf("disconnect, own model:\n%s", raw)
 	}
 
-	// Disconnect from magpie's model: back to what the user had
-	f.Set("magpie/deepseek/flash")
+	// Disconnect from magpie-friday's model: back to what the user had
+	f.Set("magpie-friday/deepseek/flash")
 	if err := a.Disconnect(); err != nil {
 		t.Fatal(err)
 	}
 	c, m, raw = read()
-	if m["default"] != "claude-opus-5" || m["provider"] != "anthropic" || providers(c)["magpie"] != nil {
+	if m["default"] != "claude-opus-5" || m["provider"] != "anthropic" || providers(c)["magpie-friday"] != nil {
 		t.Fatalf("disconnect:\n%s", raw)
 	}
 
 	// a config with no provider of its own: none comes back
 	os.WriteFile(path, []byte("agent:\n  max_turns: 60\n"), 0o644)
-	f.Set("magpie/deepseek/pro")
+	f.Set("magpie-friday/deepseek/pro")
 	if err := a.Disconnect(); err != nil {
 		t.Fatal(err)
 	}
 	c, m, raw = read()
-	if m["provider"] != nil || m["default"] != nil || providers(c)["magpie"] != nil || c["agent"] == nil {
+	if m["provider"] != nil || m["default"] != nil || providers(c)["magpie-friday"] != nil || c["agent"] == nil {
 		t.Fatalf("disconnect, no provider:\n%s", raw)
 	}
 }
 
 // Each of Hermes's bots is a profile under ~/.hermes/profiles/<name> with a
 // config.yaml of its own, which doesn't read the main one's: connected,
-// magpie is offered in every bot's picker, each keeps its own model, and
-// Disconnect takes magpie out of each (lijiho96940561 on X: only the main
-// bot had magpie).
+// magpie-friday is offered in every bot's picker, each keeps its own model, and
+// Disconnect takes magpie-friday out of each (lijiho96940561 on X: only the main
+// bot had magpie-friday).
 func TestHermesProfiles(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
@@ -152,8 +152,8 @@ func TestHermesProfiles(t *testing.T) {
 	// as `hermes profile create` leaves them: config.yaml, .env, SOUL.md
 	bot := write("profiles/coder/config.yaml", "# coder bot\nmodel:\n  default: kimi-k3\n  provider: moonshot\nproviders:\n  mine:\n    base_url: https://x\n")
 	write("profiles/coder/SOUL.md", "coder\n")
-	// cloned from a main config already on magpie
-	clone := write("profiles/writer/config.yaml", "model:\n  default: deepseek/pro\n  provider: magpie\n")
+	// cloned from a main config already on magpie-friday
+	clone := write("profiles/writer/config.yaml", "model:\n  default: deepseek/pro\n  provider: magpie-friday\n")
 	// deleted (a tombstone beside it), and a name Hermes doesn't allow
 	gone := write("profiles/old/config.yaml", "model:\n  default: x\n")
 	write("profiles/.deleted/old", "")
@@ -167,11 +167,11 @@ func TestHermesProfiles(t *testing.T) {
 	has := func(p string) bool {
 		c, _ := read(p)
 		ps, _ := c["providers"].(map[string]any)
-		return ps["magpie"] != nil
+		return ps["magpie-friday"] != nil
 	}
 
 	a := hermes(home)
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	c, raw := read(bot)
@@ -181,7 +181,7 @@ func TestHermesProfiles(t *testing.T) {
 		t.Fatalf("coder after connect:\n%s", raw)
 	}
 	if has(gone) || has(bad) {
-		t.Fatal("a deleted or invalid profile got magpie")
+		t.Fatal("a deleted or invalid profile got magpie-friday")
 	}
 
 	// a profile made later gets it at the next sync
@@ -213,7 +213,7 @@ func TestHermesProfiles(t *testing.T) {
 	}
 }
 
-// HERMES_HOME set to a profile outside ~/.hermes (Docker): magpie connects
+// HERMES_HOME set to a profile outside ~/.hermes (Docker): magpie-friday connects
 // that profile, and the root's config and its other profiles get the
 // provider too
 func TestHermesProfilesOfCustomRoot(t *testing.T) {
@@ -234,11 +234,11 @@ func TestHermesProfilesOfCustomRoot(t *testing.T) {
 	if got := hermesProfiles(here(home)); len(got) != 3 {
 		t.Fatalf("profiles: %v", got)
 	}
-	if err := hermes(home).Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := hermes(home).Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	for _, p := range []string{"config.yaml", "profiles/b/config.yaml"} {
-		v, ok := edit.GetYAML(filepath.Join(root, p), "providers.magpie.base_url")
+		v, ok := edit.GetYAML(filepath.Join(root, p), "providers.magpie-friday.base_url")
 		if !ok || !strings.HasSuffix(v, "/v1") {
 			t.Fatalf("%s: %q", p, v)
 		}
@@ -251,7 +251,7 @@ func TestHermesProfilesOfCustomRoot(t *testing.T) {
 // TestHermesFolder (新v学员 on Discord): on this machine Hermes's folder is
 // its own default, %LOCALAPPDATA%\hermes on native Windows, not ~/.hermes
 // there, and its profiles are under it; in a WSL distro, which is Linux and
-// whose variables magpie can't read, it is ~/.hermes.
+// whose variables magpie-friday can't read, it is ~/.hermes.
 func TestHermesFolder(t *testing.T) {
 	home := t.TempDir()
 	local := filepath.Join(home, "AppData", "Local")
@@ -276,11 +276,11 @@ func TestHermesFolder(t *testing.T) {
 	}
 }
 
-// What the user, or Hermes itself, set on magpie's provider stays through
+// What the user, or Hermes itself, set on magpie-friday's provider stays through
 // every sync and pick, in the connected config and in each profile's
 // (#2030's siblings): the default_model `hermes model` writes there, a name,
-// a timeout, a key command, a header beside magpie's. The address, key, API
-// mode and model list stay magpie's.
+// a timeout, a key command, a header beside magpie-friday's. The address, key, API
+// mode and model list stay magpie-friday's.
 func TestHermesKeepsTheUsersSettings(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
@@ -299,18 +299,18 @@ func TestHermesKeepsTheUsersSettings(t *testing.T) {
 	os.WriteFile(bot, []byte("model:\n  default: kimi-k3\n  provider: moonshot\n"), 0o644)
 	a := hermes(home)
 	f := a.Field("model")
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	for _, p := range []string{path, bot} {
 		if err := edit.SetYAML(p,
-			edit.KV{Path: "providers.magpie.name", Value: "My GW"},
-			edit.KV{Path: "providers.magpie.default_model", Value: "deepseek/pro"},
-			edit.KV{Path: "providers.magpie.request_timeout_seconds", Value: 900},
-			edit.KV{Path: "providers.magpie.key_cmd", Value: "cat ~/.gw-key"},
-			edit.KV{Path: "providers.magpie.extra_headers.X-Mine", Value: "1"},
-			edit.KV{Path: "providers.magpie.base_url", Value: "http://127.0.0.1:1/v1"},
-			edit.KV{Path: "providers.magpie.models", Value: []string{"gone/old"}},
+			edit.KV{Path: "providers.magpie-friday.name", Value: "My GW"},
+			edit.KV{Path: "providers.magpie-friday.default_model", Value: "deepseek/pro"},
+			edit.KV{Path: "providers.magpie-friday.request_timeout_seconds", Value: 900},
+			edit.KV{Path: "providers.magpie-friday.key_cmd", Value: "cat ~/.gw-key"},
+			edit.KV{Path: "providers.magpie-friday.extra_headers.X-Mine", Value: "1"},
+			edit.KV{Path: "providers.magpie-friday.base_url", Value: "http://127.0.0.1:1/v1"},
+			edit.KV{Path: "providers.magpie-friday.models", Value: []string{"gone/old"}},
 		); err != nil {
 			t.Fatal(err)
 		}
@@ -349,19 +349,19 @@ func TestHermesKeepsTheUsersSettings(t *testing.T) {
 			}
 			if mp.BaseURL == "http://127.0.0.1:1/v1" || mp.APIKey == "" || mp.APIMode != "chat_completions" || mp.Headers["User-Agent"] != "hermes-agent" ||
 				slices.Contains(mp.Models, "gone/old") || !slices.Contains(mp.Models, "kimi/k3") {
-				t.Errorf("%s: magpie's own parts not written in %s:\n%s", when, p, raw)
+				t.Errorf("%s: magpie-friday's own parts not written in %s:\n%s", when, p, raw)
 			}
 		}
 	}
 	check("sync")
-	if err := f.Set("magpie/kimi/k3"); err != nil {
+	if err := f.Set("magpie-friday/kimi/k3"); err != nil {
 		t.Fatal(err)
 	}
 	check("pick")
 }
 
 // PaulT on Discord: a key made under Gateway keys, put in Hermes's
-// config.yaml in place of magpie's, goes through magpie all the same, so
+// config.yaml in place of magpie-friday's, goes through magpie-friday all the same, so
 // the check is quiet and a sync keeps it. A key the gateway doesn't take
 // still is drift.
 func TestHermesWithAGatewayKeyOfTheUsers(t *testing.T) {
@@ -379,17 +379,17 @@ func TestHermesWithAGatewayKeyOfTheUsers(t *testing.T) {
 	os.MkdirAll(dir, 0o755)
 	os.WriteFile(path, []byte("model:\n  default: x\n"), 0o644)
 	a := hermes(home)
-	if err := a.Field("model").Set("magpie/deepseek/pro"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	if d := a.Check(); d != "" {
-		t.Fatalf("as magpie wrote it: %s", d)
+		t.Fatalf("as magpie-friday wrote it: %s", d)
 	}
 	secret, err := access.Update("add-key", access.Change{Name: "hermes"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := edit.SetYAML(path, edit.KV{Path: "providers.magpie.api_key", Value: secret}); err != nil {
+	if err := edit.SetYAML(path, edit.KV{Path: "providers.magpie-friday.api_key", Value: secret}); err != nil {
 		t.Fatal(err)
 	}
 	if d := a.Check(); d != "" {
@@ -398,10 +398,10 @@ func TestHermesWithAGatewayKeyOfTheUsers(t *testing.T) {
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	if v, _ := edit.GetYAML(path, "providers.magpie.api_key"); v != secret {
+	if v, _ := edit.GetYAML(path, "providers.magpie-friday.api_key"); v != secret {
 		t.Fatalf("a sync wrote over the user's key: %q", v)
 	}
-	if err := edit.SetYAML(path, edit.KV{Path: "providers.magpie.api_key", Value: "sk-not-this-gateways"}); err != nil {
+	if err := edit.SetYAML(path, edit.KV{Path: "providers.magpie-friday.api_key", Value: "sk-not-this-gateways"}); err != nil {
 		t.Fatal(err)
 	}
 	if d := a.Check(); !strings.Contains(d, "api_key") {
@@ -410,7 +410,7 @@ func TestHermesWithAGatewayKeyOfTheUsers(t *testing.T) {
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	if v, _ := edit.GetYAML(path, "providers.magpie.api_key"); v != gateway.Token {
+	if v, _ := edit.GetYAML(path, "providers.magpie-friday.api_key"); v != gateway.Token {
 		t.Fatalf("a key the gateway doesn't take is kept: %q", v)
 	}
 }
@@ -418,9 +418,9 @@ func TestHermesWithAGatewayKeyOfTheUsers(t *testing.T) {
 // PaulT on Discord: Hermes's provider written as Hermes keeps keys, the
 // api_key "${MAGPIE_API_KEY}" with the key in Hermes's .env, was marked as
 // needing attention. A reference names the key Hermes sends: one that
-// reaches magpie is not drift and a sync keeps it; one magpie can't see is
+// reaches magpie-friday is not drift and a sync keeps it; one magpie-friday can't see is
 // unknown, kept and not drift; one naming a key the gateway doesn't take
-// is drift, and a sync puts magpie's key into the .env, the reference kept.
+// is drift, and a sync puts magpie-friday's key into the .env, the reference kept.
 func TestHermesWithAKeyInItsEnvFile(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
@@ -439,7 +439,7 @@ func TestHermesWithAKeyInItsEnvFile(t *testing.T) {
 	os.MkdirAll(dir, 0o755)
 	os.WriteFile(path, []byte("model:\n  default: x\n"), 0o644)
 	a := hermes(home)
-	if err := a.Field("model").Set("magpie/deepseek/pro"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	secret, err := access.Update("add-key", access.Change{Name: "hermes"})
@@ -447,19 +447,19 @@ func TestHermesWithAKeyInItsEnvFile(t *testing.T) {
 		t.Fatal(err)
 	}
 	// the reporter's provider, as he wrote it
-	mine := "model:\n  default: deepseek/pro\n  provider: magpie\nproviders:\n  magpie:\n    name: magpie\n    api_key: \"${MAGPIE_API_KEY}\"\n    api_mode: chat_completions\n    base_url: " + here(home).v1() + "\n"
+	mine := "model:\n  default: deepseek/pro\n  provider: magpie-friday\nproviders:\n  magpie-friday:\n    name: magpie-friday\n    api_key: \"${MAGPIE_API_KEY}\"\n    api_mode: chat_completions\n    base_url: " + here(home).v1() + "\n"
 	if err := os.WriteFile(path, []byte(mine), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	ref := func(what string) {
 		t.Helper()
-		if v, _ := edit.GetYAML(path, "providers.magpie.api_key"); v != "${MAGPIE_API_KEY}" {
+		if v, _ := edit.GetYAML(path, "providers.magpie-friday.api_key"); v != "${MAGPIE_API_KEY}" {
 			t.Fatalf("%s: the user's reference was written over: %q", what, v)
 		}
 	}
 	for _, c := range []struct{ name, line string }{
 		{"a gateway key", "MAGPIE_API_KEY=" + secret},
-		{"magpie's own key, quoted", "export MAGPIE_API_KEY=\"" + gateway.Token + "\""},
+		{"magpie-friday's own key, quoted", "export MAGPIE_API_KEY=\"" + gateway.Token + "\""},
 	} {
 		os.WriteFile(env, []byte("OPENROUTER_API_KEY=sk-or\n"+c.line+"\n"), 0o600)
 		if d := a.Check(); d != "" {
@@ -469,14 +469,14 @@ func TestHermesWithAKeyInItsEnvFile(t *testing.T) {
 			t.Fatal(err)
 		}
 		ref(c.name)
-		if err := a.Field("model").Set("magpie/deepseek/pro"); err != nil {
+		if err := a.Field("model").Set("magpie-friday/deepseek/pro"); err != nil {
 			t.Fatal(err)
 		}
 		ref(c.name + ", then a pick")
 	}
 	// ${env:VAR}, Hermes's other spelling, from the environment
 	os.Remove(env)
-	if err := edit.SetYAML(path, edit.KV{Path: "providers.magpie.api_key", Value: "${env:MAGPIE_API_KEY}"}); err != nil {
+	if err := edit.SetYAML(path, edit.KV{Path: "providers.magpie-friday.api_key", Value: "${env:MAGPIE_API_KEY}"}); err != nil {
 		t.Fatal(err)
 	}
 	t.Setenv("MAGPIE_API_KEY", secret)
@@ -484,19 +484,19 @@ func TestHermesWithAKeyInItsEnvFile(t *testing.T) {
 		t.Fatalf("a gateway key in the environment is drift: %s", d)
 	}
 	os.Unsetenv("MAGPIE_API_KEY")
-	if err := edit.SetYAML(path, edit.KV{Path: "providers.magpie.api_key", Value: "${MAGPIE_API_KEY}"}); err != nil {
+	if err := edit.SetYAML(path, edit.KV{Path: "providers.magpie-friday.api_key", Value: "${MAGPIE_API_KEY}"}); err != nil {
 		t.Fatal(err)
 	}
-	// a variable only the shell sets, which magpie doesn't see: unknown
+	// a variable only the shell sets, which magpie-friday doesn't see: unknown
 	if d := a.Check(); d != "" {
-		t.Fatalf("a variable magpie can't see is drift: %s", d)
+		t.Fatalf("a variable magpie-friday can't see is drift: %s", d)
 	}
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	ref("a variable magpie can't see")
+	ref("a variable magpie-friday can't see")
 	if _, err := os.Stat(env); err == nil {
-		t.Fatal("a sync made a .env for a variable magpie can't see")
+		t.Fatal("a sync made a .env for a variable magpie-friday can't see")
 	}
 	// a key the gateway doesn't take
 	os.WriteFile(env, []byte("# keys\nMAGPIE_API_KEY=sk-not-this-gateways\nOTHER=1\n"), 0o600)
@@ -514,20 +514,20 @@ func TestHermesWithAKeyInItsEnvFile(t *testing.T) {
 	if d := a.Check(); d != "" {
 		t.Fatalf("after a sync: %s", d)
 	}
-	// more than the one reference: magpie's key, as before
-	if err := edit.SetYAML(path, edit.KV{Path: "providers.magpie.api_key", Value: "x${MAGPIE_API_KEY}"}); err != nil {
+	// more than the one reference: magpie-friday's key, as before
+	if err := edit.SetYAML(path, edit.KV{Path: "providers.magpie-friday.api_key", Value: "x${MAGPIE_API_KEY}"}); err != nil {
 		t.Fatal(err)
 	}
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	if v, _ := edit.GetYAML(path, "providers.magpie.api_key"); v != gateway.Token {
-		t.Fatalf("a value that doesn't reach magpie is kept: %q", v)
+	if v, _ := edit.GetYAML(path, "providers.magpie-friday.api_key"); v != gateway.Token {
+		t.Fatalf("a value that doesn't reach magpie-friday is kept: %q", v)
 	}
 }
 
-// keyHolds, which every agent's check of magpie's key goes through: a key
-// of the gateway's own stands in for magpie's, never for a URL or another
+// keyHolds, which every agent's check of magpie-friday's key goes through: a key
+// of the gateway's own stands in for magpie-friday's, never for a URL or another
 // value, and one the gateway doesn't take doesn't.
 func TestKeyHoldsTakesAGatewayKey(t *testing.T) {
 	home := t.TempDir()

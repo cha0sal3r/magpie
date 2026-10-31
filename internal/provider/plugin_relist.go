@@ -1,10 +1,10 @@
 package provider
 
-// A plugin's models are listed by its models hook when magpie starts, a
-// sign-in or the plugins change, or Refresh is pressed. A magpie left
+// A plugin's models are listed by its models hook when magpie-friday starts, a
+// sign-in or the plugins change, or Refresh is pressed. A magpie-friday left
 // running listed them no more, so a free model OpenCode Zen dropped stayed
 // listed and a new one never came (Jeremy.Zhou on Discord, about
-// opencode-zen-free). The magpie serving the gateway now asks again every
+// opencode-zen-free). The magpie-friday serving the gateway now asks again every
 // hour, and a model a provider's list had and its new one doesn't leaves
 // the user's picks too, as Refetch does for a built-in's. A list that
 // fell back (the vendor's couldn't be read) is the one told before
@@ -12,7 +12,7 @@ package provider
 //
 // A pick that leaves is set aside (Delisted), not forgotten, and comes back
 // when a list has it again: Our Free Model's list is short for a while
-// after its service starts and while a free pool is down, and each magpie
+// after its service starts and while a free pool is down, and each magpie-friday
 // update left its user to pick every model again (多喝热水 on Discord).
 
 import (
@@ -21,10 +21,10 @@ import (
 	"slices"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
 )
 
-// relistEvery is how often the gateway's magpie lists the plugins'
+// relistEvery is how often the gateway's magpie-friday lists the plugins'
 // models again; relistFirst is how long after it starts it first does;
 // relistSoon is how soon it asks again after a list left out a pick, as
 // a plugin's service just started may not have listed everything yet.
@@ -45,10 +45,10 @@ var relistPlugins = func(ctx context.Context) ([]plugin.Provider, error) {
 }
 
 // KeepPluginsListed lists the plugins' models again every relistEvery,
-// in the magpie serving the gateway, and drops the picks of models gone
+// in the magpie-friday serving the gateway, and drops the picks of models gone
 // from them.
 func KeepPluginsListed(ctx context.Context) {
-	// what was listed before this magpie asked: on disk from the last run
+	// what was listed before this magpie-friday asked: on disk from the last run
 	before := plugin.Cached()
 	t := time.NewTimer(relistFirst)
 	defer t.Stop()
@@ -78,7 +78,7 @@ func KeepPluginsListed(ctx context.Context) {
 	}
 }
 
-// pluginListedIDs is the ids each plugin provider lists, by magpie's id for
+// pluginListedIDs is the ids each plugin provider lists, by magpie-friday's id for
 // it, those that fell back left out: their list wasn't read.
 func pluginListedIDs(ps []plugin.Provider) map[string]map[string]bool {
 	out := map[string]map[string]bool{}

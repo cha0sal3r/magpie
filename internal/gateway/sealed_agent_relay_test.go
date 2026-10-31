@@ -8,7 +8,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // relayOfChatGPT is a Responses provider in front of the ChatGPT backend,
@@ -46,8 +46,8 @@ func relayOn(t *testing.T, id string) *relayOfChatGPT {
 	return f
 }
 
-// codexSubTurn is a request Codex, signed in to ChatGPT, sends magpie for one
-// of magpie's models, with the web_search Codex offers on every turn.
+// codexSubTurn is a request Codex, signed in to ChatGPT, sends magpie-friday for one
+// of magpie-friday's models, with the web_search Codex offers on every turn.
 func codexSubTurn(s *Server, model, session, parent, input string) *httptest.ResponseRecorder {
 	rec := httptest.NewRecorder()
 	body := `{"model":"` + model + `","stream":true,"tools":[{"type":"web_search","external_web_access":true}],"input":[` + input + `]}`
@@ -103,7 +103,7 @@ func TestSealedTaskRefusedByAnotherRelay(t *testing.T) {
 	if n := len(s2a.requests()); n != 0 || len(other.requests()) != 1 {
 		t.Fatalf("s2a asked %d times, s2b %d", n, len(other.requests()))
 	}
-	// nor does a subagent whose lead magpie never answered go to a relay
+	// nor does a subagent whose lead magpie-friday never answered go to a relay
 	rec = codexSubTurn(s, "s2a/gpt-6-astra", "worker-2", "lead-elsewhere", sealedHandoff)
 	if rec.Code != 400 || !strings.Contains(rec.Body.String(), "s2a/gpt-6-astra is neither") || len(s2a.requests()) != 0 {
 		t.Fatalf("unknown lead: %d %s, s2a asked %d times", rec.Code, rec.Body.String(), len(s2a.requests()))
@@ -142,7 +142,7 @@ func TestSealedReplyGoesBackToTheProviderThatAnsweredTheLead(t *testing.T) {
 }
 
 // The reply still goes nowhere that didn't answer the lead: a lead moved to
-// another provider, or one magpie never answered, is turned away before
+// another provider, or one magpie-friday never answered, is turned away before
 // anyone is asked; and a subagent on another provider than the ChatGPT
 // account that answered its lead is told to use the lead's model, as before.
 func TestSealedReplyRefusedWhereTheLeadWasNotAnswered(t *testing.T) {

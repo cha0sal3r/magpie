@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // unreachable answers every request as a relay does that can't reach its
@@ -25,7 +25,7 @@ func (u *unreachable) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, `{"error":{"type":"api_error","message":"upstream connect error or disconnect/reset before headers"}}`)
 }
 
-// An agent closed while magpie waits to ask a failing upstream again (#1894,
+// An agent closed while magpie-friday waits to ask a failing upstream again (#1894,
 // heng91: the Claude Code or Codex window closed while its relay was down)
 // ends the request there: the upstream is asked nothing more, the route is
 // over with nothing in flight, and its last try says the agent left in the
@@ -75,7 +75,7 @@ func TestAgentGoneInTheRetryPause(t *testing.T) {
 					res.Body.Close()
 				}
 			}()
-			// every candidate has failed once: magpie is in its pause
+			// every candidate has failed once: magpie-friday is in its pause
 			deadline := time.Now().Add(10 * time.Second)
 			for up.n.Load() < want && time.Now().Before(deadline) {
 				time.Sleep(5 * time.Millisecond)

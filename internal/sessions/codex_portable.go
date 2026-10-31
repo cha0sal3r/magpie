@@ -17,22 +17,22 @@ import (
 
 	"github.com/klauspost/compress/zstd"
 
-	"github.com/yetone/magpie/internal/codexsummary"
-	"github.com/yetone/magpie/internal/filelock"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/steady"
+	"github.com/cha0sal3r/magpie-friday/internal/codexsummary"
+	"github.com/cha0sal3r/magpie-friday/internal/filelock"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/steady"
 )
 
-// A Codex conversation magpie compacted keeps magpie's compaction item in
+// A Codex conversation magpie-friday compacted keeps magpie-friday's compaction item in
 // its rollout, and Codex sends it back with every later turn: to OpenAI
-// itself, once magpie is quit or disconnected, it is refused
+// itself, once magpie-friday is quit or disconnected, it is refused
 // (invalid_encrypted_content) and the conversation can't go on (LukeMa on
 // X). PortCodexRollouts writes, in each rollout that has one, the message
 // it stands for in its place (codexsummary.Message): what Codex's own
 // local compaction keeps, and what the gateway sends for it anyway, so a
-// rollout so written reads the same through magpie and goes on without it.
+// rollout so written reads the same through magpie-friday and goes on without it.
 //
-// Only magpie's compaction items change, in whichever line holds them (a
+// Only magpie-friday's compaction items change, in whichever line holds them (a
 // response_item, a compacted line's replacement_history); every other
 // line keeps its bytes, and the file its line count, mode and time. A
 // rollout is changed as Codex publishes a compressed one
@@ -55,7 +55,7 @@ type codexPortHome struct {
 	Pending []string  `json:"pending,omitempty"`
 }
 
-// codexPortFirst is the first day magpie wrote a compaction item of its
+// codexPortFirst is the first day magpie-friday wrote a compaction item of its
 // own (c3931c91d, 2026-09-25): no rollout last written before then has one.
 var codexPortFirst = time.Date(2026, 9, 24, 0, 0, 0, 0, time.UTC)
 
@@ -68,13 +68,13 @@ func codexPortPath() string { return filepath.Join(settings.Dir(), "codex-portab
 // CodexPort is what a pass did.
 type CodexPort struct {
 	Rewritten []string // rollouts written portable
-	Held      []string // rollouts with magpie's item a Codex holds, left for a later pass
+	Held      []string // rollouts with magpie-friday's item a Codex holds, left for a later pass
 	Done      bool     // every rollout due was looked at
 }
 
 // PortCodexRollouts makes the rollouts of the Codex home home portable,
 // those written since the last whole pass and those it left before, until
-// ctx ends. The first pass reads every rollout written since magpie began
+// ctx ends. The first pass reads every rollout written since magpie-friday began
 // to compact; later ones only what changed since.
 func PortCodexRollouts(ctx context.Context, home string) (CodexPort, error) {
 	var res CodexPort
@@ -204,7 +204,7 @@ func codexThreadOf(name string) string {
 
 var magpieMark = []byte(codexsummary.Mark)
 
-// portRollout writes the rollout at path portable, if it has magpie's
+// portRollout writes the rollout at path portable, if it has magpie-friday's
 // compaction item, and says whether it did.
 func portRollout(ctx context.Context, home, path string) (bool, error) {
 	thread := codexThreadOf(filepath.Base(path))
@@ -220,7 +220,7 @@ func portRollout(ctx context.Context, home, path string) (bool, error) {
 		return false, err
 	}
 	defer in.Close()
-	tmp, err := os.CreateTemp(filepath.Dir(path), ".magpie-"+filepath.Base(path)+"-*")
+	tmp, err := os.CreateTemp(filepath.Dir(path), ".magpie-friday-"+filepath.Base(path)+"-*")
 	if err != nil {
 		return false, err
 	}
@@ -314,9 +314,9 @@ func portRollout(ctx context.Context, home, path string) (bool, error) {
 	return true, nil
 }
 
-// portLine is a rollout line with each of magpie's compaction items in it
+// portLine is a rollout line with each of magpie-friday's compaction items in it
 // written as the message it stands for; any other line as it is, byte for
-// byte. One of magpie's items whose summary can't be read is left out of
+// byte. One of magpie-friday's items whose summary can't be read is left out of
 // a list (and its entry of replacement_history_metadata with it), as the
 // gateway leaves it out; a line that is one alone stays as it is, as
 // leaving a line out would move every line after it.
@@ -345,8 +345,8 @@ func portLine(line []byte) ([]byte, bool) {
 	return append(bytes.TrimRight(buf.Bytes(), "\n"), end...), true
 }
 
-// portValue is v with magpie's compaction items in it written as their
-// messages; drop says v is one of magpie's that can't be read.
+// portValue is v with magpie-friday's compaction items in it written as their
+// messages; drop says v is one of magpie-friday's that can't be read.
 func portValue(v any) (_ any, changed, drop bool) {
 	switch x := v.(type) {
 	case map[string]any:

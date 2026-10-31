@@ -134,8 +134,8 @@ func TestCheckStdio(t *testing.T) {
 		}
 	})
 	t.Run("not found", func(t *testing.T) {
-		h := CheckServer(context.Background(), &Server{Name: "x", Transport: "stdio", Command: "magpie-no-such-mcp-server"})
-		if h.State != "error" || h.Why != "notfound" || h.Detail != "magpie-no-such-mcp-server" {
+		h := CheckServer(context.Background(), &Server{Name: "x", Transport: "stdio", Command: "magpie-friday-no-such-mcp-server"})
+		if h.State != "error" || h.Why != "notfound" || h.Detail != "magpie-friday-no-such-mcp-server" {
 			t.Fatalf("got %+v, want notfound", h)
 		}
 	})
@@ -405,7 +405,7 @@ func TestCheckServersOnce(t *testing.T) {
 	if _, err := SaveServer("", *s); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := SaveServer("", Server{Name: "gone", Transport: "stdio", Command: "magpie-no-such-mcp-server", Agents: []string{}}); err != nil {
+	if _, err := SaveServer("", Server{Name: "gone", Transport: "stdio", Command: "magpie-friday-no-such-mcp-server", Agents: []string{}}); err != nil {
 		t.Fatal(err)
 	}
 	starts := func() int {

@@ -3,7 +3,7 @@ const { test } = require("node:test");
 const { chromium, webkit } = require("playwright");
 const { fixture } = require("./fixtures/caller-keys.cjs");
 
-// No gateway key yet (HarriesChen on Discord, 10-25): magpie web on a phone
+// No gateway key yet (HarriesChen on Discord, 10-25): magpie-friday web on a phone
 // drew "No gateway keys yet" in the body's text, 14px and dark, flush
 // against its card's edges. It is said in its card the way the same page's
 // Recent calls says it has none: muted, small, inset. So is a list that

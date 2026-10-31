@@ -7,13 +7,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // One of Codex's own models, failed by the ChatGPT backend with an error
 // status and nothing in its body, fails saying where it went and what to do:
 // relayed as it came, Codex said only "unexpected status 502 Bad Gateway:
-// Unknown error" (#409, Codex's app left on GPT-5.6 Terra while magpie's
+// Unknown error" (#409, Codex's app left on GPT-5.6 Terra while magpie-friday's
 // Agents view had DeepSeek picked for it).
 func TestCodexOwnModelEmptyError(t *testing.T) {
 	setup(t, provider.Chat, &fake{t: t})
@@ -29,7 +29,7 @@ func TestCodexOwnModelEmptyError(t *testing.T) {
 	if code != 502 || json.Unmarshal([]byte(body), &e) != nil {
 		t.Fatalf("%d %q", code, body)
 	}
-	for _, want := range []string{"502 Bad Gateway", "gpt-5.6-terra is one of Codex's own models", "pick one of magpie's models"} {
+	for _, want := range []string{"502 Bad Gateway", "gpt-5.6-terra is one of Codex's own models", "pick one of magpie-friday's models"} {
 		if !strings.Contains(e.Error.Message, want) {
 			t.Errorf("no %q in %q", want, e.Error.Message)
 		}
@@ -51,7 +51,7 @@ func TestCodexOwnModelErrorBodyKept(t *testing.T) {
 	}
 }
 
-// A magpie model whose vendor fails with an empty body is never relayed
+// A magpie-friday model whose vendor fails with an empty body is never relayed
 // empty: the agent is told the vendor and its status.
 func TestCodexMagpieModelEmptyError(t *testing.T) {
 	setup(t, provider.Responses, &fake{t: t, refuse: func([]byte) (int, string) { return http.StatusBadGateway, " " }})

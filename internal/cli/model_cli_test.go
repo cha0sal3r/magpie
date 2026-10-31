@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // saidArgs is what a command printed, which is where the wire name is
@@ -66,7 +66,7 @@ func mustFind(t *testing.T, id string) provider.Provider {
 	return *p
 }
 
-// magpie model name and --reset keep and drop the user's name for a
+// magpie-friday model name and --reset keep and drop the user's name for a
 // provider's model, a name of several words included.
 func TestModelNameCmd(t *testing.T) {
 	groupsHome(t)
@@ -107,9 +107,9 @@ func TestModelNameCmd(t *testing.T) {
 	}
 }
 
-// magpie model price says what a call to a model is counted at, and
-// magpie model prices lists what the user has said. The list and its line in
-// the help are added together: reaching it through `magpie model price` would
+// magpie-friday model price says what a call to a model is counted at, and
+// magpie-friday model prices lists what the user has said. The list and its line in
+// the help are added together: reaching it through `magpie-friday model price` would
 // have answered "unknown command".
 func TestModelPriceCmd(t *testing.T) {
 	groupsHome(t)
@@ -126,7 +126,7 @@ func TestModelPriceCmd(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !strings.Contains(out, "a/m") || !strings.Contains(out, "$0.5/$1.5 per 1M in/out") {
-		t.Errorf("magpie model prices: %q; want a/m and the $0.5/$1.5 it was given", out)
+		t.Errorf("magpie-friday model prices: %q; want a/m and the $0.5/$1.5 it was given", out)
 	}
 
 	// a price no vendor could charge is refused where it is set, and the
@@ -171,7 +171,7 @@ func said(t *testing.T, f func() error) (string, error) {
 	return printed(t, f)
 }
 
-// magpie model prices is the one place the user sees what they have said
+// magpie-friday model prices is the one place the user sees what they have said
 // models cost: every priced model with its price, a price a hand edit left
 // with a part missing named as the part that is missing rather than billed
 // at zero, and — with nothing priced yet — how to price one.
@@ -184,7 +184,7 @@ func TestModelPricesCmd(t *testing.T) {
 	if !strings.Contains(out, "no model is priced by you yet") {
 		t.Errorf("with nothing priced: %q; want the machine told none is", out)
 	}
-	if !strings.Contains(out, "magpie model price <provider/model>") {
+	if !strings.Contains(out, "magpie-friday model price <provider/model>") {
 		t.Errorf("with nothing priced: %q; want the hint at how to price one", out)
 	}
 
@@ -207,13 +207,13 @@ func TestModelPricesCmd(t *testing.T) {
 		"b/half", "no output price given, and ignored",
 	} {
 		if !strings.Contains(out, want) {
-			t.Errorf("magpie model prices: %q; want %q among it", out, want)
+			t.Errorf("magpie-friday model prices: %q; want %q among it", out, want)
 		}
 	}
 }
 
 // A price outlives the provider it was set for: that provider can be
-// deleted, and `magpie model prices` still lists the price and usage is
+// deleted, and `magpie-friday model prices` still lists the price and usage is
 // still counted at it, so --reset has to reach it by the key it is stored
 // at rather than by asking for a provider that is not there any more. A
 // reset that went looking for the provider first refused the one price the
@@ -232,7 +232,7 @@ func TestModelPriceResetAfterTheProviderIsGone(t *testing.T) {
 	}
 	for _, want := range []string{"b/vendor/m", "b/*"} {
 		if !strings.Contains(out, want) {
-			t.Fatalf("magpie model prices: %q; want %q among it", out, want)
+			t.Fatalf("magpie-friday model prices: %q; want %q among it", out, want)
 		}
 	}
 	if err := provider.Delete("b"); err != nil {
@@ -258,7 +258,7 @@ func TestModelPriceResetAfterTheProviderIsGone(t *testing.T) {
 	}
 	for _, gone := range []string{"b/vendor/m", "b/*"} {
 		if strings.Contains(out, gone) {
-			t.Errorf("magpie model prices: %q; want %s no longer listed", out, gone)
+			t.Errorf("magpie-friday model prices: %q; want %s no longer listed", out, gone)
 		}
 	}
 	if left := settings.Load().ModelPrices; len(left) != 0 {
@@ -381,21 +381,21 @@ func TestModelHelpNamesThePricesListing(t *testing.T) {
 	}
 	var line string
 	for _, l := range strings.Split(out, "\n") {
-		if strings.HasPrefix(strings.TrimSpace(l), "magpie model prices") {
+		if strings.HasPrefix(strings.TrimSpace(l), "magpie-friday model prices") {
 			line = l
 			break
 		}
 	}
 	if line == "" {
-		t.Fatalf("the help names no `magpie model prices`:\n%s", out)
+		t.Fatalf("the help names no `magpie-friday model prices`:\n%s", out)
 	}
-	if !strings.HasPrefix(line, "  magpie model prices") {
-		t.Errorf("%q; want it listed among the other magpie model commands", line)
+	if !strings.HasPrefix(line, "  magpie-friday model prices") {
+		t.Errorf("%q; want it listed among the other magpie-friday model commands", line)
 	}
 }
 
 // The help reads as one table: every description, and every line a
-// description runs on to, starts at the same column. The `magpie model price`
+// description runs on to, starts at the same column. The `magpie-friday model price`
 // lines sat a column to the right of the rest, so the commands a price is
 // set and taken off with read as a table of their own.
 func TestModelUsageAlignsEveryDescription(t *testing.T) {
@@ -408,19 +408,19 @@ func TestModelUsageAlignsEveryDescription(t *testing.T) {
 		if line == "" {
 			break // the end of the commands; what follows is prose of its own
 		}
-		if !strings.HasPrefix(line, "  magpie ") {
+		if !strings.HasPrefix(line, "  magpie-friday ") {
 			at := len(line) - len(strings.TrimLeft(line, " "))
 			if col >= 0 && at != col {
 				t.Errorf("a line a description runs on to starts at column %d, want %d: %q", at, col, line)
 			}
 			continue
 		}
-		rest := line[len("  magpie"):]
+		rest := line[len("  magpie-friday"):]
 		at := strings.Index(rest, "  ")
 		if at < 0 {
 			continue // the command is too long for a description beside it
 		}
-		at += len("  magpie") + len(rest[at:]) - len(strings.TrimLeft(rest[at:], " "))
+		at += len("  magpie-friday") + len(rest[at:]) - len(strings.TrimLeft(rest[at:], " "))
 		if col < 0 {
 			col = at
 		} else if at != col {
@@ -554,7 +554,7 @@ func TestModelPriceCmdSaysWhereThePriceCameFrom(t *testing.T) {
 	}
 }
 
-// magpie model context and output: the provider's own "*" says what it
+// magpie-friday model context and output: the provider's own "*" says what it
 // gives every model, 0 is refused rather than read as a --reset and the
 // refusal says which is, and a model the provider does not serve is
 // refused the same as one is for a name.
@@ -599,7 +599,7 @@ func TestModelLimitCmd(t *testing.T) {
 		}
 		// the refusal is a command to paste, not a flag to find in the
 		// help: "a/m --reset" leaves the reader to work out the verb
-		if !strings.Contains(err.Error(), "magpie model "+c.verb+" a/m --reset") {
+		if !strings.Contains(err.Error(), "magpie-friday model "+c.verb+" a/m --reset") {
 			t.Errorf("%s of 0 tokens: %q; it does not give the command that takes one away", c.what, err.Error())
 		}
 	}
@@ -615,7 +615,7 @@ func TestModelLimitCmd(t *testing.T) {
 	}
 }
 
-// #1438: `magpie model output` says the reply limit agents are told and
+// #1438: `magpie-friday model output` says the reply limit agents are told and
 // /v1/models gives, within the model's window, and what it was kept from;
 // the user's own limit stays as they set it, for a wider window to take.
 func TestModelOutputCmdWithinTheWindow(t *testing.T) {
@@ -646,7 +646,7 @@ func TestModelOutputCmdWithinTheWindow(t *testing.T) {
 // A provider kept unlisted, or switched off, still serves its models and
 // still takes the window a user gives one, so the query has to answer about
 // the very ids the setter takes: "is not a model this provider serves" on
-// one, and the next command storing a window on it, is magpie arguing with
+// one, and the next command storing a window on it, is magpie-friday arguing with
 // itself.
 func TestModelLimitCmdOnAProviderTheCatalogHasNot(t *testing.T) {
 	groupsHome(t)
@@ -703,7 +703,7 @@ func TestModelLimitCmdResetsAModelTheProviderHasNot(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	// magpie provider set a models=...: m is not on the list any more
+	// magpie-friday provider set a models=...: m is not on the list any more
 	p, err := provider.Find("a")
 	if err != nil {
 		t.Fatal(err)
@@ -740,7 +740,7 @@ func TestModelLimitCmdResetsAModelTheProviderHasNot(t *testing.T) {
 }
 
 // A reply limit outlives the provider it was set for, and that provider can
-// be deleted — magpie provider delete a — leaving the entry in the settings
+// be deleted — magpie-friday provider delete a — leaving the entry in the settings
 // under an id nothing serves any more. The --reset has to go looking for the
 // provider no more than the file needs it to: with the ref resolved first it
 // refuses, and the number is then only ever off by hand. And the line it
@@ -945,7 +945,7 @@ func TestModelLimitCmdSaysWhenThereIsNoLimitToTakeAway(t *testing.T) {
 		if err == nil {
 			t.Fatalf("%s a/m --reset: %q; want it to say the model has no limit of its own", verb, out)
 		}
-		if !strings.Contains(err.Error(), "magpie model "+verb+" 'a/*' --reset") {
+		if !strings.Contains(err.Error(), "magpie-friday model "+verb+" 'a/*' --reset") {
 			t.Errorf("%s a/m --reset: %q; want it to point at the provider's own every-model value", verb, err)
 		}
 		if out, err := said(t, func() error { return modelCmd([]string{verb, "a/*", "--reset"}) }); err != nil {
@@ -977,7 +977,7 @@ func TestModelLimitCmdZeroNamesEveryModelOfTheProvider(t *testing.T) {
 		if err == nil {
 			t.Fatalf("%s 'a/*' 0 was accepted", verb)
 		}
-		if !strings.Contains(err.Error(), "magpie model "+verb+" 'a/*' --reset") {
+		if !strings.Contains(err.Error(), "magpie-friday model "+verb+" 'a/*' --reset") {
 			t.Errorf("%s 'a/*' 0: %q; the command it gives has its wildcard quoted", verb, err)
 		}
 		if !strings.Contains(err.Error(), "every model of a") {
@@ -1050,7 +1050,7 @@ func TestModelUsageGivesEveryCommandADescription(t *testing.T) {
 	}
 	seen := 0
 	for i, line := range rows {
-		if !strings.HasPrefix(line, "  magpie model ") {
+		if !strings.HasPrefix(line, "  magpie-friday model ") {
 			continue
 		}
 		seen++
@@ -1059,7 +1059,7 @@ func TestModelUsageGivesEveryCommandADescription(t *testing.T) {
 		}
 	}
 	if seen == 0 {
-		t.Fatalf("the help lists no `magpie model` command:\n%s", out)
+		t.Fatalf("the help lists no `magpie-friday model` command:\n%s", out)
 	}
 }
 
@@ -1068,15 +1068,15 @@ func TestModelUsageGivesEveryCommandADescription(t *testing.T) {
 // to leave one.
 func usageColumn(rows []string) int {
 	for _, l := range rows {
-		if !strings.HasPrefix(l, "  magpie model ") {
+		if !strings.HasPrefix(l, "  magpie-friday model ") {
 			continue
 		}
-		rest := l[len("  magpie"):]
+		rest := l[len("  magpie-friday"):]
 		at := strings.Index(rest, "  ")
 		if at < 0 {
 			continue // the command is too long for a description beside it
 		}
-		return len("  magpie") + at + len(rest[at:]) - len(strings.TrimLeft(rest[at:], " "))
+		return len("  magpie-friday") + at + len(rest[at:]) - len(strings.TrimLeft(rest[at:], " "))
 	}
 	return -1
 }
@@ -1085,7 +1085,7 @@ func usageColumn(rows []string) int {
 // text beside it, or, where the command fills the column, the lines under it
 // the description runs on to.
 func usageDescription(rows []string, i, col int) string {
-	rest := rows[i][len("  magpie"):]
+	rest := rows[i][len("  magpie-friday"):]
 	if at := strings.Index(rest, "  "); at >= 0 {
 		return strings.TrimSpace(rest[at:])
 	}
@@ -1099,20 +1099,20 @@ func usageDescription(rows []string, i, col int) string {
 	return strings.TrimSpace(b.String())
 }
 
-// Every command magpie shows is one the user is meant to paste, and a shell
+// Every command magpie-friday shows is one the user is meant to paste, and a shell
 // reads a bare * in it as a glob of the directory the command runs in rather
 // than as the name: zsh fails the whole line on a name it cannot expand, and
-// bash hands magpie the files there instead. So a ref carrying the wildcard
+// bash hands magpie-friday the files there instead. So a ref carrying the wildcard
 // is quoted wherever it is shown as part of a command, the help's table
 // included, which spells it the way #280 does.
 func TestModelCmdQuotesAWildcardInEveryCommandItShows(t *testing.T) {
 	for _, verb := range []string{"context", "output"} {
-		row := helpRow("magpie model " + verb + " <provider/model> <n>")
+		row := helpRow("magpie-friday model " + verb + " <provider/model> <n>")
 		if row == "" {
-			t.Fatalf("the help has no `magpie model %s <provider/model> <n>` row:\n%s", verb, modelUsage)
+			t.Fatalf("the help has no `magpie-friday model %s <provider/model> <n>` row:\n%s", verb, modelUsage)
 		}
 		if !strings.Contains(row, "'<provider>/*'") {
-			t.Errorf("magpie model %s <provider/model> <n>: %q; the wildcard it hands over is not quoted", verb, row)
+			t.Errorf("magpie-friday model %s <provider/model> <n>: %q; the wildcard it hands over is not quoted", verb, row)
 		}
 	}
 
@@ -1154,7 +1154,7 @@ func TestModelCmdQuotesAWildcardInEveryCommandItShows(t *testing.T) {
 	for _, s := range shows {
 		for _, m := range shownCommand.FindAllStringSubmatch(s.out, -1) {
 			if ref := m[1]; strings.Contains(ref, "*") && !(strings.HasPrefix(ref, "'") && strings.HasSuffix(ref, "'")) {
-				t.Errorf("`magpie model %s` printed %q; the wildcard in %q is a glob to a shell", s.as, s.out, ref)
+				t.Errorf("`magpie-friday model %s` printed %q; the wildcard in %q is a glob to a shell", s.as, s.out, ref)
 			}
 		}
 	}
@@ -1162,7 +1162,7 @@ func TestModelCmdQuotesAWildcardInEveryCommandItShows(t *testing.T) {
 
 // shownCommand is a command as it is shown to the user: the verb and the ref
 // that follows it.
-var shownCommand = regexp.MustCompile(`magpie model [a-z][a-z-]* (\S+)`)
+var shownCommand = regexp.MustCompile(`magpie-friday model [a-z][a-z-]* (\S+)`)
 
 // helpRow is the one line of the help that starts with the given command.
 func helpRow(cmd string) string {
@@ -1192,7 +1192,7 @@ func TestModelLimitCmdSaysWhatALimitIsInTheVerbOfItsOwnCommand(t *testing.T) {
 		if err != nil {
 			t.Fatalf("%s a/m --reset: %v; the limit set just now cannot be taken off", tc.verb, err)
 		}
-		if !strings.Contains(out, "magpie model "+tc.verb+" a/m says what it "+tc.says+" now") {
+		if !strings.Contains(out, "magpie-friday model "+tc.verb+" a/m says what it "+tc.says+" now") {
 			t.Errorf("%s a/m --reset: %q; it does not say the limit in the verb of its own command", tc.verb, out)
 		}
 		other := "answers with"
@@ -1205,7 +1205,7 @@ func TestModelLimitCmdSaysWhatALimitIsInTheVerbOfItsOwnCommand(t *testing.T) {
 	}
 }
 
-// magpie model wire keeps and drops the name a provider's models are asked
+// magpie-friday model wire keeps and drops the name a provider's models are asked
 // for, and says what is in force after every change. A provider-wide name
 // stands on a model that provider really serves rather than on an id made up
 // for it, a name with no "*" in it is not explained with one, and a name of
@@ -1238,20 +1238,20 @@ func TestModelWireCmd(t *testing.T) {
 		t.Errorf("naming every model alike said %q", out)
 	}
 	if out := saidArgs(t, "wire", "b/*"); !strings.Contains(out, "B is asked for every one of its models as vendor-c/one") ||
-		strings.Contains(out, "* is the model magpie knows each of them by") {
+		strings.Contains(out, "* is the model magpie-friday knows each of them by") {
 		t.Errorf("asking about a name with no star in it said %q; want no sentence about the star", out)
 	}
-	if out := saidArgs(t, "wire", "b/*", "vendor-c/*"); !strings.Contains(out, "* is the model magpie knows each of them by") {
+	if out := saidArgs(t, "wire", "b/*", "vendor-c/*"); !strings.Contains(out, "* is the model magpie-friday knows each of them by") {
 		t.Errorf("naming every model with a star in it said %q; want the star explained", out)
 	}
 	if out := saidArgs(t, "wire", "b/*"); !strings.Contains(out, "b/vendor/m is asked for as vendor-c/vendor/m") ||
-		!strings.Contains(out, "* is the model magpie knows each of them by") {
+		!strings.Contains(out, "* is the model magpie-friday knows each of them by") {
 		t.Errorf("asking about a name with a star in it said %q", out)
 	}
 
 	// one model of its own, which the provider's name cannot outrank
 	if out := saidArgs(t, "wire", "a/m", "vendor-c/m"); !strings.Contains(out, "is asked for as vendor-c/m") ||
-		!strings.Contains(out, "magpie and the agents still know it as m") {
+		!strings.Contains(out, "magpie-friday and the agents still know it as m") {
 		t.Errorf("naming one model said %q", out)
 	}
 	if n := wires()["a/m"]; n != "vendor-c/m" {
@@ -1262,10 +1262,10 @@ func TestModelWireCmd(t *testing.T) {
 		t.Errorf("asking about one model said %q", out)
 	}
 	// a name of only whitespace takes the one away, and where nothing is in
-	// force for the model it is asked for by the name magpie knows it by
+	// force for the model it is asked for by the name magpie-friday knows it by
 	// again — not read as a name just given
 	if out := saidArgs(t, "wire", "a/m", "   "); !strings.Contains(out, "is asked for as m again") ||
-		strings.Contains(out, "magpie and the agents still know it as m") {
+		strings.Contains(out, "magpie-friday and the agents still know it as m") {
 		t.Errorf("a name of only whitespace said %q; want the removal it is", out)
 	}
 	if _, ok := wires()["a/m"]; ok {
@@ -1321,7 +1321,7 @@ func TestModelWireCmd(t *testing.T) {
 	if n := wires()["a/*"]; n != "vendor-c/one" {
 		t.Errorf("--reset on a model took the provider's %q away too", n)
 	}
-	if out := saidArgs(t, "wire", "a/*", "--reset"); !strings.Contains(out, "every model of A is asked for by the name magpie knows it by again") {
+	if out := saidArgs(t, "wire", "a/*", "--reset"); !strings.Contains(out, "every model of A is asked for by the name magpie-friday knows it by again") {
 		t.Errorf("--reset on every model said %q", out)
 	}
 	if got := len(wires()); got != 1 {
@@ -1402,7 +1402,7 @@ func TestModelWireExampleStandsOnAModelWithNoNameOfItsOwn(t *testing.T) {
 	// the name in force for sol is the one given for sol itself, and the
 	// example stands for the provider's
 	if out := saidArgs(t, "wire", "relay-a/sol"); !strings.Contains(out, "vendor-c/sol-preview") {
-		t.Fatalf("magpie model wire relay-a/sol said %q; want the name given for sol itself to be the one in force", out)
+		t.Fatalf("magpie-friday model wire relay-a/sol said %q; want the name given for sol itself to be the one in force", out)
 	}
 	for _, args := range [][]string{{"wire", "relay-a/*", "vendor-c/*"}, {"wire", "relay-a/*"}} {
 		out := saidArgs(t, args...)
@@ -1422,10 +1422,10 @@ func TestModelWireExampleStandsOnAModelWithNoNameOfItsOwn(t *testing.T) {
 	}
 	out := saidArgs(t, "wire", "relay-a/*")
 	if want := "Relay A is asked for every one of its models as vendor-c/*"; !strings.Contains(out, want) {
-		t.Errorf("magpie model wire relay-a/* said %q; want the pattern alone, %q", out, want)
+		t.Errorf("magpie-friday model wire relay-a/* said %q; want the pattern alone, %q", out, want)
 	}
 	if strings.Contains(out, "is asked for as ") {
-		t.Errorf("magpie model wire relay-a/* said %q; every model it shows has a name of its own, so no model stands for the provider's", out)
+		t.Errorf("magpie-friday model wire relay-a/* said %q; every model it shows has a name of its own, so no model stands for the provider's", out)
 	}
 }
 
@@ -1433,7 +1433,7 @@ func TestModelWireExampleStandsOnAModelWithNoNameOfItsOwn(t *testing.T) {
 // and nothing else: a model's own key wins over the provider's, so a model
 // given a name of its own is asked for by that one however the provider's
 // entry reads. A tick saying every model of the provider is asked for by the
-// name magpie knows it by is therefore false the moment one model keeps a
+// name magpie-friday knows it by is therefore false the moment one model keeps a
 // name, and leaves the reader with the opposite of what the command did — so
 // the models that keep one are named with the name in force for each of them,
 // and the claim is made only where there are none.
@@ -1448,18 +1448,18 @@ func TestModelWireResetWildcardNamesTheModelsThatKeepAName(t *testing.T) {
 		t.Fatal(err)
 	}
 	out := saidArgs(t, "wire", "a/*", "--reset")
-	if strings.Contains(out, "every model of A is asked for by the name magpie knows it by again") {
-		t.Errorf("magpie model wire a/* --reset said %q; a/m is asked for as vendor-c/m, not by the name magpie knows it by", out)
+	if strings.Contains(out, "every model of A is asked for by the name magpie-friday knows it by again") {
+		t.Errorf("magpie-friday model wire a/* --reset said %q; a/m is asked for as vendor-c/m, not by the name magpie-friday knows it by", out)
 	}
 	if !strings.Contains(out, "m is asked for as vendor-c/m, a name of its own") {
-		t.Errorf("magpie model wire a/* --reset said %q; want the model that keeps a name named with the one in force for it", out)
+		t.Errorf("magpie-friday model wire a/* --reset said %q; want the model that keeps a name named with the one in force for it", out)
 	}
 	// and what it says is what the provider is asked for
 	if got := provider.UpstreamName(mustFind(t, "a"), "m"); got != "vendor-c/m" {
 		t.Errorf("after --reset on every model, m is asked for as %q; want the name given for m itself", got)
 	}
 	if got := provider.UpstreamName(mustFind(t, "a"), "only-a"); got != "only-a" {
-		t.Errorf("after --reset on every model, only-a is asked for as %q; want the name magpie knows it by", got)
+		t.Errorf("after --reset on every model, only-a is asked for as %q; want the name magpie-friday knows it by", got)
 	}
 	if provider.HasUpstreamName("a/*") {
 		t.Error("--reset on every model left the provider's own name behind")
@@ -1475,11 +1475,11 @@ func TestModelWireResetWildcardNamesTheModelsThatKeepAName(t *testing.T) {
 	}
 	out = saidArgs(t, "wire", "a/*", "--reset")
 	if !strings.Contains(out, "m, only-a are asked for as vendor-c/m, vendor-c/only-a, names of their own") {
-		t.Errorf("magpie model wire a/* --reset said %q; want both the models that keep a name, each with its own", out)
+		t.Errorf("magpie-friday model wire a/* --reset said %q; want both the models that keep a name, each with its own", out)
 	}
 
 	// a name kept for a model the provider does not serve is not one of
-	// them: magpie asks for no such a model, so nothing goes out under
+	// them: magpie-friday asks for no such a model, so nothing goes out under
 	// that name, and saying it did would claim a request that is not made
 	if err := provider.Save(provider.Provider{
 		ID: "a", Name: "A", Key: "ka", Models: []string{"claude-opus-5-5"}, Chat: "http://127.0.0.1:1/v1",
@@ -1490,20 +1490,20 @@ func TestModelWireResetWildcardNamesTheModelsThatKeepAName(t *testing.T) {
 		t.Fatal(err)
 	}
 	out = saidArgs(t, "wire", "a/*", "--reset")
-	if !strings.Contains(out, "every model of A is asked for by the name magpie knows it by again") {
-		t.Errorf("magpie model wire a/* --reset said %q; the names left are for models A no longer serves, and it is asked for none of them", out)
+	if !strings.Contains(out, "every model of A is asked for by the name magpie-friday knows it by again") {
+		t.Errorf("magpie-friday model wire a/* --reset said %q; the names left are for models A no longer serves, and it is asked for none of them", out)
 	}
 	if strings.Contains(out, "vendor-c/m") || strings.Contains(out, "vendor-c/only-a") {
-		t.Errorf("magpie model wire a/* --reset said %q; it names models A no longer serves, which magpie never asks for", out)
+		t.Errorf("magpie-friday model wire a/* --reset said %q; it names models A no longer serves, which magpie-friday never asks for", out)
 	}
 }
 
 // The refusal for a pattern with nothing left under it says every model of
-// the provider is asked for by the name magpie knows it by, and that is false
+// the provider is asked for by the name magpie-friday knows it by, and that is false
 // the moment one model keeps a name of its own: the model's own key wins over
 // the provider's, so it is asked for under that one however the provider's
 // entry reads. The second --reset over a provider-wide name is exactly where
-// a reader is left with the opposite of what magpie did, so the models that
+// a reader is left with the opposite of what magpie-friday did, so the models that
 // keep a name are named with the name in force for each of them, as the tick
 // over the same removal already does.
 func TestModelWireResetWildcardRefusalNamesTheModelsThatKeepAName(t *testing.T) {
@@ -1528,7 +1528,7 @@ func TestModelWireResetWildcardRefusalNamesTheModelsThatKeepAName(t *testing.T) 
 	if strings.Contains(out, "✓") {
 		t.Errorf("a --reset with nothing under the key printed a tick: %q", out)
 	}
-	if strings.Contains(err.Error(), "every model of A is already asked for by the name magpie knows it by") {
+	if strings.Contains(err.Error(), "every model of A is already asked for by the name magpie-friday knows it by") {
 		t.Errorf("the second --reset says %q; m is asked for as own-m, a name of its own", err)
 	}
 	if !strings.Contains(err.Error(), "m is asked for as own-m, a name of its own") {
@@ -1547,7 +1547,7 @@ func TestModelWireResetWildcardRefusalNamesTheModelsThatKeepAName(t *testing.T) 
 // A name given for a model may stand for that model with a star in it, the
 // way one given for every model of a provider does. So the sentence naming
 // the models a provider's own entry does not reach has to say the name the
-// request goes out under, and the star in it is the model magpie knows it
+// request goes out under, and the star in it is the model magpie-friday knows it
 // by — a star left standing there would name an id no vendor is ever asked
 // for, in the one line whose whole claim is that this is the name in force.
 func TestModelWireNamesTheModelsWithAStarInTheirOwnName(t *testing.T) {
@@ -1562,19 +1562,19 @@ func TestModelWireNamesTheModelsWithAStarInTheirOwnName(t *testing.T) {
 	}
 	out := saidArgs(t, "wire", "a/*", "vendor-d/*")
 	if !strings.Contains(out, "m is asked for as vendor-c/m, a name of its own") {
-		t.Errorf("magpie model wire a/* vendor-d/* said %q; want m named with the name the request goes out under", out)
+		t.Errorf("magpie-friday model wire a/* vendor-d/* said %q; want m named with the name the request goes out under", out)
 	}
 	if strings.Contains(out, "vendor-c/*") {
-		t.Errorf("magpie model wire a/* vendor-d/* said %q; the star in a model's own name stands for the model, and no request goes out under it", out)
+		t.Errorf("magpie-friday model wire a/* vendor-d/* said %q; the star in a model's own name stands for the model, and no request goes out under it", out)
 	}
 	// and the same is said of a removal, which is the other way the
 	// sentence is reached
 	out = saidArgs(t, "wire", "a/*", "--reset")
 	if !strings.Contains(out, "m is asked for as vendor-c/m, a name of its own") {
-		t.Errorf("magpie model wire a/* --reset said %q; want m named with the name the request goes out under", out)
+		t.Errorf("magpie-friday model wire a/* --reset said %q; want m named with the name the request goes out under", out)
 	}
 	if strings.Contains(out, "vendor-c/*") {
-		t.Errorf("magpie model wire a/* --reset said %q; the star in a model's own name stands for the model, and no request goes out under it", out)
+		t.Errorf("magpie-friday model wire a/* --reset said %q; the star in a model's own name stands for the model, and no request goes out under it", out)
 	}
 
 	// two models keeping one, each with a star of its own, so the plural
@@ -1584,7 +1584,7 @@ func TestModelWireNamesTheModelsWithAStarInTheirOwnName(t *testing.T) {
 	}
 	out = saidArgs(t, "wire", "a/*", "vendor-d/*")
 	if !strings.Contains(out, "m, only-a are asked for as vendor-c/m, vendor-e/only-a, names of their own") {
-		t.Errorf("magpie model wire a/* vendor-d/* said %q; want both names, each with the star stood for by its own model", out)
+		t.Errorf("magpie-friday model wire a/* vendor-d/* said %q; want both names, each with the star stood for by its own model", out)
 	}
 }
 
@@ -1604,32 +1604,32 @@ func TestModelWireWildcardSaysTheModelsItDoesNotReach(t *testing.T) {
 	}
 	out := saidArgs(t, "wire", "a/*", "vendor-c/*")
 	if strings.Contains(out, "· every model of A is asked for as") {
-		t.Errorf("magpie model wire a/* vendor-c/* said %q; a/m keeps a name of its own and is not asked for under that one", out)
+		t.Errorf("magpie-friday model wire a/* vendor-c/* said %q; a/m keeps a name of its own and is not asked for under that one", out)
 	}
 	if !strings.Contains(out, "with no name of its own is asked for as vendor-c/*") {
-		t.Errorf("magpie model wire a/* vendor-c/* said %q; want the claim narrowed to the models it reaches", out)
+		t.Errorf("magpie-friday model wire a/* vendor-c/* said %q; want the claim narrowed to the models it reaches", out)
 	}
 	if !strings.Contains(out, "m is asked for as vendor-c/m, a name of its own") {
-		t.Errorf("magpie model wire a/* vendor-c/* said %q; want the model it does not reach named with the name in force for it", out)
+		t.Errorf("magpie-friday model wire a/* vendor-c/* said %q; want the model it does not reach named with the name in force for it", out)
 	}
 	// the example still stands on a model the name does reach, so the two
 	// lines are about different models and neither contradicts the other
 	if !strings.Contains(out, "a/only-a is asked for as vendor-c/only-a") {
-		t.Errorf("magpie model wire a/* vendor-c/* said %q; want the example on a model the name does reach", out)
+		t.Errorf("magpie-friday model wire a/* vendor-c/* said %q; want the example on a model the name does reach", out)
 	}
 	// and where no model of the provider keeps a name, the claim is the
 	// whole of it
 	if out := saidArgs(t, "wire", "b/*", "vendor-c/*"); !strings.Contains(out, "every model of B is asked for as vendor-c/*") {
-		t.Errorf("magpie model wire b/* vendor-c/* said %q; no model of B keeps a name, so every one of them is asked for under it", out)
+		t.Errorf("magpie-friday model wire b/* vendor-c/* said %q; no model of B keeps a name, so every one of them is asked for under it", out)
 	}
 }
 
 // The wire names are the one thing a listing of what the user has said does
-// not show: `magpie model names` is a list of what the models are called and
-// of the levels they offer, both of which are magpie's own, and a relay
+// not show: `magpie-friday model names` is a list of what the models are called and
+// of the levels they offer, both of which are magpie-friday's own, and a relay
 // serving a model under an id of its own changes neither — so a name given
 // for every model of one was written with no command that read it back.
-// `magpie model wires` is that listing, and it is read off the file rather
+// `magpie-friday model wires` is that listing, and it is read off the file rather
 // than off a provider, since a name outlives the provider it was given for
 // and is in force for whichever provider takes that id next.
 func TestModelWiresCmd(t *testing.T) {
@@ -1646,7 +1646,7 @@ func TestModelWiresCmd(t *testing.T) {
 	}
 
 	if out := listed(t); !strings.Contains(out, "no vendor is asked for a model by another name yet") {
-		t.Errorf("magpie model wires with nothing given said %q; want it to say there is none", out)
+		t.Errorf("magpie-friday model wires with nothing given said %q; want it to say there is none", out)
 	}
 	for _, ref := range [][2]string{{"a/m", "vendor-c/m"}, {"b/*", "vendor-c/one"}} {
 		if err := modelCmd([]string{"wire", ref[0], ref[1]}); err != nil {
@@ -1665,11 +1665,11 @@ func TestModelWiresCmd(t *testing.T) {
 			}
 			lines++
 			if !strings.Contains(l, ref[1]) {
-				t.Errorf("magpie model wires put %q on a line of its own, %q: %q; want the name with the key it is stored at", ref[0], ref[1], out)
+				t.Errorf("magpie-friday model wires put %q on a line of its own, %q: %q; want the name with the key it is stored at", ref[0], ref[1], out)
 			}
 		}
 		if lines != 1 {
-			t.Errorf("magpie model wires listed %q on %d lines, %q; want it once", ref[0], lines, out)
+			t.Errorf("magpie-friday model wires listed %q on %d lines, %q; want it once", ref[0], lines, out)
 		}
 	}
 	// a name outlives the provider it was given for, so it is still listed
@@ -1679,7 +1679,7 @@ func TestModelWiresCmd(t *testing.T) {
 		t.Fatal(err)
 	}
 	if out := listed(t); !strings.Contains(out, "b/*") || !strings.Contains(out, "vendor-c/one") {
-		t.Errorf("magpie model wires after b was deleted said %q; want the name it outlived listed still", out)
+		t.Errorf("magpie-friday model wires after b was deleted said %q; want the name it outlived listed still", out)
 	}
 	if len(wires()) != 2 {
 		t.Errorf("the names kept are %v; a listing takes none away", wires())
@@ -1688,17 +1688,17 @@ func TestModelWiresCmd(t *testing.T) {
 
 // A name that is only whitespace is no name, as it is where one is given and
 // where one is looked up: UpstreamNames leaves it out and a request under it
-// goes out by the name magpie knows the model by. So the listing reads it the
-// way the file means it, one an older magpie stored or one hand-edited in,
+// goes out by the name magpie-friday knows the model by. So the listing reads it the
+// way the file means it, one an older magpie-friday stored or one hand-edited in,
 // rather than printing a line with nothing on it — a listing whose whole
 // purpose is reading the names back cannot be the one place a name shows up
 // that no vendor is ever asked for by.
 func TestModelWiresCmdSkipsANameOfOnlyWhitespace(t *testing.T) {
 	groupsHome(t)
 	catalog.Changed = nil // no agent's files are rewritten here
-	// magpie will not write one itself — a name of only whitespace is
+	// magpie-friday will not write one itself — a name of only whitespace is
 	// taken as a removal — so it is the file that is read, as one left by
-	// an older magpie or edited by hand is
+	// an older magpie-friday or edited by hand is
 	s := settings.Load()
 	s.ModelWires = map[string]string{"a/m": "  vendor-c/m  ", "a/only-a": "   "}
 	if err := settings.Save(s); err != nil {
@@ -1708,19 +1708,19 @@ func TestModelWiresCmdSkipsANameOfOnlyWhitespace(t *testing.T) {
 	listed := false
 	for _, l := range strings.Split(out, "\n") {
 		if strings.Contains(l, "only-a") {
-			t.Errorf("magpie model wires listed %q; a name of only whitespace is no name, and no request goes out under one", l)
+			t.Errorf("magpie-friday model wires listed %q; a name of only whitespace is no name, and no request goes out under one", l)
 		}
 		if strings.Contains(l, "a/m") {
 			listed = true
 			// the name ends the line, so what the file stored around
 			// it is not in force and is not what a request goes out as
 			if !strings.HasSuffix(l, "vendor-c/m") {
-				t.Errorf("magpie model wires said %q; want the name listed as it will be sent, trimmed", out)
+				t.Errorf("magpie-friday model wires said %q; want the name listed as it will be sent, trimmed", out)
 			}
 		}
 	}
 	if !listed {
-		t.Errorf("magpie model wires said %q; want the name that is in force listed", out)
+		t.Errorf("magpie-friday model wires said %q; want the name that is in force listed", out)
 	}
 
 	// and where every name in the file is one of those, the listing says
@@ -1730,17 +1730,17 @@ func TestModelWiresCmdSkipsANameOfOnlyWhitespace(t *testing.T) {
 		t.Fatal(err)
 	}
 	if out := saidArgs(t, "wires"); !strings.Contains(out, "no vendor is asked for a model by another name yet") {
-		t.Errorf("magpie model wires with nothing but whitespace names said %q; want it to say no vendor is asked for one by another name", out)
+		t.Errorf("magpie-friday model wires with nothing but whitespace names said %q; want it to say no vendor is asked for one by another name", out)
 	}
 }
 
 // --reset takes a name away, and where there is no name to take away the
-// model is already asked for by the name magpie knows it by, or by the name
+// model is already asked for by the name magpie-friday knows it by, or by the name
 // its provider's own entry puts in force. A tick over either would report a
 // removal that did not happen — and under a provider-wide name it would
 // leave the reader with the one thing that is false, that the model's own
 // name is the one in force. So a removal with nothing under the key is
-// refused, as `magpie model price --reset` refuses a price that was never
+// refused, as `magpie-friday model price --reset` refuses a price that was never
 // set, and the refusal says which of the two the model is asked for by. An
 // error here is a command that exits 1.
 func TestModelWireResetRefusesANameThereIsNot(t *testing.T) {
@@ -1767,9 +1767,9 @@ func TestModelWireResetRefusesANameThereIsNot(t *testing.T) {
 		t.Errorf("the second --reset says %q; want it to say a/m had no name of its own", err)
 	}
 
-	// A model the provider does not serve is one magpie never asks for by
+	// A model the provider does not serve is one magpie-friday never asks for by
 	// any name, so there is none to take away — and saying which name it is
-	// asked for under would claim a request magpie does not make, which is
+	// asked for under would claim a request magpie-friday does not make, which is
 	// the one thing a mistyped id must not be answered with. It is refused
 	// as not one of the provider's models, and the same id is refused when
 	// a name is given for it, which is what the README says a name is
@@ -1781,8 +1781,8 @@ func TestModelWireResetRefusesANameThereIsNot(t *testing.T) {
 	if strings.Contains(out, "✓") {
 		t.Errorf("--reset on a model A does not serve printed a tick: %q", out)
 	}
-	if !strings.Contains(err.Error(), "a/nosuch is not a model of A magpie knows of") {
-		t.Errorf("--reset on a model A does not serve says %q; want it to say magpie knows no such model", err)
+	if !strings.Contains(err.Error(), "a/nosuch is not a model of A magpie-friday knows of") {
+		t.Errorf("--reset on a model A does not serve says %q; want it to say magpie-friday knows no such model", err)
 	}
 	if strings.Contains(err.Error(), "already asked for as") {
 		t.Errorf("--reset on a model A does not serve says %q; that model is asked for by no name at all", err)
@@ -1801,7 +1801,7 @@ func TestModelWireResetRefusesANameThereIsNot(t *testing.T) {
 	if out := saidArgs(t, "wire", "a/*", "vendor-c/one"); !strings.Contains(out, "every model of A is asked for as vendor-c/one") {
 		t.Fatalf("naming every model of A said %q", out)
 	}
-	if out := saidArgs(t, "wire", "a/*", "--reset"); !strings.Contains(out, "every model of A is asked for by the name magpie knows it by again") {
+	if out := saidArgs(t, "wire", "a/*", "--reset"); !strings.Contains(out, "every model of A is asked for by the name magpie-friday knows it by again") {
 		t.Fatalf("the first --reset on every model said %q", out)
 	}
 	out, err = refusedArgs(t, "wire", "a/*", "--reset")
@@ -1812,7 +1812,7 @@ func TestModelWireResetRefusesANameThereIsNot(t *testing.T) {
 		t.Errorf("--reset over no name at all printed a tick: %q", out)
 	}
 	if !strings.Contains(err.Error(), "a/* has no name of its own to reset") ||
-		!strings.Contains(err.Error(), "every model of A is already asked for by the name magpie knows it by") {
+		!strings.Contains(err.Error(), "every model of A is already asked for by the name magpie-friday knows it by") {
 		t.Errorf("the second --reset on every model says %q", err)
 	}
 
@@ -1828,7 +1828,7 @@ func TestModelWireResetRefusesANameThereIsNot(t *testing.T) {
 		t.Fatalf("--reset on a model with no name of its own said %q", out)
 	}
 	if !strings.Contains(err.Error(), "a/m has no name of its own") ||
-		!strings.Contains(err.Error(), "magpie model wire 'a/*' --reset") {
+		!strings.Contains(err.Error(), "magpie-friday model wire 'a/*' --reset") {
 		t.Errorf("the refusal is %q; want the 'a/*' --reset that takes the name in force away", err)
 	}
 	if strings.Contains(out, "✓") {
@@ -1846,17 +1846,17 @@ func TestModelWireResetRefusesANameThereIsNot(t *testing.T) {
 	// a model A does not serve is outside all of that: the provider's own
 	// name reaches every model of A, and a model that is not one of them is
 	// asked for by it no more than by a name of its own, so the answer is
-	// the one about magpie not knowing the model rather than the name in
+	// the one about magpie-friday not knowing the model rather than the name in
 	// force for the others
 	out, err = refusedArgs(t, "wire", "a/nosuch", "--reset")
 	if err == nil {
 		t.Fatalf("--reset on a model A does not serve, under the provider's own name, said %q", out)
 	}
-	if !strings.Contains(err.Error(), "a/nosuch is not a model of A magpie knows of") ||
+	if !strings.Contains(err.Error(), "a/nosuch is not a model of A magpie-friday knows of") ||
 		strings.Contains(err.Error(), "vendor-c/one") {
-		t.Errorf("the refusal is %q; want magpie knowing no such model, not the name in force", err)
+		t.Errorf("the refusal is %q; want magpie-friday knowing no such model, not the name in force", err)
 	}
-	if out := saidArgs(t, "wire", "a/*", "--reset"); !strings.Contains(out, "every model of A is asked for by the name magpie knows it by again") {
+	if out := saidArgs(t, "wire", "a/*", "--reset"); !strings.Contains(out, "every model of A is asked for by the name magpie-friday knows it by again") {
 		t.Errorf("--reset on every model said %q", out)
 	}
 	if got := len(wires()); got != 0 {
@@ -1898,7 +1898,7 @@ func TestModelWireResetAfterTheProviderIsGone(t *testing.T) {
 	}
 
 	// a provider that takes the id afterwards is asked for its models by
-	// the names magpie knows them by, which is the whole of what clearing
+	// the names magpie-friday knows them by, which is the whole of what clearing
 	// the name buys
 	if err := provider.Save(provider.Provider{ID: "b", Name: "B", Key: "kb",
 		Models: []string{"vendor/m"}, Chat: "http://127.0.0.1:1/v1"}); err != nil {
@@ -1963,7 +1963,7 @@ func TestModelWireResetUnderAProviderShownAsTheGoneId(t *testing.T) {
 // its text up under the line above rather than under the command it belongs
 // to, which is how the wire lines read until they were put in line.
 func TestModelUsageLinesUpItsDescriptions(t *testing.T) {
-	const cmd = "  magpie model "
+	const cmd = "  magpie-friday model "
 	// where a description starts: past the command and the run of spaces
 	// after it, or — for a wrapped description — at its own first letter
 	startsAt := func(l string) (int, bool) {
@@ -2024,7 +2024,7 @@ func TestModelUsageLinesUpItsDescriptions(t *testing.T) {
 // description is taken from the first space past it — which is where the
 // layout puts it, and which a reader reads as readily as any other line.
 func TestModelUsageGivesEveryCommandItsOwnDescription(t *testing.T) {
-	const cmd = "  magpie model "
+	const cmd = "  magpie-friday model "
 	// words a sentence cannot end on, which is what a description is left
 	// reading as when the line it carried on into was somebody else's. A
 	// preposition like "by" is not one of them: a description can end on it

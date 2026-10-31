@@ -4,7 +4,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // The search APIs (#419) go in a backup with the providers: their keys
@@ -60,7 +60,7 @@ func TestBackupSearchAPIs(t *testing.T) {
 		t.Fatalf("need key %v", r.NeedKey)
 	}
 
-	// a backup from a magpie before them leaves them alone
+	// a backup from a magpie-friday before them leaves them alone
 	old := without
 	old.Searches = nil
 	if _, err := Restore(old, Parts{Providers: true}); err != nil {

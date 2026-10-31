@@ -115,7 +115,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         await context.close();
       });
 
-      // A busy gateway (shensmart on Discord, a remote magpie in a local
+      // A busy gateway (shensmart on Discord, a remote magpie-friday in a local
       // browser: the room under the story grew and never shrank back):
       // each request is answered as the next one starts, so the two come
       // in one trace and the newest is always under way. None of them is

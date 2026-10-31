@@ -103,7 +103,7 @@ func TestZedSecretService(t *testing.T) {
 						!reflect.DeepEqual(properties["org.freedesktop.Secret.Item.Attributes"].Value(), want) || !replace {
 						t.Errorf("item properties: %v, replace %v", properties, replace)
 					}
-					if secret.Session != session || len(secret.Parameters) != 0 || string(secret.Value) != "magpie-zed" || secret.ContentType != "text/plain; charset=utf8" {
+					if secret.Session != session || len(secret.Parameters) != 0 || string(secret.Value) != "magpie-friday-zed" || secret.ContentType != "text/plain; charset=utf8" {
 						t.Errorf("incorrect Secret wire value: %+v", secret)
 					}
 					if tc.storeError {

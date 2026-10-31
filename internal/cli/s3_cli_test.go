@@ -11,8 +11,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/davsync"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/davsync"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // s3Server is an S3 server with buckets of any name, path-style, keeping
@@ -93,10 +93,10 @@ func TestS3Cmd(t *testing.T) {
 	// the wrong kind of address, and no access key, said before any secret
 	// is asked for
 	if err := s3Cmd([]string{"on", "https://dav.example.com/dav/"}); err == nil || !strings.Contains(err.Error(), "not an S3 address") {
-		t.Fatalf("a WebDAV address to magpie s3: %v", err)
+		t.Fatalf("a WebDAV address to magpie-friday s3: %v", err)
 	}
-	if err := webdavCmd([]string{"on", "s3://bkt"}); err == nil || !strings.Contains(err.Error(), "magpie s3 on s3://bkt") {
-		t.Fatalf("an S3 address to magpie webdav: %v", err)
+	if err := webdavCmd([]string{"on", "s3://bkt"}); err == nil || !strings.Contains(err.Error(), "magpie-friday s3 on s3://bkt") {
+		t.Fatalf("an S3 address to magpie-friday webdav: %v", err)
 	}
 	if err := s3Cmd([]string{"on", "s3://bkt", "endpoint=" + bucket.url}); err == nil || !strings.Contains(err.Error(), "no access key") {
 		t.Fatalf("no access key: %v", err)
@@ -115,7 +115,7 @@ func TestS3Cmd(t *testing.T) {
 		c.Endpoint != bucket.url || c.Region != "auto" || !c.PathStyle || !c.Keys || !c.Agents {
 		t.Fatalf("on: %v %+v", ok, c)
 	}
-	if up := bucket.object("/bkt/team/magpie/magpie.magpie-backup"); len(up) == 0 || strings.Contains(string(up), "deepseek") {
+	if up := bucket.object("/bkt/team/magpie-friday/magpie-friday.magpie-friday-backup"); len(up) == 0 || strings.Contains(string(up), "deepseek") {
 		t.Fatalf("in the bucket: %q", up)
 	}
 	if v := davsync.Status(); v.Error != "" || v.Last.IsZero() || v.Kind != "s3" || v.Region != "auto" {
@@ -132,14 +132,14 @@ func TestS3Cmd(t *testing.T) {
 	if c, _ := davsync.Load(); c.URL != "s3://bkt/other" || c.Region != "us-east-1" || c.Keys || c.Password != "s3cr3t" {
 		t.Fatalf("set: %+v", c)
 	}
-	if len(bucket.object("/bkt/other/magpie/magpie.magpie-backup")) == 0 {
+	if len(bucket.object("/bkt/other/magpie-friday/magpie-friday.magpie-friday-backup")) == 0 {
 		t.Fatal("nothing under the new prefix")
 	}
-	// magpie webdav doesn't change or turn off S3 sync
+	// magpie-friday webdav doesn't change or turn off S3 sync
 	if err := webdavCmd([]string{"set", "keys=yes"}); err == nil || !strings.Contains(err.Error(), "S3 sync is on") {
 		t.Fatalf("webdav set while S3 is on: %v", err)
 	}
-	if err := webdavCmd([]string{"off"}); err == nil || !strings.Contains(err.Error(), "magpie s3 off") {
+	if err := webdavCmd([]string{"off"}); err == nil || !strings.Contains(err.Error(), "magpie-friday s3 off") {
 		t.Fatalf("webdav off while S3 is on: %v", err)
 	}
 	if _, ok := davsync.Load(); !ok {
@@ -156,7 +156,7 @@ func TestS3Cmd(t *testing.T) {
 		t.Fatalf("another key: %+v", c)
 	}
 
-	// magpie webdav on moves sync to a WebDAV folder, keeping the
+	// magpie-friday webdav on moves sync to a WebDAV folder, keeping the
 	// passphrase and what is synced, leaving no S3 field behind
 	dav := newDAVServer(t, "pw")
 	piped(t, "pw")
@@ -182,7 +182,7 @@ func TestS3Cmd(t *testing.T) {
 	if c, _ := davsync.Load(); c.S3() || c.URL != dav.url || c.User != "me" || c.Password != "pw" || c.Other == nil || c.Other.Password != "s3cr3t2" {
 		t.Fatalf("back to WebDAV: %+v", c)
 	}
-	if err := s3Cmd([]string{"off"}); err == nil || !strings.Contains(err.Error(), "magpie webdav off") {
+	if err := s3Cmd([]string{"off"}); err == nil || !strings.Contains(err.Error(), "magpie-friday webdav off") {
 		t.Fatalf("s3 off while WebDAV is on: %v", err)
 	}
 	if err := webdavCmd([]string{"off"}); err != nil {

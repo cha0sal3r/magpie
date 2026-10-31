@@ -13,9 +13,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gwmw"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/gwmw"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // use makes plugins.json list entries, and the middleware load afresh.
@@ -367,7 +367,7 @@ func TestStreamUnchangedPassesBytes(t *testing.T) {
 }
 
 // A keepalive comment goes to the agent as it is written, not with the
-// event after it: held, a proxy in front of magpie heard nothing while the
+// event after it: held, a proxy in front of magpie-friday heard nothing while the
 // vendor reasoned silently and hung up (#2402).
 func TestStreamKeepaliveNotHeld(t *testing.T) {
 	use(t, file(t, `export function onEvent(ev) { ev.seen = true; return ev; }`))

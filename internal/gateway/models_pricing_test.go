@@ -7,12 +7,12 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// cleary5779 on Discord: an agent built on magpie reads /v1/models and
-// shows what a call costs. Each model magpie knows a price of carries it
+// cleary5779 on Discord: an agent built on magpie-friday reads /v1/models and
+// shows what a call costs. Each model magpie-friday knows a price of carries it
 // as OpenRouter's list does, USD a token as decimal strings, at the price
 // the Usage page counts it at; a model no price is known for has no
 // pricing at all, never a 0.

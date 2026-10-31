@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A custom tool's call a translated vendor's model made (Codex's
@@ -93,7 +93,7 @@ var sentAsOpenAI = []string{`"ctc_18da5b9a10256a3e00000012"`, `"ctc_openai"`,
 var sentToChatGPT = []string{`"tsc_18da5b9a10256a3e00000011"`, `"ctc_18da5b9a10256a3e00000012"`, `"ctc_openai"`,
 	`"call_id":"s1"`, `"call_id":"p1"`, `"call_id":"p2"`, "fix it"}
 
-// The same conversation going on through a magpie model or a routing group
+// The same conversation going on through a magpie-friday model or a routing group
 // to OpenAI's API on a key (Lullaby on Discord: "Invalid 'input[155].id':
 // 'fc_18da5b9a10256a3e00000011'. Expected an ID that begins with 'tsc'",
 // and 'ctc' after it, Codex's auto-compaction, a compaction_trigger turn

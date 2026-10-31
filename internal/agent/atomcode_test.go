@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 func atomcodeSaveFake(t *testing.T) {
@@ -19,7 +19,7 @@ func atomcodeSaveFake(t *testing.T) {
 	}
 }
 
-// Picking a model for AtomCode writes the account "magpie" and one model
+// Picking a model for AtomCode writes the account "magpie-friday" and one model
 // table per catalog model — as its own CodingPlan sign-in writes them — and
 // points both defaults at the picked one; the table's model is the catalog
 // reference the gateway resolves.
@@ -27,7 +27,7 @@ func TestAtomcodeWiring(t *testing.T) {
 	home := t.TempDir()
 	atomcodeSaveFake(t)
 	a := atomcode(home)
-	if err := a.Apply("model", "magpie/fake/m1"); err != nil {
+	if err := a.Apply("model", "magpie-friday/fake/m1"); err != nil {
 		t.Fatal(err)
 	}
 	path := filepath.Join(home, ".atomcode", "config.toml")
@@ -37,14 +37,14 @@ func TestAtomcodeWiring(t *testing.T) {
 	}
 	cfg := string(b)
 	for _, want := range []string{
-		`default_provider = "magpie/fake/m1"`,
-		`default_model = "magpie/fake/m1"`,
-		`[provider_accounts."magpie"]`,
+		`default_provider = "magpie-friday/fake/m1"`,
+		`default_model = "magpie-friday/fake/m1"`,
+		`[provider_accounts."magpie-friday"]`,
 		`provider = "openai-compatible"`,
 		`base_url = "` + gatewayV1() + `"`,
 		`api_key = "` + gateway.TokenFor("atomcode") + `"`,
-		`[models."magpie/fake/m1"]`,
-		`account = "magpie"`,
+		`[models."magpie-friday/fake/m1"]`,
+		`account = "magpie-friday"`,
 		`model = "fake/m1"`,
 		`context_window = 128000`,
 	} {
@@ -52,13 +52,13 @@ func TestAtomcodeWiring(t *testing.T) {
 			t.Errorf("want %s in:\n%s", want, cfg)
 		}
 	}
-	if v := a.Field("model").Get(); v != "magpie/fake/m1" {
+	if v := a.Field("model").Get(); v != "magpie-friday/fake/m1" {
 		t.Fatalf("model reads %q", v)
 	}
 	if d := a.Drift(); d != nil {
 		t.Fatalf("drift right after a set: %+v\n%s", d, cfg)
 	}
-	// an effort picked in magpie is written to the model table, and one
+	// an effort picked in magpie-friday is written to the model table, and one
 	// AtomCode does not know is turned away
 	if err := provider.SetModelEfforts("fake/m1", []string{"low", "medium", "high"}); err != nil {
 		t.Fatal(err)
@@ -66,14 +66,14 @@ func TestAtomcodeWiring(t *testing.T) {
 	if err := a.Apply("effort", "high"); err != nil {
 		t.Fatal(err)
 	}
-	if tbl, _ := edit.GetTOMLTable(path, atomcodeTable("magpie/fake/m1")); tbl["reasoning_effort"] != "high" {
+	if tbl, _ := edit.GetTOMLTable(path, atomcodeTable("magpie-friday/fake/m1")); tbl["reasoning_effort"] != "high" {
 		t.Fatalf("reasoning_effort: %v", tbl)
 	}
 	if err := a.Apply("effort", "ultra"); err == nil {
 		t.Fatal("an effort AtomCode does not know was accepted")
 	}
 	// an AtomCode-owned effort is kept with the model table
-	if err := edit.SetTOMLKey(path, atomcodeTable("magpie/fake/m1"), "reasoning_effort", "high"); err != nil {
+	if err := edit.SetTOMLKey(path, atomcodeTable("magpie-friday/fake/m1"), "reasoning_effort", "high"); err != nil {
 		t.Fatal(err)
 	}
 	if v := a.Field("effort").Get(); v != "high" {
@@ -87,7 +87,7 @@ func TestAtomcodeWiring(t *testing.T) {
 	}
 }
 
-// Clearing AtomCode's model takes magpie's account and model tables out and
+// Clearing AtomCode's model takes magpie-friday's account and model tables out and
 // puts the defaults the user had back — the shape its own sign-in writes.
 func TestAtomcodeRestoresOwnDefaults(t *testing.T) {
 	home := t.TempDir()
@@ -116,11 +116,11 @@ context_window = 512000
 		t.Fatal(err)
 	}
 	a := atomcode(home)
-	if err := a.Apply("model", "magpie/fake/m1"); err != nil {
+	if err := a.Apply("model", "magpie-friday/fake/m1"); err != nil {
 		t.Fatal(err)
 	}
 	cfg, _ := os.ReadFile(path)
-	for _, want := range []string{`[provider_accounts.AtomGit]`, `[models."AtomGit-glm5.3-flash"]`, `[models."magpie/fake/m1"]`} {
+	for _, want := range []string{`[provider_accounts.AtomGit]`, `[models."AtomGit-glm5.3-flash"]`, `[models."magpie-friday/fake/m1"]`} {
 		if !strings.Contains(string(cfg), want) {
 			t.Fatalf("want %s kept or written in:\n%s", want, cfg)
 		}
@@ -139,12 +139,12 @@ context_window = 512000
 		t.Fatalf("deleted provider table was restored as default_provider: %q\n%s", v, cfg)
 	}
 	if ts, _ := edit.TOMLTables(path); strings.Contains(strings.Join(ts, "\n"), atomcodeAccount) {
-		t.Fatalf("magpie's tables stayed:\n%s", cfg)
+		t.Fatalf("magpie-friday's tables stayed:\n%s", cfg)
 	}
 	if v := a.Field("model").Get(); v != "AtomGit-glm5.3-flash" {
 		t.Fatalf("model reads %q, want the user's own default_model", v)
 	}
-	// a second clear, nothing of magpie's in use, takes both defaults out
+	// a second clear, nothing of magpie-friday's in use, takes both defaults out
 	if err := a.Apply("model", ""); err != nil {
 		t.Fatal(err)
 	}
@@ -157,7 +157,7 @@ context_window = 512000
 }
 
 // The catalog as it is now reaches AtomCode's config when Sync runs, and a
-// file magpie wrote nothing into stays as it is.
+// file magpie-friday wrote nothing into stays as it is.
 func TestAtomcodeSync(t *testing.T) {
 	home := t.TempDir()
 	atomcodeSaveFake(t)
@@ -167,17 +167,17 @@ func TestAtomcodeSync(t *testing.T) {
 		t.Fatal(err)
 	}
 	if _, err := os.Stat(path); err == nil {
-		t.Fatal("Sync wrote a config where magpie had nothing")
+		t.Fatal("Sync wrote a config where magpie-friday had nothing")
 	}
-	if err := a.Apply("model", "magpie/fake/m1"); err != nil {
+	if err := a.Apply("model", "magpie-friday/fake/m1"); err != nil {
 		t.Fatal(err)
 	}
-	if err := edit.SetTOMLKey(path, atomcodeTable("magpie/fake/m1"), "reasoning_effort", "high"); err != nil {
+	if err := edit.SetTOMLKey(path, atomcodeTable("magpie-friday/fake/m1"), "reasoning_effort", "high"); err != nil {
 		t.Fatal(err)
 	}
 	b, _ := os.ReadFile(path)
-	config := strings.ReplaceAll(string(b), `[provider_accounts."magpie"]`, `[provider_accounts.magpie]`)
-	config = strings.ReplaceAll(config, `[models."magpie/fake/m1"]`, `[models.'magpie/fake/m1']`)
+	config := strings.ReplaceAll(string(b), `[provider_accounts."magpie-friday"]`, `[provider_accounts.magpie-friday]`)
+	config = strings.ReplaceAll(config, `[models."magpie-friday/fake/m1"]`, `[models.'magpie-friday/fake/m1']`)
 	if err := os.WriteFile(path, []byte(config), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -191,20 +191,20 @@ func TestAtomcodeSync(t *testing.T) {
 		t.Fatal(err)
 	}
 	cfg, _ := os.ReadFile(path)
-	if !strings.Contains(string(cfg), `[models."magpie/fake/m3"]`) {
+	if !strings.Contains(string(cfg), `[models."magpie-friday/fake/m3"]`) {
 		t.Fatalf("the new model did not reach the config:\n%s", cfg)
 	}
-	if v, _ := edit.GetTOMLTop(path, "default_model"); v != "magpie/fake/m1" {
+	if v, _ := edit.GetTOMLTop(path, "default_model"); v != "magpie-friday/fake/m1" {
 		t.Fatalf("Sync moved the default: %q", v)
 	}
 	if !strings.Contains(string(cfg), `reasoning_effort = "high"`) {
 		t.Fatalf("Sync dropped the selected effort:\n%s", cfg)
 	}
-	if strings.Count(string(cfg), "[provider_accounts.magpie]") != 0 || strings.Count(string(cfg), `[provider_accounts."magpie"]`) != 1 {
-		t.Fatalf("Sync did not canonicalize the exact magpie account:\n%s", cfg)
+	if strings.Count(string(cfg), "[provider_accounts.magpie-friday]") != 0 || strings.Count(string(cfg), `[provider_accounts."magpie-friday"]`) != 1 {
+		t.Fatalf("Sync did not canonicalize the exact magpie-friday account:\n%s", cfg)
 	}
-	config = strings.ReplaceAll(string(cfg), `[provider_accounts."magpie"]`, `[provider_accounts.magpie]`)
-	config = strings.ReplaceAll(config, `[models."magpie/fake/m1"]`, `[models.'magpie/fake/m1']`)
+	config = strings.ReplaceAll(string(cfg), `[provider_accounts."magpie-friday"]`, `[provider_accounts.magpie-friday]`)
+	config = strings.ReplaceAll(config, `[models."magpie-friday/fake/m1"]`, `[models.'magpie-friday/fake/m1']`)
 	if err := os.WriteFile(path, []byte(config), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -212,8 +212,8 @@ func TestAtomcodeSync(t *testing.T) {
 		t.Fatal(err)
 	}
 	cfg, _ = os.ReadFile(path)
-	if strings.Contains(string(cfg), "[provider_accounts.magpie]") || strings.Contains(string(cfg), gateway.TokenFor("atomcode")) {
-		t.Fatalf("clearing left the unquoted magpie account or key behind:\n%s", cfg)
+	if strings.Contains(string(cfg), "[provider_accounts.magpie-friday]") || strings.Contains(string(cfg), gateway.TokenFor("atomcode")) {
+		t.Fatalf("clearing left the unquoted magpie-friday account or key behind:\n%s", cfg)
 	}
 }
 
@@ -238,7 +238,7 @@ base_url = "https://example.com/v1"
 	if !slices.ContainsFunc(a.Field("model").Options(a.Values()), func(o Option) bool { return o.Value == "legacy" }) {
 		t.Fatal("legacy provider missing from model picker")
 	}
-	if err := a.Apply("model", "magpie/fake/m1"); err != nil {
+	if err := a.Apply("model", "magpie-friday/fake/m1"); err != nil {
 		t.Fatal(err)
 	}
 	if err := a.Apply("model", ""); err != nil {
@@ -247,7 +247,7 @@ base_url = "https://example.com/v1"
 	if v, _ := edit.GetTOMLTop(path, "default_model"); v != "legacy" {
 		t.Fatalf("legacy default_model not restored: %q", v)
 	}
-	if err := a.Apply("model", "magpie/fake/m1"); err != nil {
+	if err := a.Apply("model", "magpie-friday/fake/m1"); err != nil {
 		t.Fatal(err)
 	}
 	if err := a.Apply("model", "legacy"); err != nil {
@@ -281,11 +281,11 @@ func TestAtomcodeEffortWithoutModelTableIsRefused(t *testing.T) {
 	if err := provider.SetModelEfforts("fake/m1", []string{"low", "high"}); err != nil {
 		t.Fatal(err)
 	}
-	if err := a.Apply("model", "magpie/fake/m1"); err != nil {
+	if err := a.Apply("model", "magpie-friday/fake/m1"); err != nil {
 		t.Fatal(err)
 	}
 	path := filepath.Join(home, ".atomcode", "config.toml")
-	if err := edit.DelTOMLTable(path, atomcodeTable("magpie/fake/m1")); err != nil {
+	if err := edit.DelTOMLTable(path, atomcodeTable("magpie-friday/fake/m1")); err != nil {
 		t.Fatal(err)
 	}
 	before, _ := os.ReadFile(path)

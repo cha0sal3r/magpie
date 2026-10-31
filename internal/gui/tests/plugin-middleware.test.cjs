@@ -2,7 +2,7 @@
 // Gateway middleware plugins on the Installed tab: a plugin that is only
 // middleware says what it runs (its hooks, calls, µs each, failures with
 // the last error in the tip) where a subscription plugin says what it
-// signs in to, and never "Signs in to nothing magpie can use"; one that
+// signs in to, and never "Signs in to nothing magpie-friday can use"; one that
 // didn't load says why in red; one switched off says Off alone; a plugin
 // that is both keeps its sign-in line and gains the middleware line.
 // English and Chinese; the API is faked here.
@@ -103,8 +103,8 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
     const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: "chromium" }));
     t.after(() => browser.close());
     const I = {
-      en: { h: "Plugins extend magpie", p: /run in magpie's gateway .* give every agent tools, connect an agent, or add a page of its own/, a: "Write a plugin", url: "https://usemagpie.ai/docs/plugins", trust: /sign-in or your requests/ },
-      zh: { h: "插件扩展 magpie", p: /在 magpie 网关里处理.*给每个 Agent 提供工具.*加一个自己的页面/, a: "编写插件", url: "https://usemagpie.ai/docs/zh/plugins", trust: /登录或看到你的请求/ },
+      en: { h: "Plugins extend magpie-friday", p: /run in magpie-friday's gateway .* give every agent tools, connect an agent, or add a page of its own/, a: "Write a plugin", url: "https://usemagpie.ai/docs/plugins", trust: /sign-in or your requests/ },
+      zh: { h: "插件扩展 magpie-friday", p: /在 magpie-friday 网关里处理.*给每个 Agent 提供工具.*加一个自己的页面/, a: "编写插件", url: "https://usemagpie.ai/docs/zh/plugins", trust: /登录或看到你的请求/ },
     };
     for (const lang of ["en", "zh"]) {
       await t.test(lang, async () => {

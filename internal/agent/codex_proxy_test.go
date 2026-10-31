@@ -16,10 +16,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // proxyAs has codexProxyFor read env, sys and goos, and proxyProbe answer
@@ -38,7 +38,7 @@ func proxyAs(t *testing.T, env map[string]string, sys netproxy.Proxy, goos strin
 	})
 }
 
-// Which proxy Codex sends a request for magpie's 127.0.0.1 through, the way
+// Which proxy Codex sends a request for magpie-friday's 127.0.0.1 through, the way
 // its reqwest does (hyper-util's Matcher::from_system) and, with
 // respect_system_proxy on, the way codex-rs outbound_proxy does.
 func TestCodexProxyFor(t *testing.T) {
@@ -144,9 +144,9 @@ func TestCodexProxyNamesItsVariable(t *testing.T) {
 	}
 }
 
-// liu_dyj on X: magpie opened from the Dock lacks the NO_PROXY a shell
+// liu_dyj on X: magpie-friday opened from the Dock lacks the NO_PROXY a shell
 // profile sets, which the Codex a terminal or the ChatGPT app runs has.
-// The login shell's value is Codex's; magpie's own only where the shell
+// The login shell's value is Codex's; magpie-friday's own only where the shell
 // has none.
 func TestCodexEnvTakesLoginShell(t *testing.T) {
 	was := loginEnv
@@ -158,7 +158,7 @@ func TestCodexEnvTakesLoginShell(t *testing.T) {
 		t.Fatalf("NO_PROXY = %q, want the login shell's", got)
 	}
 	if got := codexEnv("HTTP_PROXY"); got != "http://127.0.0.1:7890" {
-		t.Fatalf("HTTP_PROXY = %q, want magpie's own", got)
+		t.Fatalf("HTTP_PROXY = %q, want magpie-friday's own", got)
 	}
 	proxyAs(t, nil, netproxy.Proxy{URL: "http://127.0.0.1:7890", HTTP: "http://127.0.0.1:7890"}, "darwin", nil)
 	codexProxyEnv = codexEnv
@@ -169,10 +169,10 @@ func TestCodexEnvTakesLoginShell(t *testing.T) {
 	}
 }
 
-// A proxy's own 502 isn't magpie; a proxy that passes the request on is.
+// A proxy's own 502 isn't magpie-friday; a proxy that passes the request on is.
 func TestRealProxyProbe(t *testing.T) {
 	gw := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, `{"name":"magpie"}`)
+		io.WriteString(w, `{"name":"magpie-friday"}`)
 	}))
 	defer gw.Close()
 	dead := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -192,7 +192,7 @@ func TestRealProxyProbe(t *testing.T) {
 	}))
 	defer pass.Close()
 	if realProxyProbe(gw.URL+"/v1", dead.URL) {
-		t.Fatal("a proxy answering 502 counted as reaching magpie")
+		t.Fatal("a proxy answering 502 counted as reaching magpie-friday")
 	}
 	if !realProxyProbe(gw.URL+"/v1", pass.URL) {
 		t.Fatal("a proxy passing the request on didn't count")
@@ -257,8 +257,8 @@ func socksOnly(t *testing.T) string {
 }
 
 // Muma102kMichael on X: Codex 502 on every project and every new chat once
-// magpie took it over, its requests for 127.0.0.1 sent through a proxy that
-// didn't pass them on. Failover, which magpie writes uninvited, is never
+// magpie-friday took it over, its requests for 127.0.0.1 sent through a proxy that
+// didn't pass them on. Failover, which magpie-friday writes uninvited, is never
 // written then, and one written before goes again; once the proxy passes
 // them on, it is.
 func TestCodexFailoverHeldWhileProxyDoesNotPassOn(t *testing.T) {
@@ -303,7 +303,7 @@ func TestCodexFailoverHeldWhileProxyDoesNotPassOn(t *testing.T) {
 	}
 }
 
-// Connected to magpie, with the gateway up but Codex's way to it through a
+// Connected to magpie-friday, with the gateway up but Codex's way to it through a
 // proxy that answers 502: the row says so, which proxy and where it is set,
 // rather than connected (kind "proxied"); once the proxy passes it on, or
 // 127.0.0.1 goes around it, connected again.
@@ -369,9 +369,9 @@ func TestCodexProxiedDriftShowsNoCredentials(t *testing.T) {
 	}
 }
 
-// Leon920717 on X: with magpie quit, Codex CLI kept retrying the gateway
-// till magpie was open again. The failover base URL magpie wrote goes as
-// the magpie serving the gateway quits (EndCodexFailover), and the next
+// Leon920717 on X: with magpie-friday quit, Codex CLI kept retrying the gateway
+// till magpie-friday was open again. The failover base URL magpie-friday wrote goes as
+// the magpie-friday serving the gateway quits (EndCodexFailover), and the next
 // start's Sync writes it again; a base URL the user wrote stays.
 func TestCodexFailoverEndsWithMagpie(t *testing.T) {
 	claims := func(m map[string]any) string {
@@ -413,7 +413,7 @@ func TestCodexFailoverEndsWithMagpie(t *testing.T) {
 		t.Fatal(err)
 	}
 	if cfg := read(); strings.Contains(cfg, "openai_base_url") || !strings.Contains(cfg, `model = "gpt-5.5"`) {
-		t.Fatalf("magpie quit, Codex still pointed at it:\n%s", cfg)
+		t.Fatalf("magpie-friday quit, Codex still pointed at it:\n%s", cfg)
 	}
 	// the app-server keeps the base URL it started with: asked to restart
 	if len(asked) != 1 || asked[0] != filepath.Dir(cx.Path) {
@@ -450,7 +450,7 @@ func TestCodexFailoverEndsWithMagpie(t *testing.T) {
 // CC Switch with "unify Codex session history" on (xuxing0727 on X) runs
 // the official sign-in as its "custom" mirror, so failover goes on that
 // table's base_url rather than openai_base_url: it too waits for the proxy
-// to pass Codex on, and goes as the magpie serving the gateway quits.
+// to pass Codex on, and goes as the magpie-friday serving the gateway quits.
 func TestCodexMirrorFailoverHeldAndEndsWithMagpie(t *testing.T) {
 	// CC Switch's own bytes (src-tauri services/provider/mod.rs)
 	const unified = "model_provider = \"custom\"\nmodel = \"gpt-5.5\"\n\n" +
@@ -499,6 +499,6 @@ func TestCodexMirrorFailoverHeldAndEndsWithMagpie(t *testing.T) {
 		t.Fatal(err)
 	}
 	if cfg := read(); strings.Contains(cfg, "base_url") || !strings.Contains(cfg, `model_provider = "custom"`) || !strings.Contains(cfg, "supports_websockets = true") {
-		t.Fatalf("magpie quit, CC Switch's mirror still pointed at it:\n%s", cfg)
+		t.Fatalf("magpie-friday quit, CC Switch's mirror still pointed at it:\n%s", cfg)
 	}
 }

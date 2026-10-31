@@ -9,13 +9,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/probelog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/probelog"
 )
 
 // Which APIs a vendor or relay serves behind the one URL the user typed is
 // found by asking (01huadalang on Discord: 一键检测支持什么协议，发一个最小
-// 请求看是否返回200): each of the three magpie speaks upstream — Chat
+// 请求看是否返回200): each of the three magpie-friday speaks upstream — Chat
 // Completions, Responses and Anthropic Messages — is sent the smallest
 // request Test sends, at that URL as the API takes it, and what answered
 // is what the provider can be given. Since a custom provider can keep a
@@ -24,7 +24,7 @@ import (
 // 端点，为什么呢？).
 
 // detectProtocols are the APIs a detection asks, in the order it says
-// what they answered: magpie's three, then Gemini's.
+// what they answered: magpie-friday's three, then Gemini's.
 var detectProtocols = []Protocol{Chat, Responses, Anthropic, Gemini}
 
 // Detection is what one API answered at the URL it was asked at.

@@ -31,7 +31,7 @@ function fixture(lang, { libOn, have = false, imageGen = "", gateway = false }) 
   const settings = () => ({
     theme: "light", lang, tray: "panel", currency: "usd", textSize: 100, redactWords: [],
     codexWarmup: "", claudeWarmup: "", codexWarmAt: "", claudeWarmAt: "",
-    version: "0.1.400", dir: "~/.config/magpie", gateway: "http://127.0.0.1:3425",
+    version: "0.1.400", dir: "~/.config/magpie-friday", gateway: "http://127.0.0.1:3425",
     proxyNow: "none", proxySource: "none", vision: "", imageGen,
     visionModels: [], workbuddyCheckins: [], lanURLs: [],
     imageGenModels: [{ id: "codex/gpt-image-2", name: "GPT Image 2", provider: "codex", providerName: "Codex", icon: "openai" }],
@@ -41,10 +41,10 @@ function fixture(lang, { libOn, have = false, imageGen = "", gateway = false }) 
     ...(gateway ? { web: true, gatewayMode: "on", gatewayOn: true } : {}),
   });
   const lib = () => ({
-    dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+    dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
     agents: [{ id: "pi", name: "Pi", icon: "generic", mcp: `${HOME}/.pi/mcp.json`, skills: `${HOME}/.pi/skills` }],
     instructions: { agents: [], sets: [] }, foundServers: [], projects: [], foundSkills: [], skills: [], problems: [],
-    servers: have ? [{ name: "magpie-image", transport: "stdio", command: "/Applications/magpie.app/Contents/MacOS/magpie", args: ["mcp", "image"], agents: ["pi"] }] : [],
+    servers: have ? [{ name: "magpie-friday-image", transport: "stdio", command: "/Applications/magpie-friday.app/Contents/MacOS/magpie-friday", args: ["mcp", "image"], agents: ["pi"] }] : [],
   });
   const route = async (route) => {
     const req = route.request(), url = new URL(req.url());
@@ -64,7 +64,7 @@ function fixture(lang, { libOn, have = false, imageGen = "", gateway = false }) 
     if (url.pathname === "/api/library") return json(lib());
     if (url.pathname === "/api/library/market/servers") {
       return json({ items: [
-        { id: "magpie-image", name: "magpie-image", title: "Magpie Image", publisher: "Magpie", description: "Generate and edit images with the image model set in Magpie.", transport: "stdio", runs: "magpie", featured: true, optIn: true, have: have ? "magpie-image" : "" },
+        { id: "magpie-friday-image", name: "magpie-friday-image", title: "Magpie Image", publisher: "Magpie", description: "Generate and edit images with the image model set in Magpie.", transport: "stdio", runs: "magpie-friday", featured: true, optIn: true, have: have ? "magpie-friday-image" : "" },
         { id: "fetch", name: "fetch", title: "Fetch", description: "Read the web.", transport: "stdio", runs: "uvx", featured: true, have: "" },
       ] });
     }
@@ -161,7 +161,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       await t.test(`${lang}: one already in the library opens MCP servers with nothing over it`, async () => {
         const { page } = await open(lang, 1100, { libOn: true, have: true });
         await row(page).locator("button.image-gen-tool").click();
-        await page.locator('#view-library .mk[data-market="mcp"] .mk-card[data-id="magpie-image"]').waitFor();
+        await page.locator('#view-library .mk[data-market="mcp"] .mk-card[data-id="magpie-friday-image"]').waitFor();
         assert.equal(await page.locator("#view-library").isVisible(), true);
         assert.equal(await page.locator("#modal .mk-sheet").count(), 0);
         assert.deepEqual(page.errors, []);

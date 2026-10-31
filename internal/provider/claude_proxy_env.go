@@ -3,7 +3,7 @@ package provider
 // Claude Code on its own subscription asks Anthropic itself, as the account
 // it is signed in to, through the proxy its env names. An account's own
 // proxy (AccountProxies) was only ever honoured on what the gateway sends,
-// so a switch of the sign-in, by magpie (SwitchWhenSpent) or by the user,
+// so a switch of the sign-in, by magpie-friday (SwitchWhenSpent) or by the user,
 // left every account on one route (#1807, kensenzhao). So while the Claude
 // subscription has a proxy for any of its accounts, the env of Claude
 // Code's settings.json names the proxy of the account it is signed in to:
@@ -12,8 +12,8 @@ package provider
 // started after a switch that go the new account's way, as with the
 // sign-in itself.
 //
-// A proxy the user set in that env is theirs: magpie writes none beside
-// it. magpie keeps the values it wrote (claude-proxy-env.json), and a key
+// A proxy the user set in that env is theirs: magpie-friday writes none beside
+// it. magpie-friday keeps the values it wrote (claude-proxy-env.json), and a key
 // counts as its own only while it still holds that value; it takes out
 // only those.
 
@@ -30,9 +30,9 @@ import (
 
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/jsonc"
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
 )
 
 // claudeProxyAddr are the keys Claude Code takes its proxy from (Node's
@@ -40,10 +40,10 @@ import (
 // theirs.
 var claudeProxyAddr = []string{"HTTPS_PROXY", "HTTP_PROXY", "https_proxy", "http_proxy"}
 
-// claudeProxyWrites are the keys magpie writes the account's proxy to.
+// claudeProxyWrites are the keys magpie-friday writes the account's proxy to.
 var claudeProxyWrites = []string{"HTTPS_PROXY", "HTTP_PROXY"}
 
-// claudeNoProxy keeps loopback off the proxy: magpie's gateway, and an
+// claudeNoProxy keeps loopback off the proxy: magpie-friday's gateway, and an
 // MCP server on this machine, are reached straight.
 const claudeNoProxy = "localhost,127.0.0.1,::1"
 
@@ -55,9 +55,9 @@ func claudeProxyRecordPath() string {
 
 func claudeSettingsFile() string { return filepath.Join(appdir.ClaudeDir(), "settings.json") }
 
-// readClaudeProxyRecord is what magpie last wrote to Claude Code's env, by
+// readClaudeProxyRecord is what magpie-friday last wrote to Claude Code's env, by
 // key. One that can't be read is an error, never "nothing written": that
-// would make magpie's own values look like the user's for good.
+// would make magpie-friday's own values look like the user's for good.
 func readClaudeProxyRecord() (map[string]string, error) {
 	m := map[string]string{}
 	b, err := os.ReadFile(claudeProxyRecordPath())
@@ -88,7 +88,7 @@ func writeClaudeProxyRecord(m map[string]string) error {
 }
 
 // claudeAccountProxy is the proxy Claude Code signed in to user should go
-// through, as an address its env takes; "" for none of magpie's. Only
+// through, as an address its env takes; "" for none of magpie-friday's. Only
 // while the subscription has a proxy for one of its accounts: without
 // one, every account goes the same way, and the subscription's proxy alone
 // was never Claude Code's. A SOCKS proxy is left out: Claude Code takes
@@ -115,7 +115,7 @@ func claudeAccountProxy(user string) string {
 
 // SyncClaudeProxyEnv has the env of Claude Code's settings.json name the
 // proxy of the account user, the one it is signed in to (see the top of
-// this file), and answers the proxy written, "" when none of magpie's is
+// this file), and answers the proxy written, "" when none of magpie-friday's is
 // there now.
 func SyncClaudeProxyEnv(user string) (string, error) {
 	return setClaudeProxyEnv(claudeAccountProxy(user))
@@ -129,7 +129,7 @@ func setClaudeProxyEnv(want string) (string, error) {
 		return "", err
 	}
 	if want == "" && len(rec) == 0 {
-		return "", nil // nothing of magpie's there, nor to be
+		return "", nil // nothing of magpie-friday's there, nor to be
 	}
 	path := claudeSettingsFile()
 	raw, err := edit.Read(path)
@@ -170,7 +170,7 @@ func setClaudeProxyEnv(want string) (string, error) {
 			}
 		}
 		if userRoute && want != "" {
-			log.Printf("claude: settings.json's env has a proxy of the user's own; magpie leaves it, and writes no account's proxy")
+			log.Printf("claude: settings.json's env has a proxy of the user's own; magpie-friday leaves it, and writes no account's proxy")
 		}
 		want = ""
 	} else {
@@ -186,7 +186,7 @@ func setClaudeProxyEnv(want string) (string, error) {
 	}
 	// what is about to be written is kept first: a crash between the two
 	// then leaves a record of a value that isn't there, never a value of
-	// magpie's that looks like the user's
+	// magpie-friday's that looks like the user's
 	changed := len(del) > 0
 	for k, v := range set {
 		if c, ok := cur(k); !ok || c != v {

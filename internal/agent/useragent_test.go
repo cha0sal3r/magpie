@@ -3,7 +3,7 @@ package agent
 import (
 	"testing"
 
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // Every agent's requests are told by what its own description says.
@@ -30,7 +30,7 @@ func TestAgentOf(t *testing.T) {
 		"cline ai-sdk/openai-compatible/3.0.37":    "cline",
 		"Vibecoding Client/1.3.104 (darwin; arm64; go1.26.2)": "mothx",
 		"ZooCode/3.90.0": "zoo-code",
-		"minimax-code":   "minimax-code", // what magpie's entry sends
+		"minimax-code":   "minimax-code", // what magpie-friday's entry sends
 		"MiniMaxCode":    "minimax-code", // 0.6.8's own (#1605)
 		"":               "other",
 	}

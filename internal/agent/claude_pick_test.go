@@ -4,17 +4,17 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A model picked in Claude Code's /model holds for its next sessions (the
-// owner: 去掉 ANTHROPIC_MODEL，让 /model 的选择对新会话也生效): magpie names the
+// owner: 去掉 ANTHROPIC_MODEL，让 /model 的选择对新会话也生效): magpie-friday names the
 // main model in settings.json's model alone, which /model saves, and no
 // ANTHROPIC_MODEL outranks it. The tiers that followed the main model go
 // with the pick (Follow); one with a model of its own keeps it. An older
-// magpie's ANTHROPIC_MODEL comes out the same way.
+// magpie-friday's ANTHROPIC_MODEL comes out the same way.
 func TestClaudeModelPickedInClaudeCode(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
@@ -73,8 +73,8 @@ func TestClaudeModelPickedInClaudeCode(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// an older magpie's ANTHROPIC_MODEL comes out, the model kept
-	writeFile(t, path, `{"model": "deepseek/pro", "env": {"ANTHROPIC_BASE_URL": "`+gateway.URL()+`", "ANTHROPIC_AUTH_TOKEN": "magpie", "ANTHROPIC_MODEL": "deepseek/pro", "ANTHROPIC_DEFAULT_OPUS_MODEL": "deepseek/pro", "CLAUDE_CODE_SUBAGENT_MODEL": "deepseek/pro"}}`)
+	// an older magpie-friday's ANTHROPIC_MODEL comes out, the model kept
+	writeFile(t, path, `{"model": "deepseek/pro", "env": {"ANTHROPIC_BASE_URL": "`+gateway.URL()+`", "ANTHROPIC_AUTH_TOKEN": "magpie-friday", "ANTHROPIC_MODEL": "deepseek/pro", "ANTHROPIC_DEFAULT_OPUS_MODEL": "deepseek/pro", "CLAUDE_CODE_SUBAGENT_MODEL": "deepseek/pro"}}`)
 	forget(a.ID + ".main")
 	forget("claude.main")
 	if err := a.Follow(); err != nil {

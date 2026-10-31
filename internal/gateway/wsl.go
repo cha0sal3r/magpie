@@ -17,20 +17,20 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // A WSL distro in NAT networking (WSL's default) reaches Windows at the
 // address Windows has on the WSL network (vEthernet (WSL), 172.17.32.1 for
-// a distro at 172.17.38.240), not at 127.0.0.1. magpie wrote that address
+// a distro at 172.17.38.240), not at 127.0.0.1. magpie-friday wrote that address
 // into the distro's agents, but the gateway listened on 127.0.0.1 alone, so
 // Codex and the other CLIs there were refused or timed out until the user
-// shared magpie on the local network (zaidu259434 on X: "启动codex这些cli连接
-// 会失败，没自动启动magpie的网关"). Now, while the gateway is on loopback, it
+// shared magpie-friday on the local network (zaidu259434 on X: "启动codex这些cli连接
+// 会失败，没自动启动magpie-friday的网关"). Now, while the gateway is on loopback, it
 // also listens on each address Windows has on a WSL network, and a request
 // that arrives there from that network with the WSL key (WSLKey, which
-// magpie writes into those agents only) is this computer's, as it is from a
+// magpie-friday writes into those agents only) is this computer's, as it is from a
 // distro in mirrored networking, whose 127.0.0.1 is Windows'. Anything else
 // arriving there is judged as a request from another machine: a container
 // of Docker Desktop's, which shares that network, has no key.
@@ -85,8 +85,8 @@ func OnWSLNet(base string) bool {
 	return slices.ContainsFunc(WSLNets(), func(n *net.IPNet) bool { return n.IP.Equal(ip) })
 }
 
-// wslKeyPrefix starts the WSL key. Neither sk-magpie- (a named gateway
-// key's, looked up among the keys) nor magpie- (the token with an agent's
+// wslKeyPrefix starts the WSL key. Neither sk-magpie-friday- (a named gateway
+// key's, looked up among the keys) nor magpie-friday- (the token with an agent's
 // id after it, agentOf).
 const wslKeyPrefix = "wsl-"
 
@@ -97,8 +97,8 @@ var wslKey struct {
 
 func wslKeyPath() string { return filepath.Join(settings.Dir(), "wsl-key") }
 
-// WSLKey is the key magpie gives the agents of a WSL distro that reaches
-// the gateway on the WSL network (OnWSLNet): made once, kept in magpie's
+// WSLKey is the key magpie-friday gives the agents of a WSL distro that reaches
+// the gateway on the WSL network (OnWSLNet): made once, kept in magpie-friday's
 // folder, readable by this user only. "" when it can't be read or made, and
 // the agent is given the gateway's token as before.
 func WSLKey() string {
@@ -142,8 +142,8 @@ func WSLKey() string {
 // whether a key is it without making one.
 func WSLKeyMade() string { return wslKeyHeld() }
 
-// wslKeyHeld is the WSL key as the gateway takes it: the one in magpie's
-// folder, read again when the cache is empty (another magpie made it).
+// wslKeyHeld is the WSL key as the gateway takes it: the one in magpie-friday's
+// folder, read again when the cache is empty (another magpie-friday made it).
 func wslKeyHeld() string {
 	path := wslKeyPath()
 	wslKey.Lock()

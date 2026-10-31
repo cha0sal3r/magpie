@@ -1,9 +1,9 @@
 package agent
 
 // Devin keeps its settings in ~/.config/devin/config.json (%APPDATA%\devin on
-// Windows), the model under agent.model. Devin has no endpoint magpie can
+// Windows), the model under agent.model. Devin has no endpoint magpie-friday can
 // stand in for — its models are its own — so the options are the families
-// `devin models list --format json` reports, not the magpie catalog, offered
+// `devin models list --format json` reports, not the magpie-friday catalog, offered
 // as the provider offers them: each family one model (and its fast run one
 // more, claude-opus-5-5-fast), with an effort beside it. Devin's config has
 // no effort of its own — a variant id is the effort it runs at — so the pair
@@ -17,8 +17,8 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 func devin(home, cfg string) *Agent {

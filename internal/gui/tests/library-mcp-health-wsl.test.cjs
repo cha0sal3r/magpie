@@ -19,7 +19,7 @@ const HOME = "C:\\Users\\loong";
 const WSL = "claude@wsl:Ubuntu";
 const agent = (id, name) => ({ id, name, icon: "claudecode-color", skills: `${HOME}\\.claude\\skills`, mcp: `${HOME}\\.claude.json` });
 const fixture = () => ({
-  dir: `${HOME}\\.magpie\\library`, backups: `${HOME}\\.magpie\\backups`, home: HOME,
+  dir: `${HOME}\\.magpie-friday\\library`, backups: `${HOME}\\.magpie-friday\\backups`, home: HOME,
   agents: [agent("claude", "Claude Code"), { ...agent(WSL, "Claude Code (Ubuntu)"), wsl: true },
     { ...agent("claude@wsl:Arch", "Claude Code (Arch)"), wsl: true }],
   instructions: { agents: [], sets: [] }, foundServers: [], foundSkills: [], skills: [], projects: [],
@@ -64,11 +64,11 @@ function server(lang) {
 }
 
 const words = {
-  en: { signed: "signed in in Claude Code (Ubuntu)", needs: "needs sign-in", checked: "Checked in: ", failed: "Failed in: ", down: "WSL Arch not running", downTip: "magpie can't check it: the agents given it run in WSL Arch, which isn't running, and a check doesn't start it" },
-  zh: { signed: "已在 Claude Code (Ubuntu) 登录", needs: "需要登录", checked: "检查位置：", failed: "失败位置：", down: "WSL Arch 未运行", downTip: "magpie 无法检查：用它的智能体运行在 WSL Arch 里，而它没有在运行，检查不会去启动它" },
-  "zh-TW": { signed: "已在 Claude Code (Ubuntu) 登入", needs: "需要登入", checked: "檢查位置：", failed: "失敗位置：", down: "WSL Arch 未執行", downTip: "magpie 無法檢查：使用它的智慧體執行在 WSL Arch 裡，而它沒有在執行，檢查不會去啟動它" },
-  ja: { signed: "Claude Code (Ubuntu) でサインイン済み", needs: "サインインが必要", checked: "チェックした場所: ", failed: "失敗した場所: ", down: "WSL Arch は停止中", downTip: "magpie はチェックできません: これを使うエージェントが動く WSL Arch は起動しておらず、チェックのために起動はしません" },
-  de: { signed: "in Claude Code (Ubuntu) angemeldet", needs: "Anmeldung nötig", checked: "Geprüft in: ", failed: "Fehlgeschlagen in: ", down: "WSL Arch läuft nicht", downTip: "magpie kann ihn nicht prüfen: Die Agenten, die ihn bekommen, laufen in WSL Arch, das nicht läuft, und eine Prüfung startet es nicht" },
+  en: { signed: "signed in in Claude Code (Ubuntu)", needs: "needs sign-in", checked: "Checked in: ", failed: "Failed in: ", down: "WSL Arch not running", downTip: "magpie-friday can't check it: the agents given it run in WSL Arch, which isn't running, and a check doesn't start it" },
+  zh: { signed: "已在 Claude Code (Ubuntu) 登录", needs: "需要登录", checked: "检查位置：", failed: "失败位置：", down: "WSL Arch 未运行", downTip: "magpie-friday 无法检查：用它的智能体运行在 WSL Arch 里，而它没有在运行，检查不会去启动它" },
+  "zh-TW": { signed: "已在 Claude Code (Ubuntu) 登入", needs: "需要登入", checked: "檢查位置：", failed: "失敗位置：", down: "WSL Arch 未執行", downTip: "magpie-friday 無法檢查：使用它的智慧體執行在 WSL Arch 裡，而它沒有在執行，檢查不會去啟動它" },
+  ja: { signed: "Claude Code (Ubuntu) でサインイン済み", needs: "サインインが必要", checked: "チェックした場所: ", failed: "失敗した場所: ", down: "WSL Arch は停止中", downTip: "magpie-friday はチェックできません: これを使うエージェントが動く WSL Arch は起動しておらず、チェックのために起動はしません" },
+  de: { signed: "in Claude Code (Ubuntu) angemeldet", needs: "Anmeldung nötig", checked: "Geprüft in: ", failed: "Fehlgeschlagen in: ", down: "WSL Arch läuft nicht", downTip: "magpie-friday kann ihn nicht prüfen: Die Agenten, die ihn bekommen, laufen in WSL Arch, das nicht läuft, und eine Prüfung startet es nicht" },
 };
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {

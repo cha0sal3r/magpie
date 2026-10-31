@@ -29,7 +29,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // dailySlack is how late a day's start is still sent: a machine that
@@ -82,7 +82,7 @@ func nextDayStart(ats []string, now time.Time) (time.Time, bool) {
 func startKey(t time.Time) string { return t.Format("2006-01-02 15:04") }
 
 // hadStart says whether last, the start a window was last started for,
-// is key. A magpie before several times kept the day alone
+// is key. A magpie-friday before several times kept the day alone
 // ("2006-01-02"): that day's starts all count as had, so the day it is
 // updated on sends nothing twice.
 func hadStart(last, key string) bool {

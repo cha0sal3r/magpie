@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-// SearchAPI is a web search API the user gave magpie a key to.
+// SearchAPI is a web search API the user gave magpie-friday a key to.
 type SearchAPI struct {
 	Vendor string `json:"vendor"` // one of SearchVendors
 	// Key is its key, or several separated by commas (Keys), each tried
@@ -37,7 +37,7 @@ const (
 	SearchPickOrder = "order" // the first until it is refused
 )
 
-// SearchVendor is a search API magpie can ask.
+// SearchVendor is a search API magpie-friday can ask.
 type SearchVendor struct {
 	ID, Name string
 	Base     string // its address, "" for one the user runs
@@ -52,7 +52,7 @@ type SearchVendor struct {
 // asked at its Base, ydc-index.io, instead.
 const YouFreeSearch = "https://api.you.com/v1/agents/search"
 
-// SearchVendors are the search APIs magpie can ask, in the order offered.
+// SearchVendors are the search APIs magpie-friday can ask, in the order offered.
 var SearchVendors = []SearchVendor{
 	{ID: "tavily", Name: "Tavily", Base: "https://api.tavily.com", KeysURL: "https://app.tavily.com/home"},
 	{ID: "brave", Name: "Brave Search", Base: "https://api.search.brave.com", KeysURL: "https://api-dashboard.search.brave.com/app/keys"},
@@ -121,7 +121,7 @@ func (a SearchAPI) Base() string {
 	return v.Base
 }
 
-// Ready is whether it can be asked: a vendor magpie knows, at an address,
+// Ready is whether it can be asked: a vendor magpie-friday knows, at an address,
 // with a key where it needs one (a SearXNG, You.com, may not).
 func (a SearchAPI) Ready() bool {
 	v, known := SearchVendorOf(a.Vendor)

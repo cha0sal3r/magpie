@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE: ghcr.io/${{ github.repository_owner }}/magpie
+  IMAGE: ghcr.io/${{ github.repository_owner }}/magpie-friday
 
 jobs:
   build:
@@ -40,9 +40,9 @@ jobs:
           docker build --load \
             --cache-from type=gha,scope=${{ matrix.platform }} \
             --cache-to type=gha,scope=${{ matrix.platform }},mode=max \
-            -t magpie-smoke .
+            -t magpie-friday-smoke .
 
-          docker run -d --name smoke -v smoke-ci:/config -p 13425:3425 magpie-smoke
+          docker run -d --name smoke -v smoke-ci:/config -p 13425:3425 magpie-friday-smoke
 
           READY=0
           for _ in $(seq 1 30); do
@@ -51,12 +51,12 @@ jobs:
           done
           test "$READY" = 1
 
-          # a NAS panel's terminal opens bash or sh, with magpie on PATH
-          docker exec smoke /bin/bash -c 'magpie healthcheck && ls /config >/dev/null'
+          # a NAS panel's terminal opens bash or sh, with magpie-friday on PATH
+          docker exec smoke /bin/bash -c 'magpie-friday healthcheck && ls /config >/dev/null'
           docker exec smoke /bin/sh -c 'echo sh works'
 
           CODE=$(curl -s -o /tmp/body.json -w '%{http_code}' \
-            -H 'Authorization: Bearer magpie' -H 'Content-Type: application/json' \
+            -H 'Authorization: Bearer magpie-friday' -H 'Content-Type: application/json' \
             -d '{"model":"ci-unknown-model","messages":[{"role":"user","content":"hi"}]}' \
             http://127.0.0.1:13425/v1/chat/completions)
           echo "chat/completions answered HTTP $CODE"
@@ -64,7 +64,7 @@ jobs:
           (( CODE >= 400 && CODE < 500 ))
           jq -e '.error.type' /tmp/body.json > /dev/null
 
-          OUT=$(docker run --rm -v smoke-ci:/config magpie-smoke provider add ci-smoke key=sk-ci url=https://example.com)
+          OUT=$(docker run --rm -v smoke-ci:/config magpie-friday-smoke provider add ci-smoke key=sk-ci url=https://example.com)
           echo "$OUT"
           echo "$OUT" | grep -q 'added ci-smoke'
 

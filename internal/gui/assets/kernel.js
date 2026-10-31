@@ -60,7 +60,7 @@
   // The error boundary: a hook that throws (or whose promise fails) is
   // caught here, and the page shows what broke instead of what it had.
   function fail(page, hook, args, err) {
-    console.error(`[magpie] ${page.plugin.id}: ${page.part.key}.${hook}`, err);
+    console.error(`[magpie-friday] ${page.plugin.id}: ${page.part.key}.${hook}`, err);
     page.broken = { hook, args };
     const card = document.createElement("div");
     card.className = "list slot-error";
@@ -232,7 +232,7 @@
       try {
         setup(context(p));
       } catch (err) {
-        console.error(`[magpie] ${id}: setup`, err);
+        console.error(`[magpie-friday] ${id}: setup`, err);
       }
     },
     // app.js, once it is set up: every page is mounted
@@ -253,7 +253,7 @@
       for (const [lang, words] of Object.entries(dict)) {
         const to = (I18N[lang] ||= {});
         for (const [k, v] of Object.entries(words)) {
-          if (k in to) console.error(`[magpie] ${lang} ${JSON.stringify(k)} is said twice`);
+          if (k in to) console.error(`[magpie-friday] ${lang} ${JSON.stringify(k)} is said twice`);
           else to[k] = v;
         }
       }
@@ -267,7 +267,7 @@
       if (JSON.stringify(p.config) === JSON.stringify(config)) return;
       p.config = { ...config };
       for (const fn of p.onConfig) {
-        try { fn(p.config); } catch (err) { console.error(`[magpie] ${id}: config`, err); }
+        try { fn(p.config); } catch (err) { console.error(`[magpie-friday] ${id}: config`, err); }
       }
     },
   };

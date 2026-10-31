@@ -1,26 +1,26 @@
 // Package gwtool is the gateway's tool point (P3 of
-// docs/subsystems/plugin-runtime.md): the tools magpie answers itself for
+// docs/subsystems/plugin-runtime.md): the tools magpie-friday answers itself for
 // an agent, in place of the vendor. A plugin serves a tool by its name
 // while it is on (Serve). In the process serving the gateway (Gate), a
 // tool no plugin serves is neither offered nor answered; a process not
 // serving the gateway (the CLI, the TUI) has them all, as before the
 // point was there.
 //
-// WebSearch is plugins/search's: magpie's web search for a model that
+// WebSearch is plugins/search's: magpie-friday's web search for a model that
 // can't search by itself. Off, a vendor that searches by itself still
-// does; magpie offers no search of its own. PluginTools is plugins/tools':
+// does; magpie-friday offers no search of its own. PluginTools is plugins/tools':
 // the tools community plugins give, served to every agent over MCP. Off,
 // the server lists none and runs none.
 package gwtool
 
 import "sync"
 
-// WebSearch is magpie's web search: the stand-in web_search tool, the
+// WebSearch is magpie-friday's web search: the stand-in web_search tool, the
 // search MCP server and Codex's search when ChatGPT can't answer it.
 const WebSearch = "web_search"
 
 // PluginTools are the tools the user's plugins give (their OpenCode tool
-// hook), served over magpie's plugin tools MCP server.
+// hook), served over magpie-friday's plugin tools MCP server.
 const PluginTools = "plugin_tools"
 
 var gate struct {

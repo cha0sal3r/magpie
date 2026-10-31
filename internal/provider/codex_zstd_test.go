@@ -155,7 +155,7 @@ func TestCodexWarmGoesZstd(t *testing.T) {
 }
 
 // The encoder's coders and their histories live as long as the process, so
-// how many it keeps is set by magpie, not by the machine's cores: 28 turns
+// how many it keeps is set by magpie-friday, not by the machine's cores: 28 turns
 // of 1 MiB at once on 16 cores held ~96 MB with the library's default of a
 // coder per core.
 func TestCodexZstdHoldsLittle(t *testing.T) {

@@ -10,7 +10,7 @@ import (
 // names first, as it has them, then the rest as they came (the order they
 // were added). The order is more than the list's: the agents' pickers list
 // the models in it, a bare model id goes to the first provider serving it,
-// and a group magpie finds of a model more than one provider serves tries
+// and a group magpie-friday finds of a model more than one provider serves tries
 // them in it.
 func ordered(ps []Provider, order []string) []Provider {
 	if len(order) == 0 {
@@ -104,7 +104,7 @@ func StoredOrder() ([]string, error) {
 // MirrorOrder makes the providers' order the one another computer has, as
 // sync brings it: its ids first, as it has them, then the ones named here
 // alone (a signed-in account only this computer has), in the order they
-// have here. None, as from a magpie before the order was synced or one
+// have here. None, as from a magpie-friday before the order was synced or one
 // never arranged, leaves the order here as it is.
 func MirrorOrder(order []string) error {
 	if len(order) == 0 {

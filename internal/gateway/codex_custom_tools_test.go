@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // codeModeRequest is a turn as Codex sends it for a model its catalog puts
@@ -29,7 +29,7 @@ const codeModeRequest = `{"model":"fake/m1","instructions":"","stream":true,
 	{"type":"custom_tool_call_output","call_id":"c1","output":"a.txt"}
 ]}`
 
-// A model magpie translates for is offered Codex's custom tools as
+// A model magpie-friday translates for is offered Codex's custom tools as
 // functions taking their input (#534: in code mode exec was dropped, and
 // the model said it had only the collaboration and wait tools), sees an
 // earlier call to one and its output, and its call goes back to Codex as

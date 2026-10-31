@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// An agent closed while magpie waited to ask a failing relay again (#1894,
+// An agent closed while magpie-friday waited to ask a failing relay again (#1894,
 // heng91: a relay behind a proxy that was off, the Claude Code window
 // closed) ended the request in the pause. The Routing page's story says the
 // agent canceled it and nobody is asked again, and the list says canceled,

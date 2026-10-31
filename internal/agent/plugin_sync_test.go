@@ -8,10 +8,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // A plugin's sign-in changing reaches the model lists agents keep in
@@ -46,7 +46,7 @@ func TestPluginSignInReachesPiModels(t *testing.T) {
 	t.Cleanup(plugin.Settle)
 
 	p := pi(home)
-	if err := p.Pick("model", "magpie/deepseek/pro"); err != nil {
+	if err := p.Pick("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	plugin.Told()

@@ -12,11 +12,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 func TestAsyncGatewayResponseDoesNotHoldStream(t *testing.T) {
@@ -76,7 +76,7 @@ export async function onResponse(body,ctx){await fetch(ctx.options.url,{method:"
 	// Client reads the first delta while upstream generation is still blocked.
 	go func() {
 		req, _ := http.NewRequestWithContext(t.Context(), "POST", gw.URL+"/v1/chat/completions", strings.NewReader(`{"model":"fake/m1","stream":true,"messages":[{"role":"user","content":"question"}]}`))
-		req.Header.Set("Authorization", "Bearer magpie")
+		req.Header.Set("Authorization", "Bearer magpie-friday")
 		res, err := gw.Client().Do(req)
 		if err != nil {
 			first <- err.Error()
@@ -187,7 +187,7 @@ export async function onRequest(body,ctx) {
 			t.Fatal(err)
 		}
 		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("Authorization", "Bearer magpie-codex")
+		req.Header.Set("Authorization", "Bearer magpie-friday-codex")
 		req.Header.Set(SessionHeader, session)
 		res, err := gw.Client().Do(req)
 		if err != nil {
@@ -213,7 +213,7 @@ export async function onRequest(body,ctx) {
 			if strings.Count(got, "QUARTZ-8413") != 1 || !strings.Contains(got, "session-a") || !strings.Contains(got, "Quartz codename?") {
 				t.Fatalf("recall did not reach provider exactly once: %s", got)
 			}
-			if strings.Contains(got, "context-test") || strings.Contains(got, "magpie-codex") {
+			if strings.Contains(got, "context-test") || strings.Contains(got, "magpie-friday-codex") {
 				t.Fatalf("plugin credentials leaked upstream: %s", got)
 			}
 			query := <-queries
@@ -437,7 +437,7 @@ export async function onResponse(reply,ctx){await fetch(ctx.options.url,{method:
 
 // A hooks package with its own page saves its options from that page. The
 // host hands each hook the options it loaded with, so the save starts the
-// host again; one that didn't left the hook on the old options until magpie
+// host again; one that didn't left the hook on the old options until magpie-friday
 // restarted (magpie-community/plugins#117's PowerContext page).
 func TestGatewayHookSeesOptionsSavedFromItsPage(t *testing.T) {
 	t.Setenv("MAGPIE_BUN", testenv.Bun(t))

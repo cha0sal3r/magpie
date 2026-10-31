@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // crushHome is effortHome with Crush's data folder in the sandbox too, and
@@ -30,7 +30,7 @@ func crushHome(t *testing.T) (home, data string) {
 // Crush saves what its own model picker chooses to its data file, and reads
 // that after crush.json, so a pick there wins over one in crush.json. Once
 // somebody has picked a model in Crush (its first run asks for one), the
-// model magpie sets has to go where Crush reads it last, and what magpie
+// model magpie-friday sets has to go where Crush reads it last, and what magpie-friday
 // shows has to be what Crush will use.
 func TestCrushPickWhereCrushReadsIt(t *testing.T) {
 	home, data := crushHome(t)
@@ -41,21 +41,21 @@ func TestCrushPickWhereCrushReadsIt(t *testing.T) {
 	if got := large.Get(); got != "mine/m-mine" {
 		t.Fatalf("large reads %q, not the pick Crush uses", got)
 	}
-	if err := large.Set("magpie/deepseek/pro"); err != nil {
+	if err := large.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
-	if p, _ := edit.GetJSON(data, "models.large.provider"); p != "magpie" {
+	if p, _ := edit.GetJSON(data, "models.large.provider"); p != "magpie-friday" {
 		t.Fatalf("Crush still picks %q from its data file:\n%s", p, readFile(data))
 	}
 	if m, _ := edit.GetJSON(data, "models.large.model"); m != "deepseek/pro" {
 		t.Fatalf("data file model %q:\n%s", m, readFile(data))
 	}
-	if got := large.Get(); got != "magpie/deepseek/pro" {
+	if got := large.Get(); got != "magpie-friday/deepseek/pro" {
 		t.Fatalf("large reads %q", got)
 	}
 	// the provider stays where it was, with the library's MCP servers
-	if _, ok := edit.GetJSON(cr.Path, "providers.magpie.base_url"); !ok {
-		t.Fatalf("no magpie provider in %s:\n%s", cr.Path, readFile(cr.Path))
+	if _, ok := edit.GetJSON(cr.Path, "providers.magpie-friday.base_url"); !ok {
+		t.Fatalf("no magpie-friday provider in %s:\n%s", cr.Path, readFile(cr.Path))
 	}
 	if cr.Check() != "" {
 		t.Fatalf("check: %s", cr.Check())
@@ -71,7 +71,7 @@ func TestCrushPickWhereCrushReadsIt(t *testing.T) {
 	}
 
 	small := cr.Field("small")
-	if err := small.Set("magpie/deepseek/flash"); err != nil {
+	if err := small.Set("magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
 	// unset, a pick is gone from both files, and the provider goes with
@@ -82,7 +82,7 @@ func TestCrushPickWhereCrushReadsIt(t *testing.T) {
 	if large.Get() != "" || effort.Get() != "" {
 		t.Fatalf("large %q, effort %q after unset:\n%s", large.Get(), effort.Get(), readFile(data))
 	}
-	if _, ok := edit.GetJSON(cr.Path, "providers.magpie"); !ok {
+	if _, ok := edit.GetJSON(cr.Path, "providers.magpie-friday"); !ok {
 		t.Fatal("the provider went while small still uses it")
 	}
 	if err := small.Set(""); err != nil {
@@ -93,12 +93,12 @@ func TestCrushPickWhereCrushReadsIt(t *testing.T) {
 			t.Fatalf("a small pick is left in %s:\n%s", f, readFile(f))
 		}
 	}
-	if _, ok := edit.GetJSON(cr.Path, "providers.magpie"); ok {
+	if _, ok := edit.GetJSON(cr.Path, "providers.magpie-friday"); ok {
 		t.Fatalf("the provider is left with no pick on it:\n%s", readFile(cr.Path))
 	}
 }
 
-// A pick magpie wrote to crush.json before it wrote Crush's data file still
+// A pick magpie-friday wrote to crush.json before it wrote Crush's data file still
 // reads as set where Crush has picked nothing itself, and one Crush's own
 // pick hides reads as that pick, since it is the one Crush uses.
 func TestCrushPickInCrushJSON(t *testing.T) {
@@ -107,8 +107,8 @@ func TestCrushPickInCrushJSON(t *testing.T) {
 	if cr.Path == data {
 		t.Skip("crush.json is Crush's data file here")
 	}
-	writeFile(t, cr.Path, `{"providers":{"magpie":{"base_url":"x"}},"models":{"large":{"provider":"magpie","model":"deepseek/pro"}}}`)
-	if got := cr.Field("model").Get(); got != "magpie/deepseek/pro" {
+	writeFile(t, cr.Path, `{"providers":{"magpie-friday":{"base_url":"x"}},"models":{"large":{"provider":"magpie-friday","model":"deepseek/pro"}}}`)
+	if got := cr.Field("model").Get(); got != "magpie-friday/deepseek/pro" {
 		t.Fatalf("large reads %q", got)
 	}
 	writeFile(t, data, `{"models":{"large":{"model":"m-mine","provider":"mine"}}}`)
@@ -118,10 +118,10 @@ func TestCrushPickInCrushJSON(t *testing.T) {
 }
 
 // Crush's picker saves the whole model object in its data file: the model
-// and the settings it picked for that model. A model magpie picks takes the
+// and the settings it picked for that model. A model magpie-friday picks takes the
 // whole object's place, so none of those settings ride along to it (a
-// max_tokens meant for another model would go upstream with magpie's), and
-// magpie's effort row doesn't show an effort magpie never set.
+// max_tokens meant for another model would go upstream with magpie-friday's), and
+// magpie-friday's effort row doesn't show an effort magpie-friday never set.
 func TestCrushPickReplacesCrushsModelObject(t *testing.T) {
 	home, data := crushHome(t)
 	cr := crush(home, filepath.Join(home, ".config"))
@@ -134,10 +134,10 @@ func TestCrushPickReplacesCrushsModelObject(t *testing.T) {
   "recent_models": {"large": [{"model":"gpt-5","provider":"openai"}]}
 }`)
 
-	if err := cr.Field("model").Set("magpie/deepseek/pro"); err != nil {
+	if err := cr.Field("model").Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
-	if err := cr.Field("small").Set("magpie/deepseek/flash"); err != nil {
+	if err := cr.Field("small").Set("magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
 	for _, typ := range []string{"large", "small"} {
@@ -146,12 +146,12 @@ func TestCrushPickReplacesCrushsModelObject(t *testing.T) {
 		if err := json.Unmarshal([]byte(raw), &obj); err != nil {
 			t.Fatalf("models.%s: %v\n%s", typ, err, readFile(data))
 		}
-		if len(obj) != 2 || obj["provider"] != "magpie" {
-			t.Fatalf("models.%s after magpie's pick: %s", typ, raw)
+		if len(obj) != 2 || obj["provider"] != "magpie-friday" {
+			t.Fatalf("models.%s after magpie-friday's pick: %s", typ, raw)
 		}
 	}
 	if e := cr.Field("effort").Get(); e != "" {
-		t.Fatalf("effort row shows %q, which magpie never set", e)
+		t.Fatalf("effort row shows %q, which magpie-friday never set", e)
 	}
 	// the rest of the data file is Crush's and stays
 	if k, _ := edit.GetJSON(data, "providers.openai.api_key"); k != "sk-keep" {
@@ -161,21 +161,21 @@ func TestCrushPickReplacesCrushsModelObject(t *testing.T) {
 		t.Fatalf("recent_models gone:\n%s", readFile(data))
 	}
 
-	// an effort magpie set stays with its next pick on magpie
+	// an effort magpie-friday set stays with its next pick on magpie-friday
 	if err := cr.Field("effort").Set("high"); err != nil {
 		t.Fatal(err)
 	}
-	if err := cr.Field("model").Set("magpie/deepseek/max"); err != nil {
+	if err := cr.Field("model").Set("magpie-friday/deepseek/max"); err != nil {
 		t.Fatal(err)
 	}
 	if e := cr.Field("effort").Get(); e != "high" {
-		t.Fatalf("magpie's own effort %q after a new pick:\n%s", e, readFile(data))
+		t.Fatalf("magpie-friday's own effort %q after a new pick:\n%s", e, readFile(data))
 	}
 
-	// once Crush's picker has saved its own object again, magpie's next pick
+	// once Crush's picker has saved its own object again, magpie-friday's next pick
 	// drops all of it, the effort Crush saved too
-	writeFile(t, data, `{"models":{"large":{"model":"deepseek/pro","provider":"magpie","reasoning_effort":"low","max_tokens":64000}}}`)
-	if err := cr.Field("model").Set("magpie/deepseek/max"); err != nil {
+	writeFile(t, data, `{"models":{"large":{"model":"deepseek/pro","provider":"magpie-friday","reasoning_effort":"low","max_tokens":64000}}}`)
+	if err := cr.Field("model").Set("magpie-friday/deepseek/max"); err != nil {
 		t.Fatal(err)
 	}
 	if raw, _ := edit.GetJSON(data, "models.large"); strings.Contains(raw, "max_tokens") || strings.Contains(raw, "reasoning_effort") {
@@ -183,7 +183,7 @@ func TestCrushPickReplacesCrushsModelObject(t *testing.T) {
 	}
 }
 
-// Crush keeps API keys in its data file, so when magpie is first to make it
+// Crush keeps API keys in its data file, so when magpie-friday is first to make it
 // the file is readable by its owner only.
 func TestCrushDataFileMadePrivate(t *testing.T) {
 	if runtime.GOOS == "windows" {
@@ -191,7 +191,7 @@ func TestCrushDataFileMadePrivate(t *testing.T) {
 	}
 	home, data := crushHome(t)
 	cr := crush(home, filepath.Join(home, ".config"))
-	if err := cr.Field("model").Set("magpie/deepseek/pro"); err != nil {
+	if err := cr.Field("model").Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	st, err := os.Stat(data)
@@ -205,7 +205,7 @@ func TestCrushDataFileMadePrivate(t *testing.T) {
 
 // Crush in a WSL distro has the same data file over its crush.json, in the
 // distro's home: <distro home>/.local/share/crush/crush.json, whatever
-// Windows' own XDG_DATA_HOME or LOCALAPPDATA say. A pick made in magpie goes
+// Windows' own XDG_DATA_HOME or LOCALAPPDATA say. A pick made in magpie-friday goes
 // there and is read back from there.
 func TestCrushInWSLPicksInTheDistrosDataFile(t *testing.T) {
 	home, _ := crushHome(t)
@@ -223,13 +223,13 @@ func TestCrushInWSLPicksInTheDistrosDataFile(t *testing.T) {
 	if got := large.Get(); got != "mine/m-mine" {
 		t.Fatalf("large reads %q, not the pick in the distro's data file", got)
 	}
-	if err := large.Set("magpie/deepseek/pro"); err != nil {
+	if err := large.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
-	if p, _ := edit.GetJSON(data, "models.large.provider"); p != "magpie" {
+	if p, _ := edit.GetJSON(data, "models.large.provider"); p != "magpie-friday" {
 		t.Fatalf("the distro's Crush still picks %q:\n%s", p, readFile(data))
 	}
-	if got := large.Get(); got != "magpie/deepseek/pro" {
+	if got := large.Get(); got != "magpie-friday/deepseek/pro" {
 		t.Fatalf("large reads %q", got)
 	}
 	for _, other := range []string{

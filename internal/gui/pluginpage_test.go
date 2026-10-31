@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // pagePlugins writes plugins.json with the example page plugin
@@ -95,7 +95,7 @@ func TestPluginPageServedShutIn(t *testing.T) {
 		t.Fatalf("pages: %s %v", w.Body, err)
 	}
 	p := pages[0]
-	if p.Spec != on || p.Key != "plugin-magpie-usage-glance" || p.Title != "Usage glance" || len(p.Reads) != 1 || p.Reads[0] != "usage:summary" {
+	if p.Spec != on || p.Key != "plugin-magpie-friday-usage-glance" || p.Title != "Usage glance" || len(p.Reads) != 1 || p.Reads[0] != "usage:summary" {
 		t.Fatalf("page %+v", p)
 	}
 	tok := strings.Split(strings.TrimPrefix(p.URL, pluginPagePrefix), "/")[0]
@@ -230,7 +230,7 @@ func TestPluginPageNoAPI(t *testing.T) {
 	}
 }
 
-// magpie web's guard lets a page's files through without the cookie a
+// magpie-friday web's guard lets a page's files through without the cookie a
 // sandboxed frame never sends, and only those: a made-up token is served
 // nothing, and the rest of the page still wants the key.
 func TestPluginPageWebGuard(t *testing.T) {
@@ -252,13 +252,13 @@ func TestPluginPageWebGuard(t *testing.T) {
 	}
 }
 
-// A page's actions (magpie.actions) come with it to the window, one that
+// A page's actions (magpie-friday.actions) come with it to the window, one that
 // names no title by the page's own in each language; a plugin switched
 // off adds no item to any menu.
 func TestPluginPageActions(t *testing.T) {
 	on, off := pagePlugins(t)
 	for _, dir := range []string{on, off} {
-		pkg := `{"name":"magpie-usage-glance","magpie":{"page":{"title":"Usage glance","titles":{"zh":"用量速览"},"file":"page/index.html"},
+		pkg := `{"name":"magpie-friday-usage-glance","magpie":{"page":{"title":"Usage glance","titles":{"zh":"用量速览"},"file":"page/index.html"},
 			"actions":[{"id":"check","menu":"provider","title":"Check balance","titles":{"ja":"残高を確認"}},{"id":"logs","menu":"agent"}]}}`
 		if err := os.WriteFile(filepath.Join(dir, "package.json"), []byte(pkg), 0o644); err != nil {
 			t.Fatal(err)

@@ -20,7 +20,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
 )
 
 // Call is one model call of an agent's conversation, as tune replays it.
@@ -153,7 +153,7 @@ type CompactOpts struct {
 	Current int
 	// Window is the model's whole window, the most a setting can give; 0
 	// when it isn't known, and then nothing short of Max caps a setting
-	// (zhemu on Discord: a 1M model magpie had no window for was offered
+	// (zhemu on Discord: a 1M model magpie-friday had no window for was offered
 	// no more than the largest prompt it had been sent, 412K)
 	Window int
 }

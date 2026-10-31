@@ -4,7 +4,7 @@
   "role": "assistant",
   "parentID": "msg_0001",
   "modelID": "codex/gpt-6-luna",
-  "providerID": "magpie",
+  "providerID": "magpie-friday",
   "mode": "build",
   "agent": "build",
   "cost": 0,

@@ -4,7 +4,7 @@
 // puts one in on a click: Claude Code's auto-compact window for a model and
 // its two cache lifetimes, Codex's compact limit. A setting already the
 // leanest says so and has no button; one a variable comes before is told
-// of and has none either; one magpie put in has Undo. Drawn before the
+// of and has none either; one magpie-friday put in has Undo. Drawn before the
 // gateway has read anything, in Chromium and WebKit, at a phone's width and
 // a desk's, in every language, none of it wider than the page. Each row
 // draws what every setting would have spent past the advice. The advice is

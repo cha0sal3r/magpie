@@ -11,8 +11,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/filememo"
-	"github.com/yetone/magpie/internal/redact"
+	"github.com/cha0sal3r/magpie-friday/internal/filememo"
+	"github.com/cha0sal3r/magpie-friday/internal/redact"
 )
 
 func TestRoundTrip(t *testing.T) {
@@ -140,25 +140,25 @@ func TestMigrate(t *testing.T) {
 		t.Fatal(err)
 	}
 	Migrate()
-	fi, err := os.Stat(filepath.Join(cfg, "magpie", "providers.json"))
+	fi, err := os.Stat(filepath.Join(cfg, "magpie-friday", "providers.json"))
 	if err != nil || runtime.GOOS != "windows" && fi.Mode().Perm() != 0o600 { // Windows has no such bits
 		t.Fatalf("providers.json not copied with its mode: %v %v", fi, err)
 	}
-	if _, err := os.Stat(filepath.Join(cfg, "magpie", "sub", "x")); err != nil {
+	if _, err := os.Stat(filepath.Join(cfg, "magpie-friday", "sub", "x")); err != nil {
 		t.Fatal("nested file not copied")
 	}
 	if _, err := os.Stat(old); err != nil {
 		t.Fatal("the old folder must stay")
 	}
-	if _, err := os.Stat(filepath.Join(cache, "magpie")); err == nil {
+	if _, err := os.Stat(filepath.Join(cache, "magpie-friday")); err == nil {
 		t.Fatal("no old cache, so no new one")
 	}
 	// a second run must not touch an existing folder
-	if err := os.WriteFile(filepath.Join(cfg, "magpie", "providers.json"), []byte("new"), 0o600); err != nil {
+	if err := os.WriteFile(filepath.Join(cfg, "magpie-friday", "providers.json"), []byte("new"), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	Migrate()
-	if b, _ := os.ReadFile(filepath.Join(cfg, "magpie", "providers.json")); string(b) != "new" {
+	if b, _ := os.ReadFile(filepath.Join(cfg, "magpie-friday", "providers.json")); string(b) != "new" {
 		t.Fatal("existing folder overwritten")
 	}
 }
@@ -288,7 +288,7 @@ func TestSettingsPageSaveKeepsWhatOtherPagesSet(t *testing.T) {
 	var want Settings
 	names := setPerModel(t, &want, "openai/gpt-5-mini")
 	want.Visible = map[string][]string{"code": {"openai/gpt-5-mini"}}
-	want.LANKey, want.TextSize = "magpie-lan", 125
+	want.LANKey, want.TextSize = "magpie-friday-lan", 125
 	if err := Save(want); err != nil {
 		t.Fatal(err)
 	}

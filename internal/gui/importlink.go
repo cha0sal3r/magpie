@@ -8,10 +8,10 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// An import link (magpie://import?…, see provider.ParseImport) is parsed
+// An import link (magpie-friday://import?…, see provider.ParseImport) is parsed
 // here, parked under a random id, and the window opens on the Providers tab
 // with that id; the page fetches it once and asks the user before saving
 // anything.

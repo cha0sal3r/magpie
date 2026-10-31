@@ -7,13 +7,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agentenv"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // Settings' Codex thread titles (#705) is set on its own: off, a model
-// magpie serves (one it doesn't is refused), or back to Codex's own; the
+// magpie-friday serves (one it doesn't is refused), or back to Codex's own; the
 // Settings page's other saves, which never send it, keep it; and the page
 // is told the models it may name.
 func TestCodexTitlesSetting(t *testing.T) {
@@ -56,7 +56,7 @@ func TestCodexTitlesSetting(t *testing.T) {
 		t.Errorf("another save (%d) lost the setting: %q", code, settings.Load().CodexTitles)
 	}
 	if code, _ := call("/api/settings/codex-titles", `{"model":"nope/x"}`); code < 400 || settings.Load().CodexTitles != "off" {
-		t.Errorf("a model magpie doesn't serve: %d, %q", code, settings.Load().CodexTitles)
+		t.Errorf("a model magpie-friday doesn't serve: %d, %q", code, settings.Load().CodexTitles)
 	}
 	if code, out := call("/api/settings/codex-titles", `{"model":"fake/m1"}`); code != 200 || out["codexTitles"] != "fake/m1" {
 		t.Errorf("a model: %d %v", code, out["codexTitles"])

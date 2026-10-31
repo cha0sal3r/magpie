@@ -20,7 +20,7 @@ const pdf = { name: "pdf", kind: "folder", description: "PDFs", agents: ["claude
 
 function serve(lang, lib, calls) {
   const view = (result) => ({
-    dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+    dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
     agents: [agent("claude", "Claude Code", "claudecode-color")],
     instructions: { agents: [], sets: [] }, servers: structuredClone(lib.servers), foundServers: [], projects: [], foundSkills: [],
     skills: structuredClone(lib.skills), problems: [], ...(result ? { result } : {}),

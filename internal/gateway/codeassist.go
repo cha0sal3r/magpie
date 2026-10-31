@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // ---- Google Code Assist (provider side) --------------------------------------
@@ -49,7 +49,7 @@ func accountAgent(p provider.Provider) string {
 // the one Claude Code and its Agent SDK (Claude Desktop's chats) send: its
 // billing line or the SDK's identity line anywhere in the system
 // instruction turns the request away, on every model, while the same words
-// in a message go through (#666). magpie doesn't hide them from Google; it
+// in a message go through (#666). magpie-friday doesn't hide them from Google; it
 // says why, so no one chases a quota that isn't spent.
 func antigravityTurnsAway(system string) bool {
 	return strings.Contains(system, "x-anthropic-billing-header:") ||
@@ -97,7 +97,7 @@ func (s *Server) antigravityForeseen(p provider.Provider, from provider.Protocol
 	return err == nil && antigravityTurnsAway(req.System)
 }
 
-// antigravityTurnedAwayHint is what magpie adds to Antigravity's words, after
+// antigravityTurnedAwayHint is what magpie-friday adds to Antigravity's words, after
 // " — ", for the agent and the Routing page, which says it apart from them in
 // its own language (routing/client.js AG_TURNED_AWAY).
 const antigravityTurnedAwayHint = "Antigravity answers this 429 to the system prompt of Claude Code and the Claude Agent SDK (Claude Desktop's chats) whatever quota is left, so it is not a quota and waiting won't help; use another provider for these chats, or put one after Antigravity in a routing group"
@@ -115,7 +115,7 @@ const turnedAwayErrType = "prompt_turned_away"
 
 // codeAssistID is the id a request on the account's app goes out under: on
 // Antigravity the variant the effort picks for a model that is a family of
-// levels, and elsewhere the model magpie knows. It is keyed by the account
+// levels, and elsewhere the model magpie-friday knows. It is keyed by the account
 // (accountAgent) rather than by the provider's id, since that is the account
 // the variants belong to, and it is the id a ledger judges what the vendor
 // answered against (provider.AntigravitySentID), so the gateway and the

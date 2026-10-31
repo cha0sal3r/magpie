@@ -14,9 +14,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // grokMedia is the backend a Grok subscription's images and videos are
@@ -139,7 +139,7 @@ func TestVolcengineAgentPlanVideos(t *testing.T) {
 }
 
 func TestVolcengineVideoBody(t *testing.T) {
-	f := filming{Prompt: "a magpie", Seconds: "6", Size: "1280x720", Start: &picture{Mime: "image/png", Data: []byte("png")}, References: []picture{{URL: "https://example.test/ref.png"}}}
+	f := filming{Prompt: "a magpie-friday", Seconds: "6", Size: "1280x720", Start: &picture{Mime: "image/png", Data: []byte("png")}, References: []picture{{URL: "https://example.test/ref.png"}}}
 	var got map[string]any
 	if err := json.Unmarshal(volcengineVideoBody("doubao-seedance-2.5", f), &got); err != nil {
 		t.Fatal(err)
@@ -211,7 +211,7 @@ func TestVolcengineVideoIsStartedPolledAndFetched(t *testing.T) {
 	}
 
 	s := New()
-	code, obj, raw, _ := request(t, s, http.MethodPost, "/v1/videos", "application/json", `{"model":"ark-agent/doubao-seedance-2.0-mini","prompt":"a magpie","seconds":5,"size":"854x480"}`)
+	code, obj, raw, _ := request(t, s, http.MethodPost, "/v1/videos", "application/json", `{"model":"ark-agent/doubao-seedance-2.0-mini","prompt":"a magpie-friday","seconds":5,"size":"854x480"}`)
 	if code != 200 || obj["status"] != "queued" || obj["model"] != "ark-agent/doubao-seedance-2.0-mini" {
 		t.Fatalf("create: %d %s", code, raw)
 	}

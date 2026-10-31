@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // copilotFake signs a Copilot account in (its GitHub token gh) to a fake
@@ -224,7 +224,7 @@ const copilotStudentList = `{"data":[
   {"id":"gpt-4.1","model_picker_enabled":false,"model_picker_category":"versatile","policy":{"state":"enabled"},"capabilities":{"type":"chat"}}]}`
 
 // #256 (infinitr0us, 22:07, v0.1.921): /auto picked gpt-5.6-luna, which
-// Copilot refused "The requested model is not supported."; magpie then went
+// Copilot refused "The requested model is not supported."; magpie-friday then went
 // down the list in its order, gpt-4.1 last, five more refusals, and the
 // request failed with 400 before reaching gpt-4.1. The reply named
 // mai-code-1.1-flash, a refused pick. gpt-4.1 is now the first fallback,

@@ -36,9 +36,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // GrokExecutable finds the Grok Build CLI; a var so tests can fake it.
@@ -65,7 +65,7 @@ type grokCandidate struct {
 // then ~/.local/bin. On Windows it is grok.exe — looking for a bare grok
 // there missed ~/.grok/bin, and a grok.cmd npm put on PATH first hid it
 // (#180). path is the process' PATH and, on Windows, the registry's, which
-// has what was installed since magpie started.
+// has what was installed since magpie-friday started.
 func grokCandidates(goos, home, grokHome, binDir string, path []string) []grokCandidate {
 	name := "grok"
 	if goos == "windows" {
@@ -136,7 +136,7 @@ type grokCredential struct {
 	Issuer    string    `json:"oidc_issuer"`
 }
 
-// readGrokCredential reads the sign-in the CLI keeps in its home. magpie
+// readGrokCredential reads the sign-in the CLI keeps in its home. magpie-friday
 // only reads it: the CLI refreshes it with a token that changes each time.
 func readGrokCredential(home string) (grokCredential, bool) {
 	var all map[string]grokCredential
@@ -165,7 +165,7 @@ var grokTools = map[string]bool{"function": true, "web_search": true, "x_search"
 	"mcp": true, "shell": true, "tool_search": true}
 
 // grokBody leaves out the tools Grok's backend doesn't take, as a backend
-// magpie translates for goes without them: Codex, without apply_patch,
+// magpie-friday translates for goes without them: Codex, without apply_patch,
 // edits files through its shell. Codex's web_search says whether it may
 // reach the live web, which Grok's doesn't take either; it searches live.
 // And Codex hands reasoning back with "content": null, which the backend
@@ -273,7 +273,7 @@ func grokShaped(body []byte, keepNone bool) []byte {
 // Grok's backend takes: "From <author> to <recipient>" first, then its text
 // and images as they came, in its place among the input. One sealed
 // (encrypted_content on it or on a part), empty, or with a part of another
-// kind is left as it is: magpie reads no sealed task, and the gateway's
+// kind is left as it is: magpie-friday reads no sealed task, and the gateway's
 // guard for one (hasSealedAgentMessage) still sees it. The plugin does the
 // same (@magpie-community/opencode-grok-auth 0.1.11, plugins#61).
 func grokAgentMessage(it any) (map[string]any, bool) {

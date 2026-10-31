@@ -1,7 +1,7 @@
 <!-- reviewed-through: e297a8ab2 (2026-10-13 23:30 +0800) -->
 # Lessons from merged work
 
-magpie's code is written, reviewed, merged and released by agents. Each night
+magpie-friday's code is written, reviewed, merged and released by agents. Each night
 the day's commits are reviewed for what had to be fixed again, what shouldn't
 have merged and what was verified too thinly. What we learned is kept here.
 Read this before changing code. Each lesson is a rule, then why, then the
@@ -80,14 +80,14 @@ one machine made every run time out until the sessions took turns.
 From 10-17 04:00 to 10-18 04:00 there were 77 commits and 7 tags
 (v0.1.1277 to v0.1.1283), each on a green run with its 16 assets. The
 retire stack (0f1666b38 to de671719a, about 30k lines out) took all 11
-deprecated built-ins out of magpie, with a dead-code diff and real
+deprecated built-ins out of magpie-friday, with a dead-code diff and real
 accounts for 8 of them. What went wrong was again at the edges of a run.
 Four bodies recorded a run at a tree other than the one pushed. Reds
 "under load" were filed (27 such issues since 10-16) and then commented
 on with no owner until CI went red on them. A check added to the fallback
 path read every passing reply's whole body, and a 24MB reply waited past
 its client's timeout on CI (7ac20247a). Two lessons were seen a third day
-and moved into the code standards: magpie's default never overrides a
+and moved into the code standards: magpie-friday's default never overrides a
 value the user set, and a checkout belongs to the session that made it.
 
 ## Reading the report
@@ -120,7 +120,7 @@ made up.**
   Truncated and empty bodies go in the tests.
 - Seen 1× (2026-10-05).
 
-**When the vendor refuses magpie but serves its own client on the same
+**When the vendor refuses magpie-friday but serves its own client on the same
 account, diff every header of the failing request against the official
 client's. Do that before adding retries or fallbacks.**
 - #256 Copilot Auto took four releases (719a6820, 026158b0, 251ef218, then
@@ -143,14 +143,14 @@ content before you rest an account.**
 **Fix what the error is about, not only how it is worded.**
 - e63fbb0e (kkgg on Discord, "GLM 直接429了"): Zhipu answered a GLM Coding
   Plan key sent to its pay-as-you-go endpoint with 429 1113 "余额不足". The
-  commit relabelled the 429 as out of credit, and nothing in magpie tells the
+  commit relabelled the 429 as out of credit, and nothing in magpie-friday tells the
   user the key belongs on the Coding Plan endpoint, which is what would make
   their requests work.
 - When a report shows a wrong label, also ask why the request failed. Fix
   that, or point the user to the fix in the message itself.
 - 10-10: 1134c7a8 reworded the "restart codex" advice. luci hit the same
   stale app-server daemon on the next release, and e611fc65 then restarted
-  it from magpie.
+  it from magpie-friday.
 - Seen 2× (2026-10-06, 2026-10-10).
 
 ## Fix the class, not the sample
@@ -190,7 +190,7 @@ protocol, never by a key's name.**
 - docs/subsystems/gateway-routing.md said "There is no `Host` check, so a
   page whose own name resolves to 127.0.0.1 (DNS rebinding) counts as
   same-origin". On 10-10 the review reproduced it on main. A rebound page
-  got 200 on /v1/models, /v1/chat/completions and /v1/magpie/quotas without
+  got 200 on /v1/models, /v1/chat/completions and /v1/magpie-friday/quotas without
   a key. Fixed in c431225a.
 - A same-origin exemption needs the Host checked too. A rebound page's GET
   carries no Origin at all.
@@ -233,12 +233,12 @@ and trusted only as far as who can write it.**
   on a push to main (pull_request runs get no write token).
 - Seen 1× (2026-10-14).
 
-**Text magpie adds to a prompt that goes to a vendor names neither magpie
+**Text magpie-friday adds to a prompt that goes to a vendor names neither magpie-friday
 nor the vendor's limits.**
 - 5d33f060b (10-12) headed the models it added to Codex's spawn_agent
-  description "(Codex names only five above; magpie serves these too)".
+  description "(Codex names only five above; magpie-friday serves these too)".
   That text goes upstream, to OpenAI too. 3c4f8f9ae made it neutral, and
-  its test fails when the text names magpie, Codex or "five". The cost is
+  its test fails when the text names magpie-friday, Codex or "five". The cost is
   ban risk, so a prompt change gets the same care as a header change.
 - Seen 1× (2026-10-12).
 
@@ -251,8 +251,8 @@ nor the vendor's limits.**
 
 **A command never takes a flag, or a value it doesn't know, as data to
 write.**
-- `magpie snow --help` took "--help" as a model: it deleted
-  profiles/magpie.json and wrote "--help" into the user's profile. 76db4c6c2
+- `magpie-friday snow --help` took "--help" as a model: it deleted
+  profiles/magpie-friday.json and wrote "--help" into the user's profile. 76db4c6c2
   (#1457) made --help print usage on every command, and Snow and Gemini CLI
   refuse an unknown value. Try each command with --help and a bad value in
   a sandbox HOME.
@@ -275,7 +275,7 @@ every user.**
 
 ## The user's own files and settings
 
-**Never let magpie's default override a value the user set themselves**
+**Never let magpie-friday's default override a value the user set themselves**
 is in the code standards since 10-18. See
 [Moved to the code standards](#moved-to-the-code-standards).
 
@@ -371,7 +371,7 @@ re-derives every place that discloses it.**
 - 169c23c1 sent `omp#` profile ids and the user's own model ids, which
   aren't in the public catalog (fixed in 2cdae80a: only known ids are sent).
 - 7d663a27 sent each partner's daily counts, while the READMEs' Privacy and
-  the site's "What does magpie send about me?" still listed what was sent
+  the site's "What does magpie-friday send about me?" still listed what was sent
   before (b4aa62af).
 - Grep the READMEs (en, zh) and site/public/docs (en, zh, ja) for the
   privacy text in the same commit.
@@ -385,7 +385,7 @@ re-derives every place that discloses it.**
   testdata.
 - Seen 1× (2026-10-10).
 
-**A check that a value is gone looks past text magpie generates.**
+**A check that a value is gone looks past text magpie-friday generates.**
 - 6c099edd's redact test checked that "ops" was gone by substring. The
   placeholder's random suffix spelled it ({{HOSTNAME_mlopsiy3}}) on macOS
   CI. f0453192 strips placeholders before the check, in its sibling
@@ -395,7 +395,7 @@ re-derives every place that discloses it.**
 **Playwright's WebKit is not WebKitGTK.** A GUI change with motion or a new
 browser API is tried in the real Linux app too.
 - 18e82adc6 (10-11) traded the layouts in a view transition. The GUI suite
-  passed in WebKit, but under Wayland magpie turns WebKitGTK's compositing
+  passed in WebKit, but under Wayland magpie-friday turns WebKitGTK's compositing
   off, and WebKitGTK 2.52 crashed in the transition and froze the window
   (f5dd4d604, a reporter on X).
 - Seen 1× (2026-10-12).
@@ -612,10 +612,10 @@ These were seen on three or more days. The rules and their evidence are in
 [docs/code-standards.md](docs/code-standards.md); a review still checks
 each one.
 
-- **Never let magpie's default override a value the user set themselves**
+- **Never let magpie-friday's default override a value the user set themselves**
   (10-05, 10-10, 10-17). On 10-17 5a2414acd brought every plugins.yml
   without `settled` up once, Essentials to All. A user who had run
-  `magpie plugin preset essentials` themselves wrote the same file, and
+  `magpie-friday plugin preset essentials` themselves wrote the same file, and
   the body doesn't name them (#2749).
 - **A checkout, worktree or log belongs to the session that made it**
   (10-09, 10-12, 10-17). On 10-17 another session checked out

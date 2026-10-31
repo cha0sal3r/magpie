@@ -25,7 +25,7 @@ import (
 )
 
 // lanAddr is a private IPv4 address of this computer: one on the user's
-// own network, as a Remote magpie or a NAS is.
+// own network, as a Remote magpie-friday or a NAS is.
 func lanAddr(t *testing.T) net.IP {
 	t.Helper()
 	addrs, _ := net.InterfaceAddrs()
@@ -115,8 +115,8 @@ func certFor(t *testing.T, ip net.IP) (tls.Certificate, []byte) {
 }
 
 // #1572: a plugin's requests to a host on the user's own network — a
-// Remote magpie, an LLM relay on the NAS — went through the proxy magpie
-// gave the host, which can't reach it (502 Bad Gateway), while magpie's
+// Remote magpie-friday, an LLM relay on the NAS — went through the proxy magpie-friday
+// gave the host, which can't reach it (502 Bad Gateway), while magpie-friday's
 // own requests leave such a host direct (netproxy.onLAN, #982). The
 // plugin's fetches, http:// (sent to the proxy in absolute form) and
 // https:// (a CONNECT), and its HTTP/2 sessions now go direct too; a

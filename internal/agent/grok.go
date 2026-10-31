@@ -2,15 +2,15 @@ package agent
 
 // Grok Build, xAI's grok CLI, keeps its settings in ~/.grok/config.toml (or
 // $GROK_HOME's): the model new sessions start with under [models] default,
-// and models of the user's own as [model."<id>"] tables. magpie adds one
-// such table per catalog model, named "magpie/<provider>/<model>", pointing
-// at the gateway with magpie's own key — a model with no key of its own
+// and models of the user's own as [model."<id>"] tables. magpie-friday adds one
+// such table per catalog model, named "magpie-friday/<provider>/<model>", pointing
+// at the gateway with magpie-friday's own key — a model with no key of its own
 // would be sent the user's xAI sign-in — so the catalog joins Grok's own
 // models in its /model picker.
 //
 // A signed-in Grok also takes remote "campaign" patches from xAI, applied
 // above config.toml, and a launch campaign sets models.default (September
-// 2026's grok-4.7-launch did): a default picked in magpie was ignored and
+// 2026's grok-4.7-launch did): a default picked in magpie-friday was ignored and
 // every new session started on the campaign's model. So a default picked
 // here turns campaigns off ([features] campaigns = false), and clearing it
 // gives them back.
@@ -23,17 +23,17 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // grokEfforts are the reasoning efforts Grok knows.
 var grokEfforts = []string{"none", "minimal", "low", "medium", "high", "xhigh", "max"}
 
-// grokModelTable is the header prefix of every table magpie writes.
+// grokModelTable is the header prefix of every table magpie-friday writes.
 var grokModelTable = `model."` + magpieID + "/"
 
-// grokModelTables are magpie's model tables, for a Grok that reaches the
+// grokModelTables are magpie-friday's model tables, for a Grok that reaches the
 // gateway's /v1 at v1.
 func grokModelTables(v1 string) []edit.Table {
 	var out []edit.Table
@@ -98,7 +98,7 @@ func grokIn(at place) *Agent {
 		}
 		return edit.SetTOMLKey(path, "features", "campaigns", false)
 	}
-	// the efforts of a model through magpie, as its catalog entry has them
+	// the efforts of a model through magpie-friday, as its catalog entry has them
 	efforts := func(model string) []string {
 		ref, ok := strings.CutPrefix(model, magpieID+"/")
 		if !ok {
@@ -149,7 +149,7 @@ func grokIn(at place) *Agent {
 				return err.Error()
 			}
 			if t == nil {
-				return "Grok Build's [model." + strconv.Quote(v) + "] (config.toml) is gone, so it no longer reaches magpie"
+				return "Grok Build's [model." + strconv.Quote(v) + "] (config.toml) is gone, so it no longer reaches magpie-friday"
 			}
 			return wiringOff("Grok Build", path, func(k string) (string, bool) { v, ok := t[k]; return v, ok },
 				"base_url", at.v1(), "api_key", at.gwKey())
@@ -204,7 +204,7 @@ func grokIn(at place) *Agent {
 					return edit.SetTOMLKey(path, "models", "default", v)
 				},
 				Options: func(cur map[string]string) []Option {
-					// magpie's rows for the account Grok Build is signed in
+					// magpie-friday's rows for the account Grok Build is signed in
 					// to are its own models a second time: they fold into
 					// one row (Fate on Discord: grokbuild 在登录态下会加载重复的模型)
 					opts := viaMagpie("grok", magpieID+"/")
@@ -237,12 +237,12 @@ func grokIn(at place) *Agent {
 }
 
 // grokOwnOptions are the models Grok Build offers its signed-in account: as
-// it last listed them itself (models_cache.json in its home), and as magpie
+// it last listed them itself (models_cache.json in its home), and as magpie-friday
 // last listed them for a Grok subscription; then the models of the user's
 // own config.toml tables, and the current one. Grok asks for them itself,
 // on its sign-in or their own key, so each says so (Direct): a row not
-// connected listed nothing of Grok's own, only magpie's, unless a Grok
-// subscription was signed in in magpie (EZN7L2C3, #834).
+// connected listed nothing of Grok's own, only magpie-friday's, unless a Grok
+// subscription was signed in in magpie-friday (EZN7L2C3, #834).
 func grokOwnOptions(dir, path, cur string) []Option {
 	seen := map[string]bool{}
 	var out []Option

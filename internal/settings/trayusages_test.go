@@ -9,7 +9,7 @@ import (
 
 // The menu bar shows several cards (TrayUsages); a settings file from before
 // them, with the one TrayUsage, shows that one, and TrayUsage is kept as the
-// first for an older magpie.
+// first for an older magpie-friday.
 func TestTrayUsagesMigrate(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
 	if err := os.MkdirAll(Dir(), 0o755); err != nil {
@@ -39,7 +39,7 @@ func TestTrayUsagesMigrate(t *testing.T) {
 		t.Fatalf("several: %q %q\n%s", s.TrayUsages, s.TrayUsage, b)
 	}
 	if !strings.Contains(string(b), `"trayUsage": "codex|x@y.z"`) {
-		t.Fatalf("first not kept for an older magpie:\n%s", b)
+		t.Fatalf("first not kept for an older magpie-friday:\n%s", b)
 	}
 	// all turned off, though the page still sends the first it was drawn with
 	s.TrayUsages = []string{}

@@ -7,7 +7,7 @@ import (
 )
 
 // A logout can leave Claude Code's credentials and profile behind. Signing in
-// through magpie then is the account Claude Code uses, not one kept beside a
+// through magpie-friday then is the account Claude Code uses, not one kept beside a
 // stale one, and it shows up as a provider (#31).
 func TestClaudeSignInOverStaleCredentials(t *testing.T) {
 	shellFakes(t)

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
 // A gateway that resells several vendors names each catalog; its models
@@ -17,7 +17,7 @@ func TestSeveralCatalogs(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
 	cache := t.TempDir()
 	t.Setenv("XDG_CACHE_HOME", cache)
-	os.MkdirAll(filepath.Join(cache, "magpie"), 0o755)
+	os.MkdirAll(filepath.Join(cache, "magpie-friday"), 0o755)
 	if err := os.WriteFile(catalog.CachePath(), []byte(`{
 	  "openai": {"models": {"gpt-5.5": {"id":"gpt-5.5","name":"GPT-5.5","reasoning_options":[{"type":"effort","values":["low","high"]}]}}},
 	  "deepseek": {"models": {"deepseek-chat": {"id":"deepseek-chat","name":"DeepSeek V4","reasoning_options":[{"type":"effort","values":["high","max"]}]}}}
@@ -58,7 +58,7 @@ func TestOpenCodeModelAPIs(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
 	cache := t.TempDir()
 	t.Setenv("XDG_CACHE_HOME", cache)
-	os.MkdirAll(filepath.Join(cache, "magpie"), 0o755)
+	os.MkdirAll(filepath.Join(cache, "magpie-friday"), 0o755)
 	if err := os.WriteFile(catalog.CachePath(), []byte(`{
 	  "opencode-go": {"models": {
 	    "grok-4.7": {"id":"grok-4.7","provider":{"npm":"@ai-sdk/openai"}},

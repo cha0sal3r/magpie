@@ -7,17 +7,17 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // A network that can't reach GitHub can have a release's file come
 // through a GitHub download mirror: its prefix goes before the file's
-// github.com URL (https://mirror.example/https://github.com/…). magpie
-// names no mirror of its own; one is used only when given (magpie update
-// --mirror, or Settings' UpdateMirror, which magpie update mirror sets).
+// github.com URL (https://mirror.example/https://github.com/…). magpie-friday
+// names no mirror of its own; one is used only when given (magpie-friday update
+// --mirror, or Settings' UpdateMirror, which magpie-friday update mirror sets).
 //
-// A mirror is a host magpie doesn't trust: the update feed, with each
+// A mirror is a host magpie-friday doesn't trust: the update feed, with each
 // file's SHA-256, is still asked at usemagpie.ai and never through the
 // mirror, the file is checked against that hash, and the macOS app must
 // still be signed by the team that signed the one installed. A mirror

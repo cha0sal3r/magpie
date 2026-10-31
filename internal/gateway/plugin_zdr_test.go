@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Command Code's own answers to x-cmd-zdr: 1 for a model no Zero Data
@@ -191,7 +191,7 @@ func TestZDRRefusalIsCommandCodesCodeOnly(t *testing.T) {
 
 // Wherever a try's failure is rested — a strict conversation's own
 // account, a System One decision, a count — a Zero Data Retention refusal
-// rests nothing: read from the vendor's own body, or from magpie's note
+// rests nothing: read from the vendor's own body, or from magpie-friday's note
 // beside the error the agent was given in Anthropic's shape, which keeps
 // no code. Another vendor's model refusal in the same words still rests
 // the model.

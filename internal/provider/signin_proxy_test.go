@@ -14,8 +14,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // setProxies gives subscription id a proxy of its own, and its accounts
@@ -153,7 +153,7 @@ func TestSignInGoesThroughItsProxy(t *testing.T) {
 	}
 }
 
-// A device sign-in run by magpie (Copilot's: the code asked for, then
+// A device sign-in run by magpie-friday (Copilot's: the code asked for, then
 // polled for the token, then whose account it is) goes through the
 // subscription's proxy from its first request (#1663).
 func TestDeviceSignInGoesThroughItsProxy(t *testing.T) {
@@ -269,7 +269,7 @@ func TestClaudeSignInGoesThroughItsProxy(t *testing.T) {
 // A Claude subscription behind a socks5:// proxy (#2651): Claude Code is
 // built with Bun, which takes only http:// and https:// proxies and failed
 // as UnsupportedProxyProtocol, so its sign-in, and the auth status read
-// after it, are given magpie's HTTP bridge to the SOCKS proxy.
+// after it, are given magpie-friday's HTTP bridge to the SOCKS proxy.
 func TestClaudeSignInBridgesASOCKSProxy(t *testing.T) {
 	claudeHome(t)
 	noAnthropic(t)
@@ -376,7 +376,7 @@ Account:
 	fakeDevin(t, exe)
 	const sub, mine, picked = "http://127.0.0.1:7001", "http://127.0.0.1:7002", "http://127.0.0.1:7003"
 	setProxies(t, "devin", sub, map[string]string{"dev@example.com": mine, "two@example.com": picked})
-	// the CLI's own account, and a second one in a home of magpie's
+	// the CLI's own account, and a second one in a home of magpie-friday's
 	two, _ := newDevinHome()
 	os.WriteFile(devinCredentialsAt(two), devinCredentials("devin-session-token$two", "", "", ""), 0o600)
 	writeLogins([]savedLogin{

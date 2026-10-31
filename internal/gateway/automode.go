@@ -8,7 +8,7 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Claude Code's auto mode checks each action with a classifier (#250).
@@ -21,8 +21,8 @@ import (
 // (anthropicWholeEvents). Any other model neither sees them nor answers
 // them (serverReview), and Claude Code, finding no result, classifies
 // locally for the rest of the session, naming the gateway in a notice.
-// magpie says nothing on the API's behalf. Where no model Claude Code can
-// reach through magpie is reviewed (AutoModeReviewed), the agent's wiring
+// magpie-friday says nothing on the API's behalf. Where no model Claude Code can
+// reach through magpie-friday is reviewed (AutoModeReviewed), the agent's wiring
 // turns the review off in Claude Code's settings instead
 // (CLAUDE_CODE_AUTO_MODE_SERVER=0, as Anthropic's page on the notice says to
 // for a gateway that can't run the checks), so it classifies locally from
@@ -73,7 +73,7 @@ func (s *Server) serverReview(p provider.Provider, asked []string, body []byte) 
 // subscription (the bridge hands the review to Claude Code's own binary),
 // a Claude model (Anthropic's API, a relay in front of it, Bedrock's or
 // Vertex's names for it), or anything on Anthropic's own API. No other
-// vendor runs Anthropic's classifier, and magpie answers none on its
+// vendor runs Anthropic's classifier, and magpie-friday answers none on its
 // behalf: another subscription's or a plugin's Claude model (Copilot,
 // Kiro, Cursor…) is that vendor's service, which turns the safeguards
 // away (#1756) or drops them, so it isn't reviewed by its name alone.
@@ -88,7 +88,7 @@ func AutoModeReviewed(p provider.Provider, model string) bool {
 }
 
 // AutoModeReviewable reports whether Claude Code, asking for model at p
-// through magpie, can have its actions reviewed: AutoModeReviewed, on a
+// through magpie-friday, can have its actions reviewed: AutoModeReviewed, on a
 // route that reaches the Messages API. A Claude model p serves only on
 // Chat or Responses (a relay with no Anthropic endpoint, or one the user
 // set to be asked on another API) is asked translated, and a translation
@@ -148,7 +148,7 @@ func hasReply(msgs []Message) bool {
 // auto mode classifier, to reason least — none when it can go without, its
 // lowest level otherwise — with room for that reasoning and the verdict.
 // A model whose levels aren't known (one on a relay the user added, under
-// the relay's own name for it) is asked for none too, as magpie's own ask
+// the relay's own name for it) is asked for none too, as magpie-friday's own ask
 // (OwnEffort): left to the vendor, a model that reasons did so at its
 // default over the whole policy and transcript, and Claude Code, which
 // waits 60 seconds an attempt for the verdict (2.1.310), closed the
@@ -171,7 +171,7 @@ func fitAutoModeClassifier(p provider.Provider, model string, req *Request) {
 	}
 }
 
-// ownEffortField is the effort magpie added (OwnEffort), remembered in
+// ownEffortField is the effort magpie-friday added (OwnEffort), remembered in
 // unfit for a model whose upstream turned the field away.
 func ownEffortField(model string) string { return "own effort\x00" + model }
 
@@ -182,7 +182,7 @@ var (
 	effortFieldUnknown = regexp.MustCompile(`(?i)(?:unrecogni[sz]ed|unknown|unsupported|unexpected|extra)\s+(?:request\s+)?(?:argument|parameter|field|property|name|key)s?(?:\s+supplied)?\W{0,4}reasoning(?:[._]effort)?\b|\breasoning(?:[._]effort)?['"\x60]?\W{0,4}(?:extra inputs are not permitted|is not (?:supported|allowed|permitted)|unsupported)`)
 )
 
-// ownEffortRefused reads a 400 to the effort magpie added (OwnEffort) as
+// ownEffortRefused reads a 400 to the effort magpie-friday added (OwnEffort) as
 // turned away, and whether it was the level sent (value) rather than the
 // field. Anything else is the request's own fault and reaches the client.
 func ownEffortRefused(status int, body []byte, sent string) (refused, value bool) {
@@ -229,14 +229,14 @@ func autoModeClassifierAsk(body []byte) bool {
 
 // ClassifierStandIn is the model Claude Code's auto mode classifier goes
 // to in place of the tier's it named, while that tier follows a main model
-// /model has moved since magpie wrote it; "" leaves it as asked. Set by
+// /model has moved since magpie-friday wrote it; "" leaves it as asked. Set by
 // main (agent.ClassifierStandIn).
 var ClassifierStandIn func(agent, model string) string
 
 // classifierStandIn is ClassifierStandIn for a request Claude Code sent,
 // when it is the auto mode classifier: Claude Code names its sonnet tier
 // for it, not the session's model, so the first one after a switch in
-// /model went to the model before it until magpie moved the tier.
+// /model went to the model before it until magpie-friday moved the tier.
 func classifierStandIn(agent string, from provider.Protocol, asked string, body []byte) string {
 	if ClassifierStandIn == nil || agent != "claude" || from != provider.Anthropic || !autoModeClassifierAsk(body) {
 		return ""

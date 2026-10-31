@@ -6,23 +6,23 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 func TestLegacyLANFallbackBeforeMigration(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
-	s := settings.Settings{LAN: true, LANKey: "sk-magpie-old-client"}
+	s := settings.Settings{LAN: true, LANKey: "sk-magpie-friday-old-client"}
 	if err := settings.Save(s); err != nil {
 		t.Fatal(err)
 	}
 	before, ok := Authenticate(s.LANKey)
-	if !ok || before.KeyID == "" || before.KeyName != "Magpie" {
+	if !ok || before.KeyID == "" || before.KeyName != "magpie-friday" {
 		t.Fatal("unmigrated legacy key lost access", before, ok)
 	}
 	if _, err := os.Stat(Path()); !errors.Is(err, os.ErrNotExist) {
 		t.Fatal("authentication must not create a key store", err)
 	}
-	for _, secret := range []string{"", "wrong", "magpie", s.LANKey + "x"} {
+	for _, secret := range []string{"", "wrong", "magpie-friday", s.LANKey + "x"} {
 		if _, ok := Authenticate(secret); ok {
 			t.Fatal("legacy fallback accepted another token")
 		}
@@ -67,7 +67,7 @@ func TestLegacyLANFallbackDoesNotBypassRevocation(t *testing.T) {
 
 func TestLegacyLANFallbackWithReadOnlyDirectory(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
-	s := settings.Settings{LAN: true, LANKey: "sk-magpie-readonly"}
+	s := settings.Settings{LAN: true, LANKey: "sk-magpie-friday-readonly"}
 	if err := settings.Save(s); err != nil {
 		t.Fatal(err)
 	}
@@ -81,7 +81,7 @@ func TestLegacyLANFallbackWithReadOnlyDirectory(t *testing.T) {
 		t.Fatal(err)
 	}
 	for range 3 {
-		if who, ok := Authenticate(s.LANKey); !ok || who.KeyID == "" || who.KeyName != "Magpie" {
+		if who, ok := Authenticate(s.LANKey); !ok || who.KeyID == "" || who.KeyName != "magpie-friday" {
 			t.Fatal("failed key-store creation broke legacy access", who, ok)
 		}
 	}

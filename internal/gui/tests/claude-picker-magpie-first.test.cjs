@@ -1,9 +1,9 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// abledo on Discord: "为什么claudecode的magpie模型选不了？其他的agent可以选".
+// abledo on Discord: "为什么claudecode的magpie-friday模型选不了？其他的agent可以选".
 // Claude Code not yet connected, with a relay of the user's own as its
 // ANTHROPIC_BASE_URL: its picker opened on a long list of Claude models it
-// asks the relay for itself, under "Claude Code · <host>", and every magpie
-// model sat below it, out of sight. magpie's models now come first and the
+// asks the relay for itself, under "Claude Code · <host>", and every magpie-friday
+// model sat below it, out of sight. magpie-friday's models now come first and the
 // agent's own direct ones after them, connected or not, the current model
 // still at the top. In five languages, chromium and webkit, at 1100 and 420
 // wide. No backend: the API is faked here.
@@ -16,7 +16,7 @@ const { chromium, webkit } = require("playwright");
 const assets = path.resolve(__dirname, "../assets");
 const host = "api.somerelay.example";
 const own = (value, note) => ({ value, note, icon: "claude-color", group: "Claude Code · " + host, direct: host });
-// in the backend's order: Claude Code's own, then magpie's
+// in the backend's order: Claude Code's own, then magpie-friday's
 const options = [
   own("claude-opus-5-5", "Claude Opus 5.5"),
   own("claude-haiku-5-5", "Claude Haiku 5.5"),
@@ -30,8 +30,8 @@ const options = [
   own("claude-opus-4-5", "Claude Opus 4.5"),
   own("claude-sonnet-4-5", "Claude Sonnet 4.5"),
   own("claude-haiku-4-5", "Claude Haiku 4.5"),
-  { value: "zhipu/glm-4.6", label: "GLM-4.6", note: "Zhipu · via magpie", icon: "zhipu-color", group: "Zhipu", ref: "zhipu/glm-4.6" },
-  { value: "deepseek/deepseek-v4", label: "DeepSeek V4", note: "DeepSeek · via magpie", icon: "deepseek-color", group: "DeepSeek", ref: "deepseek/deepseek-v4" },
+  { value: "zhipu/glm-4.6", label: "GLM-4.6", note: "Zhipu · via magpie-friday", icon: "zhipu-color", group: "Zhipu", ref: "zhipu/glm-4.6" },
+  { value: "deepseek/deepseek-v4", label: "DeepSeek V4", note: "DeepSeek · via magpie-friday", icon: "deepseek-color", group: "DeepSeek", ref: "deepseek/deepseek-v4" },
 ];
 const state = (value, wired) => ({
   agents: [{ id: "claude", name: "Claude Code", icon: "claudecode-color", path: "/test/settings.json", wired,
@@ -66,7 +66,7 @@ function server(lang, value, wired, sets) {
 const row = '.row.agent[data-id="claude"]';
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
-  test(engine + ": Claude Code's picker shows magpie's models first", async (t) => {
+  test(engine + ": Claude Code's picker shows magpie-friday's models first", async (t) => {
     const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: "chromium" }));
     const errors = [];
     t.after(async () => {
@@ -92,7 +92,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
             const at = (g) => groups.findIndex((x) => x.toLowerCase() === g.toLowerCase());
             assert(at("Zhipu") >= 0 && at("DeepSeek") > at("Zhipu"), `${wired}: ${groups.join(" | ")}`);
             assert(at("Claude Code · " + host) > at("DeepSeek"), `${wired}: the agent's own come last: ${groups.join(" | ")}`);
-            // the current one still heads the list, and magpie's first one
+            // the current one still heads the list, and magpie-friday's first one
             // is in sight without a scroll
             const names = await page.locator("#list li:not(.group) .v").allTextContents();
             const cur = names.indexOf("claude-opus-5-5");

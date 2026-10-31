@@ -1,4 +1,4 @@
-// Package imagemcp is `magpie mcp image`: a stdio MCP server an agent is
+// Package imagemcp is `magpie-friday mcp image`: a stdio MCP server an agent is
 // given, when it is picked for it in the Library, to make images with the
 // model the Settings' Image generation names, and videos with the first
 // video model the gateway has (gateway.AutoVideomaker). It asks the
@@ -27,8 +27,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // Folder is where images go in the project when no path is given, and
@@ -74,8 +74,8 @@ var (
 
 var videoSchema = map[string]any{
 	"name": videoTool,
-	"description": "Generate a short video from a text prompt, optionally starting from an image to animate, with a video model set up in Magpie " +
-		"(a Grok subscription's Grok Imagine, Volcengine Ark Agent Plan's Seedance, another Magpie's, or a provider whose model list marks video models). It takes from ten seconds to a few minutes, then the video is saved as an mp4 file in the project (" + VideoFolder +
+	"description": "Generate a short video from a text prompt, optionally starting from an image to animate, with a video model set up in magpie-friday " +
+		"(a Grok subscription's Grok Imagine, Volcengine Ark Agent Plan's Seedance, another magpie-friday's, or a provider whose model list marks video models). It takes from ten seconds to a few minutes, then the video is saved as an mp4 file in the project (" + VideoFolder +
 		"/ unless path says where) and its path is returned; when it is not ready within about 20 seconds, the answer is an id to wait on with " + resultTool + " instead. Describe the subject, the motion and the camera: what moves, how, and what the shot is.",
 	"inputSchema": map[string]any{
 		"type": "object",
@@ -98,7 +98,7 @@ var resultSchema = map[string]any{
 
 var schema = map[string]any{
 	"name": tool,
-	"description": "Generate an image from a text prompt, or edit/combine images given as reference_images, with the image model set in Magpie. " +
+	"description": "Generate an image from a text prompt, or edit/combine images given as reference_images, with the image model set in magpie-friday. " +
 		"The image is saved as a file in the project (" + Folder + "/ unless path says where) and its path is returned (when it is not ready within about 20 seconds, the answer is an id to wait on with " + resultTool + " instead); " +
 		"reference it from code or docs by that path. Write a detailed prompt: subject, style, composition, colours, any text to render exactly.",
 	"inputSchema": map[string]any{
@@ -299,7 +299,7 @@ func (s *server) handle(req rpc) {
 		s.mu.Lock()
 		s.roots = len(p.Capabilities.Roots) > 0 && string(p.Capabilities.Roots) != "null"
 		if name := strings.ReplaceAll(strings.TrimSpace(p.ClientInfo.Name), " ", "-"); name != "" {
-			// the call is the agent's: usage names it, not magpie
+			// the call is the agent's: usage names it, not magpie-friday
 			if p.ClientInfo.Version != "" {
 				name += "/" + p.ClientInfo.Version
 			}
@@ -309,7 +309,7 @@ func (s *server) handle(req rpc) {
 		result = map[string]any{
 			"protocolVersion": "2025-06-18",
 			"capabilities":    map[string]any{"tools": map[string]any{}},
-			"serverInfo":      map[string]any{"name": "magpie-image", "version": "1"},
+			"serverInfo":      map[string]any{"name": "magpie-friday-image", "version": "1"},
 		}
 	case "ping":
 		result = map[string]any{}
@@ -337,7 +337,7 @@ func (s *server) handle(req rpc) {
 			j = s.jobs[strings.TrimSpace(a.ID)]
 			s.mu.Unlock()
 			if j == nil {
-				result = map[string]any{"content": []any{map[string]any{"type": "text", "text": fmt.Sprintf("no image or video is being made as %q (magpie-image may have been restarted): look in the project's %s/ or %s/, or generate it again", a.ID, Folder, VideoFolder)}}, "isError": true}
+				result = map[string]any{"content": []any{map[string]any{"type": "text", "text": fmt.Sprintf("no image or video is being made as %q (magpie-friday-image may have been restarted): look in the project's %s/ or %s/, or generate it again", a.ID, Folder, VideoFolder)}}, "isError": true}
 				break
 			}
 		} else {
@@ -421,7 +421,7 @@ func (s *server) generate(raw json.RawMessage) (string, error) {
 	s.mu.Unlock()
 	res, err := s.client.Do(r)
 	if err != nil {
-		return "", fmt.Errorf("magpie isn't answering at %s (is it running?): %w", s.gateway, err)
+		return "", fmt.Errorf("magpie-friday isn't answering at %s (is it running?): %w", s.gateway, err)
 	}
 	defer res.Body.Close()
 	data, _ := io.ReadAll(io.LimitReader(res.Body, 256<<20))
@@ -510,8 +510,8 @@ func (s *server) generate(raw json.RawMessage) (string, error) {
 }
 
 // project is the folder images are saved in: the client's first root when
-// it can say, else the folder the agent started magpie in. The home folder
-// or / isn't a project: ~/Pictures/Magpie is used then (the distro's, for
+// it can say, else the folder the agent started magpie-friday in. The home folder
+// or / isn't a project: ~/Pictures/magpie-friday is used then (the distro's, for
 // an agent in WSL).
 func (s *server) project() string {
 	if dir := s.root(); dir != "" {
@@ -520,12 +520,12 @@ func (s *server) project() string {
 	dir, _ := os.Getwd()
 	if wsl != nil && wsl.home != "" {
 		if d := wsl.shown(dir); d == "" || d == "/" || strings.TrimSuffix(d, "/") == strings.TrimSuffix(wsl.home, "/") {
-			return wsl.local(strings.TrimSuffix(wsl.home, "/") + "/Pictures/Magpie")
+			return wsl.local(strings.TrimSuffix(wsl.home, "/") + "/Pictures/magpie-friday")
 		}
 	}
 	home, _ := os.UserHomeDir()
 	if dir == "" || dir == "/" || dir == home || filepath.Dir(dir) == dir {
-		return filepath.Join(home, "Pictures", "Magpie")
+		return filepath.Join(home, "Pictures", "magpie-friday")
 	}
 	return dir
 }
@@ -539,7 +539,7 @@ func (s *server) root() string {
 		return ""
 	}
 	s.nextCall++
-	id := fmt.Sprintf(`"magpie-roots-%d"`, s.nextCall)
+	id := fmt.Sprintf(`"magpie-friday-roots-%d"`, s.nextCall)
 	ch := make(chan rpc, 1)
 	s.pending[id] = ch
 	s.mu.Unlock()
@@ -744,7 +744,7 @@ func (s *server) call(method, path string, body []byte) ([]byte, int, error) {
 	s.mu.Unlock()
 	res, err := s.client.Do(r)
 	if err != nil {
-		return nil, 0, fmt.Errorf("magpie isn't answering at %s (is it running?): %w", s.gateway, err)
+		return nil, 0, fmt.Errorf("magpie-friday isn't answering at %s (is it running?): %w", s.gateway, err)
 	}
 	defer res.Body.Close()
 	data, _ := io.ReadAll(io.LimitReader(res.Body, 512<<20))

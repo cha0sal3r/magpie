@@ -13,14 +13,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // ourFree is a provider listing ids as Our Free Model's plugin does: its
 // free pools' models, and its account channels' as "channel/model".
 func ourFree(ids ...string) []plugin.Provider {
-	p := plugin.Provider{ID: "our-free-model", Spec: "magpie-our-free-model", Name: "Our Free Model",
+	p := plugin.Provider{ID: "our-free-model", Spec: "magpie-friday-our-free-model", Name: "Our Free Model",
 		NPM: "@ai-sdk/openai-compatible"}
 	for _, id := range ids {
 		p.Models = append(p.Models, plugin.Model{ID: id, Name: id, NPM: "@ai-sdk/openai-compatible"})
@@ -28,9 +28,9 @@ func ourFree(ids ...string) []plugin.Provider {
 	return []plugin.Provider{p}
 }
 
-// Our Free Model's service, started again with magpie after an update,
+// Our Free Model's service, started again with magpie-friday after an update,
 // lists its free pools at once and its account channels' models only once
-// it has read them, so the list the gateway's magpie read a minute after
+// it has read them, so the list the gateway's magpie-friday read a minute after
 // it started was short. The picks it didn't have were dropped for good,
 // and its user picked every model again after each update (多喝热水 on
 // Discord). They are set aside now, not served while the list leaves them
@@ -49,7 +49,7 @@ func TestPluginPicksComeBackWithTheirList(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	write("plugins.json", map[string]any{"plugins": []map[string]any{{"spec": "magpie-our-free-model"}}})
+	write("plugins.json", map[string]any{"plugins": []map[string]any{{"spec": "magpie-friday-our-free-model"}}})
 	write("plugin-auth.json", map[string]any{"our-free-model": map[string]any{"type": "api", "key": "managed"}})
 	full := ourFree("pool-a", "pool-b", "qoder/claude-x", "kiro/claude-y", "kiro/claude-z")
 	plugin.UseCached(full)
@@ -156,7 +156,7 @@ func TestEveryPickDelistedServesNone(t *testing.T) {
 		t.Fatal(err)
 	}
 	for name, v := range map[string]any{
-		"plugins.json":     map[string]any{"plugins": []map[string]any{{"spec": "magpie-our-free-model"}}},
+		"plugins.json":     map[string]any{"plugins": []map[string]any{{"spec": "magpie-friday-our-free-model"}}},
 		"plugin-auth.json": map[string]any{"our-free-model": map[string]any{"type": "api", "key": "managed"}},
 	} {
 		b, _ := json.Marshal(v)

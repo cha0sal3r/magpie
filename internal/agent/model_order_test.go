@@ -4,12 +4,12 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // An order dragged on the Agents page reaches every agent, not only Codex
 // (#1052): Claude Code's /model picker (viaMagpie, which writePicker turns
-// into settings.json's modelPicker) and the model files magpie writes for
+// into settings.json's modelPicker) and the model files magpie-friday writes for
 // the others (magpieModels) list the models in it, and one agent's order
 // leaves another's alone.
 func TestModelOrderReachesEveryAgent(t *testing.T) {

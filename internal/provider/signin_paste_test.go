@@ -51,7 +51,7 @@ func fakeCodexTokens(t *testing.T, hold chan struct{}) *atomic.Int32 {
 
 // callbackAddress is the address the vendor's page sends the browser back
 // to, as the browser shows it: localhost, which from a server or Docker
-// container is not where magpie is.
+// container is not where magpie-friday is.
 func callbackAddress(t *testing.T, st SignInState, code, state string) string {
 	t.Helper()
 	u, err := url.Parse(st.URL)
@@ -65,7 +65,7 @@ func callbackAddress(t *testing.T, st SignInState, code, state string) string {
 	return q.Get("redirect_uri") + "?" + url.Values{"code": {code}, "state": {state}}.Encode()
 }
 
-// Jorben on Discord: magpie in Docker on a cloud server, its web UI in his
+// Jorben on Discord: magpie-friday in Docker on a cloud server, its web UI in his
 // browser; ChatGPT sends the browser back to localhost:1455, which is his
 // own machine, and the sign-in never finished. The address pasted finishes it.
 func TestCodexSignInFromPastedAddress(t *testing.T) {

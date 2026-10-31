@@ -99,7 +99,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       assert.deepEqual(errors, [], where);
       await context.close();
 
-      // magpie web in gateway mode: Agents and Library aren't there
+      // magpie-friday web in gateway mode: Agents and Library aren't there
       const gw = await browser.newContext({ viewport: { width, height: 640 }, reducedMotion: "reduce" });
       const gp = await gw.newPage();
       gp.setDefaultTimeout(5000);

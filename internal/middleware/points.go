@@ -35,11 +35,11 @@ import (
 
 	"github.com/Calcium-Ion/moejs"
 
-	"github.com/yetone/magpie/internal/beat"
-	"github.com/yetone/magpie/internal/filememo"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/routes"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/beat"
+	"github.com/cha0sal3r/magpie-friday/internal/filememo"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/routes"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 var (
@@ -412,8 +412,8 @@ func (o *observer) Serve() (stop func()) {
 	go func() {
 		defer wg.Done()
 		// a plugin turned on here is seen once saved (Written); every
-		// OthersEvery only catches one the CLI or a second magpie turned on
-		// (#3185: a 1s tick woke an idle magpie every second)
+		// OthersEvery only catches one the CLI or a second magpie-friday turned on
+		// (#3185: a 1s tick woke an idle magpie-friday every second)
 		for {
 			select {
 			case <-done:

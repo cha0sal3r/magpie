@@ -1,7 +1,7 @@
 package provider
 
 // What a whole subscription window holds, as the Usage page's account
-// cards say beside its share used: what magpie routed through the account
+// cards say beside its share used: what magpie-friday routed through the account
 // since the window began, over the share the vendor says is used. Package
 // usage reckons it (WithWindowHolds), from its log; here are the figures and
 // the window's bounds.
@@ -11,13 +11,13 @@ import (
 	"time"
 )
 
-// WindowHolds is a window's whole allowance reckoned from magpie's own
+// WindowHolds is a window's whole allowance reckoned from magpie-friday's own
 // calls: Tokens of input and output (cache traffic aside, as the Usage
 // page counts tokens) and, when every call's model has an API list price,
 // Cost at those prices (cache reads and writes at the vendor's own rates).
-// Routed is what magpie routed through the account in the window so far,
+// Routed is what magpie-friday routed through the account in the window so far,
 // up to when the share was read, and Used that share. A call made with the
-// account outside magpie is in Used but not in Routed, so the estimate is
+// account outside magpie-friday is in Used but not in Routed, so the estimate is
 // then lower than the window really holds.
 type WindowHolds struct {
 	Tokens int64   `json:"tokens"`
@@ -43,8 +43,8 @@ const HoldsFloor = 5.0
 const (
 	HoldsLow        = "low"     // under HoldsFloor used
 	HoldsNoClock    = "clock"   // no reset clock, so no known start
-	HoldsBeforeLog  = "log"     // began before magpie's log does
-	HoldsNoneRouted = "none"    // magpie routed nothing it counts in it
+	HoldsBeforeLog  = "log"     // began before magpie-friday's log does
+	HoldsNoneRouted = "none"    // magpie-friday routed nothing it counts in it
 	HoldsCredits    = "credits" // a call in it may have been paid from credits
 )
 

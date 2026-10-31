@@ -1,7 +1,7 @@
 package gateway
 
 // The request archive on this computer (CyberCaius on Discord): while sync
-// has no S3 bucket for it, a call is kept in magpie's own folder, at
+// has no S3 bucket for it, a call is kept in magpie-friday's own folder, at
 // request-archive/<date>/<id>.json, the same file the bucket would get. It
 // has a switch of its own, settings' RequestArchiveLocal, which sync never
 // carries to another computer, so request bodies are written to a disk only
@@ -21,7 +21,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // ErrNotArchived is a name the archive on this computer has nothing at.
@@ -54,8 +54,8 @@ var (
 	localArchives = map[string]*DiskArchive{}
 )
 
-// LocalArchive is the archive in magpie's folder: request-archive under
-// ~/.config/magpie, or a portable magpie's data folder.
+// LocalArchive is the archive in magpie-friday's folder: request-archive under
+// ~/.config/magpie-friday, or a portable magpie-friday's data folder.
 func LocalArchive() *DiskArchive {
 	dir := filepath.Join(settings.Dir(), "request-archive")
 	localMu.Lock()

@@ -45,29 +45,29 @@ func TestEmpryo(t *testing.T) {
 	for _, o := range f.Options(a.Values()) {
 		vals = append(vals, o.Value)
 	}
-	if !strings.Contains(strings.Join(vals, " "), "anthropic/claude-sonnet-5-5 magpie/deepseek/pro") {
+	if !strings.Contains(strings.Join(vals, " "), "anthropic/claude-sonnet-5-5 magpie-friday/deepseek/pro") {
 		t.Fatalf("options: %v", vals)
 	}
 
-	for range 2 { // twice: one magpie provider, and the user's model kept
-		if err := f.Set("magpie/deepseek/pro"); err != nil {
+	for range 2 { // twice: one magpie-friday provider, and the user's model kept
+		if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 			t.Fatal(err)
 		}
 	}
 	m := read()
 	ps, _ := m["providers"].([]any)
 	if len(ps) != 2 || !reflect.DeepEqual(ps[0], want["providers"].([]any)[0]) ||
-		!reflect.DeepEqual(ps[1], map[string]any{"id": "magpie", "name": "Magpie", "baseURL": gatewayV1(), "modelsAPI": gatewayV1() + "/models"}) {
+		!reflect.DeepEqual(ps[1], map[string]any{"id": "magpie-friday", "name": "magpie-friday", "baseURL": gatewayV1(), "modelsAPI": gatewayV1() + "/models"}) {
 		t.Fatalf("providers: %v", m["providers"])
 	}
-	if m["defaultModel"] != "magpie/deepseek/pro" || m["theme"] != "dark" {
+	if m["defaultModel"] != "magpie-friday/deepseek/pro" || m["theme"] != "dark" {
 		t.Fatalf("set: %v", m)
 	}
-	if f.Get() != "magpie/deepseek/pro" || a.Check() != "" {
+	if f.Get() != "magpie-friday/deepseek/pro" || a.Check() != "" {
 		t.Fatalf("on: %q %q", f.Get(), a.Check())
 	}
 
-	// magpie's provider pointed elsewhere
+	// magpie-friday's provider pointed elsewhere
 	b, _ := os.ReadFile(path)
 	os.WriteFile(path, []byte(strings.Replace(string(b), gatewayV1(), "http://elsewhere/v1", 1)), 0o644)
 	if !strings.Contains(a.Check(), "http://elsewhere/v1") {
@@ -83,12 +83,12 @@ func TestEmpryo(t *testing.T) {
 		t.Fatalf("restore: %v", m)
 	}
 
-	// a file magpie made goes again
+	// a file magpie-friday made goes again
 	os.Remove(path)
-	if err := f.Set("magpie/deepseek/flash"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
-	if m := read(); m["defaultModel"] != "magpie/deepseek/flash" {
+	if m := read(); m["defaultModel"] != "magpie-friday/deepseek/flash" {
 		t.Fatalf("new: %v", m)
 	}
 	if err := f.Set(""); err != nil {

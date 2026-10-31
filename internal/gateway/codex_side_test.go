@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // codexSideRequest is one of the Codex app's hidden side turns as it sends
@@ -36,7 +36,7 @@ const (
 	sideSummarySchema     = `{"type":"object","properties":{"summary":{"type":"string"},"compactSummary":{"type":"string","maxLength":60}},"required":["summary","compactSummary"],"additionalProperties":false}`
 )
 
-// With one of magpie's models picked beside Codex's ChatGPT sign-in, the
+// With one of magpie-friday's models picked beside Codex's ChatGPT sign-in, the
 // Codex app's titles, descriptions and summaries, which it asks for on
 // gpt-6-luna whatever the conversation is on, are written by the model
 // picked, not by ChatGPT, so a conversation on a third-party model spends
@@ -67,7 +67,7 @@ func TestCodexSideTurnsOnThePickedModel(t *testing.T) {
 		codexSideRequest(t, s, src, sideSummarySchema)
 	}
 	if chatgptCalls != 3 || f.calls != 0 {
-		t.Fatalf("own model: chatgpt %d, magpie model %d", chatgptCalls, f.calls)
+		t.Fatalf("own model: chatgpt %d, magpie-friday model %d", chatgptCalls, f.calls)
 	}
 
 	side = "fake/m1"
@@ -79,14 +79,14 @@ func TestCodexSideTurnsOnThePickedModel(t *testing.T) {
 		before := f.calls
 		rec := codexSideRequest(t, s, c.source, c.schema)
 		if text, _ := outputText(t, rec.Body.String()); rec.Code != 200 || text != c.want || f.calls != before+1 || chatgptCalls != 3 {
-			t.Fatalf("%s on the picked model: %d %q, magpie model %d, chatgpt %d", c.source, rec.Code, rec.Body.String(), f.calls, chatgptCalls)
+			t.Fatalf("%s on the picked model: %d %q, magpie-friday model %d, chatgpt %d", c.source, rec.Code, rec.Body.String(), f.calls, chatgptCalls)
 		}
 		var sent struct {
 			Model string `json:"model"`
 		}
 		json.Unmarshal(f.got, &sent)
 		if sent.Model != "m1" {
-			t.Errorf("%s: the magpie model was asked for %q", c.source, sent.Model)
+			t.Errorf("%s: the magpie-friday model was asked for %q", c.source, sent.Model)
 		}
 	}
 
@@ -97,7 +97,7 @@ func TestCodexSideTurnsOnThePickedModel(t *testing.T) {
 	req.Header.Set("Authorization", "Bearer chatgpt-token")
 	s.Handler().ServeHTTP(rec, req)
 	if chatgptCalls != 4 || f.calls != 3 {
-		t.Errorf("a plain turn: chatgpt %d, magpie model %d", chatgptCalls, f.calls)
+		t.Errorf("a plain turn: chatgpt %d, magpie-friday model %d", chatgptCalls, f.calls)
 	}
 
 	var kinds []string
@@ -110,7 +110,7 @@ func TestCodexSideTurnsOnThePickedModel(t *testing.T) {
 	}
 }
 
-// A summary on one of magpie's models, with magpie Codex's provider, is
+// A summary on one of magpie-friday's models, with magpie-friday Codex's provider, is
 // handed back in the shape its schema asks for too: a model behind the
 // Chat API never sees the schema, and the app drops a plain answer.
 func TestCodexSummaryOnMagpieProvider(t *testing.T) {

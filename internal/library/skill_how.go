@@ -4,8 +4,8 @@ package library
 // which an update reaches at once, or a copy of its own, which a tool that
 // doesn't follow links (or a sync, a backup, an archive) takes as a folder
 // like any other. The library has one way for every agent, and an agent
-// can have its own. A copy carries magpie's mark (marker), so it is known
-// for magpie's own and is all a change of way or a Remove ever takes away;
+// can have its own. A copy carries magpie-friday's mark (marker), so it is known
+// for magpie-friday's own and is all a change of way or a Remove ever takes away;
 // a folder of the user's by that name is never touched. A copy is made
 // again on each sync once the library's skill differs from it: the page
 // says which copies differ until then (SkillView.Behind), with a button
@@ -82,7 +82,7 @@ func SetSkillHow(agent, how string) (*Result, error) {
 	})
 }
 
-// relink puts a link to the library's skill at p in place of magpie's copy
+// relink puts a link to the library's skill at p in place of magpie-friday's copy
 // there, not ok when no link can be made (Windows without the right to),
 // which leaves the copy as it is. A copy that differs from the library's
 // skill (edited in the agent) is kept aside rather than lost.
@@ -91,7 +91,7 @@ func relink(agent, p, name string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	next := filepath.Join(filepath.Dir(p), "."+name+".magpie-link")
+	next := filepath.Join(filepath.Dir(p), "."+name+".magpie-friday-link")
 	os.Remove(next)
 	if err := dirLink(skillDir(name), next); err != nil {
 		return false, nil

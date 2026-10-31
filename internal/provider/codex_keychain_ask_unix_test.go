@@ -11,10 +11,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
-// macOS' `security` as magpie runs it: the secret is read with room for
+// macOS' `security` as magpie-friday runs it: the secret is read with room for
 // the user (keychainAsk, not keychainWait), and its exits are told apart
 // (SecBase.h: errSecItemNotFound -25300 → 44, errSecAuthFailed -25293 →
 // 51, errSecUserCanceled -128 → 128). A fake `security` on PATH; never

@@ -5,9 +5,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // The number Claude Desktop's menu says beside a Claude model it names
@@ -50,10 +50,10 @@ func TestProviderModelsSayDesktopNumber(t *testing.T) {
 	for _, e := range provider.Catalog() {
 		if e.ID == "relay/claude-opus-5-5" {
 			id := gateway.DesktopID(e)
-			rest, cut := strings.CutPrefix(id, "magpie-")
+			rest, cut := strings.CutPrefix(id, "magpie-friday-")
 			n, _, ok := strings.Cut(rest, ".anthropic.claude-opus-5-5")
 			if !cut || !ok || n == "" {
-				t.Fatalf("Desktop is shown %s, want magpie-<n>.anthropic.claude-opus-5-5", id)
+				t.Fatalf("Desktop is shown %s, want magpie-friday-<n>.anthropic.claude-opus-5-5", id)
 			}
 			opus = n
 		}
@@ -63,7 +63,7 @@ func TestProviderModelsSayDesktopNumber(t *testing.T) {
 		"claude-opus-5-5": opus,
 		// its own id: Desktop names it "Sonnet 5.5", with no number
 		"claude-sonnet-5-5": "",
-		// mythos-magpie-<n>: Desktop names it by display_name, which
+		// mythos-magpie-friday-<n>: Desktop names it by display_name, which
 		// says the provider
 		"m2": "",
 		// not shown to Claude Desktop

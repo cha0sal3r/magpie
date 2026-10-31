@@ -5,12 +5,12 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// magpie's own gateway is on the port Settings has (Magic_zero on
-// Discord): an app's entry there is magpie's, not one to import, and one
-// on 3425 is another program's once magpie has moved off it.
+// magpie-friday's own gateway is on the port Settings has (Magic_zero on
+// Discord): an app's entry there is magpie-friday's, not one to import, and one
+// on 3425 is another program's once magpie-friday has moved off it.
 func TestGatewayURLOnSettingsPort(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)

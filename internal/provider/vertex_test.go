@@ -32,7 +32,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // vertexHome gives a test a home of its own with no Google credentials in
@@ -364,7 +364,7 @@ func TestVertexSaveRefuses(t *testing.T) {
 		{v: &Vertex{Project: "acme-vertex", Location: "us-central1/"}, want: `"us-central1/" is no Vertex AI location: global, us, eu or a region such as us-central1`},
 		{v: &Vertex{Project: "acme-vertex", Credentials: "keys/acme-vertex.json"}, want: `give the credentials file's full path, not "keys/acme-vertex.json"`},
 		// another user's home, which nothing expands: it would be read
-		// under whatever folder magpie was started in
+		// under whatever folder magpie-friday was started in
 		{v: &Vertex{Project: "acme-vertex", Credentials: "~other/acme-vertex.json"}, want: `give the credentials file's full path, not "~other/acme-vertex.json"`},
 		{v: &Vertex{Project: "acme-vertex", Impersonate: "vertex-runner"}, want: `"vertex-runner" is no service account's email`},
 		{v: &Vertex{Project: "acme-vertex", Impersonate: "vertex-runner@acme vertex.iam.gserviceaccount.com"}, want: `"vertex-runner@acme vertex.iam.gserviceaccount.com" is no service account's email`},
@@ -1167,7 +1167,7 @@ func TestVertexUndatedTokenKept(t *testing.T) {
 
 // Credentials no token is minted from are refused, saying what to use
 // instead, before anything is sent: workload identity federation's, a
-// sovereign cloud's, a kind magpie doesn't read, a person's with no
+// sovereign cloud's, a kind magpie-friday doesn't read, a person's with no
 // refresh token, and a file that isn't JSON. A missing file is named: the
 // provider's own is to be corrected or cleared, and when it is the one
 // gcloud would have written, the refusal says how to sign in.
@@ -1259,7 +1259,7 @@ func TestVertexEnvCredentialsMissing(t *testing.T) {
 }
 
 // A GOOGLE_APPLICATION_CREDENTIALS that isn't a full path names no file
-// wherever magpie was started, and gcloud's file, read in its place, may be
+// wherever magpie-friday was started, and gcloud's file, read in its place, may be
 // another account's: the person's own, where the variable named a service
 // account's key. It is refused by name, and nothing is minted. One that
 // starts ~/ is under the home, as the provider's own file is.
@@ -1317,7 +1317,7 @@ func TestVertexCredentialsFile(t *testing.T) {
 	t.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "")
 	t.Setenv("CLOUDSDK_CONFIG", "~/gcloud-work")
 	is("", filepath.Join(home, "gcloud-work", "application_default_credentials.json"))
-	// and one that isn't a full path names no file wherever magpie was
+	// and one that isn't a full path names no file wherever magpie-friday was
 	// started: it is refused by name, the next place not looked in
 	for _, c := range []struct{ name, v string }{{"GOOGLE_APPLICATION_CREDENTIALS", "env.json"}, {"CLOUDSDK_CONFIG", "gcloud-work"}} {
 		t.Setenv(c.name, c.v)

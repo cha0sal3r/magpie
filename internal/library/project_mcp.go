@@ -14,7 +14,7 @@ import (
 	toml "github.com/pelletier/go-toml/v2"
 	"github.com/tidwall/jsonc"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 // projectMCPFiles is the file, in a project, each agent reads the project's
@@ -55,7 +55,7 @@ var projectMCPFiles = map[string]struct {
 }
 
 // ProjectMCPFile is the file, in a project, an agent reads the project's
-// MCP servers from: "" for one magpie can't give a project's servers to.
+// MCP servers from: "" for one magpie-friday can't give a project's servers to.
 func ProjectMCPFile(agent string) string { return projectMCPFiles[agent].rel }
 
 // ProjectNoSSE says whether an agent's project file can't take a server
@@ -82,7 +82,7 @@ func (p *Project) mcpRel(agent string) (string, mcpFormat) {
 	return f.rel, f.format
 }
 
-// formatOfRel is the format of a project's file magpie wrote servers in.
+// formatOfRel is the format of a project's file magpie-friday wrote servers in.
 func formatOfRel(rel string) (mcpFormat, bool) {
 	switch rel {
 	case "opencode.jsonc":
@@ -99,8 +99,8 @@ func formatOfRel(rel string) (mcpFormat, bool) {
 }
 
 // syncProjectMCP writes the library's servers the project has into each
-// agent's file there, and takes out those magpie wrote that it no longer
-// has; an entry by the same name that magpie didn't write is left as it
+// agent's file there, and takes out those magpie-friday wrote that it no longer
+// has; an entry by the same name that magpie-friday didn't write is left as it
 // is, and so is everything else in the file.
 func (l *Library) syncProjectMCP(p *Project, fail func(what string, err error)) {
 	want := map[string][]*Server{} // the file → its servers
@@ -186,7 +186,7 @@ func (l *Library) syncProjectMCP(p *Project, fail func(what string, err error)) 
 			s := wroteStartup(s, was[s.Name])
 			old := entries[s.Name]
 			if old != nil && !slices.Contains(had, s.Name) {
-				fail("mcp:"+s.Name, fmt.Errorf("%s has a server called %s already that isn't magpie's: it's left as it is", rel, s.Name))
+				fail("mcp:"+s.Name, fmt.Errorf("%s has a server called %s already that isn't magpie-friday's: it's left as it is", rel, s.Name))
 				continue
 			}
 			if old != nil {
@@ -225,7 +225,7 @@ func (l *Library) syncProjectMCP(p *Project, fail func(what string, err error)) 
 			wrote[rel] = mine
 			continue
 		}
-		// a file magpie made goes once nothing is left in it; one with
+		// a file magpie-friday made goes once nothing is left in it; one with
 		// anything of the user's in it is the user's from then on
 		if i := slices.Index(p.MadeFiles, rel); i >= 0 {
 			if blankFile(abs, format) {
@@ -290,7 +290,7 @@ func ProjectServer(dir, name string, agents []string) (*Result, error) {
 		var ids []string
 		for _, id := range agents {
 			if ProjectMCPFile(id) == "" {
-				return fmt.Errorf("magpie knows of no file %s reads a project's MCP servers from", id)
+				return fmt.Errorf("magpie-friday knows of no file %s reads a project's MCP servers from", id)
 			}
 			ids = set(ids, id, true)
 		}

@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// Dani Ariyanto on Discord (magpie model spec --reasoning off): a model the
+// Dani Ariyanto on Discord (magpie-friday model spec --reasoning off): a model the
 // user said takes no reasoning field is offered no levels by the gateway,
 // so the Gateway page's row says none, though its list has some. The
 // backend sends such a model reasonless with no kept levels; the row went

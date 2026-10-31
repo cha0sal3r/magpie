@@ -7,7 +7,7 @@ import (
 )
 
 // Front is what the gateway's own listener serves: Handler behind
-// lanGuard, built once. `magpie web`'s port hands the gateway's client
+// lanGuard, built once. `magpie-friday web`'s port hands the gateway's client
 // routes (ClientPath) to it too, so a request there is judged exactly as
 // one on the gateway's port: the allow list, a key from another machine
 // or through a proxy, a rebound page's Host, and corsGuard's Origin rules.
@@ -28,7 +28,7 @@ var clientPrefixes = []string{
 	"/muse-code/models", CodexPath, AlphaSearchPath, "/mcp",
 }
 
-// ClientPath: p is one of the gateway's client routes, which `magpie web`
+// ClientPath: p is one of the gateway's client routes, which `magpie-friday web`
 // answers on its own port too by handing it to the gateway, so one address
 // (one reverse-proxy location) serves the page and the agents (zgcwkj on
 // Discord). The page's own routes keep its key: /api/* is the page's, so

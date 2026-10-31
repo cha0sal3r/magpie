@@ -5,9 +5,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // isMemoryKind: a call Codex makes to write or consolidate its memories,
@@ -24,7 +24,7 @@ func codexTurnKey(r *http.Request, who string) string {
 }
 
 // rememberCodexTurn keeps the model a turn of Codex's own conversation
-// was asked on, one magpie serves, for its memory calls.
+// was asked on, one magpie-friday serves, for its memory calls.
 func (s *Server) rememberCodexTurn(r *http.Request, who, agent, kind, asked string) {
 	if agent != "codex" || kind != "" {
 		return
@@ -48,23 +48,23 @@ func freeOnChatGPT(model string) bool {
 	return strings.EqualFold(strings.TrimSpace(model), "codex-auto-review")
 }
 
-// codexMemoryStandIn is the model a Codex memory call goes to when magpie
+// codexMemoryStandIn is the model a Codex memory call goes to when magpie-friday
 // knows none by the name it came with (#742): Codex writes and
 // consolidates its memories on models of its own (memories.extract_model
 // and consolidation_model, gpt-5.6-luna and gpt-5.6-terra by default) by
-// their bare names, whatever it is set to, so with magpie as its provider
+// their bare names, whatever it is set to, so with magpie-friday as its provider
 // every one was turned away as an unknown model before it was routed. It
 // goes to the model that Codex's own turns go to — the last one it had
 // answered here, else the last in the ledger (a week back) from the same
 // agent with the same key — so it is routed, and in the views, as the
 // memory call it is. Its auto-review (isReviewCall) goes there too when
-// Codex's config names no model magpie serves (StandIn): Codex reviews on
+// Codex's config names no model magpie-friday serves (StandIn): Codex reviews on
 // the conversation's model when it has no reviewer, and a Codex whose
-// config magpie doesn't read as its own — on magpie through another
+// config magpie-friday doesn't read as its own — on magpie-friday through another
 // provider table or a profile, under a CODEX_HOME of its own, or on
-// another computer — was answered 404 "magpie knows no model
+// another computer — was answered 404 "magpie-friday knows no model
 // \"codex-auto-review\"" (Adam on Discord). "" for any other call, a model
-// magpie serves, or a Codex that has had no turn answered here.
+// magpie-friday serves, or a Codex that has had no turn answered here.
 func (s *Server) codexMemoryStandIn(r *http.Request, who, agent, kind, asked string) string {
 	if agent != "codex" || !isMemoryKind(kind) && !isReviewCall(kind, asked) {
 		return ""

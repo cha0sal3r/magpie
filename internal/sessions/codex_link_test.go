@@ -42,7 +42,7 @@ func TestCodexRolloutsBehindALink(t *testing.T) {
 	if len(listed) == 0 {
 		t.Fatal("the fixture has no Codex session")
 	}
-	if err := os.WriteFile(filepath.Join(codex, "config.toml"), []byte("model_provider = \"magpie\"\n"), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(codex, "config.toml"), []byte("model_provider = \"magpie-friday\"\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -72,8 +72,8 @@ func TestCodexRolloutsBehindALink(t *testing.T) {
 		t.Fatalf("a rollout behind a link reads as %s, want %s", home, codex)
 	}
 	for _, m := range ListAgent("codex") {
-		if m.UsesProvider != "magpie" {
-			t.Fatalf("session %s uses %q, want magpie", m.ID, m.UsesProvider)
+		if m.UsesProvider != "magpie-friday" {
+			t.Fatalf("session %s uses %q, want magpie-friday", m.ID, m.UsesProvider)
 		}
 	}
 }

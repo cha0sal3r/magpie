@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 func TestKimiLiteralQuotedModelKey(t *testing.T) {
@@ -63,7 +63,7 @@ func TestKimiRestoresDecodedModelKey(t *testing.T) {
 				t.Fatal(err)
 			}
 			field := kimi(home).Field("model")
-			if err := field.Set("magpie/deepseek/pro"); err != nil {
+			if err := field.Set("magpie-friday/deepseek/pro"); err != nil {
 				t.Fatal(err)
 			}
 			if err := field.Set(""); err != nil {

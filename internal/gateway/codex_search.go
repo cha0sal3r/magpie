@@ -11,20 +11,20 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // AlphaSearchPath is where Codex's own web search, its web.run tool, goes:
 // "alpha/search" under the model provider's base URL, so /v1/alpha/search
-// on magpie's provider and CodexPath+"/alpha/search" when Codex is signed in
+// on magpie-friday's provider and CodexPath+"/alpha/search" when Codex is signed in
 // to ChatGPT. Codex offers web.run since 0.143 for a provider that sends
-// x-openai-actor-authorization, as magpie's does, on a model whose catalog
-// entry says use_responses_lite, as a ChatGPT account's do in magpie
+// x-openai-actor-authorization, as magpie-friday's does, on a model whose catalog
+// entry says use_responses_lite, as a ChatGPT account's do in magpie-friday
 // (codexcat copies Codex's own entry). Unanswered, the 404 ended the turn:
 // Codex takes any failure of web.run as fatal (anton on Discord).
 const AlphaSearchPath = "/alpha/search"
 
-// alphaSearchRequest is the part of Codex's SearchRequest magpie reads; the
+// alphaSearchRequest is the part of Codex's SearchRequest magpie-friday reads; the
 // rest goes on to the ChatGPT backend as it came.
 type alphaSearchRequest struct {
 	Model    string `json:"model"`
@@ -49,7 +49,7 @@ type alphaSearchReply struct {
 // alphaSearch answers POST /v1/alpha/search. A ChatGPT account's model
 // goes to the ChatGPT backend's search, as Codex sends it there itself,
 // on the account's sign-in. Any other model's search_query is searched as
-// magpie searches for a model that can't (webSearch). What magpie can't
+// magpie-friday searches for a model that can't (webSearch). What magpie-friday can't
 // do is said in the tool's output with a 200, which the model reads; a
 // failure status would end the turn.
 func (s *Server) alphaSearch(w http.ResponseWriter, r *http.Request) {
@@ -63,7 +63,7 @@ func (s *Server) alphaSearch(w http.ResponseWriter, r *http.Request) {
 func (s *Server) alphaSearchBody(w http.ResponseWriter, r *http.Request, body []byte) {
 	var q alphaSearchRequest
 	if err := json.Unmarshal(body, &q); err != nil {
-		writeError(w, provider.Responses, http.StatusBadRequest, "magpie couldn't read the web search request: "+err.Error())
+		writeError(w, provider.Responses, http.StatusBadRequest, "magpie-friday couldn't read the web search request: "+err.Error())
 		return
 	}
 	if q.Model == "" {
@@ -76,9 +76,9 @@ func (s *Server) alphaSearchBody(w http.ResponseWriter, r *http.Request, body []
 		if answered {
 			return
 		}
-		// a failure would end the turn: magpie searches in its place
+		// a failure would end the turn: magpie-friday searches in its place
 		log.Printf("web search on ChatGPT for %s: %s", q.Model, why)
-		note = "ChatGPT's web search failed (" + why + "); magpie searched in its place.\n\n"
+		note = "ChatGPT's web search failed (" + why + "); magpie-friday searched in its place.\n\n"
 	}
 	s.alphaSearchHere(w, r, q, note)
 }
@@ -119,7 +119,7 @@ func chatGPTSearchers(r *http.Request, model string) ([]provider.Provider, strin
 // alphaSearchOn sends the search to the ChatGPT backend on each account in
 // turn, the next asked when one is refused, limited or fails, and relays
 // the backend's answer as it is. It says whether one answered: when none
-// did, nothing is written, and the search is magpie's (alphaSearchHere),
+// did, nothing is written, and the search is magpie-friday's (alphaSearchHere),
 // with why returned.
 func (s *Server) alphaSearchOn(w http.ResponseWriter, r *http.Request, body []byte, model string, ons []provider.Provider) (bool, string) {
 	start := time.Now()
@@ -189,7 +189,7 @@ func (s *Server) alphaSearchOn(w http.ResponseWriter, r *http.Request, body []by
 }
 
 // alphaSearchHere answers a search for a model no ChatGPT account serves:
-// its search_query and image_query searched as magpie searches for a
+// its search_query and image_query searched as magpie-friday searches for a
 // model that can't, the findings the tool's output. Opening, clicking or
 // finding in a page is the ChatGPT backend's alone, and said so.
 func (s *Server) alphaSearchHere(w http.ResponseWriter, r *http.Request, q alphaSearchRequest, note string) {
@@ -207,7 +207,7 @@ func (s *Server) alphaSearchHere(w http.ResponseWriter, r *http.Request, q alpha
 		queries = append(queries, text)
 	}
 	if len(queries) == 0 {
-		writeJSON(w, http.StatusOK, alphaSearchReply{Output: note + "magpie can only search the web for " + q.Model + ": give web.run a search_query. Opening, clicking or finding in a page goes to the ChatGPT backend, for a ChatGPT account's model in magpie."})
+		writeJSON(w, http.StatusOK, alphaSearchReply{Output: note + "magpie-friday can only search the web for " + q.Model + ": give web.run a search_query. Opening, clicking or finding in a page goes to the ChatGPT backend, for a ChatGPT account's model in magpie-friday."})
 		return
 	}
 	ctx := context.WithValue(r.Context(), searchForKey{}, &CallFor{Agent: callerOf(r).agent, Model: q.Model})
@@ -219,9 +219,9 @@ func (s *Server) alphaSearchHere(w http.ResponseWriter, r *http.Request, q alpha
 				return
 			}
 			log.Printf("web search for %s: %v", q.Model, err)
-			msg := "magpie couldn't search the web for " + query + ": " + err.Error()
+			msg := "magpie-friday couldn't search the web for " + query + ": " + err.Error()
 			if errors.Is(err, errNoSearcher) {
-				msg += ": add a search API in magpie's Settings → Models → Web search (or magpie search add <api> <key>), or a provider that can search"
+				msg += ": add a search API in magpie-friday's Settings → Models → Web search (or magpie-friday search add <api> <key>), or a provider that can search"
 			}
 			said = append(said, msg)
 			continue

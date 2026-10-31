@@ -13,12 +13,12 @@ import (
 
 // lc on Discord: Zed wasn't among the agents an MCP server could be given
 // to. Zed reads them from context_servers in its settings.json (JSONC),
-// the file magpie sets its model in: a command as command/args/env, a url
+// the file magpie-friday sets its model in: a command as command/args/env, a url
 // as url/headers, which it speaks streamable HTTP to (zed-industries/zed
 // 2c99f547, crates/settings_content/src/project.rs
 // ContextServerSettingsContent). The user's comments, other settings, own
 // servers and an extension's server are kept; unchecking Zed takes out
-// only magpie's entries.
+// only magpie-friday's entries.
 func TestZedMCP(t *testing.T) {
 	user := `// Zed settings
 //
@@ -181,7 +181,7 @@ func TestZedMCP(t *testing.T) {
 				t.Errorf("a sync rewrote servers that are as the library has them:\n%s", read(t, p))
 			}
 
-			// a key the user gives magpie's entry in Zed stays
+			// a key the user gives magpie-friday's entry in Zed stays
 			text := strings.Replace(read(t, p), `"command": "npx"`, `"enabled": false, "command": "npx"`, 1)
 			write(t, p, text)
 			fs.Args = []string{"-y", "@mcp/fs", "/tmp"}
@@ -190,12 +190,12 @@ func TestZedMCP(t *testing.T) {
 				t.Errorf("fs after an edit: %v", g)
 			}
 
-			// unchecking Zed takes out only magpie's
+			// unchecking Zed takes out only magpie-friday's
 			ok(t)(ServerAgents("fs", nil))
 			ok(t)(RemoveServer("web"))
 			got = parse()
 			if len(got) != 3 || got["mine"] == nil || got["remote-mine"] == nil || got["mcp-server-github"]["settings"] == nil {
-				t.Errorf("after taking magpie's out:\n%s", read(t, p))
+				t.Errorf("after taking magpie-friday's out:\n%s", read(t, p))
 			}
 			for _, keep := range []string{"// Zed settings", "// my theme", "/* the servers I added in Zed */", "// installed from Zed's extensions", `"theme": "One Dark"`, `"buffer_font_size": 15`, `"timeout": 120`} {
 				if !strings.Contains(read(t, p), keep) {

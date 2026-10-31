@@ -15,7 +15,7 @@ import (
 )
 
 // s3 keeps the backup in an S3-compatible bucket — AWS S3, Cloudflare R2,
-// Backblaze B2, MinIO, Garage, a NAS — at <prefix>/magpie/magpie.magpie-backup,
+// Backblaze B2, MinIO, Garage, a NAS — at <prefix>/magpie-friday/magpie-friday.magpie-friday-backup,
 // as the WebDAV folder does: the object read with its ETag, written back
 // with If-Match, the first one with If-None-Match: *. The address is
 // s3://bucket/prefix; User is the access key ID and Password its secret.

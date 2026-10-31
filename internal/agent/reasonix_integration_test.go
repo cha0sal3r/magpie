@@ -13,9 +13,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // An opt-in contract check against the released client. Everything it reads and
@@ -104,7 +104,7 @@ func TestReasonixStudioCLIIntegration(t *testing.T) {
 	gw := httptest.NewServer(s.Handler())
 	defer gw.Close()
 	t.Setenv("MAGPIE_ADDR", strings.TrimPrefix(gw.URL, "http://"))
-	if err := a.Field("model").Set("magpie/group/code"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/group/code"); err != nil {
 		t.Fatal(err)
 	}
 	if err := a.Field("effort").Set(expectedEffort); err != nil {

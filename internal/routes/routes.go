@@ -40,7 +40,7 @@ type Seat struct {
 	Weight int
 	// Resting: it rests after a failure now
 	Resting bool
-	// Tokens is what magpie sent it lately, decayed by an hour's half-life
+	// Tokens is what magpie-friday sent it lately, decayed by an hour's half-life
 	Tokens float64
 	// Free: the model this seat would be asked for costs nothing on it —
 	// its vendor serves that model at no cost to the subscription's

@@ -6,13 +6,13 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
 // #597: a routing group of DeepSeek V4 Pro on Tencent's TokenHub and on its
-// Token Plan (deepseek-v4-pro-202606, which nothing magpie reads knows)
+// Token Plan (deepseek-v4-pro-202606, which nothing magpie-friday reads knows)
 // offered no reasoning levels, so Pi listed off alone for it and ran it
-// without reasoning while magpie showed max. A model a provider serves that
+// without reasoning while magpie-friday showed max. A model a provider serves that
 // its vendor's list leaves out takes the levels the gateway fits an effort
 // to (Provider.Efforts), and a member whose levels nothing knows takes
 // whatever the agent asks rather than taking the others' away. Nor does a
@@ -24,7 +24,7 @@ func TestGroupLevelsWithUnknownMember(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
 	cache := t.TempDir()
 	t.Setenv("XDG_CACHE_HOME", cache)
-	os.MkdirAll(filepath.Join(cache, "magpie"), 0o755)
+	os.MkdirAll(filepath.Join(cache, "magpie-friday"), 0o755)
 	if err := os.WriteFile(catalog.CachePath(), []byte(`{
 	  "deepseek": {"models": {"deepseek-v4-pro": {"id":"deepseek-v4-pro","name":"DeepSeek V4 Pro","reasoning":true,
 	    "reasoning_options":[{"type":"toggle"},{"type":"effort","values":["low","high","max"]}],"limit":{"context":1000000}}}},

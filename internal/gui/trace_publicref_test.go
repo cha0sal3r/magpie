@@ -10,13 +10,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
-// The Routing page names a group magpie found as agents pick it,
+// The Routing page names a group magpie-friday found as agents pick it,
 // auto/<model>, wherever a route names one: the model the agent asked
 // for, the group and the groups in it, the request a search was for and a
 // subagent's pick (未寒 on Discord: the live view still said

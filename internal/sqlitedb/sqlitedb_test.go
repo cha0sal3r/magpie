@@ -20,7 +20,7 @@ import (
 // that child runs TestOpenInChild.
 const childDB = "MAGPIE_SQLITEDB_CHILD"
 
-// The environment #2327's reporter's magpie was started with: a fragment
+// The environment #2327's reporter's magpie-friday was started with: a fragment
 // of a DLP tool's dylib path, with no "=", ahead of everything else. The
 // first SQLite open reads SQLITE_TMPDIR, and modernc's getenv used to
 // print TODOTODO and os.Exit(1) on that entry (on macOS, Windows and the
@@ -34,7 +34,7 @@ func TestSQLiteSurvivesMalformedEnv(t *testing.T) {
 	child.Env = append(child.Env, childDB+"="+db)
 	out, err := child.CombinedOutput()
 	if err != nil || strings.Contains(string(out), "TODOTODO") || !strings.Contains(string(out), "opened 1") {
-		t.Fatalf("a magpie started with an entry with no \"=\" couldn't open SQLite: %v\n%s", err, out)
+		t.Fatalf("a magpie-friday started with an entry with no \"=\" couldn't open SQLite: %v\n%s", err, out)
 	}
 }
 

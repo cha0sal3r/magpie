@@ -10,11 +10,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/budget"
-	"github.com/yetone/magpie/internal/gwbudget"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/budget"
+	"github.com/cha0sal3r/magpie-friday/internal/gwbudget"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // limitClock is the time a gateway key's limit is checked at: the window
@@ -23,7 +23,7 @@ import (
 var limitClock = time.Now
 
 // remoteKeyLimitHeader marks a 429 as the gateway key's own limit, not a
-// provider's: a magpie that uses this one as a remote rests its key on it,
+// provider's: a magpie-friday that uses this one as a remote rests its key on it,
 // and only its model on any other refusal (#2077).
 const remoteKeyLimitHeader = "X-Magpie-Limit-Reset"
 
@@ -108,11 +108,11 @@ func protoOfPath(path string) provider.Protocol {
 	return provider.Chat
 }
 
-// keyLimit answers GET /v1/magpie/limit: the calling gateway key's limit,
+// keyLimit answers GET /v1/magpie-friday/limit: the calling gateway key's limit,
 // what it has used and when it resets; {"limited":false} for a key with
 // none or a request without one. "limits" is each of a key's limits
 // (#2227), and "limit" the one holding it most (budget.Binding), which is
-// what a magpie from before them reads.
+// what a magpie-friday from before them reads.
 func (s *Server) keyLimit(w http.ResponseWriter, r *http.Request) {
 	who := access.Caller(r.Context())
 	if who.KeyID == "" || len(who.Limits()) == 0 {

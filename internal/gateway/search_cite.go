@@ -2,9 +2,9 @@ package gateway
 
 import "strings"
 
-// After a search magpie ran for a model (searchReply), or one a provider
+// After a search magpie-friday ran for a model (searchReply), or one a provider
 // ran and reported (KSearch), the model's answer names the pages it used
-// by their addresses: magpie's web_search tool asks it to cite the URLs.
+// by their addresses: magpie-friday's web_search tool asks it to cite the URLs.
 // An Anthropic client is told which pages a line cites as Anthropic's own
 // search tells it, a text block whose citations are
 // web_search_result_location entries for the pages of the reply's
@@ -13,7 +13,7 @@ import "strings"
 // one block as before. The text is the model's, unchanged.
 //
 // encrypted_index is Anthropic's sealed pointer into its own result, which
-// magpie can't make: it is "", as the results' encrypted_content is
+// magpie-friday can't make: it is "", as the results' encrypted_content is
 // (searchResultBlock). cited_text is what the search said of the page, when
 // it said something (Hit.Cited), else "".
 

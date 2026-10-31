@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // bareGLM asks for glm-5.3 by its bare id, as MOMO's client did, and says
@@ -23,7 +23,7 @@ func bareGLM(t *testing.T, s *Server, say string) (code int, from, body string) 
 // A bare model id two providers serve (MOMO on Discord: glm-5.3 under
 // opencode-go and a6api) goes where the Providers order says, every
 // time, and the reply says which provider it was. With found groups on
-// (the default) the group magpie found for it is what's routed, so the
+// (the default) the group magpie-friday found for it is what's routed, so the
 // next provider answers when the first can't; off, it is the first
 // provider alone.
 func TestBareSlugFollowsTheProvidersOrder(t *testing.T) {

@@ -8,7 +8,7 @@ import (
 // With names the user set plain (PlainOwnNames, #92), a routing group they
 // made is one of them (#868: 模型名称太长…路由组的名称也很长, an agent's
 // narrow menu cut "· routing group" to "· rou…"): its name stands alone in
-// the agents' lists. A group magpie found keeps "· routing group", the
+// the agents' lists. A group magpie-friday found keeps "· routing group", the
 // vendors' names keep their providers', and a name the list would show
 // twice keeps its suffix, so a picker never shows one name twice.
 func TestPlainOwnNamesGroups(t *testing.T) {

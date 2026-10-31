@@ -5,7 +5,7 @@ import "testing"
 // Antigravity answers a 429 "Resource has been exhausted (e.g. check
 // quota)" to Claude Code's and the Agent SDK's system prompt whatever the
 // quota left (#666: Claude Desktop's chats always 429, its titles and
-// Codex on the same account fine); magpie says so rather than leave a user
+// Codex on the same account fine); magpie-friday says so rather than leave a user
 // chasing a quota. Both lines are as Claude Code 2.1.288 sends them.
 func TestAntigravityTurnsAwayClaudeCodesSystemPrompt(t *testing.T) {
 	for _, system := range []string{

@@ -5,12 +5,12 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// #315: a Responses request rebuilt by magpie asks for what its client's
+// #315: a Responses request rebuilt by magpie-friday asks for what its client's
 // include did, as prompt_cache_key goes on: a strict Codex relay refuses
-// one without reasoning.encrypted_content. magpie's own search sources are
+// one without reasoning.encrypted_content. magpie-friday's own search sources are
 // added to it once.
 func TestResponsesKeepsInclude(t *testing.T) {
 	include := func(body, host string) []string {
@@ -48,7 +48,7 @@ func TestResponsesKeepsInclude(t *testing.T) {
 }
 
 // The way #315 met it: Codex offering web search to a Responses provider
-// magpie doesn't know searches by itself goes through magpie's search, and
+// magpie-friday doesn't know searches by itself goes through magpie-friday's search, and
 // the request its provider gets still asks for sealed reasoning.
 func TestCodexSearchKeepsInclude(t *testing.T) {
 	f := &fake{t: t, reply: sse(

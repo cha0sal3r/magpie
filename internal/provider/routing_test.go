@@ -132,7 +132,7 @@ func TestAllowanceFor(t *testing.T) {
 }
 
 // The first ask for an agent's allowances waits for them, so the first
-// requests after magpie starts are routed by them too.
+// requests after magpie-friday starts are routed by them too.
 func TestAllowancesFirstWaits(t *testing.T) {
 	if m := Allowances("nobody"); m == nil {
 		t.Fatal("the first ask didn't wait")

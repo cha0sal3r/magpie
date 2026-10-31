@@ -9,7 +9,7 @@ import (
 	"time"
 	"unicode/utf16"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 // A .wslconfig Notepad saved as "Unicode" (UTF-16LE with a BOM), as
@@ -66,7 +66,7 @@ func TestParseProbeNet(t *testing.T) {
 // What WSL says wins over .wslconfig: mirrored by wslinfo with no
 // .wslconfig at all is 127.0.0.1; nat by wslinfo with a .wslconfig saying
 // mirrored (not yet applied) is Windows, and the notice says nat. Without
-// wslinfo, .wslconfig decides, and the notice says magpie couldn't ask.
+// wslinfo, .wslconfig decides, and the notice says magpie-friday couldn't ask.
 func TestWSLNetworkingFromWslinfo(t *testing.T) {
 	for _, c := range []struct {
 		net, cfg string
@@ -114,7 +114,7 @@ func TestWSLNetworkingFromWslinfo(t *testing.T) {
 }
 
 // A distro that stopped is probed again once it runs, so WSL restarted in
-// another networking mode is seen without restarting magpie.
+// another networking mode is seen without restarting magpie-friday.
 func TestWSLReprobedAfterStop(t *testing.T) {
 	home, _ := codexHome(t, "", "model = \"gpt-5.5\"\n")
 	fakeWSL(t, "Ubuntu\r\n", "Ubuntu\r\n", nil, map[string]string{"Ubuntu": filepath.Dir(home)})
@@ -163,7 +163,7 @@ func TestWSLReprobedAfterStop(t *testing.T) {
 
 // #1230: under consomme networking the distro's default route is Windows'
 // own next hop (198.18.0.2 behind a TUN proxy), not Windows, and the
-// distro's 127.0.0.1 is relayed to Windows' own. Every agent magpie writes
+// distro's 127.0.0.1 is relayed to Windows' own. Every agent magpie-friday writes
 // there is pointed at 127.0.0.1, and Codex's config says so.
 func TestWSLConsommeIsLoopback(t *testing.T) {
 	home, read := codexHome(t, "", "model = \"gpt-5.5\"\n")
@@ -192,14 +192,14 @@ func TestWSLConsommeIsLoopback(t *testing.T) {
 	}
 }
 
-// An agent an older magpie pointed at a consomme distro's default route
+// An agent an older magpie-friday pointed at a consomme distro's default route
 // (#1230's 198.18.0.2) is offered 127.0.0.1 once the distro is probed again.
 func TestWSLConsommeMovesOffRoute(t *testing.T) {
 	home, _ := codexHome(t, "", "model = \"gpt-5.5\"\n")
 	probe := "home:/" + filepath.Base(home) + "\ndir:.codex\nroute:default via 198.18.0.2 dev eth0\nnet:consomme\n"
 	fakeWSL(t, "Ubuntu\r\n", "Ubuntu\r\n", map[string]string{"Ubuntu": probe},
 		map[string]string{"Ubuntu": filepath.Dir(home)})
-	// wsl.json as a magpie that took the route for Windows left it
+	// wsl.json as a magpie-friday that took the route for Windows left it
 	os.MkdirAll(filepath.Dir(wslStatePath()), 0o755)
 	if err := os.WriteFile(wslStatePath(), []byte(`{"Ubuntu":{"name":"Ubuntu","home":"/`+filepath.Base(home)+
 		`","root":"","has":{"dir:.codex":true},"probe":2,"gateway":"198.18.0.2","net":"consomme"}}`), 0o644); err != nil {

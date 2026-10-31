@@ -15,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 // pemPair writes a self-signed certificate and its key into dir.
@@ -109,16 +109,16 @@ func TestCommandsRefuseHalfAPair(t *testing.T) {
 }
 
 // The service installed again from a shell that names no certificate
-// (magpie daemon web on, a new PATH) keeps the one it was installed with;
+// (magpie-friday daemon web on, a new PATH) keeps the one it was installed with;
 // --no-tls takes it away.
 func TestDaemonReinstallKeepsTLS(t *testing.T) {
 	var file string
 	switch runtime.GOOS {
 	case "darwin":
-		file = filepath.Join(os.Getenv("HOME"), "Library", "LaunchAgents", "com.yetone.magpie.serve.plist")
+		file = filepath.Join(os.Getenv("HOME"), "Library", "LaunchAgents", "com.cha0sal3r.magpie-friday.serve.plist")
 	case "linux":
 		t.Setenv("XDG_CONFIG_HOME", filepath.Join(t.TempDir(), "config"))
-		file = filepath.Join(os.Getenv("XDG_CONFIG_HOME"), "systemd", "user", "magpie.service")
+		file = filepath.Join(os.Getenv("XDG_CONFIG_HOME"), "systemd", "user", "magpie-friday.service")
 	default:
 		t.Skip("no service on " + runtime.GOOS)
 	}

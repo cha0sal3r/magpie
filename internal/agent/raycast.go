@@ -6,11 +6,11 @@ package agent
 // custom-providers):
 //
 //	providers:
-//	  - id: magpie
-//	    name: magpie
+//	  - id: magpie-friday
+//	    name: magpie-friday
 //	    base_url: http://127.0.0.1:3425/v1   # OpenAI compatible, without /chat/completions
 //	    api_keys:
-//	      magpie: magpie-raycast
+//	      magpie-friday: magpie-friday-raycast
 //	    models:
 //	      - id: <provider>/<model>
 //	        name: …
@@ -24,10 +24,10 @@ package agent
 //
 // Raycast watches the file and picks a change up without a restart. The
 // model is picked in Raycast's own model picker (Quick AI, AI Chat, AI
-// Commands), not in a file, so what magpie sets is whether its models are in
-// that picker: one entry of the providers list, id "magpie". The user's other
+// Commands), not in a file, so what magpie-friday sets is whether its models are in
+// that picker: one entry of the providers list, id "magpie-friday". The user's other
 // entries, the top-level tools block and comments stay, and so does a key
-// magpie doesn't write in its own entry (include_user_email,
+// magpie-friday doesn't write in its own entry (include_user_email,
 // additional_parameters, a model's description). Raycast's User-Agent isn't
 // known, so its requests are told apart by their key.
 
@@ -42,8 +42,8 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 // raycastApp is Raycast's macOS bundle.
@@ -85,7 +85,7 @@ func raycast(home string) *Agent {
 			},
 			Set: func(v string) error { return write(v != "") },
 			Options: func(map[string]string) []Option {
-				return []Option{{Value: magpieID, Label: "magpie", Icon: "magpie", Note: "every magpie model in Raycast AI's model picker (Raycast Pro)"}}
+				return []Option{{Value: magpieID, Label: "magpie-friday", Icon: "magpie-friday", Note: "every magpie-friday model in Raycast AI's model picker (Raycast Pro)"}}
 			},
 		}},
 	}
@@ -119,9 +119,9 @@ type raycastProvider struct {
 	Models  []raycastModel    `yaml:"models"`
 }
 
-// raycastProviderYAML is magpie's entry in providers.yaml for a gateway at
+// raycastProviderYAML is magpie-friday's entry in providers.yaml for a gateway at
 // gw. Every ability is said, as Raycast assumes tools and vision off and
-// temperature on when one isn't: tools on, as every model magpie serves an
+// temperature on when one isn't: tools on, as every model magpie-friday serves an
 // agent takes them and Raycast's AI Extensions need them; vision on a model
 // that takes images; temperature off on one that refuses it; reasoning
 // effort on a model with effort levels.
@@ -136,11 +136,11 @@ func raycastProviderYAML(gw string) raycastProvider {
 			ReasoningEffort: raycastSupported{len(m.Efforts) > 0},
 		}})
 	}
-	return raycastProvider{ID: magpieID, Name: "magpie", BaseURL: gw + "/v1",
+	return raycastProvider{ID: magpieID, Name: "magpie-friday", BaseURL: gw + "/v1",
 		APIKeys: map[string]string{magpieID: agentKeyAt("raycast", gw)}, Models: ms}
 }
 
-// raycastWired says whether providers.yaml has magpie's entry.
+// raycastWired says whether providers.yaml has magpie-friday's entry.
 func raycastWired(path string) bool {
 	b, err := edit.Read(path)
 	if err != nil || len(bytes.TrimSpace(b)) == 0 {
@@ -161,7 +161,7 @@ func raycastWired(path string) bool {
 	})
 }
 
-// raycastIndex is the place of magpie's entry in the providers list, -1
+// raycastIndex is the place of magpie-friday's entry in the providers list, -1
 // when it has none.
 func raycastIndex(seq *yaml.Node) int {
 	for i, it := range seq.Content {
@@ -177,8 +177,8 @@ func raycastIndex(seq *yaml.Node) int {
 	return -1
 }
 
-// raycastWire puts magpie's entry into providers.yaml, made when there is
-// none; an entry there already keeps what magpie doesn't write in it. The
+// raycastWire puts magpie-friday's entry into providers.yaml, made when there is
+// none; an entry there already keeps what magpie-friday doesn't write in it. The
 // file is written only when the entry says something else.
 func raycastWire(path string, p raycastProvider) error {
 	var want yaml.Node
@@ -227,7 +227,7 @@ func raycastWire(path string, p raycastProvider) error {
 	return nil
 }
 
-// raycastUnwire takes magpie's entry out of providers.yaml, the list with it
+// raycastUnwire takes magpie-friday's entry out of providers.yaml, the list with it
 // when it was the only one, and the file when nothing is left in it.
 func raycastUnwire(path string) error {
 	if !raycastWired(path) {
@@ -256,7 +256,7 @@ func raycastUnwire(path string) error {
 }
 
 // mergeYAMLKept is want with each key of have that want lacks, mappings in
-// both merged alike and the models list matched by id: a key magpie doesn't
+// both merged alike and the models list matched by id: a key magpie-friday doesn't
 // write, at any depth, is the user's and stays with its comments, while a
 // model gone from the catalog leaves the list.
 func mergeYAMLKept(have, want *yaml.Node) *yaml.Node {

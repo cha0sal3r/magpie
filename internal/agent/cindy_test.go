@@ -31,7 +31,7 @@ func TestCindyLink(t *testing.T) {
 	if err := json.Unmarshal(b, &p); err != nil {
 		t.Fatal(err)
 	}
-	if p.Kind != "custom" || p.ID != "magpie" || p.Auth.Method != "apiKey" || p.Auth.APIKey != "magpie-cindy" || len(p.Endpoints) != 3 {
+	if p.Kind != "custom" || p.ID != "magpie-friday" || p.Auth.Method != "apiKey" || p.Auth.APIKey != "magpie-friday-cindy" || len(p.Endpoints) != 3 {
 		t.Fatalf("payload = %+v", p)
 	}
 	if p.Endpoints[0].BaseURL != "http://127.0.0.1:3425" || p.Endpoints[1].BaseURL != "http://127.0.0.1:3425/v1" {
@@ -43,7 +43,7 @@ func TestCindyHas(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "cindy-local-v1.db")
 	gw := "http://127.0.0.1:3425"
 	if has, known := cindyHas(path, gw); has || !known {
-		t.Fatal("no database, yet has magpie or unknown")
+		t.Fatal("no database, yet has magpie-friday or unknown")
 	}
 	db, err := sql.Open("sqlite", path)
 	if err != nil {
@@ -54,13 +54,13 @@ func TestCindyHas(t *testing.T) {
 		t.Fatal(err)
 	}
 	if has, known := cindyHas(path, gw); has || !known {
-		t.Fatal("empty, yet has magpie or unknown")
+		t.Fatal("empty, yet has magpie-friday or unknown")
 	}
 	if _, err := db.Exec(`INSERT INTO custom_providers VALUES ('p1', 'Other', '{"codex":{"baseUrl":"https://x"}}')`); err != nil {
 		t.Fatal(err)
 	}
 	if has, _ := cindyHas(path, gw); has {
-		t.Fatal("another provider taken for magpie")
+		t.Fatal("another provider taken for magpie-friday")
 	}
 	if _, err := db.Exec(`INSERT INTO custom_providers VALUES ('p2', 'Mine', '{"codex":{"baseUrl":"http://127.0.0.1:3425/v1"}}')`); err != nil {
 		t.Fatal(err)
@@ -71,7 +71,7 @@ func TestCindyHas(t *testing.T) {
 }
 
 // Cindy's global build keeps a database per signed-in account in
-// CindyGlobal: magpie added there is added.
+// CindyGlobal: magpie-friday added there is added.
 func TestCindyAdded(t *testing.T) {
 	local, global := t.TempDir(), t.TempDir()
 	gw := "http://127.0.0.1:3425"
@@ -84,16 +84,16 @@ func TestCindyAdded(t *testing.T) {
 	}
 	defer db.Close()
 	if _, err := db.Exec(`CREATE TABLE custom_providers (id text PRIMARY KEY, name text, runtimes text DEFAULT '{}');
-		INSERT INTO custom_providers VALUES ('magpie-73271b6d', 'Magpie', '{}')`); err != nil {
+		INSERT INTO custom_providers VALUES ('magpie-friday-73271b6d', 'magpie-friday', '{}')`); err != nil {
 		t.Fatal(err)
 	}
 	if added, _ := cindyAdded([]string{local, global}, gw); !added {
-		t.Fatal("magpie in an account's database not found")
+		t.Fatal("magpie-friday in an account's database not found")
 	}
 }
 
 // Cindy closed leaves its WAL-mode database with no -shm beside it, which
-// SQLite can't open read-only: magpie in it is still found, and nothing is
+// SQLite can't open read-only: magpie-friday in it is still found, and nothing is
 // written in Cindy's folder. A file that is no database is unknown, never
 // "not added".
 func TestCindyHasClosedWALAndUnreadable(t *testing.T) {
@@ -106,7 +106,7 @@ func TestCindyHasClosedWALAndUnreadable(t *testing.T) {
 	}
 	if _, err := db.Exec(`PRAGMA journal_mode=WAL;
 		CREATE TABLE custom_providers (id text PRIMARY KEY, name text, runtimes text DEFAULT '{}');
-		INSERT INTO custom_providers VALUES ('magpie', 'Magpie', '{}')`); err != nil {
+		INSERT INTO custom_providers VALUES ('magpie-friday', 'magpie-friday', '{}')`); err != nil {
 		t.Fatal(err)
 	}
 	db.Close()
@@ -125,7 +125,7 @@ func TestCindyHasClosedWALAndUnreadable(t *testing.T) {
 		t.Fatalf("unreadable database: has %v known %v, want unknown", has, known)
 	}
 	if added, known := cindyAdded([]string{dir}, gw); !added || !known {
-		t.Fatal("magpie in one database, beside one unreadable, not found")
+		t.Fatal("magpie-friday in one database, beside one unreadable, not found")
 	}
 	os.Remove(path)
 	if added, known := cindyAdded([]string{dir}, gw); added || known {

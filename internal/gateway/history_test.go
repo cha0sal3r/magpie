@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // historyNoon holds the history's clock at noon of a past day and returns
@@ -91,7 +91,7 @@ func TestHistoryKeepsDaysAndDropsOld(t *testing.T) {
 // midnight and past that hour's prune, is kept with the day's other
 // routes: its file is added to the day's .gz, not written over it, and the
 // day is listed once with all of them, before and after. Its file added and
-// left behind (magpie stopped before removing it) adds none of them again,
+// left behind (magpie-friday stopped before removing it) adds none of them again,
 // however often it is left, and late routes written to it in between.
 func TestHistoryKeepsALateRouteWithItsDay(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
@@ -154,7 +154,7 @@ func TestHistoryKeepsALateRouteWithItsDay(t *testing.T) {
 	}
 }
 
-// A day's .gz cut short, by an older magpie stopped (or a disk filled) while
+// A day's .gz cut short, by an older magpie-friday stopped (or a disk filled) while
 // writing it in place, or by a route cut short in the file it was gzipped
 // from, is written anew from the whole routes it has and its file's: after
 // the break none of the file's routes could be read, and after a route cut
@@ -221,9 +221,9 @@ func TestHistoryKeepsADayCutShort(t *testing.T) {
 	}
 }
 
-// A day's .gz.tmp left by a magpie stopped before renaming it over the .gz
+// A day's .gz.tmp left by a magpie-friday stopped before renaming it over the .gz
 // goes at a prune once it is an hour old. A younger one, maybe another
-// magpie's still being written, stays.
+// magpie-friday's still being written, stays.
 func TestHistoryDropsALeftGzTmp(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
 	now := time.Now()
@@ -246,7 +246,7 @@ func TestHistoryDropsALeftGzTmp(t *testing.T) {
 	}
 }
 
-// A day's .gz that can't be read (left by magpie run as another user, say)
+// A day's .gz that can't be read (left by magpie-friday run as another user, say)
 // is unknown, not empty: it isn't written over from the day's file, and the
 // file stays for a prune that can read the .gz.
 func TestHistoryLeavesADayItCantRead(t *testing.T) {

@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // tavilyUsageDoc is GET /usage's 200 reply as Tavily's API reference
@@ -366,7 +366,7 @@ func TestSearchQuotas(t *testing.T) {
 }
 
 // No key is ever said in full: not in a search's error (an API that says
-// the key back in its own), a quota's, the log, or the state magpie keeps
+// the key back in its own), a quota's, the log, or the state magpie-friday keeps
 // of the keys.
 func TestSearchKeyNeverInFull(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())

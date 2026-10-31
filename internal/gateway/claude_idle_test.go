@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 func idleTestBridge() *subscriptionBridge {
@@ -49,7 +49,7 @@ func TestClaudeIdleReplacementKeepsItsKey(t *testing.T) {
 	}
 }
 
-// X, Sma1lboy: magpie grew to 158 GB in two days. One run under two keys
+// X, Sma1lboy: magpie-friday grew to 158 GB in two days. One run under two keys
 // was the oldest on every pass of keepIdle's loop past idleMost, which
 // took out one key only, so the loop never ended and grew its drop list
 // with the bridge's lock held. Run in a child, which the old loop is taken

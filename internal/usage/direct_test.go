@@ -6,15 +6,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
 )
 
 // Direct sums up only the calls the agents made on their own, as their
 // session files tell them — a Codex turn on the user's own ChatGPT sign-in,
 // say — by agent, model and session, priced by their model; the gateway's
-// calls stay Summarize's (Kumo31 on Discord: Codex used outside magpie was
-// on the window's Usage tab but not in magpie usage).
+// calls stay Summarize's (Kumo31 on Discord: Codex used outside magpie-friday was
+// on the window's Usage tab but not in magpie-friday usage).
 func TestDirectCountsOnlySessionFileCalls(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)

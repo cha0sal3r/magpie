@@ -1,4 +1,4 @@
-// Package iconproxy names where magpie downloads a remote picture from. A
+// Package iconproxy names where magpie-friday downloads a remote picture from. A
 // plugin's, an import link's or the library's icon sits on a host its author
 // picked, and fetching it straight from there would hand that author the
 // user's IP each time a page showed it. Every such fetch goes through

@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/yetone/magpie/internal/fonts"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/fonts"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // onFonts updates existing webviews even while the other one has focus.

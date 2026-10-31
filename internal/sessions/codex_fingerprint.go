@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/yetone/magpie/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
 )
 
 var codexFingerprintKey struct {
@@ -19,7 +19,7 @@ var codexFingerprintKey struct {
 }
 
 // CodexPromptDigest keeps prompt evidence comparable across restarts without
-// publishing a guessable hash. The key stays in Magpie's local config directory.
+// publishing a guessable hash. The key stays in magpie-friday's local config directory.
 func CodexPromptDigest(prompt string) string { return codexFingerprint("prompt", prompt) }
 
 func codexFingerprint(kind, text string) string {
@@ -51,7 +51,7 @@ func codexTitleKey() []byte {
 		if err = os.MkdirAll(filepath.Dir(path), 0700); err != nil {
 			return nil
 		}
-		// An exclusive create lets concurrent Magpie processes agree on one key.
+		// An exclusive create lets concurrent magpie-friday processes agree on one key.
 		file, err := os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
 		if os.IsExist(err) {
 			key, err = os.ReadFile(path)

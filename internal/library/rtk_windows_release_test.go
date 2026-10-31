@@ -15,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // fakeRTKRelease serves a fake rtk Windows release at the URL rtkDownloadBase
@@ -75,14 +75,14 @@ func TestRTKWindowsStandaloneUpgrader(t *testing.T) {
 		t.Fatalf("standalone: upgrader %q; want %s … %s", c, rtkWindowsRelease, bin)
 	}
 
-	// winget's records say it is winget's: magpie doesn't take it over
+	// winget's records say it is winget's: magpie-friday doesn't take it over
 	forgetWingetOwned()
 	wingetRecords = func() ([]string, bool) { return []string{filepath.Dir(bin)}, true }
 	if c := rtkUpgrader(bin); c != nil {
 		t.Fatalf("winget's own: upgrader %q; want none", c)
 	}
 
-	// magpie on arm64: rtk's Windows release has no build for it
+	// magpie-friday on arm64: rtk's Windows release has no build for it
 	forgetWingetOwned()
 	wingetRecords = func() ([]string, bool) { return []string{filepath.Join(h, "winget")}, true }
 	rtkArch = "arm64"
@@ -94,7 +94,7 @@ func TestRTKWindowsStandaloneUpgrader(t *testing.T) {
 // #2006: with no record of winget's to read, the standalone action needs
 // winget to say it has no rtk-ai.rtk, or no winget at all. A winget that
 // couldn't say (it timed out) is no answer: the rtk may be winget's, and
-// magpie doesn't take it over.
+// magpie-friday doesn't take it over.
 func TestRTKWindowsStandaloneAsksWinget(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("the fakes are shell scripts")
@@ -246,7 +246,7 @@ func TestRTKWindowsReleaseShown(t *testing.T) {
 	}
 }
 
-// #2006: UpgradeRTK hands this channel to magpie's own download-and-replace
+// #2006: UpgradeRTK hands this channel to magpie-friday's own download-and-replace
 // instead of running the action as a command (it is not one). This is the
 // wiring the two tests above leave untested on Windows: the successful one
 // skips there. A download that doesn't match rtk's checksums is enough —

@@ -28,29 +28,29 @@ package agent
 // up itself), custom_headers and custom_extra_body objects, modalities a
 // list of text/image/audio/tool_use.
 //
-// magpie adds a source "magpie", OpenAI Compatible at the gateway's /v1 with
+// magpie-friday adds a source "magpie-friday", OpenAI Compatible at the gateway's /v1 with
 // a key naming AstrBot (its requests carry no User-Agent of its own), and an
-// entry "magpie/<provider>/<model>" for every model of magpie's, and makes
+// entry "magpie-friday/<provider>/<model>" for every model of magpie-friday's, and makes
 // the one picked AstrBot's default chat model: agent_runner.config.model.
 // provider_id, which AstrBot reads when agent_runner.runner_type is "local"
 // (4.28's ProviderManager._resolve_using_provider), or
 // provider_settings.default_provider_id in a file from before agent_runner,
 // which AstrBot's migration (migra_helper.py) carries over. The user's own
 // sources and models are left where they are, byte for byte, and so is
-// what they changed in magpie's own entries in AstrBot's WebUI (a source's
+// what they changed in magpie-friday's own entries in AstrBot's WebUI (a source's
 // timeout or proxy, a model switched off, its extra body). A model picked
 // for one chat with /provider, which AstrBot keeps in its own database, is
-// the user's and stands. The file is copied to cmd_config.json.before-magpie
-// before magpie first writes it.
+// the user's and stands. The file is copied to cmd_config.json.before-magpie-friday
+// before magpie-friday first writes it.
 //
 // AstrBot reads the file once, at start, and keeps it in memory: its WebUI
-// writes the whole of it back on every save. So magpie's change needs
+// writes the whole of it back on every save. So magpie-friday's change needs
 // AstrBot restarted, and a WebUI save made before that restart writes over
 // it (Check then says so). AstrBot writes the file with a UTF-8 BOM
-// (astrbot_config.py, encoding utf-8-sig), which magpie keeps.
+// (astrbot_config.py, encoding utf-8-sig), which magpie-friday keeps.
 //
-// AstrBot in Docker is not one magpie wires: its data folder is a volume
-// magpie can't know, and the gateway on this machine's loopback is not the
+// AstrBot in Docker is not one magpie-friday wires: its data folder is a volume
+// magpie-friday can't know, and the gateway on this machine's loopback is not the
 // container's.
 
 import (
@@ -66,8 +66,8 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 const (
@@ -84,9 +84,9 @@ var astrbotBOM = []byte("\xef\xbb\xbf")
 
 // astrbotRoot is the folder AstrBot keeps data/ in: ASTRBOT_ROOT, else the
 // desktop app's ~/.astrbot, else a folder `astrbot init` was run in that
-// magpie can know of — the home itself (a .astrbot file there), or ~/astrbot
+// magpie-friday can know of — the home itself (a .astrbot file there), or ~/astrbot
 // or ~/AstrBot, where its README and a clone of its source put it. A root
-// none of these is reaches magpie through ASTRBOT_ROOT. With none found it is
+// none of these is reaches magpie-friday through ASTRBOT_ROOT. With none found it is
 // the desktop app's, which then isn't there.
 func astrbotRoot(at place) string {
 	if d := strings.TrimSpace(at.getenv("ASTRBOT_ROOT")); d != "" {
@@ -114,8 +114,8 @@ func astrbotAt(at place) *Agent {
 	root := astrbotRoot(at)
 	data := filepath.Join(root, "data")
 	path := filepath.Join(data, "cmd_config.json")
-	backup := path + ".before-magpie"
-	// keyPick is the default chat model AstrBot was on before magpie's
+	backup := path + ".before-magpie-friday"
+	// keyPick is the default chat model AstrBot was on before magpie-friday's
 	keyPick := at.key("astrbot.provider_id")
 	key := func() string { return agentKeyAt("astrbot", at.gw()) }
 	// read is the file without its BOM, and whether it had one
@@ -150,7 +150,7 @@ func astrbotAt(at place) *Agent {
 		return astrbotLegacy
 	}
 	pick := func() string { r, _ := get(pickKey()); return r.String() }
-	// source is magpie's entry in provider_sources
+	// source is magpie-friday's entry in provider_sources
 	source := func() (gjson.Result, bool) {
 		r, _ := get(astrbotSources)
 		for _, e := range r.Array() {
@@ -178,7 +178,7 @@ func astrbotAt(at place) *Agent {
 		return write(out, bom)
 	}
 	// lists rewrites provider_sources and provider: the user's entries as
-	// they are, magpie's — when on — after them, as astrbotWired makes them
+	// they are, magpie-friday's — when on — after them, as astrbotWired makes them
 	// from what is there
 	lists := func(on bool) error {
 		raw, bom, err := read()
@@ -194,8 +194,8 @@ func astrbotAt(at place) *Agent {
 		}
 		return write(out, bom)
 	}
-	// unwire takes magpie's source and models out, and AstrBot back to the
-	// default chat model it was on — when it is still on one of magpie's: a
+	// unwire takes magpie-friday's source and models out, and AstrBot back to the
+	// default chat model it was on — when it is still on one of magpie-friday's: a
 	// pick the user made in AstrBot since is theirs and stands
 	unwire := func() error {
 		if !isFile(path) {
@@ -211,19 +211,19 @@ func astrbotAt(at place) *Agent {
 		}
 		return lists(false)
 	}
-	// put is magpie's source and models in, and AstrBot's default chat model
-	// the one picked (magpie/<provider>/<model>). What AstrBot was on is
+	// put is magpie-friday's source and models in, and AstrBot's default chat model
+	// the one picked (magpie-friday/<provider>/<model>). What AstrBot was on is
 	// saved before it is written over, and only then.
 	put := func(v string) error {
 		raw, _, err := read()
 		if errors.Is(err, os.ErrNotExist) {
-			return fmt.Errorf("AstrBot has no %s yet: start AstrBot once so it writes its settings (or start magpie with ASTRBOT_ROOT set to the folder AstrBot runs in), then connect it", path)
+			return fmt.Errorf("AstrBot has no %s yet: start AstrBot once so it writes its settings (or start magpie-friday with ASTRBOT_ROOT set to the folder AstrBot runs in), then connect it", path)
 		}
 		if err != nil {
 			return err
 		}
 		if !json.Valid(raw) {
-			return fmt.Errorf("AstrBot's %s isn't JSON magpie can read; it was left as it is", path)
+			return fmt.Errorf("AstrBot's %s isn't JSON magpie-friday can read; it was left as it is", path)
 		}
 		if !gjson.GetBytes(raw, astrbotSources).Exists() {
 			return fmt.Errorf("this AstrBot keeps no provider_sources in %s: update AstrBot to 4.10 or later, start it once, then connect it", path)
@@ -260,11 +260,11 @@ func astrbotAt(at place) *Agent {
 				return ""
 			}
 			if r, _ := get("agent_runner.runner_type"); pickKey() == astrbotRunner && r.String() != "local" {
-				return "AstrBot's agent runner (cmd_config.json) is " + orDefault(r.String()) + ", which doesn't ask its chat model, so it no longer asks magpie"
+				return "AstrBot's agent runner (cmd_config.json) is " + orDefault(r.String()) + ", which doesn't ask its chat model, so it no longer asks magpie-friday"
 			}
 			e, ok := source()
 			if !ok {
-				return "magpie's provider source is gone from AstrBot's " + path + " (a save in AstrBot's WebUI writes its settings back whole) — connect it again"
+				return "magpie-friday's provider source is gone from AstrBot's " + path + " (a save in AstrBot's WebUI writes its settings back whole) — connect it again"
 			}
 			return wiringOff("AstrBot", path, func(k string) (string, bool) {
 				r := e.Get(k)
@@ -279,7 +279,7 @@ func astrbotAt(at place) *Agent {
 		},
 		Fields: []Field{{
 			// AstrBot's default chat model, by its provider id: one of
-			// magpie's is magpie/<provider>/<model>, the id magpie gives
+			// magpie-friday's is magpie-friday/<provider>/<model>, the id magpie-friday gives
 			// its entry in provider, which is "<source>/<model>" as
 			// AstrBot's own WebUI names them
 			Key: "model", Label: "model",
@@ -294,7 +294,7 @@ func astrbotAt(at place) *Agent {
 				if ref, ok := strings.CutPrefix(v, magpieID+"/"); ok && isMagpie(ref) {
 					return put(v)
 				}
-				// one of the user's own: AstrBot goes onto it, magpie's
+				// one of the user's own: AstrBot goes onto it, magpie-friday's
 				// models left beside it in its list until Disconnect
 				if ours() {
 					forget(keyPick)
@@ -336,9 +336,9 @@ func astrbotOwn(path, cur string) []Option {
 }
 
 // astrbotWired is raw, AstrBot's config, with provider_sources and provider
-// holding the user's entries as they are and, when on, magpie's after them:
+// holding the user's entries as they are and, when on, magpie-friday's after them:
 // its source at gw (the gateway's /v1) with key, and one entry for each of
-// magpie's models. What the user changed in magpie's entries is kept
+// magpie-friday's models. What the user changed in magpie-friday's entries is kept
 // (astrbotKeep).
 func astrbotWired(raw []byte, on bool, gw, key string) ([]byte, error) {
 	var wantSource map[string]any
@@ -359,16 +359,16 @@ func astrbotWired(raw []byte, on bool, gw, key string) ([]byte, error) {
 		astrbotKeep(raw, astrbotModels, wantModels, astrbotModelOwned))
 }
 
-// astrbotSourceOwned and astrbotModelOwned are the keys of magpie's entries
-// that are magpie's to say; every other key of one is the user's to change
+// astrbotSourceOwned and astrbotModelOwned are the keys of magpie-friday's entries
+// that are magpie-friday's to say; every other key of one is the user's to change
 // in AstrBot's WebUI, and stays as they left it.
 var (
 	astrbotSourceOwned = []string{"id", "provider", "type", "provider_type", "key", "api_base"}
 	astrbotModelOwned  = []string{"id", "provider_source_id", "model", "modalities", "max_context_tokens"}
 )
 
-// astrbotKeep is want, magpie's entries for the list at k, each with the
-// keys of the entry of the same id already in raw that aren't magpie's to
+// astrbotKeep is want, magpie-friday's entries for the list at k, each with the
+// keys of the entry of the same id already in raw that aren't magpie-friday's to
 // say (owned) kept as they are.
 func astrbotKeep(raw []byte, k string, want []map[string]any, owned []string) []map[string]any {
 	have := map[string]map[string]json.RawMessage{}
@@ -395,7 +395,7 @@ func astrbotKeep(raw []byte, k string, want []map[string]any, owned []string) []
 }
 
 // astrbotList is raw with the top-level list at k rewritten: its entries
-// that aren't magpie's (mine) as they are, byte for byte, then add. Nothing
+// that aren't magpie-friday's (mine) as they are, byte for byte, then add. Nothing
 // else of the file changes.
 func astrbotList(raw []byte, k string, mine func(gjson.Result) bool, add []map[string]any) ([]byte, error) {
 	r := gjson.GetBytes(raw, k)
@@ -448,7 +448,7 @@ func astrbotList(raw []byte, k string, mine func(gjson.Result) bool, add []map[s
 	return append(out, raw[r.Index+len(r.Raw):]...), nil
 }
 
-// astrbotSourceJSON is magpie's provider source: AstrBot's OpenAI Compatible
+// astrbotSourceJSON is magpie-friday's provider source: AstrBot's OpenAI Compatible
 // template (default.py's "OpenAI" in CONFIG_METADATA_2's provider templates)
 // at the gateway's /v1, with a key naming AstrBot.
 func astrbotSourceJSON(gw, key string) map[string]any {
@@ -466,11 +466,11 @@ func astrbotSourceJSON(gw, key string) map[string]any {
 	}
 }
 
-// astrbotModelJSON is one of magpie's models as an entry of AstrBot's
+// astrbotModelJSON is one of magpie-friday's models as an entry of AstrBot's
 // provider list. Every one is said to take tools: AstrBot drops a model's
 // tools when tool_use isn't in its modalities (modalities.py), and the
-// gateway hands a tool call on whatever the model. Images are what magpie
-// knows the model sees, or describes to it. A window magpie doesn't know is
+// gateway hands a tool call on whatever the model. Images are what magpie-friday
+// knows the model sees, or describes to it. A window magpie-friday doesn't know is
 // 0, which has AstrBot look it up itself.
 func astrbotModelJSON(m catalog.Model) map[string]any {
 	mods := []string{"text"}

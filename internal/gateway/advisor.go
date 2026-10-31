@@ -7,24 +7,24 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // advisorTools fits Claude Code's advisor (/advisor, --advisor) to the
 // upstream a Messages request goes to as it is (passthrough). Claude Code
 // declares it as Anthropic's server tool, {"type": "advisor_20260301",
 // "name": "advisor", "model": …}, and names the advisor's model as it
-// names its own: on magpie, by magpie's id ("anthropic/claude-opus-5-5",
+// names its own: on magpie-friday, by magpie-friday's id ("anthropic/claude-opus-5-5",
 // or the tier an alias like opus is on), which no vendor knows, so the
 // whole request was turned away (JackChou on Discord).
 //
 // The advisor runs at the vendor, on the same account: its model goes as
 // that upstream's own name for it when it is p's, as the request's own
-// model does (wires). An advisor magpie can't give that upstream (another
+// model does (wires). An advisor magpie-friday can't give that upstream (another
 // provider's model, or not a Claude model) is left out, and so is every
 // advisor when the request's model is not Claude's (a vendor's Messages
 // API knows no such tool): the turn is answered without one, as a model
-// that isn't on magpie would be. What Claude Code put in the conversation
+// that isn't on magpie-friday would be. What Claude Code put in the conversation
 // for an advisor left out goes with it (withoutAdvisor).
 func advisorTools(body []byte, p provider.Provider, upstream string, wires map[string]string) []byte {
 	if !bytes.Contains(body, []byte(`"advisor_`)) {
@@ -85,7 +85,7 @@ func advisorTools(body []byte, p provider.Provider, upstream string, wires map[s
 }
 
 // advisorModel is the name p's upstream knows the advisor model by, and
-// whether p can run it: one of p's models, by magpie's id, or a Claude
+// whether p can run it: one of p's models, by magpie-friday's id, or a Claude
 // model's own id that names no provider.
 func advisorModel(p provider.Provider, model string, wires map[string]string) (string, bool) {
 	model = strings.TrimSuffix(strings.TrimSpace(model), "[1m]")

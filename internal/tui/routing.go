@@ -4,7 +4,7 @@ package tui
 // go in, how requests spread over them and how long a conversation stays,
 // and the rules that send a turn to one of them first, with the classifier
 // that tells a message's intent. What the app's Routing view does, in the
-// terminal; the rules are typed as magpie group rule add takes them.
+// terminal; the rules are typed as magpie-friday group rule add takes them.
 
 import (
 	"fmt"
@@ -14,8 +14,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 func (m *model) reloadGroups() {
@@ -78,7 +78,7 @@ func staysName(v string) string {
 	return "stays auto"
 }
 
-// saveGroup changes one group and saves it: one magpie found becomes the
+// saveGroup changes one group and saves it: one magpie-friday found becomes the
 // user's.
 func saveGroup(id string, change func(*provider.Group) error, done string) tea.Cmd {
 	return func() tea.Msg {
@@ -188,7 +188,7 @@ func (m model) updateGroups(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 // one with its first model.
 type pickMsg struct{ group, newGroup string }
 
-// memberOptions is every model and group magpie has, but those in skip.
+// memberOptions is every model and group magpie-friday has, but those in skip.
 func memberOptions(skip []string, self string) []agent.Option {
 	var out []agent.Option
 	// a group is of decision models alone, asked at /v1/systemone, or of
@@ -225,11 +225,11 @@ func memberOptions(skip []string, self string) []agent.Option {
 func (m *model) openMemberPicker(p pickMsg) {
 	var skip []string
 	crumbs := []string{"routing", p.newGroup, "first model"}
-	empty := "magpie has no models yet · add a provider first"
+	empty := "magpie-friday has no models yet · add a provider first"
 	if p.group != "" {
 		g, _ := findGroup(p.group)
 		skip, crumbs = g.Members, []string{"routing", g.Name, "add a model"}
-		empty = "every model magpie has is in it"
+		empty = "every model magpie-friday has is in it"
 	}
 	m.pk = picker{
 		crumbs: crumbs,
@@ -282,7 +282,7 @@ func (m *model) openClassifier(g provider.Group) {
 		input:  newInput("filter models · best a small fast one without reasoning"),
 		items:  list(),
 		relist: list,
-		empty:  "magpie has no models yet · add a provider first",
+		empty:  "magpie-friday has no models yet · add a provider first",
 		onPick: func(id string) tea.Cmd {
 			return saveGroup(g.ID, func(g *provider.Group) error { g.Classifier = id; return nil }, g.Name+" classifies with "+id)
 		},
@@ -446,7 +446,7 @@ func (m model) updateGroup(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		in := newInput("a tag, e.g. relay")
 		in.SetValue(g.Family)
 		m.openAsk(ask{crumbs: []string{"routing", g.Name, "family"}, input: in, empty: true,
-			hint: "agents can be shown only some families: magpie visible <agent> <family>",
+			hint: "agents can be shown only some families: magpie-friday visible <agent> <family>",
 			onEnter: func(v string) tea.Cmd {
 				return saveGroup(g.ID, func(g *provider.Group) error { g.Family = v; return nil }, g.Name+" family "+dash(v))
 			}})
@@ -577,7 +577,7 @@ func (m model) viewGroups() string {
 	for i := start; i < min(len(m.groups), start+visible); i++ {
 		g := m.groups[i]
 		if i == m.shown {
-			b.WriteString("\n" + pad + "  " + sFaint.Render("removed · found by magpie, taken away: u brings one back") + "\n")
+			b.WriteString("\n" + pad + "  " + sFaint.Render("removed · found by magpie-friday, taken away: u brings one back") + "\n")
 		}
 		marker, name := "  ", sName.Render(padRight(dash(g.Name), nameW))
 		if g.Hidden {
@@ -633,7 +633,7 @@ func (m model) viewGroup() string {
 		head = append(head, "family "+g.Family)
 	}
 	if g.Auto {
-		head = append(head, "found by magpie: a change makes it yours")
+		head = append(head, "found by magpie-friday: a change makes it yours")
 	}
 	b.WriteString(pad + "  " + sMuted.Render(strings.Join(head, " · ")) + "\n\n")
 	b.WriteString(pad + "  " + sFaint.Render("models · the first that can take a request gets it") + "\n")

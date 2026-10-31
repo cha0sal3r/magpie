@@ -9,11 +9,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // zoecats on Discord: a local aggregator says "quota exhausted" for a
-// moment while it switches upstreams, and the half hour magpie rested its
+// moment while it switches upstreams, and the half hour magpie-friday rested its
 // one key for it held every request back, answered "out of its allowance"
 // without asking. With rests on quota and 429 turned off for the provider
 // (LimitRestOff), the refusal goes to the agent as it came, nothing is set

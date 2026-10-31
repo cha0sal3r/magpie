@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 func claudeAuthFixture(t *testing.T, lapse string) (Provider, savedLogin) {
@@ -102,7 +102,7 @@ func TestClaudeRefusalHoldsForItsCredentialOnly(t *testing.T) {
 }
 
 // Claude Code empties a sign-in Anthropic refused to refresh: the copy
-// magpie kept of it is the refused one, never put back for Claude Code.
+// magpie-friday kept of it is the refused one, never put back for Claude Code.
 func TestClaudeEmptiedSignInIsNotPutBack(t *testing.T) {
 	p, side := claudeAuthFixture(t, "")
 	dir, err := sideToken(t, p, side.User)

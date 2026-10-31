@@ -54,7 +54,7 @@ func copilotSignInEnds(t *testing.T, d time.Duration) SignInState {
 	return end
 }
 
-// GitHub's device page said "your device is now connected", and magpie
+// GitHub's device page said "your device is now connected", and magpie-friday
 // never finished (#723, jia2): a token endpoint that keeps failing was
 // asked again, silently, until the sign-in timed out 10 minutes later. It
 // now fails with what GitHub answered.

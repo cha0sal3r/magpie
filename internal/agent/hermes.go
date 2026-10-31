@@ -3,21 +3,21 @@ package agent
 // Hermes Agent (Nous Research) keeps its settings in $HERMES_HOME/config.yaml,
 // by default %LOCALAPPDATA%\hermes\config.yaml on Windows and
 // ~/.hermes/config.yaml elsewhere (place.hermesHome): the model under model.default, served by
-// model.provider, which may name an entry of providers. magpie adds itself
-// there as the provider "magpie" (the gateway, spoken to as chat completions,
+// model.provider, which may name an entry of providers. magpie-friday adds itself
+// there as the provider "magpie-friday" (the gateway, spoken to as chat completions,
 // with the catalog as its models) and points model.provider at it; a model
-// through magpie is "magpie/<provider>/<model>" here and model.default holds
+// through magpie-friday is "magpie-friday/<provider>/<model>" here and model.default holds
 // "<provider>/<model>". The provider and model the user had are stashed and
-// put back when magpie steps out. A model of the user's own picked after
-// that, in Hermes or on the Agents page, leaves magpie's provider in
+// put back when magpie-friday steps out. A model of the user's own picked after
+// that, in Hermes or on the Agents page, leaves magpie-friday's provider in
 // providers: Hermes stays connected, its session model picker still offers
-// magpie's models beside its own (lijiho96940561 on X: Hermes went to Not
-// connected and magpie's models left its picker), and only Disconnect
+// magpie-friday's models beside its own (lijiho96940561 on X: Hermes went to Not
+// connected and magpie-friday's models left its picker), and only Disconnect
 // takes the provider out.
 //
 // Each of Hermes's bots is a profile with its own config.yaml (see
-// hermesProfiles), which doesn't read the main one's: magpie's provider goes
-// into every profile's too, so magpie is offered in every bot's picker, not
+// hermesProfiles), which doesn't read the main one's: magpie-friday's provider goes
+// into every profile's too, so magpie-friday is offered in every bot's picker, not
 // the main one's alone (lijiho96940561 on X). A profile's own model and
 // provider are left as its user set them, and Disconnect takes the provider
 // out of each.
@@ -29,9 +29,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/dirent"
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/dirent"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 func hermes(home string) *Agent { return hermesIn(here(home)) }
@@ -43,8 +43,8 @@ func hermesIn(at place) *Agent {
 	dir := at.hermesHome()
 	path := filepath.Join(dir, "config.yaml")
 	hermesProvider := func(p string) any { return hermesKept(at, p, hermesProviderAt(at.gw())) }
-	// spread puts magpie's provider, as it is now, into every other
-	// profile's config beside the one magpie connects
+	// spread puts magpie-friday's provider, as it is now, into every other
+	// profile's config beside the one magpie-friday connects
 	spread := func() error {
 		var errs []error
 		for _, p := range hermesOthers(at, dir) {
@@ -59,11 +59,11 @@ func hermesIn(at place) *Agent {
 	key := "hermes:" + path + ":"
 	getKey := func(k string) string { v, _ := edit.GetYAML(path, k); return v }
 	onMagpie := func() bool { return getKey("model.provider") == magpieID }
-	// joined: magpie's provider is in providers, though the model is one of
+	// joined: magpie-friday's provider is in providers, though the model is one of
 	// Hermes's own
 	joined := func() bool { _, ok := edit.GetYAML(path, "providers."+magpieID+".base_url"); return ok }
-	// restore puts back the provider and model the user had before magpie,
-	// magpie's provider left beside them
+	// restore puts back the provider and model the user had before magpie-friday,
+	// magpie-friday's provider left beside them
 	restore := func() error {
 		var del []string
 		var kvs []edit.KV
@@ -101,8 +101,8 @@ func hermesIn(at place) *Agent {
 			return ""
 		},
 		Joined: joined,
-		// Disconnect takes magpie's provider out; the model, when it is
-		// magpie's, goes back by the field
+		// Disconnect takes magpie-friday's provider out; the model, when it is
+		// magpie-friday's, goes back by the field
 		Unwire: func() error {
 			var errs []error
 			if joined() {
@@ -124,8 +124,8 @@ func hermesIn(at place) *Agent {
 				}
 				// a reference to a variable: the key it names, as Hermes
 				// reads it (PaulT on Discord: "${MAGPIE_API_KEY}" with the
-				// key in Hermes's .env was said not to reach magpie). One
-				// magpie can't see (a variable of the shell's alone) is
+				// key in Hermes's .env was said not to reach magpie-friday). One
+				// magpie-friday can't see (a variable of the shell's alone) is
 				// unknown, never drift.
 				key, known := hermesKey(at, path, v)
 				if !known {
@@ -210,7 +210,7 @@ var hermesProfileID = regexp.MustCompile(`^[a-z0-9][a-z0-9_-]{0,63}$`)
 // (%LOCALAPPDATA%\hermes on Windows, ~/.hermes elsewhere), which a
 // HERMES_HOME under it is a profile of; a HERMES_HOME elsewhere is the root itself, or, as
 // <root>/profiles/<name>, a profile of <root> (get_default_hermes_root).
-// A profile with no config.yaml yet is left out: magpie doesn't make one.
+// A profile with no config.yaml yet is left out: magpie-friday doesn't make one.
 func hermesProfiles(at place) []string {
 	root := at.hermesDefault()
 	if env := at.getenv("HERMES_HOME"); env != "" {
@@ -239,7 +239,7 @@ func hermesProfiles(at place) []string {
 	return paths
 }
 
-// hermesOthers is every profile's config but the one at dir, which magpie
+// hermesOthers is every profile's config but the one at dir, which magpie-friday
 // connects
 func hermesOthers(at place, dir string) []string {
 	var out []string
@@ -255,8 +255,8 @@ func hermesOthers(at place, dir string) []string {
 	return out
 }
 
-// hermesUnwireProfile takes magpie's provider out of a profile's config. A
-// profile whose model is on magpie (one cloned from a connected main
+// hermesUnwireProfile takes magpie-friday's provider out of a profile's config. A
+// profile whose model is on magpie-friday (one cloned from a connected main
 // config, or picked in that bot) would be left naming a provider that is
 // gone, so its provider and model go too, and Hermes takes its own
 // defaults, as the main config does with nothing stashed.
@@ -280,7 +280,7 @@ type hermesProviderEntry struct {
 	Models  []string          `yaml:"models"`
 }
 
-// hermesProviderAt is magpie's entry under providers, for a Hermes reaching
+// hermesProviderAt is magpie-friday's entry under providers, for a Hermes reaching
 // the gateway at gw. Hermes sends its own User-Agent only from a recent
 // release on, so the header names it for the gateway's usage view.
 func hermesProviderAt(gw string) hermesProviderEntry {
@@ -294,13 +294,13 @@ func hermesProviderAt(gw string) hermesProviderEntry {
 	}
 }
 
-// hermesKept is magpie's entry e laid over the one in the config at path.
+// hermesKept is magpie-friday's entry e laid over the one in the config at path.
 // Hermes keeps keys it doesn't know and writes into the entry itself: `hermes
 // model` sets default_model there, the dashboard key_env, and a user adds
 // key_cmd, request_timeout_seconds, extra_body, context_length, enabled or
 // ssl_* (hermes_cli/config_providers.py _KNOWN_PROVIDER_KEYS). Each stays,
-// as does a name of their own and a header beside magpie's User-Agent; the
-// address, key, API mode and model list are magpie's (#2030), but for a
+// as does a name of their own and a header beside magpie-friday's User-Agent; the
+// address, key, API mode and model list are magpie-friday's (#2030), but for a
 // key the user keeps as a reference to a variable (hermesKeptKey).
 func hermesKept(at place, path string, e hermesProviderEntry) any {
 	e.APIKey = hermesKeptKey(at, path, e.APIKey)
@@ -340,9 +340,9 @@ func hermesEnvFile(path string) string { return filepath.Join(filepath.Dir(path)
 // hermesKey is the api_key v in the config at path as Hermes sends it, each
 // reference expanded: from the .env beside it, which Hermes loads over its
 // environment, then from the environment, this machine's only. known is
-// false when a reference names a variable magpie can't see there (one only
+// false when a reference names a variable magpie-friday can't see there (one only
 // a shell profile sets) or another source; Hermes would expand it, or send
-// it as it is, and magpie can't tell which.
+// it as it is, and magpie-friday can't tell which.
 func hermesKey(at place, path, v string) (key string, known bool) {
 	known = true
 	key = hermesEnvRef.ReplaceAllStringFunc(v, func(ref string) string {
@@ -365,12 +365,12 @@ func hermesKey(at place, path, v string) (key string, known bool) {
 	return key, known
 }
 
-// hermesKeptKey is the api_key magpie writes into the config at path, where
+// hermesKeptKey is the api_key magpie-friday writes into the config at path, where
 // want is its own key: a reference the user put there stays, whenever the
-// key it names holds (keyHolds) or magpie can't see it. One naming a key
-// the gateway doesn't take stays too, and magpie's key goes into the .env
+// key it names holds (keyHolds) or magpie-friday can't see it. One naming a key
+// the gateway doesn't take stays too, and magpie-friday's key goes into the .env
 // beside the config under its variable, which Hermes reads over the
-// environment; a value with more than the one reference in it is magpie's
+// environment; a value with more than the one reference in it is magpie-friday's
 // key again.
 func hermesKeptKey(at place, path, want string) string {
 	raw, _ := edit.GetYAML(path, "providers."+magpieID+".api_key")

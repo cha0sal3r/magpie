@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// A community plugin's panels in magpie's own pages (pluginpages.js, P5):
+// A community plugin's panels in magpie-friday's own pages (pluginpages.js, P5):
 // the example plugin (testdata/panel-plugin) adds a note to each
 // provider's editor, told which provider it is in, the top models at the
 // end of Usage, and its settings on Settings' Plugins tab, a tab there
@@ -22,8 +22,8 @@ const example = path.resolve(__dirname, "../testdata/panel-plugin/ui");
 const bridge = path.resolve(__dirname, "../pagebridge.js");
 
 const NOTES = "1".repeat(32), SPEND = "2".repeat(32), SETS = "3".repeat(32), TALL = "4".repeat(32), BROKEN = "5".repeat(32), LIB = "6".repeat(32);
-const panel = (tok, i, slot, title, file, name = "magpie-provider-notes", reads = ["usage:summary"]) => ({
-  spec: "/x/" + name, name, key: `plugin-${name.replace("magpie-", "")}-${i}`, slot, title, reads, url: `/_magpie/plugin/${tok}/${file}`,
+const panel = (tok, i, slot, title, file, name = "magpie-friday-provider-notes", reads = ["usage:summary"]) => ({
+  spec: "/x/" + name, name, key: `plugin-${name.replace("magpie-friday-", "")}-${i}`, slot, title, reads, url: `/_magpie/plugin/${tok}/${file}`,
 });
 const allPanels = [
   panel(NOTES, 0, "provider", "Notes", "notes.html"),
@@ -96,7 +96,7 @@ async function frameReady(page, tok) {
 const fits = (page, sel) => page.evaluate((sel) => { const v = document.querySelector(sel); return v.scrollWidth <= v.clientWidth + 1; }, sel);
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
-  test(`${engine}: a plugin's panels draw in magpie's own pages, shut in`, async (t) => {
+  test(`${engine}: a plugin's panels draw in magpie-friday's own pages, shut in`, async (t) => {
     const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: "chromium" }));
     t.after(() => browser.close());
     for (const lang of ["en", "zh", "zh-TW", "ja", "de"]) {
@@ -165,7 +165,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         const spend = await frameReady(page, SPEND);
         await spend.waitForFunction(() => document.querySelectorAll("#top li").length === 2);
         assert.equal(await spend.locator("#top li").first().textContent(), "gpt-5: 9 calls", where);
-        assert.ok(seen.reads.some((r) => r.spec === "/x/magpie-provider-notes" && r.read === "usage:summary"), where);
+        assert.ok(seen.reads.some((r) => r.spec === "/x/magpie-friday-provider-notes" && r.read === "usage:summary"), where);
         assert.equal(await spend.evaluate(() => document.documentElement.lang), lang, `${where}: the window's language`);
         assert.ok(await fits(page, "#view-usage"), `${where}: Usage fits`);
         // Usage hides its own headings while a period loads, not a panel's
@@ -183,7 +183,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         assert.equal(await notes.evaluate(() => magpie.context.provider.name), "OpenAI", where);
         await notes.locator("#note").fill("work account");
         await notes.locator("#saved").filter({ hasText: "Saved" }).waitFor();
-        assert.deepEqual(seen.options.at(-1), { spec: "/x/magpie-provider-notes", options: { notes: { openai: "work account" } } }, `${where}: its own options`);
+        assert.deepEqual(seen.options.at(-1), { spec: "/x/magpie-friday-provider-notes", options: { notes: { openai: "work account" } } }, `${where}: its own options`);
         assert.ok(await page.evaluate(() => { const m = document.querySelector("#modal .plugin-slot"); return m.getBoundingClientRect().right <= innerWidth + 1; }), `${where}: the editor fits`);
         // a new provider's editor has no provider to tell: no panel
         await page.evaluate(() => openModal(renderEditor(null)));
@@ -252,7 +252,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
     const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: "chromium" }));
     t.after(() => browser.close());
     const plugins = { bun: true, bunVersion: "1.3.0", plugins: [
-      { spec: "/x/magpie-provider-notes", providers: [], moved: [], inMagpieOnly: true, panels: [{ slot: "provider", title: "Notes" }, { slot: "usage", title: "Top models today" }, { slot: "settings", title: "Provider notes" }], panelReads: ["usage:summary"] },
+      { spec: "/x/magpie-friday-provider-notes", providers: [], moved: [], inMagpieOnly: true, panels: [{ slot: "provider", title: "Notes" }, { slot: "usage", title: "Top models today" }, { slot: "settings", title: "Provider notes" }], panelReads: ["usage:summary"] },
       { spec: "/x/my-library", providers: [], moved: [], inMagpieOnly: true, page: { title: "My library", replaces: "library", reads: [] } },
     ] };
     for (const lang of ["en", "zh", "zh-TW", "ja", "de"]) {
@@ -269,13 +269,13 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         await page.locator(":is(.lib-tabs .opt, .nav-s):visible", { hasText: installed }).first().click();
         const row = (name) => view.locator(".pm-row").filter({ has: page.locator(".name", { hasText: name }) });
         const tr = (k, v) => page.evaluate(([k, v]) => t(k, v), [k, v]);
-        const notes = row("magpie-provider-notes");
+        const notes = row("magpie-friday-provider-notes");
         await notes.waitFor();
         assert.deepEqual((await notes.locator(".pm-chip.kind").allInnerTexts()).map((x) => x.trim()), [await tr("Panels")], where);
         const where2 = [await tr("each provider's editor"), await tr("the Usage page"), await tr("Settings")].join(await tr(", "));
         assert.equal((await notes.locator(".pm-page").innerText()).trim(), await tr("Adds panels to {where}, which can read {reads}", { where: where2, reads: await tr("your usage totals, by model") }), where);
         const lib = row("my-library");
-        assert.equal((await lib.locator(".pm-page").innerText()).trim(), await tr("Takes the place of the {page} page, and reads nothing of magpie's", { page: await tr("Library") }), where);
+        assert.equal((await lib.locator(".pm-page").innerText()).trim(), await tr("Takes the place of the {page} page, and reads nothing of magpie-friday's", { page: await tr("Library") }), where);
         if (lang !== "en") assert.ok(!(await notes.locator(".pm-page").innerText()).includes("Adds panels"), `${where}: translated`);
         assert.ok(await view.evaluate((v) => v.scrollWidth <= v.clientWidth + 1), `${where}: fits`);
         assert.deepEqual(errors, [], where);

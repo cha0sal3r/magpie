@@ -15,15 +15,15 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/masking"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/masking"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// An agent's request that magpie holds before routing it went nowhere a
+// An agent's request that magpie-friday holds before routing it went nowhere a
 // user could see (heyusaku6 on X): Codex thought for over ten minutes on a
 // routing group's model, then on two others, the Routing page showed none
-// of them, and only a restart of Codex and magpie ended it. Codex waits for
+// of them, and only a restart of Codex and magpie-friday ended it. Codex waits for
 // a reply's headers with no limit of its own, and a request shows on the
 // Routing page once a route is begun for it, so whatever held it before
 // that (a lock, a wait with no end) held it in silence.
@@ -31,12 +31,12 @@ import (
 // What held it isn't known. So a request with no route begun for it is
 // shown on the Routing page as routing once it has waited unroutedShow,
 // and is answered with an error once it has waited unroutedMost, with
-// magpie's log saying where every goroutine stood. Its context ends then
+// magpie-friday's log saying where every goroutine stood. Its context ends then
 // too, so what waits on it lets go.
 var unroutedShow, unroutedMost = 15 * time.Second, 2 * time.Minute
 
 // unroutedWatched is whether a request to path is an agent's turn, which
-// is given a route once magpie knows where it goes: Chat, Responses,
+// is given a route once magpie-friday knows where it goes: Chat, Responses,
 // Messages, Gemini and Codex's own backend. A compaction or a model list
 // has no route of its own, and an MCP or a search call is not a turn.
 func unroutedWatched(path string) bool {
@@ -61,20 +61,20 @@ func unroutedProto(path string) provider.Protocol {
 	return provider.Chat
 }
 
-// errUnrouted ends a request's context when magpie stopped holding it.
-var errUnrouted = errors.New("magpie held the request too long before routing it")
+// errUnrouted ends a request's context when magpie-friday stopped holding it.
+var errUnrouted = errors.New("magpie-friday held the request too long before routing it")
 
-// heldWriter is the client's writer while magpie may still answer for its
-// handler: what the handler writes goes through it, and once magpie has
+// heldWriter is the client's writer while magpie-friday may still answer for its
+// handler: what the handler writes goes through it, and once magpie-friday has
 // answered (gaveUp) the handler's writes go nowhere. The handler's headers
-// are its own until it writes, so magpie's answer never shares a map
+// are its own until it writes, so magpie-friday's answer never shares a map
 // another goroutine is filling.
 type heldWriter struct {
 	w      http.ResponseWriter
 	mu     sync.Mutex
 	hdr    http.Header
 	wrote  bool // the handler began its reply
-	gaveUp bool // magpie answered for it
+	gaveUp bool // magpie-friday answered for it
 }
 
 func newHeldWriter(w http.ResponseWriter) *heldWriter {
@@ -91,7 +91,7 @@ func (h *heldWriter) Header() http.Header {
 }
 
 // begin is the handler's reply starting: its headers go to the client's.
-// Called with mu held; false once magpie has answered.
+// Called with mu held; false once magpie-friday has answered.
 func (h *heldWriter) begin() bool {
 	if h.gaveUp {
 		return false
@@ -139,7 +139,7 @@ func (h *heldWriter) FlushError() error {
 // Unwrap is for http.ResponseController's deadlines.
 func (h *heldWriter) Unwrap() http.ResponseWriter { return h.w }
 
-// answer writes magpie's own reply, whole, unless the handler began one.
+// answer writes magpie-friday's own reply, whole, unless the handler began one.
 // Its length is said, so the client has all of it while the handler may
 // still be held: a reply of no length ends only when the handler does.
 func (h *heldWriter) answer(proto provider.Protocol, status int, msg string) bool {
@@ -173,7 +173,7 @@ type unroutedHold struct {
 	cancel context.CancelCauseFunc
 	asked  atomic.Value // string: the model it asked for, once read
 	shown  *Route       // under f.mu
-	ended  bool         // under f.mu: answered by magpie
+	ended  bool         // under f.mu: answered by magpie-friday
 	over   bool         // under f.mu: its handler returned
 	// masking counts the maskings under way for it: one held there waits
 	// for Settings → Privacy's local model, and its error says so
@@ -251,7 +251,7 @@ func (u *unroutedHold) show() {
 // showLocked begins the route that shows it; f.mu is held.
 func (u *unroutedHold) showLocked() {
 	asked, _ := u.asked.Load().(string)
-	rt := Route{Time: u.f.start, Agent: callerOf(u.r).agent, Session: u.f.session, Model: asked, Provider: "magpie"}
+	rt := Route{Time: u.f.start, Agent: callerOf(u.r).agent, Session: u.f.session, Model: asked, Provider: "magpie-friday"}
 	if rt.Agent == "" {
 		rt.Agent = u.f.agent
 	}
@@ -311,12 +311,12 @@ func unroutedMsg(held time.Duration, masking bool) string {
 		if b := modelBusy(); b != "" {
 			why = " (" + b + ")"
 		}
-		return fmt.Sprintf("magpie held this request for %s waiting for the local masking model (Settings → Privacy) to mask it%s, so it was stopped rather than sent masked by the rules alone. Send it again: what the model has already read is kept, so it goes quicker. To send requests without waiting for the model, turn it off in Settings → Privacy.", held, why)
+		return fmt.Sprintf("magpie-friday held this request for %s waiting for the local masking model (Settings → Privacy) to mask it%s, so it was stopped rather than sent masked by the rules alone. Send it again: what the model has already read is kept, so it goes quicker. To send requests without waiting for the model, turn it off in Settings → Privacy.", held, why)
 	}
 	if masking {
-		return fmt.Sprintf("magpie held this request for %s while masking it (Settings → Privacy), before routing it to any provider, so it was stopped rather than left waiting. Send it again; if it keeps happening, restart magpie and report it with magpie's log, which says where it was held.", held)
+		return fmt.Sprintf("magpie-friday held this request for %s while masking it (Settings → Privacy), before routing it to any provider, so it was stopped rather than left waiting. Send it again; if it keeps happening, restart magpie-friday and report it with magpie-friday's log, which says where it was held.", held)
 	}
-	return fmt.Sprintf("magpie held this request for %s without routing it to any provider, so it was stopped rather than left waiting. Send it again; if it keeps happening, restart magpie and report it with magpie's log, which says where it was held.", held)
+	return fmt.Sprintf("magpie-friday held this request for %s without routing it to any provider, so it was stopped rather than left waiting. Send it again; if it keeps happening, restart magpie-friday and report it with magpie-friday's log, which says where it was held.", held)
 }
 
 // modelOn and modelBusy are internal/masking's, a test's

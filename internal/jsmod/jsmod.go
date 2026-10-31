@@ -1,5 +1,5 @@
 // Package jsmod compiles a plugin's JavaScript module for moejs, the
-// JavaScript engine written in Go that magpie runs plugin code in its own
+// JavaScript engine written in Go that magpie-friday runs plugin code in its own
 // process with: gateway middleware (internal/middleware) and agents
 // (internal/agentplug).
 package jsmod

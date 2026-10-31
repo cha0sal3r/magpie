@@ -8,7 +8,7 @@ import (
 
 // A request's body is held several times over while it is served (as
 // read, masked, captured for the log), and Go keeps the pages it freed
-// after: a tray magpie with ~60 requests an hour sat at 725 MB of private
+// after: a tray magpie-friday with ~60 requests an hour sat at 725 MB of private
 // working set after a collection, its heap holding 1088 MB of which 315 MB
 // was live (#3472). Go's scavenger hands such pages back only slowly, and
 // not while the next collection's goal covers them. So once the gateway

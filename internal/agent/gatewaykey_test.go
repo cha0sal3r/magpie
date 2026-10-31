@@ -9,14 +9,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 // An agent in a WSL distro under NAT reaches the gateway at Windows'
 // address, where gateway.Token is turned away (whqtian on Discord: OpenCode
-// in WSL was written "apiKey": "magpie" and refused). Every agent's config
+// in WSL was written "apiKey": "magpie-friday" and refused). Every agent's config
 // carries the LAN sharing key there while sharing is on, and gateway.Token on
 // loopback, or while nothing is shared.
 func TestGatewayKeyBeyondLoopback(t *testing.T) {
@@ -70,10 +70,10 @@ func TestGatewayKeyBeyondLoopback(t *testing.T) {
 		t.Errorf("Qoder on loopback: key %q", k)
 	}
 	if !ourKey(lan) || !ourKey(gateway.Token) || ourKey("sk-someone-else") || ourKey("") {
-		t.Error("ourKey tells magpie's keys from others wrongly")
+		t.Error("ourKey tells magpie-friday's keys from others wrongly")
 	}
 	if !qoderKeyed(lan, "qoder") {
-		t.Error("a Qoder given the LAN key isn't seen as on magpie")
+		t.Error("a Qoder given the LAN key isn't seen as on magpie-friday")
 	}
 
 	if err := access.ConfigureLAN(false, false); err != nil {
@@ -82,7 +82,7 @@ func TestGatewayKeyBeyondLoopback(t *testing.T) {
 	want(wsl, gateway.Token)
 }
 
-// T3 Code's magpie instance is Claude Code routed with the gateway's
+// T3 Code's magpie-friday instance is Claude Code routed with the gateway's
 // address and the token Claude Code is sent with: beyond loopback that is
 // the LAN sharing key, as at.gwKey() routes Claude Code itself.
 // gateway.Token is turned away there, so T3's every call was answered 401
@@ -135,7 +135,7 @@ func TestT3CodeKeyBeyondLoopback(t *testing.T) {
 // Air's and OpenChamber's OpenCode provider block carries the key for the
 // gateway's address, and each row's Check compares against it: beyond
 // loopback, the LAN sharing key. Against gateway.Token there, the rows said
-// "magpie's gateway won't take its requests" of the config Sync had just
+// "magpie-friday's gateway won't take its requests" of the config Sync had just
 // written and the gateway does take (#1647, ggbdpq).
 func TestAirAndOpenChamberChecksTakeTheKeyForTheGateway(t *testing.T) {
 	home, _ := codexHome(t, "", "")
@@ -157,11 +157,11 @@ func TestAirAndOpenChamberChecksTakeTheKeyForTheGateway(t *testing.T) {
 	airOpenCode = func(string) string { return "/opt/bin/opencode" }
 	t.Cleanup(func() { airOpenCode = was })
 	a := air(home, filepath.Join(home, ".config"))
-	if err := a.Apply("model", "magpie/fake/m1"); err != nil {
+	if err := a.Apply("model", "magpie-friday/fake/m1"); err != nil {
 		t.Fatal(err)
 	}
-	cfg := filepath.Join(airDir, "magpie-opencode.json")
-	if v, _ := edit.GetJSON(cfg, "provider.magpie.options.apiKey"); v != lan {
+	cfg := filepath.Join(airDir, "magpie-friday-opencode.json")
+	if v, _ := edit.GetJSON(cfg, "provider.magpie-friday.options.apiKey"); v != lan {
 		t.Fatalf("Air's config has key %q, want the LAN sharing key", v)
 	}
 	if d := a.Check(); d != "" {
@@ -173,11 +173,11 @@ func TestAirAndOpenChamberChecksTakeTheKeyForTheGateway(t *testing.T) {
 	writeFile(t, filepath.Join(dir, "preferences.json"), `{"version":1,"fields":{"defaultModel":{"value":"anthropic/claude-sonnet-5","updatedAt":7}}}`)
 	writeFile(t, filepath.Join(dir, "settings.json"), `{"defaultModel":"anthropic/claude-sonnet-5"}`)
 	ch := openChamber(home, filepath.Join(home, ".config"))
-	if err := ch.Apply("model", "magpie/fake/m1"); err != nil {
+	if err := ch.Apply("model", "magpie-friday/fake/m1"); err != nil {
 		t.Fatal(err)
 	}
 	ocCfg := filepath.Join(home, "oc", "opencode.json")
-	if v, _ := edit.GetJSON(ocCfg, "provider.magpie.options.apiKey"); v != lan {
+	if v, _ := edit.GetJSON(ocCfg, "provider.magpie-friday.options.apiKey"); v != lan {
 		t.Fatalf("OpenChamber's OpenCode config has key %q, want the LAN sharing key", v)
 	}
 	if d := ch.Check(); d != "" {
@@ -247,7 +247,7 @@ func TestPinnedGatewayKeyForEveryWriter(t *testing.T) {
 			t.Errorf("%s at %s: key %q, want the LAN sharing key", agent, gw, k)
 		}
 		if plain[agent] == lan || !strings.HasPrefix(plain[agent], gateway.Token) {
-			t.Errorf("%s with nothing shared: key %q, want magpie's own", agent, plain[agent])
+			t.Errorf("%s with nothing shared: key %q, want magpie-friday's own", agent, plain[agent])
 		}
 	}
 }

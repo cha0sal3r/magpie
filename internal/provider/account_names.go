@@ -6,7 +6,7 @@ package provider
 // providers.json beside the account's other settings (AccountNames), by
 // the account's name in lower case; the vendor's or plugin's sign-in is
 // never written to. It is shown wherever the account is: the Usage page,
-// the menu bar, magpie accounts, magpie quota and /v1/magpie/quotas
+// the menu bar, magpie-friday accounts, magpie-friday quota and /v1/magpie-friday/quotas
 // (SubscriptionQuota.Alias, Quota.Alias), the Usage page's Accounts and
 // the request log's Account filter, a gateway key's accounts, and the
 // Routing page (which reads accountNames from /api/providers).

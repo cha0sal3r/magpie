@@ -34,7 +34,7 @@ func addStuck(t *testing.T, ctx context.Context) {
 // listed, and it is told as not loaded, saying why (shualaitianduai on
 // Discord). Before, the host loaded the plugins one after another and
 // answered init only when all were in, so every plugin waited until
-// magpie's two-minute deadline failed the whole host.
+// magpie-friday's two-minute deadline failed the whole host.
 func TestStuckPluginLoadHoldsNoOther(t *testing.T) {
 	sandbox(t)
 	stuckWaits(t)

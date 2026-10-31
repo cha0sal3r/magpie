@@ -1,4 +1,4 @@
-module github.com/yetone/magpie
+module github.com/cha0sal3r/magpie-friday
 
 go 1.26.8
 

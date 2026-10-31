@@ -8,10 +8,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// The Agents page's Disconnect: an agent magpie is in says so (wired), and
+// The Agents page's Disconnect: an agent magpie-friday is in says so (wired), and
 // disconnecting it puts back the model the user had and answers with the
 // agent no longer wired.
 func TestAgentDisconnectAPI(t *testing.T) {
@@ -53,10 +53,10 @@ func TestAgentDisconnectAPI(t *testing.T) {
 		return agentJSON{}
 	}
 	if codex(call("/api/state", "")).Wired {
-		t.Fatal("wired before magpie set anything")
+		t.Fatal("wired before magpie-friday set anything")
 	}
 	if !codex(call("/api/set", `{"agent":"codex","field":"model","value":"relay/m1"}`)).Wired {
-		t.Fatal("not wired on a magpie model")
+		t.Fatal("not wired on a magpie-friday model")
 	}
 	a := codex(call("/api/agents/disconnect/codex", "{}"))
 	if a.Wired || a.Fields[0].Value != "gpt-5.4" {

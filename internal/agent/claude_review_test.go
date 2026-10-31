@@ -5,19 +5,19 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// TestClaudeAutoModeReview: Claude Code in auto mode behind magpie on a
+// TestClaudeAutoModeReview: Claude Code in auto mode behind magpie-friday on a
 // model Anthropic doesn't review (1EFLOPS on X, on Codex's gpt-6.1-sol)
 // said "this session isn't eligible because your requests go through
 // 127.0.0.1:3425…". Anthropic's page says to turn the review off
-// (CLAUDE_CODE_AUTO_MODE_SERVER=0) for a gateway that can't run it: magpie
+// (CLAUDE_CODE_AUTO_MODE_SERVER=0) for a gateway that can't run it: magpie-friday
 // does while no model Claude Code can reach through it is reviewed, and
 // leaves it on while one is, shown or behind a group or a fallback. A
-// value of the user's is theirs, and magpie's goes when Claude Code is
-// taken off magpie.
+// value of the user's is theirs, and magpie-friday's goes when Claude Code is
+// taken off magpie-friday.
 func TestClaudeAutoModeReview(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
@@ -119,10 +119,10 @@ func TestClaudeAutoModeReview(t *testing.T) {
 		t.Fatalf("fallback gone: %q, want 0", review())
 	}
 
-	// off magpie, onto Claude Code's own model, and reset: magpie's goes
+	// off magpie-friday, onto Claude Code's own model, and reset: magpie-friday's goes
 	set("model", "claude-opus-4-8")
 	if review() != "" {
-		t.Fatalf("Claude's own model kept magpie's value: %q", review())
+		t.Fatalf("Claude's own model kept magpie-friday's value: %q", review())
 	}
 	set("model", "v/gpt-x")
 	if review() != "0" {
@@ -130,7 +130,7 @@ func TestClaudeAutoModeReview(t *testing.T) {
 	}
 	set("model", "")
 	if review() != "" {
-		t.Fatalf("reset kept magpie's value: %q", review())
+		t.Fatalf("reset kept magpie-friday's value: %q", review())
 	}
 
 	// the user's own value is theirs, through a switch, Sync and reset
@@ -166,7 +166,7 @@ func TestClaudeAutoModeReview(t *testing.T) {
 	}
 }
 
-// TestT3CodeAutoModeReview: T3 Code's magpie instance runs Claude Code on
+// TestT3CodeAutoModeReview: T3 Code's magpie-friday instance runs Claude Code on
 // the gateway through its own environment, so it is told the same: the
 // review off while none of the models it lists is reviewed, and on (not
 // set) once one is.
@@ -210,7 +210,7 @@ func TestT3CodeAutoModeReview(t *testing.T) {
 // set to is judged on the provider it resolves to, as the gateway judges
 // its requests, not by its name alone. A Claude name on a provider that
 // falls back to Anthropic, or a group with a Claude member, keeps the
-// review on; a name magpie doesn't know is judged by the name.
+// review on; a name magpie-friday doesn't know is judged by the name.
 func TestClaudeReviewedJudgesTheSetModelWhereItGoes(t *testing.T) {
 	syncHome(t)
 	if err := provider.Save(provider.Provider{ID: "a", Name: "A", Anthropic: "http://127.0.0.1:1", Key: "k", Models: []string{"claude-sonnet-5"}}); err != nil {
@@ -246,7 +246,7 @@ func TestClaudeReviewedJudgesTheSetModelWhereItGoes(t *testing.T) {
 }
 
 // TestClaudeReviewedOnlyWhereMessagesReachClaude (nexnull on Discord,
-// Claude Code 2.1.308 on DeepSeek through magpie v0.1.1318, still told
+// Claude Code 2.1.308 on DeepSeek through magpie-friday v0.1.1318, still told
 // "this session isn't eligible because your requests go through
 // 127.0.0.1:3425"): a Claude model a provider serves only on Chat or
 // Responses is asked translated, and a translation carries neither the

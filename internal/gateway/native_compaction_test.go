@@ -14,9 +14,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // nativeSealedReply is a Responses stream whose output is one compaction item,
@@ -48,7 +48,7 @@ func nativeAsk(t *testing.T, model, body string) (int, string) {
 // #1099: a provider set to compact natively is asked Codex's
 // compaction_trigger as Codex sent it, and the compaction it seals goes
 // back to Codex unchanged; the next turn carries it to the same provider
-// as it is. One not set to keeps magpie's summary (magpie1:).
+// as it is. One not set to keeps magpie-friday's summary (magpie1:).
 func TestNativeCompactionPassesTheTrigger(t *testing.T) {
 	f := &fake{t: t, reply: nativeSealedReply("gAAAAB-sealed-by-relay")}
 	setup(t, provider.Responses, f)
@@ -57,7 +57,7 @@ func TestNativeCompactionPassesTheTrigger(t *testing.T) {
 		w.WriteHeader(400)
 	})
 
-	// off: magpie summarises, the trigger never reaches the relay
+	// off: magpie-friday summarises, the trigger never reaches the relay
 	f.reply = sse(
 		`data: {"type":"response.output_item.done","output_index":0,"item":{"type":"message","role":"assistant","content":[{"type":"output_text","text":"SUMMARY"}]}}`,
 		`data: {"type":"response.completed","response":{"id":"resp_s","status":"completed","output":[],"usage":{"input_tokens":1,"output_tokens":1,"total_tokens":2}}}`)
@@ -92,7 +92,7 @@ func TestNativeCompactionPassesTheTrigger(t *testing.T) {
 }
 
 // A relay that refuses compaction_trigger has its own error go back to
-// Codex, not a summary of magpie's in its place.
+// Codex, not a summary of magpie-friday's in its place.
 func TestNativeCompactionRefusalGoesBack(t *testing.T) {
 	f := &fake{t: t}
 	f.refuse = func(body []byte) (int, string) {
@@ -147,7 +147,7 @@ func TestNativeCompactionStaysWithItsWriter(t *testing.T) {
 
 // GitHub Copilot's GPT models answer on Responses, so a Copilot account
 // set to compact natively is asked Codex's compaction as it was sent; its
-// Claude models, on chat completions, keep magpie's summary.
+// Claude models, on chat completions, keep magpie-friday's summary.
 func TestNativeCompactionCopilot(t *testing.T) {
 	var mu sync.Mutex
 	var asked []string
@@ -410,10 +410,10 @@ func TestNativeCompactionWriterThroughAGroupWhoseListLacksTheModel(t *testing.T)
 	}
 }
 
-// #2582, #2642: Codex compacting one of its own models through magpie's
+// #2582, #2642: Codex compacting one of its own models through magpie-friday's
 // Codex accounts compacts natively only with the codex provider's native
 // compaction on. Off (the default), the trigger never reaches the ChatGPT
-// backend: magpie's summary comes back, which any account reads, and no
+// backend: magpie-friday's summary comes back, which any account reads, and no
 // account is recorded as the conversation's only reader. Before, the
 // trigger was relayed whatever the setting and the seal bound the
 // conversation to the account that answered, so switching to another
@@ -479,7 +479,7 @@ func TestCodexOwnModelCompactionHonoursTheToggle(t *testing.T) {
 }
 
 // #2642: a conversation whose native compaction's account can't be asked
-// is told why, as magpie's settings say, and what lets it go on — not
+// is told why, as magpie-friday's settings say, and what lets it go on — not
 // "switched off, removed, or no longer serves" of an account that is on.
 // No other account is asked.
 func TestNativeCompactionWriterGoneSaysWhy(t *testing.T) {
@@ -501,7 +501,7 @@ func TestNativeCompactionWriterGoneSaysWhy(t *testing.T) {
 					t.Fatal(err)
 				}
 			},
-			[]string{"switched off in magpie", "switch spare@example.com on again", "the others can stay on beside it"},
+			[]string{"switched off in magpie-friday", "switch spare@example.com on again", "the others can stay on beside it"},
 			[]string{"no longer signed in", "paused"}},
 		{"own paused", "me@example.com",
 			func(t *testing.T) {
@@ -510,7 +510,7 @@ func TestNativeCompactionWriterGoneSaysWhy(t *testing.T) {
 				}
 			},
 			[]string{"it is paused", "turn me@example.com on again"},
-			[]string{"no longer signed in", "switched off in magpie"}},
+			[]string{"no longer signed in", "switched off in magpie-friday"}},
 		{"kept from the model", "me@example.com",
 			func(t *testing.T) {
 				if err := provider.SetAccountModels("codex", "me@example.com", []string{"gpt-4.1"}); err != nil {
@@ -518,10 +518,10 @@ func TestNativeCompactionWriterGoneSaysWhy(t *testing.T) {
 				}
 			},
 			[]string{"set not to serve gpt-5.5 (Names & levels)", "let me@example.com serve gpt-5.5 again"},
-			[]string{"no longer signed in", "switched off in magpie", "paused"}},
+			[]string{"no longer signed in", "switched off in magpie-friday", "paused"}},
 		{"signed out", "gone@example.com", func(t *testing.T) {},
-			[]string{"gone@example.com is no longer signed in to magpie", "sign in to gone@example.com again"},
-			[]string{"switched off in magpie", "paused"}},
+			[]string{"gone@example.com is no longer signed in to magpie-friday", "sign in to gone@example.com again"},
+			[]string{"switched off in magpie-friday", "paused"}},
 	} {
 		t.Run(c.name, func(t *testing.T) {
 			codexSignedIn(t, "spare@example.com")
@@ -637,14 +637,14 @@ func TestNativeCompactionRouteNamesItsWriter(t *testing.T) {
 
 // A legacy /responses/compact carrying a recorded seal is judged here, as
 // the same request on /responses is (serve, checkpointReaders, #2642):
-// the writer on in magpie answers it, signed as the writer — relayed as
+// the writer on in magpie-friday answers it, signed as the writer — relayed as
 // it came, the compact reaches the sign-in, which another account's seal
 // refuses (#1099, #2271), its reason unread (#2727). A writer gone is
 // refused with the reason, also when the sign-in is paused and the
 // compact would otherwise relay on another account (compactOn); a seal
 // the sign-in wrote while it can be asked relays as it came; a request
 // signing with its own chatgpt-account-id (a Codex on WSL or another
-// CODEX_HOME), and a seal a magpie key's candidate wrote, are not judged
+// CODEX_HOME), and a seal a magpie-friday key's candidate wrote, are not judged
 // here.
 // sealedCompactAsked sends Codex's legacy /responses/compact carrying the seal
 // enc, signed with auth (Codex's ChatGPT token, or a gateway key) and
@@ -694,7 +694,7 @@ func TestNativeCompactionCompactJudgesItsWriter(t *testing.T) {
 	}
 	account := sealedBy
 
-	t.Run("a writer on in magpie answers it, signed as the writer", func(t *testing.T) {
+	t.Run("a writer on in magpie-friday answers it, signed as the writer", func(t *testing.T) {
 		codexSignedIn(t, "biz@example.com") // the sign-in is me@example.com (acct-1); biz@example.com (acct-2) is on
 		nativeOn(t, "codex")
 		wroteCheckpoint("gAAAAB-sealed-by-biz", account("biz@example.com"))
@@ -711,7 +711,7 @@ func TestNativeCompactionCompactJudgesItsWriter(t *testing.T) {
 		if code != 400 || seen != "" {
 			t.Fatalf("%d, the backend saw %q: %s", code, seen, body)
 		}
-		for _, want := range []string{"compacted natively by codex@gone@example.com", "gone@example.com is no longer signed in to magpie", "sign in to gone@example.com again"} {
+		for _, want := range []string{"compacted natively by codex@gone@example.com", "gone@example.com is no longer signed in to magpie-friday", "sign in to gone@example.com again"} {
 			if !strings.Contains(body, want) {
 				t.Errorf("no %q in %s", want, body)
 			}
@@ -755,7 +755,7 @@ func TestNativeCompactionCompactJudgesItsWriter(t *testing.T) {
 		if code != 400 || seen != "" {
 			t.Fatalf("%d, the backend saw %q: %s", code, seen, body)
 		}
-		if !strings.Contains(body, "gone@example.com is no longer signed in to magpie") {
+		if !strings.Contains(body, "gone@example.com is no longer signed in to magpie-friday") {
 			t.Errorf("body %s", body)
 		}
 	})

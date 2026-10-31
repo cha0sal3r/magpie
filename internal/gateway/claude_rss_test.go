@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // giveRSS has every Claude Code run read as holding rss (over the budget
@@ -101,7 +101,7 @@ func TestClaudeOversizedParkedRunIsLetGo(t *testing.T) {
 	}
 }
 
-// The budget is an eighth of the memory magpie may use, a floor under it.
+// The budget is an eighth of the memory magpie-friday may use, a floor under it.
 func TestClaudeRunBudgetScalesWithMemory(t *testing.T) {
 	root := t.TempDir()
 	putMeminfo(t, root, "MemTotal:       32505856 kB\n")

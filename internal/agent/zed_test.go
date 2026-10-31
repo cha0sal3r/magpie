@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 func TestZed(t *testing.T) {
@@ -34,7 +34,7 @@ func TestZed(t *testing.T) {
 		t.Fatalf("original: %q", f.Get())
 	}
 	v, err := a.Spell("model", "relay/glm-4.6")
-	if err != nil || v != "magpie/relay/glm-4.6" {
+	if err != nil || v != "magpie-friday/relay/glm-4.6" {
 		t.Fatalf("spelling: %q %v", v, err)
 	}
 	if err := a.Apply("model", v); err != nil {
@@ -74,7 +74,7 @@ func TestZed(t *testing.T) {
 	if n, _ := edit.GetJSON(a.Path, zedProvider+".available_models.#"); n != "2" {
 		t.Fatalf("catalog did not sync: %s", readFile(a.Path))
 	}
-	if err := f.Set("magpie/relay/unknown"); err != nil {
+	if err := f.Set("magpie-friday/relay/unknown"); err != nil {
 		t.Fatal(err)
 	}
 	if err := f.Set(""); err != nil {
@@ -87,7 +87,7 @@ func TestZed(t *testing.T) {
 		t.Fatal("did not restore whole default model")
 	}
 	if _, ok := edit.GetJSON(a.Path, zedProvider); ok {
-		t.Fatal("magpie provider left after reset")
+		t.Fatal("magpie-friday provider left after reset")
 	}
 }
 
@@ -99,7 +99,7 @@ func TestZedCredentialFailureLeavesSettings(t *testing.T) {
 	credential := zedCredential
 	t.Cleanup(func() { zedCredential = credential })
 	zedCredential = func(string) error { return errors.New("keychain locked") }
-	if err := a.Field("model").Set("magpie/relay/glm-4.6"); err == nil || !strings.Contains(err.Error(), "keychain locked") {
+	if err := a.Field("model").Set("magpie-friday/relay/glm-4.6"); err == nil || !strings.Contains(err.Error(), "keychain locked") {
 		t.Fatalf("missing credential failure: %v", err)
 	}
 	if readFile(a.Path) != before {
@@ -117,7 +117,7 @@ func TestZedFreshAndOwn(t *testing.T) {
 		t.Fatal("sync created settings without a pick")
 	}
 	f := a.Field("model")
-	if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	if err := f.Set(""); err != nil {
@@ -126,7 +126,7 @@ func TestZedFreshAndOwn(t *testing.T) {
 	if f.Get() != "" {
 		t.Fatalf("reset fresh: %q", f.Get())
 	}
-	if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	if err := f.Set("openai/gpt-custom"); err != nil {
@@ -136,13 +136,13 @@ func TestZedFreshAndOwn(t *testing.T) {
 		t.Fatalf("native model: %q", f.Get())
 	}
 	if _, ok := edit.GetJSON(a.Path, zedProvider); ok {
-		t.Fatal("magpie provider left on native selection")
+		t.Fatal("magpie-friday provider left on native selection")
 	}
 }
 
 // Zed's max_tokens is the window a prompt and its reply share, and it lets
 // a prompt fill max_tokens - max_output_tokens before it compacts (its
-// thread's input_token_capacity). That room is the prompt magpie's catalog
+// thread's input_token_capacity). That room is the prompt magpie-friday's catalog
 // says the model takes (#850): GPT-5's input 272000 with its 128000 reply,
 // a 400000 window as OpenAI gives it, and a model with no output limit
 // gets its context alone.
@@ -162,7 +162,7 @@ func TestZedWindowHoldsPromptAndReply(t *testing.T) {
 		t.Fatal(err)
 	}
 	a := zedAt(filepath.Join(home, "zed"))
-	if err := a.Field("model").Set("magpie/relay/gpt-5"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/relay/gpt-5"); err != nil {
 		t.Fatal(err)
 	}
 	var p struct {
@@ -212,7 +212,7 @@ func TestZedTokenLimitOverrides(t *testing.T) {
 		t.Fatal(err)
 	}
 	a := zedAt(filepath.Join(home, "zed"))
-	if err := a.Field("model").Set("magpie/relay/glm-4.6"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	check := func(output int) {
@@ -244,12 +244,12 @@ func TestZedRestoresProviderAndModelLimits(t *testing.T) {
 	writeFile(t, catalog.CachePath(), `{"zai":{"models":{"glm-4.6":{"id":"glm-4.6","name":"GLM","modalities":{"input":["text","image"]},"limit":{"context":204800,"output":300000}}}}}`)
 	catalog.Reset()
 	a := zedAt(filepath.Join(home, "zed"))
-	writeFile(t, a.Path, `{"agent":{"default_model":{"provider":"openai","model":"own"}},"language_models":{"openai_compatible":{"magpie":{"api_url":"https://my-proxy/v1","available_models":[]}}}}`)
+	writeFile(t, a.Path, `{"agent":{"default_model":{"provider":"openai","model":"own"}},"language_models":{"openai_compatible":{"magpie-friday":{"api_url":"https://my-proxy/v1","available_models":[]}}}}`)
 	before := readFile(a.Path)
 	if err := a.Sync(); err != nil || readFile(a.Path) != before {
 		t.Fatalf("sync changed a user's provider: %v", err)
 	}
-	if err := a.Field("model").Set("magpie/relay/glm-4.6"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	// The independent reply limit keeps its allowance beside the prompt's
@@ -271,21 +271,21 @@ func TestZedReselectAfterNativePicker(t *testing.T) {
 	home := syncHome(t)
 	a := zedAt(filepath.Join(home, "zed"))
 	f := a.Field("model")
-	if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	// Zed's picker changes only the model, leaving our provider installed.
 	if err := edit.SetJSON(a.Path, edit.KV{Path: zedModel, Value: map[string]string{"provider": "openai", "model": "gpt-custom"}}); err != nil {
 		t.Fatal(err)
 	}
-	if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	if err := f.Set(""); err != nil {
 		t.Fatal(err)
 	}
 	if _, ok := edit.GetJSON(a.Path, zedProvider); ok {
-		t.Fatal("reset restored magpie's own provider")
+		t.Fatal("reset restored magpie-friday's own provider")
 	}
 	if got := f.Get(); got != "openai/gpt-custom" {
 		t.Fatalf("reset model: %q", got)
@@ -296,16 +296,16 @@ func TestZedReselectPreservesProvider(t *testing.T) {
 	home := syncHome(t)
 	a := zedAt(filepath.Join(home, "zed"))
 	original := `{"api_url":"https://my-proxy/v1","available_models":[{"name":"custom","max_tokens":8192}],"headers":{"X-Custom":"keep"}}`
-	writeFile(t, a.Path, `{"agent":{"default_model":{"provider":"openai","model":"own"}},"language_models":{"openai_compatible":{"magpie":`+original+`}}}`)
+	writeFile(t, a.Path, `{"agent":{"default_model":{"provider":"openai","model":"own"}},"language_models":{"openai_compatible":{"magpie-friday":`+original+`}}}`)
 	f := a.Field("model")
-	if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	native := `{"provider":"zed.dev","model":"claude-sonnet","temperature":0.3}`
 	if err := edit.SetJSON(a.Path, edit.KV{Path: zedModel, Value: json.RawMessage(native)}); err != nil {
 		t.Fatal(err)
 	}
-	if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	if err := f.Set(""); err != nil {
@@ -322,12 +322,12 @@ func TestZedReselectPreservesProvider(t *testing.T) {
 func TestZedResetAfterNativePicker(t *testing.T) {
 	home := syncHome(t)
 	a := zedAt(filepath.Join(home, "zed"))
-	writeFile(t, a.Path, `{"agent":{"default_model":{"provider":"openai","model":"own"}},"language_models":{"openai_compatible":{"magpie":{"api_url":"https://my-proxy/v1","available_models":[]}}}}`)
+	writeFile(t, a.Path, `{"agent":{"default_model":{"provider":"openai","model":"own"}},"language_models":{"openai_compatible":{"magpie-friday":{"api_url":"https://my-proxy/v1","available_models":[]}}}}`)
 	f := a.Field("model")
-	if err := f.Set("magpie/relay/glm-4.6"); err != nil {
+	if err := f.Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
-	// Zed's picker changes the model without removing magpie's provider.
+	// Zed's picker changes the model without removing magpie-friday's provider.
 	native := `{"provider":"zed.dev","model":"claude-sonnet","temperature":0.3}`
 	if err := edit.SetJSON(a.Path, edit.KV{Path: zedModel, Value: json.RawMessage(native)}); err != nil {
 		t.Fatal(err)

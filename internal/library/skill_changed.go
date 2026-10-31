@@ -81,8 +81,8 @@ func libraryHash(name string) string {
 
 // editState tells whether a skill from GitHub was changed here since it
 // was fetched: its library folder no longer holds the files fetched, or
-// an agent's copy of it was edited since magpie made it and isn't taken
-// in yet. known is false when that can't be told: magpie didn't keep the
+// an agent's copy of it was edited since magpie-friday made it and isn't taken
+// in yet. known is false when that can't be told: magpie-friday didn't keep the
 // hash of what it fetched (installed before it did), or the folder can't
 // be read.
 func (l *Library) editState(s *Skill, targets []*Target) (edited, known bool) {

@@ -24,7 +24,7 @@ const found = [
   srv("node_repl", ["codex"], { own: true }),
 ];
 const lib = (foundServers) => ({
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: [agent("claude", "Claude Code"), agent("codex", "Codex"), agent("gemini", "Gemini CLI"), agent("goose", "Goose")],
   instructions: { agents: [] }, servers: [], skills: [], foundSkills: [], projects: [], foundServers,
 });
@@ -56,26 +56,26 @@ function server(lang, posts) {
 const said = {
   en: {
     head: "Remove github?",
-    github: ["It is taken out of the MCP settings of Claude Code, Codex. Each file is copied to magpie's backups before it changes.", "Gemini CLI has another server by this name; that one stays."],
-    figma: ["It is taken out of the MCP settings of Goose. Each file is copied to magpie's backups before it changes."],
+    github: ["It is taken out of the MCP settings of Claude Code, Codex. Each file is copied to magpie-friday's backups before it changes.", "Gemini CLI has another server by this name; that one stays."],
+    figma: ["It is taken out of the MCP settings of Goose. Each file is copied to magpie-friday's backups before it changes."],
     removed: "github removed",
   },
   zh: {
     head: "移除 github？",
-    github: ["将从 Claude Code, Codex 的 MCP 配置中移除。每个文件改动前都会先复制到 magpie 的备份。", "Gemini CLI 中有另一个同名服务器，那个保持不动。"],
-    figma: ["将从 Goose 的 MCP 配置中移除。每个文件改动前都会先复制到 magpie 的备份。"],
+    github: ["将从 Claude Code, Codex 的 MCP 配置中移除。每个文件改动前都会先复制到 magpie-friday 的备份。", "Gemini CLI 中有另一个同名服务器，那个保持不动。"],
+    figma: ["将从 Goose 的 MCP 配置中移除。每个文件改动前都会先复制到 magpie-friday 的备份。"],
     removed: "已移除 github",
   },
   ja: {
     head: "github を削除しますか？",
-    github: ["Claude Code, Codex の MCP 設定から外されます。各ファイルは変更前に magpie のバックアップにコピーされます。", "Gemini CLI には同じ名前の別のサーバーがあり、そちらはそのまま残ります。"],
-    figma: ["Goose の MCP 設定から外されます。各ファイルは変更前に magpie のバックアップにコピーされます。"],
+    github: ["Claude Code, Codex の MCP 設定から外されます。各ファイルは変更前に magpie-friday のバックアップにコピーされます。", "Gemini CLI には同じ名前の別のサーバーがあり、そちらはそのまま残ります。"],
+    figma: ["Goose の MCP 設定から外されます。各ファイルは変更前に magpie-friday のバックアップにコピーされます。"],
     removed: "github を削除しました",
   },
   de: {
     head: "github entfernen?",
-    github: ["Er wird aus den MCP-Einstellungen von Claude Code, Codex entfernt. Jede Datei wird vorher in die Backups von magpie kopiert.", "Gemini CLI hat einen anderen Server mit diesem Namen; dieser bleibt."],
-    figma: ["Er wird aus den MCP-Einstellungen von Goose entfernt. Jede Datei wird vorher in die Backups von magpie kopiert."],
+    github: ["Er wird aus den MCP-Einstellungen von Claude Code, Codex entfernt. Jede Datei wird vorher in die Backups von magpie-friday kopiert.", "Gemini CLI hat einen anderen Server mit diesem Namen; dieser bleibt."],
+    figma: ["Er wird aus den MCP-Einstellungen von Goose entfernt. Jede Datei wird vorher in die Backups von magpie-friday kopiert."],
     removed: "github entfernt",
   },
 };

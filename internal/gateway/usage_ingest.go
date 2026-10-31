@@ -14,13 +14,13 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
-// POST /v1/magpie/usage/requests (#1874): a client that calls its vendor
-// itself, not through magpie, tells magpie of its calls, so the Usage page
+// POST /v1/magpie-friday/usage/requests (#1874): a client that calls its vendor
+// itself, not through magpie-friday, tells magpie-friday of its calls, so the Usage page
 // counts them with the rest. It takes one record, or an array of them, in
 // the shape usage.jsonl has, and writes each beside the gateway's own,
 // marked source "reported": counted in the totals, and told apart, and
@@ -28,13 +28,13 @@ import (
 //
 // A record's rid is required, and one already reported is skipped, after
 // a restart too, since what was reported is read from the log itself. A
-// record with no cost is priced at magpie's prices, as a gateway call is.
+// record with no cost is priced at magpie-friday's prices, as a gateway call is.
 // A batch is all or nothing: one bad record answers 400, naming it and its
 // field, and none is written.
 //
 // It writes into what this computer's usage says, so it is let in as
-// GET /v1/magpie/usage is: this computer, or another with an enabled
-// gateway key while magpie is shared. A request with a browser's marks
+// GET /v1/magpie-friday/usage is: this computer, or another with an enabled
+// gateway key while magpie-friday is shared. A request with a browser's marks
 // needs an enabled gateway key even from this computer: corsGuard lets
 // a page on localhost or 127.0.0.1 (any port) through keyless, and it
 // shouldn't be able to write what the page counts.
@@ -103,7 +103,7 @@ func (s *Server) usageIngest(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		if who.KeyID == "" {
-			writeError(w, provider.Chat, http.StatusForbidden, "a browser page may report usage only with an enabled magpie gateway key (Authorization: Bearer <key>): a page has no say in what this computer's usage counts")
+			writeError(w, provider.Chat, http.StatusForbidden, "a browser page may report usage only with an enabled magpie-friday gateway key (Authorization: Bearer <key>): a page has no say in what this computer's usage counts")
 			return
 		}
 	}

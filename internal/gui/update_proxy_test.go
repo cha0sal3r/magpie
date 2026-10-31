@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/update"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/update"
 )
 
 // An update check that failed going direct is tried again as soon as a
@@ -33,7 +33,7 @@ func TestSettingsProxyRechecksAFailedUpdate(t *testing.T) {
 	}
 	var hits atomic.Int32
 	px := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Host == "feed.magpie.invalid" {
+		if r.URL.Host == "feed.magpie-friday.invalid" {
 			hits.Add(1)
 		}
 		json.NewEncoder(w).Encode(update.Release{Version: "9.9.9"})
@@ -43,7 +43,7 @@ func TestSettingsProxyRechecksAFailedUpdate(t *testing.T) {
 	if err := settings.Save(settings.Settings{Proxy: "direct"}); err != nil {
 		t.Fatal(err)
 	}
-	t.Setenv("MAGPIE_UPDATE_FEED", "http://feed.magpie.invalid/api/latest")
+	t.Setenv("MAGPIE_UPDATE_FEED", "http://feed.magpie-friday.invalid/api/latest")
 	old := updates
 	updates = &updater{}
 	defer func() { updates = old }()

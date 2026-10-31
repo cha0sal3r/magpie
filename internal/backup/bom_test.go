@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // A backup file an editor saved over with a byte order mark (a Windows
@@ -42,8 +42,8 @@ func TestOpenReadsThroughABOM(t *testing.T) {
 	}
 }
 
-// magpie's own round trip: `magpie backup f` writes through edit.WriteAtomic,
-// which keeps the mark of a file already at f, and `magpie restore f` reads
+// magpie-friday's own round trip: `magpie-friday backup f` writes through edit.WriteAtomic,
+// which keeps the mark of a file already at f, and `magpie-friday restore f` reads
 // the file as it is on disk.
 func TestBackupSavedOverAMarkedFileRestores(t *testing.T) {
 	home(t)

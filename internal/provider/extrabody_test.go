@@ -49,7 +49,7 @@ func TestExtraBodyTested(t *testing.T) {
 	if err != nil || len(rs) != len(detectProtocols) || !rs[1].Result.OK {
 		t.Fatalf("Detect: %v, %+v", err, rs)
 	}
-	if len(keys) != 3 || !strings.HasPrefix(keys[0], "magpie-test-") || keys[0] == keys[1] {
+	if len(keys) != 3 || !strings.HasPrefix(keys[0], "magpie-friday-test-") || keys[0] == keys[1] {
 		t.Errorf("asked with %q", keys)
 	}
 }

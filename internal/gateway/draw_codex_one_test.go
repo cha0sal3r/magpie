@@ -9,15 +9,15 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // #1865: chatgpt.com's Codex images backend answers gpt-image-2,
 // gpt-image-2.5 and a made-up name alike with the same image, so a ChatGPT
 // account lists one GPT Image, said to be the vendor's pick. A gpt-image-2.5
-// saved when magpie listed it is kept as saved, still draws there, and
+// saved when magpie-friday listed it is kept as saved, still draws there, and
 // stands for that one entry. An API key's gpt-image-2.5, where the model
 // field matters, is listed and kept as it is.
 func TestCodexListsOneGPTImage(t *testing.T) {
@@ -85,7 +85,7 @@ func TestCodexListsOneGPTImage(t *testing.T) {
 	if m, ok := drawer(); !ok || m != "codex/gpt-image-2.5" {
 		t.Fatalf("drawer = %q %v", m, ok)
 	}
-	code, _, raw := postImages(t, New(), "/v1/images/generations", "application/json", `{"prompt":"a magpie"}`)
+	code, _, raw := postImages(t, New(), "/v1/images/generations", "application/json", `{"prompt":"a magpie-friday"}`)
 	if code != 200 {
 		t.Fatalf("%d %s", code, raw)
 	}

@@ -1,8 +1,8 @@
 package provider
 
-// Accounts magpie signs in beside an agent's own. Grok's CLI and Copilot's
-// editors and CLI each keep one account, which magpie only ever reads; a
-// further account is signed in by magpie and kept by magpie alone (a home
+// Accounts magpie-friday signs in beside an agent's own. Grok's CLI and Copilot's
+// editors and CLI each keep one account, which magpie-friday only ever reads; a
+// further account is signed in by magpie-friday and kept by magpie-friday alone (a home
 // of its own for Grok, a token for Copilot). logins.json lists them, and
 // the agent's own account too, with nothing of its secrets, so it can go
 // behind another or be turned off like the rest.
@@ -16,13 +16,13 @@ import (
 	"time"
 )
 
-// sideLogin is one of those accounts, with what magpie saved of it.
+// sideLogin is one of those accounts, with what magpie-friday saved of it.
 type sideLogin struct {
 	Login
 	saved savedLogin
 }
 
-// own says a saved account is the agent's own sign-in, not one of magpie's.
+// own says a saved account is the agent's own sign-in, not one of magpie-friday's.
 func (l savedLogin) own() bool {
 	return l.Home == "" && (len(l.Auth) == 0 || string(l.Auth) == "null")
 }
@@ -30,7 +30,7 @@ func (l savedLogin) own() bool {
 // sideLogins lists an agent's accounts that are signed in, the first in
 // use first, then the rest as they were added. ownUser is who the agent
 // itself is signed in to, "" for no one; usable says a saved one of
-// magpie's is still signed in.
+// magpie-friday's is still signed in.
 func sideLogins(agent, ownUser string, usable func(savedLogin) bool) []sideLogin {
 	// read without the lock, which is taken only for a change to write:
 	// a list that changes nothing, nearly every one, made and locked
@@ -77,7 +77,7 @@ func keepSideLogins(ls []savedLogin, agent, ownUser string, look bool) ([]savedL
 					}
 					changed = true
 				}
-				// removed in magpie, it shows again once the agent signs in
+				// removed in magpie-friday, it shows again once the agent signs in
 				// anew: told by its sign-in's mark where the agent has one,
 				// else by another account
 				if ls[i].Hidden != "" {
@@ -94,7 +94,7 @@ func keepSideLogins(ls []savedLogin, agent, ownUser string, look bool) ([]savedL
 				}
 			}
 		}
-		// one of magpie's that is the same account stands for it: it took
+		// one of magpie-friday's that is the same account stands for it: it took
 		// the agent's own over while that couldn't be read (addSideLogin)
 		if !found && !slices.ContainsFunc(ls, func(l savedLogin) bool { return l.Agent == agent && strings.EqualFold(l.User, ownUser) }) {
 			if look {
@@ -124,11 +124,11 @@ func listSideLogins(ls []savedLogin, agent, ownUser string, usable func(savedLog
 			continue
 		}
 		if l.own() && (ownUser == "" || l.Hidden != "") || !l.own() && !usable(l) {
-			continue // signed out there, or removed in magpie
+			continue // signed out there, or removed in magpie-friday
 		}
-		// the agent's own that is one of magpie's already, as when the
+		// the agent's own that is one of magpie-friday's already, as when the
 		// agent was signed in to another account (or signed out) when
-		// magpie signed this one in, and the agent signed in to it after:
+		// magpie-friday signed this one in, and the agent signed in to it after:
 		// that one stands for it, as above, not listed twice (蓝猫 on
 		// Discord, Devin)
 		if l.own() && slices.ContainsFunc(ls, func(m savedLogin) bool {
@@ -161,7 +161,7 @@ func loginsOf(ls []sideLogin) []Login {
 }
 
 // editSideLogin changes the saved account of user: one shown before one
-// hidden of the same name, the agent's own removed in magpie, which only
+// hidden of the same name, the agent's own removed in magpie-friday, which only
 // a slot (Home) tells apart (dev on Discord: Remove on a ZCode account took
 // the hidden one beside it).
 func editSideLogin(agent, user string, f func(ls []savedLogin, i int) ([]savedLogin, error)) error {
@@ -217,7 +217,7 @@ func listedMatch(agent, user string, ls []sideLogin) func(savedLogin) bool {
 }
 
 // sameSaved says two saved accounts are one: a plugin's by its key, an
-// agent's own or one of magpie's with no home of its own by its name.
+// agent's own or one of magpie-friday's with no home of its own by its name.
 func sameSaved(a, b savedLogin) bool {
 	if a.Agent != b.Agent || a.Home != b.Home || a.own() != b.own() {
 		return false
@@ -235,7 +235,7 @@ func activeOf(ls []sideLogin) string {
 }
 
 // switchSideLogin puts an account first. The agent's own sign-in stays as
-// it is: magpie only changes which account its gateway uses first.
+// it is: magpie-friday only changes which account its gateway uses first.
 func switchSideLogin(agent, user string, ls []sideLogin) error {
 	was := activeOf(ls)
 	isWas := listedMatch(agent, was, ls)
@@ -258,7 +258,7 @@ func switchSideLogin(agent, user string, ls []sideLogin) error {
 
 func setSideLoginOn(agent, user string, on bool, ls []sideLogin) error {
 	if !on && strings.EqualFold(activeOf(ls), user) {
-		return fmt.Errorf("magpie uses %s first; put another account first to stop using it", user)
+		return fmt.Errorf("magpie-friday uses %s first; put another account first to stop using it", user)
 	}
 	return editListedLogin(agent, user, ls, func(saved []savedLogin, i int) ([]savedLogin, error) {
 		saved[i].On = on
@@ -266,13 +266,13 @@ func setSideLoginOn(agent, user string, on bool, ls []sideLogin) error {
 	})
 }
 
-// forgetSideLogin drops an account magpie signed in; gone is told what it
+// forgetSideLogin drops an account magpie-friday signed in; gone is told what it
 // kept. The agent's own sign-in is only hidden: its files stay as they
 // are, and it shows again once the agent signs in anew (ownMark). Either
 // one, removed while first, puts the next account first; the only one
 // leaves the subscription with no account (#874: a removed subscription's
 // Sign out… could never take its one account; 歧路亡羊 on Discord: one of
-// magpie's that was first was refused, "put another account first", even
+// magpie-friday's that was first was refused, "put another account first", even
 // by the subscription's Sign out…, which takes every account).
 func forgetSideLogin(agent, user string, ls []sideLogin, gone func(savedLogin)) error {
 	own := slices.ContainsFunc(ls, func(l sideLogin) bool { return l.Own && strings.EqualFold(l.User, user) })
@@ -340,7 +340,7 @@ func ownMark(agent string) string {
 	return hex.EncodeToString(sum[:12])
 }
 
-// addSideLogin keeps an account magpie just signed in, in use beside the
+// addSideLogin keeps an account magpie-friday just signed in, in use beside the
 // others. Signed in again, an account keeps the newer sign-in; one that is
 // the agent's own already is not kept twice (dup is told of what is let
 // go either way). ownUser is who the agent is signed in to now, "" for no
@@ -363,7 +363,7 @@ func addSideLogin(l savedLogin, ownUser string, dup func(savedLogin)) (err error
 		if ls[i].Agent == l.Agent && strings.EqualFold(ls[i].User, l.User) {
 			if ls[i].own() && strings.EqualFold(ownUser, l.User) {
 				dup(l)
-				// removed in magpie, the agent's own is brought back by
+				// removed in magpie-friday, the agent's own is brought back by
 				// signing in to it again: kept hidden, the sign-in said
 				// done and the account was listed nowhere (#320)
 				if ls[i].Hidden == "" {

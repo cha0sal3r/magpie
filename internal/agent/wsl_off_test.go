@@ -7,11 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/sessions"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// #1264 (Etsuya233): with Settings' Detect agents in WSL off, magpie asks
+// #1264 (Etsuya233): with Settings' Detect agents in WSL off, magpie-friday asks
 // wsl.exe nothing on its own: no distro is listed or probed, no agent of
 // one is shown, and the Sessions page lists none of a distro's sessions,
 // even one it listed while the setting was on. Turned on again, the

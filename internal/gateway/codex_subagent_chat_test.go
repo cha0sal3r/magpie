@@ -4,12 +4,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // #1633 (laacmilan): Codex's lead on token/gpt-6.1-sol, a provider on Chat
 // Completions, its subagents wanted on token too. The lead's spawn_agent
-// task reaches the subagent as text (magpie served the lead), so a
+// task reaches the subagent as text (magpie-friday served the lead), so a
 // subagent the lead put on one of Codex's own models goes on the token
 // model set for Codex's subagents, and ChatGPT isn't asked. The lead's
 // own turn stays on the model it asked for.
@@ -34,7 +34,7 @@ func TestCodexSubagentPutOnAChatProviderUnderAChatLead(t *testing.T) {
 	if r.Subagent == nil || *r.Subagent != (SubagentPick{Asked: "gpt-6-astra", To: "token/gpt-6.1-sol"}) || r.Provider != "token" {
 		t.Fatalf("trace: provider %q subagent %+v", r.Provider, r.Subagent)
 	}
-	// the lead on its own model, magpie's token one
+	// the lead on its own model, magpie-friday's token one
 	if rec := codexAsks(s, "token/gpt-6.1-sol", "", leadAsk); rec.Code != 200 {
 		t.Fatalf("lead: %d %s", rec.Code, rec.Body.String())
 	}

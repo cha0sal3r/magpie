@@ -6,10 +6,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// Every route Handler registers is either a client route `magpie web`'s
+// Every route Handler registers is either a client route `magpie-friday web`'s
 // port hands to the gateway (ClientPath), or one named here that stays on
 // the gateway's port alone: its info page at /, the /api/* routes (the
 // page's own namespace there) and the Claude helper's callbacks under
@@ -68,7 +68,7 @@ func TestClientPathOnlyClean(t *testing.T) {
 			t.Errorf("%q is a client path", p)
 		}
 	}
-	for _, p := range []string{"/v1", "/v1/", "/v1/models", "/v1/chat/completions", "/v1beta/models/gemini:generateContent", "/mcp/magpie/tools", "/backend-api/codex/responses", "/messages"} {
+	for _, p := range []string{"/v1", "/v1/", "/v1/models", "/v1/chat/completions", "/v1beta/models/gemini:generateContent", "/mcp/magpie-friday/tools", "/backend-api/codex/responses", "/messages"} {
 		if !ClientPath(p) {
 			t.Errorf("%q is not a client path", p)
 		}

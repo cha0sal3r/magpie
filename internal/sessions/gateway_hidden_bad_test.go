@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// A gateway-sessions-hidden.json that doesn't parse holds deletions magpie
+// A gateway-sessions-hidden.json that doesn't parse holds deletions magpie-friday
 // made before, not nothing: the next DeleteGateway or Restore keeps it aside
 // (as stash.json's and logins.json's unread files are kept) instead of
 // writing the list over, so what it held can still be got back.
@@ -26,7 +26,7 @@ func TestUnreadHiddenKeptAside(t *testing.T) {
 	if !strings.Contains(string(was), `"gone"`) {
 		t.Fatalf("the hidden file lost the first deletion: %s", was)
 	}
-	// half a write, as an older magpie's cut-short one would leave
+	// half a write, as an older magpie-friday's cut-short one would leave
 	bad := was[:len(was)/2]
 	if err := os.WriteFile(p, bad, 0o600); err != nil {
 		t.Fatal(err)

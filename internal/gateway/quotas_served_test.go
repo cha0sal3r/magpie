@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// GET /v1/magpie/quotas tells when each key last answered a request through
+// GET /v1/magpie-friday/quotas tells when each key last answered a request through
 // the gateway, and marks the latest last (#570); one that never did has
 // neither.
 func TestQuotasLastServedAt(t *testing.T) {
@@ -40,7 +40,7 @@ func TestQuotasLastServedAt(t *testing.T) {
 		t.Fatalf("%d %s", rec.Code, rec.Body)
 	}
 	rec = httptest.NewRecorder()
-	r := httptest.NewRequest("GET", "/v1/magpie/quotas", nil)
+	r := httptest.NewRequest("GET", "/v1/magpie-friday/quotas", nil)
 	r.RemoteAddr = "127.0.0.1:5000"
 	s.Handler().ServeHTTP(rec, r)
 	var out struct {

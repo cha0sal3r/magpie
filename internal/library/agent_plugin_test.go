@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agentplug"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/agentplug"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // plugAgents switches on a plugin for each agent module in srcs, in the
@@ -38,7 +38,7 @@ export const agent = {
 `
 
 // An agent a plugin adds is given the Library's instructions, MCP servers
-// and skills where its agent.library says, and has only magpie's taken
+// and skills where its agent.library says, and has only magpie-friday's taken
 // away again, the user's own kept.
 func TestPluginAgentGetsTheLibrary(t *testing.T) {
 	h := sandbox(t)
@@ -122,7 +122,7 @@ func TestPluginAgentWithoutAPlaceIsRefused(t *testing.T) {
 	}
 }
 
-// An MCP file in a format magpie doesn't write, or none named, keeps the
+// An MCP file in a format magpie-friday doesn't write, or none named, keeps the
 // plugin from loading, rather than servers written in a shape its agent
 // can't read.
 func TestPluginAgentMCPFormat(t *testing.T) {
@@ -146,7 +146,7 @@ func TestPluginAgentMCPFormat(t *testing.T) {
 	}
 }
 
-// Every format an agent plugin may name is one magpie writes.
+// Every format an agent plugin may name is one magpie-friday writes.
 func TestPluginMCPFormatsAreWritten(t *testing.T) {
 	for _, n := range agentplug.MCPFormats {
 		if _, ok := pluginMCP[n]; !ok {

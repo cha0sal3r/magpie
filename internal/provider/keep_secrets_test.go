@@ -10,7 +10,7 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
 )
 
 func keepSecretsHome(t *testing.T) {
@@ -29,7 +29,7 @@ func keepSecretsHome(t *testing.T) {
 
 // #1821: a Volcengine provider's AccessKey ID and Secret went missing from
 // providers.json. Sync and a restore bring the provider whole from another
-// computer; one that knows no access key (a magpie before v0.1.1142, or
+// computer; one that knows no access key (a magpie-friday before v0.1.1142, or
 // one it was never given on) sends the same key and nothing else, and
 // that wiped it here. Kept now while the key is the one here, as a copy
 // without keys keeps its secret headers too; another key is another

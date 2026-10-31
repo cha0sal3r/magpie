@@ -21,16 +21,16 @@ import (
 	"encoding/json"
 )
 
-// ProviderKey is how magpie names this subscription.
+// ProviderKey is how magpie-friday names this subscription.
 const ProviderKey = "qoder"
 
-// CNProviderKey is how magpie names the Qoder CN subscription; it is also the
+// CNProviderKey is how magpie-friday names the Qoder CN subscription; it is also the
 // id of Qoder CN's CLI agent.
 const CNProviderKey = "qoder-cn"
 
 // Site is one Qoder deployment.
 type Site struct {
-	ID   string // the provider id magpie keeps its accounts under
+	ID   string // the provider id magpie-friday keeps its accounts under
 	Name string
 }
 
@@ -49,7 +49,7 @@ func SiteOf(id string) *Site {
 	return Global
 }
 
-// Credential is kept in the account's auth blob in magpie's logins.json.
+// Credential is kept in the account's auth blob in magpie-friday's logins.json.
 type Credential struct {
 	UID           string          `json:"uid"`
 	Email         string          `json:"email,omitempty"`

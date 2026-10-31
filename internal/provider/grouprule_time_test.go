@@ -84,7 +84,7 @@ func TestRuleTimeCleanAndConditions(t *testing.T) {
 }
 
 // A rule with hours matches a request inside them only; one without a
-// time (an older magpie's) is in none.
+// time (an older magpie-friday's) is in none.
 func TestRuleTimeMatches(t *testing.T) {
 	r := Rule{Use: "a/x", Time: &TimeWindow{From: "09:00", To: "18:00", Days: []string{"mon", "tue", "wed", "thu", "fri"}}}
 	if !r.Matches(RuleRequest{At: at(2, 10, 0)}) {

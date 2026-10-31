@@ -16,7 +16,7 @@ import (
 
 	"github.com/klauspost/compress/zstd"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // revokedUpstream stands in for the ChatGPT backend with the sign-in of
@@ -178,7 +178,7 @@ func TestRevokedWordsFromAKeyRestAsBefore(t *testing.T) {
 	}
 }
 
-// Compaction goes to an account of magpie's alone, with the one Codex is
+// Compaction goes to an account of magpie-friday's alone, with the one Codex is
 // signed in to paused (#263): one whose sign-in OpenAI revoked (#1793) is
 // marked by its 401 there too, and the next compaction goes to another,
 // not to it again.

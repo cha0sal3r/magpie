@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // The allow list (lc on Discord) is saved cleaned; an entry that isn't an
@@ -42,7 +42,7 @@ func TestAllowIPsSetting(t *testing.T) {
 	if rec := post("/api/settings/allowips", `{"ips":["my-laptop"]}`, here); rec.Code == http.StatusOK || !strings.Contains(rec.Body.String(), "is not an IP address") || !slices.Equal(settings.Load().AllowIPs, want) {
 		t.Errorf("not an address: %d %s, saved %v", rec.Code, rec.Body, settings.Load().AllowIPs)
 	}
-	// magpie web opened from 203.0.113.7: a list without it would shut it out
+	// magpie-friday web opened from 203.0.113.7: a list without it would shut it out
 	if rec := post("/api/settings/allowips", `{"ips":["10.0.0.0/8"]}`, "203.0.113.7:50000"); rec.Code == http.StatusOK || !strings.Contains(rec.Body.String(), "shut out 203.0.113.7") || !slices.Equal(settings.Load().AllowIPs, want) {
 		t.Errorf("shut out: %d %s, saved %v", rec.Code, rec.Body, settings.Load().AllowIPs)
 	}

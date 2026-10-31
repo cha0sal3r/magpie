@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// The script run as administrator sets what magpie's own environment
+// The script run as administrator sets what magpie-friday's own environment
 // adds (its proxy, the PATH npm's node goes first on), since an elevated
 // process starts from the user's environment afresh; it keeps cmd.exe from
 // reading a % as a variable, and passes npm's exit code on.

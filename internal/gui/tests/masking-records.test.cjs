@@ -1,7 +1,7 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // Insights › Masking: a short card of what masking kept from vendors (the
 // number, the days, agents to providers, each with its logo, through
-// magpie's bird in the middle of its ring) over the requests it changed,
+// magpie-friday's bird in the middle of its ring) over the requests it changed,
 // by day, narrowed by facets, agents and providers, or the values masked
 // most. A request opens on its steps, its text as
 // written here, as the vendor got it or side by side (only the parts
@@ -212,8 +212,8 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         assert.deepEqual(await card.locator(".mo-col.agent .nm").allTextContents(), ["Claude Code", "Codex"]);
         assert.deepEqual(await card.locator(".mo-col.provider .nm").allTextContents(), ["Anthropic", "OpenAI"]);
         await card.locator(".mo-flow path.mo-th.out").first().waitFor({ state: "attached" });
-        // magpie's bird on the line through this computer, and the words
-        // that say magpie masked them, for a screenshot shared elsewhere
+        // magpie-friday's bird on the line through this computer, and the words
+        // that say magpie-friday masked them, for a screenshot shared elsewhere
         assert.equal(await card.locator(".msk-hub use").getAttribute("href"), "#bird");
         const hub = await card.locator(".msk-hub").boundingBox(), mid = await card.locator(".mo-mid").boundingBox();
         assert(Math.abs(hub.x + hub.width / 2 - (mid.x + mid.width / 2)) < 1.5, "the bird sits on the centre line");
@@ -239,7 +239,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
           const of = nodes.filter((n) => n.side === side);
           assert(of.every((n) => Math.abs(n.ic.x - of[0].ic.x) < 0.5 && Math.abs(n.nm - of[0].nm) < 0.5), `${side}s' logos in one column, names on one edge: ${JSON.stringify(of)}`);
         }
-        assert.match(await card.locator(".mo-cap").textContent(), /magpie/);
+        assert.match(await card.locator(".mo-cap").textContent(), /magpie-friday/);
         assert.equal(await page.evaluate(() => [...document.querySelectorAll("#maskCard, #maskCard *")].some((n) => /gradient/.test(getComputedStyle(n).backgroundImage))), false, "flat: no gradient");
         // short: the list starts in the first screen
         assert((await list.locator(".msk-row").first().boundingBox()).y < 760, "the requests show without a scroll");

@@ -15,10 +15,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // asked is what a vendor was asked for, in order, from the several
@@ -43,7 +43,7 @@ func (a *asked) all() []string {
 // wire takes what the vendor was asked for since the last call and says
 // whether every one of those requests named a model the way a turn does:
 // by the name on the wire, and nothing else. Taking it empties the record,
-// so a probe that went out under the name magpie knows can't be vouched
+// so a probe that went out under the name magpie-friday knows can't be vouched
 // for by a later probe that went out under the right one.
 func (a *asked) wire(t *testing.T, what string, want []string) []string {
 	t.Helper()
@@ -90,7 +90,7 @@ func asking(t *testing.T, a *asked) *httptest.Server {
 
 // putProvider adds a provider to the file the configured and the signed-in
 // ones are merged from, for a provider whose id Save reserves and a test
-// still needs magpie to be able to find.
+// still needs magpie-friday to be able to find.
 func putProvider(t *testing.T, p map[string]any) {
 	t.Helper()
 	b, err := json.Marshal(map[string]any{"providers": []map[string]any{p}})
@@ -107,7 +107,7 @@ func putProvider(t *testing.T, p map[string]any) {
 
 // A relay that serves a model under an id of its own is asked for it by that
 // id, and by nothing else: the catalog agents see, the routing groups and the
-// usage records keep the name magpie knows the model by, so a rename upstream
+// usage records keep the name magpie-friday knows the model by, so a rename upstream
 // is not a rename here.
 func TestUpstreamNameReachesTheVendorOnly(t *testing.T) {
 	fresh(t)
@@ -152,7 +152,7 @@ func TestUpstreamNameReachesTheVendorOnly(t *testing.T) {
 		t.Fatalf("the other provider was asked for %v", got[1:])
 	}
 
-	// the catalog still knows the model by magpie's name for it
+	// the catalog still knows the model by magpie-friday's name for it
 	found := false
 	for _, e := range provider.Catalog() {
 		if e.ID == "relay-b/model-2" {
@@ -197,7 +197,7 @@ func TestUpstreamNameReachesTheVendorOnly(t *testing.T) {
 // A name given for a provider outlives that provider, and it outlives it by
 // the id: the provider can be deleted and another take the same id, and the
 // name goes on asking that one's models for theirs. So a removal has to work
-// off the key the name is stored at — which is all `magpie model wire
+// off the key the name is stored at — which is all `magpie-friday model wire
 // relay-b/model-2 --reset` has left to work off once the provider is gone —
 // and here it is: with the name off, the relay that took the id is asked for
 // its own model by its own id.
@@ -412,7 +412,7 @@ func TestUpstreamWildcardNamesEachModel(t *testing.T) {
 
 // The first test drives a request that has to be translated, because the
 // relay only speaks Chat Completions. These two cover the paths that test
-// cannot reach: a request the provider understands as it came, which magpie
+// cannot reach: a request the provider understands as it came, which magpie-friday
 // relays without rebuilding, and the token count asked of the vendor.
 func TestUpstreamNameOnNativeAndCountPaths(t *testing.T) {
 	for _, tc := range []struct {
@@ -469,7 +469,7 @@ func TestUpstreamNameOnNativeAndCountPaths(t *testing.T) {
 			}
 			// "vendor-c/sol-2" is the same model as "sol", and a name that
 			// is not a prefix or a dated version of it is exactly what a
-			// comparison with magpie's own name would get wrong
+			// comparison with magpie-friday's own name would get wrong
 			if tc.path == "/v1/messages" {
 				if r := lastRoute(s); r.Served != "vendor-c/sol-2" || r.Swapped {
 					t.Errorf("the model answered under the relay's own id is marked swapped: %+v", r)
@@ -493,7 +493,7 @@ func TestUpstreamNamePrecedence(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// with nothing set, the vendor is asked for the model magpie knows
+	// with nothing set, the vendor is asked for the model magpie-friday knows
 	if got := provider.UpstreamName(*p, "sol"); got != "sol" {
 		t.Errorf("unset: %q; want the canonical id", got)
 	}
@@ -583,7 +583,7 @@ func TestUpstreamNameRejectsBadKeys(t *testing.T) {
 }
 
 // A provider given another id takes the names the user gave its models with
-// it: a model asked for by the relay's own id would be asked for by magpie's
+// it: a model asked for by the relay's own id would be asked for by magpie-friday's
 // again, and the relay would be asked for a model it does not have.
 func TestUpstreamNamesFollowTheProviderRename(t *testing.T) {
 	fresh(t)
@@ -613,10 +613,10 @@ func TestUpstreamNamesFollowTheProviderRename(t *testing.T) {
 }
 
 // A relay that only knows its own ids would fail a test naming the model
-// magpie knows it by, though every real turn reaches it: the provider's own
+// magpie-friday knows it by, though every real turn reaches it: the provider's own
 // tests ask for the model the way a request does. Each of the two probes is
 // held to that on its own, on what it asked the relay for while it was the
-// only one running — a provider test asking for magpie's name and a model
+// only one running — a provider test asking for magpie-friday's name and a model
 // test asking for the relay's, read together, both look right.
 func TestProviderTestsAskTheWireName(t *testing.T) {
 	fresh(t)
@@ -657,7 +657,7 @@ func TestProviderTestsAskTheWireName(t *testing.T) {
 	if got := seen.wire(t, "testing the models", wire); len(got) != len(wire) {
 		t.Errorf("testing the models asked the relay for %v; want one request per model", got)
 	}
-	// the model reported is the one magpie knows, not the relay's own id
+	// the model reported is the one magpie-friday knows, not the relay's own id
 	for _, r := range p.TestModels(ctx, []string{"model-2"}) {
 		if r.Model != "model-2" {
 			t.Errorf("a test reports the model as %q; the canonical id is what the user picked", r.Model)
@@ -665,7 +665,7 @@ func TestProviderTestsAskTheWireName(t *testing.T) {
 	}
 }
 
-// A drawing is the one request that keeps the name magpie knows the model by:
+// A drawing is the one request that keeps the name magpie-friday knows the model by:
 // the gateway builds those bodies itself, on the images API or on chat with
 // modalities, and no upstream name is written into one. A provider test that
 // asked for the vendor's own name would be testing a request no turn ever
@@ -711,14 +711,14 @@ func TestProviderDrawingTestsAskTheCanonicalName(t *testing.T) {
 	// the images request and the chat one it fell back to, neither carrying
 	// the upstream name
 	if got := seen.all(); len(got) != 2 || got[0] != "imagine-2" || got[1] != "imagine-2" {
-		t.Fatalf("the relay was asked for %v; a drawing goes out under the name magpie knows the model by", got)
+		t.Fatalf("the relay was asked for %v; a drawing goes out under the name magpie-friday knows the model by", got)
 	}
 }
 
 // A name that is only whitespace is the user taking their name away, not one
 // to be kept: it is a legal removal, so it must not fail, and it must leave
 // nothing behind — no key in the settings, and the model asked for by the
-// name magpie knows it by. A wire name that is a space in the file would be
+// name magpie-friday knows it by. A wire name that is a space in the file would be
 // sent to the vendor as the model, and a list of them would show it as one
 // the user gave.
 func TestUpstreamNameBlankIsAReset(t *testing.T) {
@@ -780,8 +780,8 @@ func TestUpstreamNameBlankIsAReset(t *testing.T) {
 	}
 }
 
-// A name left blank in the file — by an older magpie, or by hand — is no
-// name: the model is asked for by the name magpie knows it by, and a list of
+// A name left blank in the file — by an older magpie-friday, or by hand — is no
+// name: the model is asked for by the name magpie-friday knows it by, and a list of
 // them does not show a blank as one the user gave. It is the same thing a
 // blank name is where it is set, and the file is no more exempt.
 func TestUpstreamNameBlankInTheFileIsNoName(t *testing.T) {
@@ -917,7 +917,7 @@ func TestUpstreamNameWildcardStandsWhereverItStands(t *testing.T) {
 
 // A name given for a provider's every model is not one id for all of them: an
 // Antigravity account is asked for the variant its effort picks, and the name
-// goes with that variant. Filling the "*" in with the model magpie knows
+// goes with that variant. Filling the "*" in with the model magpie-friday knows
 // would send one id whatever level is asked for, so the effort stops choosing
 // and a relay that serves gemini-3.7-flash-high is asked for the base id it
 // has no answer for.
@@ -933,7 +933,7 @@ func TestUpstreamNameFollowsTheAntigravityVariant(t *testing.T) {
 		t.Fatal(err)
 	}
 	// a wire name is given for a model the provider really serves, so
-	// magpie must be able to find the provider that serves it. The account
+	// magpie-friday must be able to find the provider that serves it. The account
 	// is built at runtime and its id is reserved (Save refuses it), so the
 	// test registers the provider under that id in the file directly: the
 	// model a name is keyed by is the family the live list stands for.
@@ -975,7 +975,7 @@ func TestUpstreamNameFollowsTheAntigravityVariant(t *testing.T) {
 		}
 	}
 
-	// a Gemini CLI account has no variants, so the model magpie knows is
+	// a Gemini CLI account has no variants, so the model magpie-friday knows is
 	// what is asked for, under the provider's name
 	if err := provider.SetUpstreamName("antigravity/gemini-3.7-flash", ""); err != nil {
 		t.Fatal(err)
@@ -998,7 +998,7 @@ func TestUpstreamNameFollowsTheAntigravityVariant(t *testing.T) {
 // goes out under the variant of the model the effort picks, so a relay that
 // answers with that very id has not swapped anything — and one that answers
 // with another level's id has, whichever of the two the reader is looking
-// at. The route read the model magpie knows where the ledger read the id
+// at. The route read the model magpie-friday knows where the ledger read the id
 // that went out, and told the user two different things about the same
 // reply.
 //
@@ -1007,7 +1007,7 @@ func TestUpstreamNameFollowsTheAntigravityVariant(t *testing.T) {
 // id names no account, so neither view reaches for a variant, and both read
 // the reply back by the one name that went out. An Antigravity account's
 // provider is not a shape a test can build here — it speaks Code Assist,
-// which magpie cannot point at a relay — and the rule keyed by the account is
+// which magpie-friday cannot point at a relay — and the rule keyed by the account is
 // read in internal/provider, where the account is what a caller hands in.
 func TestUpstreamNameReadTheSameByTheRouteAndTheLedger(t *testing.T) {
 	fresh(t)
@@ -1084,7 +1084,7 @@ func TestUpstreamNameReadTheSameByTheRouteAndTheLedger(t *testing.T) {
 // account's own id, and a test that builds a provider of an account's own id
 // with no account behind it says nothing about which of the two the rule is
 // keyed by: it is the shape where they come apart, and the relay here is
-// asked for the model magpie knows, so no level of the family is what the
+// asked for the model magpie-friday knows, so no level of the family is what the
 // route has to read the reply back by.
 //
 // Only the route is asserted: a record keeps the provider id and no account,
@@ -1172,10 +1172,10 @@ func TestAntigravityEnvelopeIsNamedAsTheLedgerJudgesIt(t *testing.T) {
 			}
 		}
 	}
-	// and a Gemini CLI account is asked for the model magpie knows, which is
+	// and a Gemini CLI account is asked for the model magpie-friday knows, which is
 	// what its ledger row reads back too
 	if got := codeAssistID("gemini-3.7-flash", "high", "gemini"); got != "gemini-3.7-flash" {
-		t.Errorf("a Gemini CLI account is asked for %q; want the model magpie knows", got)
+		t.Errorf("a Gemini CLI account is asked for %q; want the model magpie-friday knows", got)
 	}
 }
 

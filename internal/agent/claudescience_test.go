@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 // fakeScience is claude-science's daemon as its CLI tells it: status,
@@ -67,7 +67,7 @@ func (f *fakeScience) base() (string, bool) {
 // Claude Science is connected by restarting its daemon with
 // ANTHROPIC_BASE_URL set to the gateway, on the port it was on, and by
 // nothing else; disconnected by restarting it without the variable, one
-// set in magpie's own environment too. A daemon magpie didn't start is
+// set in magpie-friday's own environment too. A daemon magpie-friday didn't start is
 // drift, never stopped behind the user's back; one not running is started
 // while it is connected.
 func TestClaudeScienceRestartsItsDaemon(t *testing.T) {
@@ -113,8 +113,8 @@ func TestClaudeScienceRestartsItsDaemon(t *testing.T) {
 	// keeper leaves it running
 	f.pid, f.env, f.calls = 77, nil, nil
 	f.lock()
-	if d := a.Check(); !strings.Contains(d, "without magpie's gateway") {
-		t.Errorf("a daemon magpie didn't start: check %q", d)
+	if d := a.Check(); !strings.Contains(d, "without magpie-friday's gateway") {
+		t.Errorf("a daemon magpie-friday didn't start: check %q", d)
 	}
 	f.calls = nil
 	keepScienceOnce()
@@ -133,7 +133,7 @@ func TestClaudeScienceRestartsItsDaemon(t *testing.T) {
 	}
 
 	// disconnected: running again, without the variable even where
-	// magpie's own environment has it
+	// magpie-friday's own environment has it
 	f.calls = nil
 	if err := field.Set(""); err != nil {
 		t.Fatal(err)

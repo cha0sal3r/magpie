@@ -43,7 +43,7 @@ func TestSkillHow(t *testing.T) {
 			t.Errorf("%s: not a copy of the skill", p)
 		}
 		if !ours(p, "pdf") {
-			t.Errorf("%s: not marked magpie's", p)
+			t.Errorf("%s: not marked magpie-friday's", p)
 		}
 	}
 	v, err := Read(nil)

@@ -100,7 +100,7 @@ func tiersLike(got, want string) bool {
 
 // A request that asks a plugin's model for a tier the plugin says it is
 // served at reaches the plugin's fetch with that service_tier, on Chat and
-// on Responses (#2514), also where magpie translates the request to the
+// on Responses (#2514), also where magpie-friday translates the request to the
 // plugin's protocol. There, one it doesn't say, or a model that says none, is
 // sent without it, as before; a request relayed in the client's own protocol
 // was already sent as the client wrote it.

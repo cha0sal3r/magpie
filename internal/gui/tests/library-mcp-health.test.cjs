@@ -1,6 +1,6 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // Each MCP server's row says whether it works (Discord: lc asked for a
-// status per server), as magpie found by connecting to it: a dot and a few
+// status per server), as magpie-friday found by connecting to it: a dot and a few
 // words beside its name, the whole reason in its tooltip. The servers are
 // checked once when the MCP tab opens, not again on coming back to it; a
 // click on a row's status checks that one again (fresh), without opening
@@ -17,7 +17,7 @@ const { chromium, webkit } = require("playwright");
 const assets = path.resolve(__dirname, "../assets");
 const HOME = "/Users/lc";
 const fixture = () => ({
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: [{ id: "claude", name: "Claude Code", icon: "claudecode-color", skills: `${HOME}/.claude/skills`, mcp: `${HOME}/.claude.json`, projectMCP: ".mcp.json" }],
   instructions: { agents: [], sets: [] }, foundServers: [], foundSkills: [], skills: [],
   // github is on in a project only, which is still in use
@@ -75,8 +75,8 @@ const words = {
   en: {
     checking: "checking…",
     files: ["12 tools", "It started and listed its tools"],
-    linear: ["needs sign-in", "The server asks for a sign-in — open it to sign in once in magpie"],
-    fetch: ["can't start: uvx not found", "Can't start it: there is no uvx on the PATH magpie has"],
+    linear: ["needs sign-in", "The server asks for a sign-in — open it to sign in once in magpie-friday"],
+    fetch: ["can't start: uvx not found", "Can't start it: there is no uvx on the PATH magpie-friday has"],
     github: ["exited (1)", "It exited with code 1 before listing its tools\nError: GITHUB_PERSONAL_ACCESS_TOKEN is not set"],
     slow: ["no answer to tools/list", "No answer to tools/list in 60 seconds"],
     again: "Click to check again", fresh: "13 tools", skills: "Skills",
@@ -85,8 +85,8 @@ const words = {
   zh: {
     checking: "检查中…",
     files: ["12 个工具", "已启动并列出了它的工具"],
-    linear: ["需要登录", "服务器要求登录：打开它，在 magpie 中登录一次"],
-    fetch: ["无法启动：找不到 uvx", "无法启动：magpie 的 PATH 里没有 uvx"],
+    linear: ["需要登录", "服务器要求登录：打开它，在 magpie-friday 中登录一次"],
+    fetch: ["无法启动：找不到 uvx", "无法启动：magpie-friday 的 PATH 里没有 uvx"],
     github: ["已退出（1）", "列出工具前就退出了，退出码 1\nError: GITHUB_PERSONAL_ACCESS_TOKEN is not set"],
     slow: ["tools/list 无响应", "等了 60 秒，tools/list 仍没有响应"],
     again: "点击重新检查", fresh: "13 个工具", skills: "技能",

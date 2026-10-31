@@ -6,18 +6,18 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // The Codex app reads its sign-in only as it opens. When the ChatGPT
-// account it is on runs out, it greys its Send for every model, magpie's
-// too, and making magpie Codex's provider (agent AppOut) reaches it only
-// once it is quit and opened again (MasterYi on Discord). On macOS magpie
+// account it is on runs out, it greys its Send for every model, magpie-friday's
+// too, and making magpie-friday Codex's provider (agent AppOut) reaches it only
+// once it is quit and opened again (MasterYi on Discord). On macOS magpie-friday
 // does that itself, once each time the account runs out: only while the
 // app open then still runs (provider.CodexAppOut, its app-server's pid
 // unchanged, so it hasn't read the provider), the account is out, and no
-// turn has gone through magpie for codexAppOutIdle. The app's own code
+// turn has gone through magpie-friday for codexAppOutIdle. The app's own code
 // keeps an unsent message's draft (its composer-prompt-drafts-v2 store)
 // and its threads across a quit. Elsewhere, or when the quit didn't take,
 // Codex's accounts say to reopen it.
@@ -42,7 +42,7 @@ var (
 		}
 		return out
 	}
-	// codexAgentOut is whether magpie is Codex's provider for its used-up
+	// codexAgentOut is whether magpie-friday is Codex's provider for its used-up
 	// ChatGPT account
 	codexAgentOut = func() bool {
 		a, err := agent.Find("codex")
@@ -57,7 +57,7 @@ var (
 )
 
 // codexAppOutJSON is a Codex app left unable to send: the account it is
-// signed in to, and whether magpie is still to reopen it.
+// signed in to, and whether magpie-friday is still to reopen it.
 type codexAppOutJSON struct {
 	User      string `json:"user"`
 	Reopening bool   `json:"reopening,omitempty"`

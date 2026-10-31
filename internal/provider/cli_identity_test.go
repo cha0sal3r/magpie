@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// keepIdentities has this test keep the answers on disk, as magpie does
+// keepIdentities has this test keep the answers on disk, as magpie-friday does
 // outside a test binary.
 func keepIdentities(t *testing.T) {
 	keepInSandbox = true
@@ -32,7 +32,7 @@ func TestCLIIdentityKeptAcrossStarts(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// a magpie started again serves the kept one at once, however long the
+	// a magpie-friday started again serves the kept one at once, however long the
 	// CLI takes, and asks it behind that
 	release := make(chan struct{})
 	slow := func() (string, string, bool, error) { <-release; return "other@example.com", "Ultra", true, nil }
@@ -242,7 +242,7 @@ func TestCLIIdentityNotKeptInATestBinary(t *testing.T) {
 
 // A CLI whose sign-in reads the same isn't started every minute: asked
 // every minute, cursor-agent took ~0.5s of CPU and 200 MB each time for as
-// long as magpie ran (#3185). A sign-in or sign-out in it is asked at the
+// long as magpie-friday ran (#3185). A sign-in or sign-out in it is asked at the
 // next look a minute on, and the same one again after unchangedAsk.
 func TestCLIIdentityAskedOnASignInChange(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())

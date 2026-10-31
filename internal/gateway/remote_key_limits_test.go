@@ -9,13 +9,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/budget"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/budget"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// #1547 (PennyVibe), between two magpies: a computer with another magpie
-// as its provider, through two gateway keys that magpie gave it, is shown
+// #1547 (PennyVibe), between two magpies: a computer with another magpie-friday
+// as its provider, through two gateway keys that magpie-friday gave it, is shown
 // each key's own limit and what it used, read with that key alone. The
 // numbers move with the key's own requests, never with the other key's;
 // a key held to no limit says so.
@@ -153,7 +153,7 @@ func TestKeyLimitTellsOnlyTheCaller(t *testing.T) {
 		t.Fatal(w.Code, w.Body.String())
 	}
 	for _, q := range []string{"", "?key=" + keys[1].ID, "?key=B", "?id=" + keys[1].ID + "&name=B"} {
-		r := httptest.NewRequest("GET", "/v1/magpie/limit"+q, nil)
+		r := httptest.NewRequest("GET", "/v1/magpie-friday/limit"+q, nil)
 		r.Header.Set("Authorization", "Bearer "+secrets[0])
 		r.Header.Set("X-Magpie-Key", keys[1].ID)
 		w := httptest.NewRecorder()
@@ -172,7 +172,7 @@ func TestKeyLimitTellsOnlyTheCaller(t *testing.T) {
 		}
 	}
 	// without a key, from another machine: nothing
-	r = httptest.NewRequest("GET", "/v1/magpie/limit", nil)
+	r = httptest.NewRequest("GET", "/v1/magpie-friday/limit", nil)
 	r.RemoteAddr = "192.168.1.9:5000"
 	w = httptest.NewRecorder()
 	lanGuard(h).ServeHTTP(w, r)

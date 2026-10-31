@@ -8,16 +8,16 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/mcpauth"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/mcpauth"
 )
 
 // A remote server that asks for an OAuth sign-in is signed in to once, in
-// magpie, and every agent given it reaches it through the gateway's
-// /mcp/<name>, which adds magpie's token (#615): the agents are given that
-// address in place of the server's. A server magpie isn't signed in to is
+// magpie-friday, and every agent given it reaches it through the gateway's
+// /mcp/<name>, which adds magpie-friday's token (#615): the agents are given that
+// address in place of the server's. A server magpie-friday isn't signed in to is
 // given as it is, and the agent signs in itself as before.
 
 func init() {
@@ -32,7 +32,7 @@ func init() {
 }
 
 // relaysAny says whether any of the library's servers is given through the
-// gateway: one magpie is signed in to.
+// gateway: one magpie-friday is signed in to.
 func relaysAny() bool {
 	mu.Lock()
 	l, err := load()
@@ -54,7 +54,7 @@ func through(s *Server, base string) *Server {
 	c.URL = strings.TrimRight(base, "/") + "/mcp/" + url.PathEscape(s.Name)
 	c.Headers = nil
 	for k, v := range s.Headers {
-		// magpie's token goes in its place
+		// magpie-friday's token goes in its place
 		if strings.EqualFold(k, "Authorization") {
 			continue
 		}
@@ -67,7 +67,7 @@ func through(s *Server, base string) *Server {
 		// from another machine (a WSL distro under NAT) the gateway refuses
 		// a call without an enabled key, with a 401 the agent would take
 		// for the server asking it to sign in; the relay drops this
-		// Authorization for magpie's token
+		// Authorization for magpie-friday's token
 		if c.Headers == nil {
 			c.Headers = map[string]string{}
 		}
@@ -84,9 +84,9 @@ func gatewayOf(t *Target) string {
 	return gateway.URL()
 }
 
-var errNotHTTP = errors.New("magpie signs in only to a server reached over streamable HTTP")
+var errNotHTTP = errors.New("magpie-friday signs in only to a server reached over streamable HTTP")
 
-// SignInServer starts signing magpie in to the library's server called
+// SignInServer starts signing magpie-friday in to the library's server called
 // name: the State's URL is the page to open in a browser.
 func SignInServer(ctx context.Context, name string) (mcpauth.State, error) {
 	mu.Lock()
@@ -109,6 +109,6 @@ func SignInServer(ctx context.Context, name string) (mcpauth.State, error) {
 	return mcpauth.StartWith(ctx, s.Name, s.URL, app)
 }
 
-// SignOutServer forgets magpie's sign-in to the server called name, and
+// SignOutServer forgets magpie-friday's sign-in to the server called name, and
 // gives the agents the server's own address again.
 func SignOutServer(name string) error { return mcpauth.SignOut(name) }

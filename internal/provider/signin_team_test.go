@@ -13,7 +13,7 @@ import (
 
 // A Team seat on the email of a personal subscription is an account of its
 // own: added beside the personal one, which stays signed in; and signing in
-// brings back a Claude account that had been removed from magpie.
+// brings back a Claude account that had been removed from magpie-friday.
 func TestClaudeTeamSeatBesidePersonal(t *testing.T) {
 	home := claudeHome(t)
 	noAnthropic(t)

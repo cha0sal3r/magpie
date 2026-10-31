@@ -7,16 +7,16 @@ import (
 	"testing"
 )
 
-// The routing is this process's own, so a magpie on this computer that does
+// The routing is this process's own, so a magpie-friday on this computer that does
 // not serve the gateway reads it here to show the same Routing page (#2606).
 // It answers this computer alone: the trace names accounts and what they
-// served, and the magpie that reads it is on the same machine.
+// served, and the magpie-friday that reads it is on the same machine.
 func TestGatewayTraceIsLoopbackOnly(t *testing.T) {
 	h := New().Handler()
 
 	t.Run("this computer", func(t *testing.T) {
 		w := httptest.NewRecorder()
-		r := httptest.NewRequest("GET", "/v1/magpie/trace", nil)
+		r := httptest.NewRequest("GET", "/v1/magpie-friday/trace", nil)
 		r.RemoteAddr = "127.0.0.1:50123"
 		h.ServeHTTP(w, r)
 		if w.Code != 200 {
@@ -35,9 +35,9 @@ func TestGatewayTraceIsLoopbackOnly(t *testing.T) {
 		if got.Object != "trace" || got.Routes == nil {
 			t.Fatalf("object %q routes %v", got.Object, got.Routes)
 		}
-		// the console names the magpie routing from the trace it plays
+		// the console names the magpie-friday routing from the trace it plays
 		if got.Pid != os.Getpid() || got.Serves != Serves {
-			t.Errorf("the trace doesn't name its magpie: pid %d serves %q", got.Pid, got.Serves)
+			t.Errorf("the trace doesn't name its magpie-friday: pid %d serves %q", got.Pid, got.Serves)
 		}
 	})
 
@@ -46,7 +46,7 @@ func TestGatewayTraceIsLoopbackOnly(t *testing.T) {
 	t.Run("through a proxy here", func(t *testing.T) {
 		for _, hdr := range []string{"X-Forwarded-For", "Cf-Connecting-IP", "Tailscale-User-Login"} {
 			w := httptest.NewRecorder()
-			r := httptest.NewRequest("GET", "/v1/magpie/trace", nil)
+			r := httptest.NewRequest("GET", "/v1/magpie-friday/trace", nil)
 			r.RemoteAddr = "127.0.0.1:50123"
 			r.Header.Set(hdr, "203.0.113.7")
 			h.ServeHTTP(w, r)
@@ -58,7 +58,7 @@ func TestGatewayTraceIsLoopbackOnly(t *testing.T) {
 
 	t.Run("another machine", func(t *testing.T) {
 		w := httptest.NewRecorder()
-		r := httptest.NewRequest("GET", "/v1/magpie/trace", nil)
+		r := httptest.NewRequest("GET", "/v1/magpie-friday/trace", nil)
 		r.RemoteAddr = "192.168.0.9:50123"
 		h.ServeHTTP(w, r)
 		if w.Code != 403 {
@@ -67,7 +67,7 @@ func TestGatewayTraceIsLoopbackOnly(t *testing.T) {
 	})
 }
 
-// Another magpie's trace is read from this computer alone (#2606): an
+// Another magpie-friday's trace is read from this computer alone (#2606): an
 // address on another interface or host is never asked, whatever
 // MAGPIE_ADDR says, and one listening everywhere is read on loopback.
 func TestOwnerReadOnLoopbackAlone(t *testing.T) {
@@ -82,7 +82,7 @@ func TestOwnerReadOnLoopbackAlone(t *testing.T) {
 		"192.168.1.9:3561": "",
 		"10.0.0.5:3561":    "",
 		"example.com:3561": "",
-		"magpie.tail:3561": "",
+		"magpie-friday.tail:3561": "",
 	} {
 		t.Setenv("MAGPIE_ADDR", addr)
 		if got := ownerURL(); got != want {

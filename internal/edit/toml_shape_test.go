@@ -45,13 +45,13 @@ func TestTOMLShaperMatchesParser(t *testing.T) {
 
 // A big config.toml is parsed in a time that grows with its size, not its
 // square: Codex's own reached 1.5 MB, and each key's line was counted from
-// the top of the file, a third of a second at every magpie start.
+// the top of the file, a third of a second at every magpie-friday start.
 func TestTOMLBigFileParsesInLinearTime(t *testing.T) {
 	var b strings.Builder
 	for i := 0; b.Len() < 3<<20; i++ {
 		fmt.Fprintf(&b, "[projects.\"/Users/me/p%d\"]\ntrust_level = \"trusted\" # note\n\n", i)
 	}
-	b.WriteString("model_provider = \"magpie\"\n")
+	b.WriteString("model_provider = \"magpie-friday\"\n")
 	lines := splitLines("model_provider = \"x\"\n" + b.String())
 	start := time.Now()
 	f, err := parseTOMLFile(lines)

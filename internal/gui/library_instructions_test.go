@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/library"
+	"github.com/cha0sal3r/magpie-friday/internal/library"
 )
 
 // A change to the instructions is answered with the instructions alone,

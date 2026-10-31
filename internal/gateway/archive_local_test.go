@@ -12,11 +12,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // With sync not to S3 and the archive's switch on at this computer
-// (CyberCaius on Discord), a call is kept in magpie's folder, the same file
+// (CyberCaius on Discord), a call is kept in magpie-friday's folder, the same file
 // the bucket gets: its secrets taken out, its id on the response and the
 // call, written whole through a temporary file, readable by this user only.
 func TestArchiveOnThisComputer(t *testing.T) {
@@ -39,7 +39,7 @@ func TestArchiveOnThisComputer(t *testing.T) {
 	if err != nil {
 		t.Fatalf("not on this computer: %v", err)
 	}
-	for _, secret := range []string{archiveKey, "named-secret", "magpie-gateway-key", "another-secret", "cookie-secret", "abc123", "query-secret"} {
+	for _, secret := range []string{archiveKey, "named-secret", "magpie-friday-gateway-key", "another-secret", "cookie-secret", "abc123", "query-secret"} {
 		if strings.Contains(string(data), secret) {
 			t.Errorf("%s in the archive:\n%s", secret, data)
 		}

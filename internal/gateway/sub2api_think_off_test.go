@@ -6,7 +6,7 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // sub2apiNoneRefused is Sub2API's answer, on its Messages API, to a
@@ -19,7 +19,7 @@ const sub2apiNoneRefused = `{"type":"error","error":{"type":"invalid_request_err
 // Sub2API's gpt-6.1-sol, turns thinking off; Sub2API refused every one,
 // and Claude Code blocked every action. Asked again with thinking left to
 // the model, and so from the start from then on, its title asks (which
-// magpie turns thinking off for) included. Another 400 naming the levels,
+// magpie-friday turns thinking off for) included. Another 400 naming the levels,
 // for another level, is the agent's to see.
 func TestSub2APIThinkingOffRefused(t *testing.T) {
 	var sent []string

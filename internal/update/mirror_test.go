@@ -14,7 +14,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 func updateHome(t *testing.T) {
@@ -29,15 +29,15 @@ func updateHome(t *testing.T) {
 }
 
 // A release's file comes through a GitHub download mirror only when one is
-// given (magpie update --mirror, or Settings' UpdateMirror): its prefix
+// given (magpie-friday update --mirror, or Settings' UpdateMirror): its prefix
 // before the github.com URL. The feed, with the file's SHA-256, is never
 // asked through it, and a file the mirror changed is refused (akic404 on
 // Discord: install and update without a proxy).
 func TestUpdateThroughAMirror(t *testing.T) {
 	updateHome(t)
-	body := []byte("new magpie")
+	body := []byte("new magpie-friday")
 	sum := sha256.Sum256(body)
-	asset := Asset{URL: "https://github.com/yetone/magpie-releases/releases/download/v9.9.9/magpie-cli-linux-amd64", SHA256: hex.EncodeToString(sum[:])}
+	asset := Asset{URL: "https://github.com/cha0sal3r/magpie-friday-releases/releases/download/v9.9.9/magpie-cli-linux-amd64", SHA256: hex.EncodeToString(sum[:])}
 
 	var mu sync.Mutex
 	var seen []string
@@ -48,7 +48,7 @@ func TestUpdateThroughAMirror(t *testing.T) {
 		bad := tamper
 		mu.Unlock()
 		if bad {
-			w.Write([]byte("not magpie"))
+			w.Write([]byte("not magpie-friday"))
 			return
 		}
 		w.Write(body)
@@ -60,7 +60,7 @@ func TestUpdateThroughAMirror(t *testing.T) {
 	defer feed.Close()
 	t.Setenv("MAGPIE_UPDATE_FEED", feed.URL+"/api/latest")
 
-	// none unless given: no mirror is magpie's own
+	// none unless given: no mirror is magpie-friday's own
 	if m := Mirror(context.Background()); m != "" {
 		t.Fatalf("a mirror by default: %q", m)
 	}
@@ -69,7 +69,7 @@ func TestUpdateThroughAMirror(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	path := filepath.Join(t.TempDir(), "magpie.new")
+	path := filepath.Join(t.TempDir(), "magpie-friday.new")
 	if err := download(ctx, rel.Assets[BinaryAsset()], path); err != nil {
 		t.Fatal(err)
 	}
@@ -118,11 +118,11 @@ func TestUpdateThroughAMirror(t *testing.T) {
 	}
 }
 
-// magpie update --proxy takes the feed and the download through the proxy
+// magpie-friday update --proxy takes the feed and the download through the proxy
 // given, over Settings' and the environment's.
 func TestUpdateThroughAProxyGiven(t *testing.T) {
 	updateHome(t)
-	body := []byte("new magpie")
+	body := []byte("new magpie-friday")
 	sum := sha256.Sum256(body)
 	var mu sync.Mutex
 	var seen []string
@@ -135,25 +135,25 @@ func TestUpdateThroughAProxyGiven(t *testing.T) {
 			return
 		}
 		json.NewEncoder(w).Encode(Release{Version: "9.9.9", Assets: map[string]Asset{
-			BinaryAsset(): {URL: "http://releases.magpie.invalid/asset", SHA256: hex.EncodeToString(sum[:])},
+			BinaryAsset(): {URL: "http://releases.magpie-friday.invalid/asset", SHA256: hex.EncodeToString(sum[:])},
 		}})
 	}))
 	defer px.Close()
 	if err := settings.Save(settings.Settings{Proxy: "direct"}); err != nil {
 		t.Fatal(err)
 	}
-	t.Setenv("MAGPIE_UPDATE_FEED", "http://feed.magpie.invalid/api/latest")
+	t.Setenv("MAGPIE_UPDATE_FEED", "http://feed.magpie-friday.invalid/api/latest")
 	ctx := WithProxy(context.Background(), px.URL)
 	rel, err := Latest(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := download(ctx, rel.Assets[BinaryAsset()], filepath.Join(t.TempDir(), "magpie.new")); err != nil {
+	if err := download(ctx, rel.Assets[BinaryAsset()], filepath.Join(t.TempDir(), "magpie-friday.new")); err != nil {
 		t.Fatal(err)
 	}
 	mu.Lock()
 	defer mu.Unlock()
-	if want := []string{"http://feed.magpie.invalid/api/latest", "http://releases.magpie.invalid/asset"}; !slices.Equal(seen, want) {
+	if want := []string{"http://feed.magpie-friday.invalid/api/latest", "http://releases.magpie-friday.invalid/asset"}; !slices.Equal(seen, want) {
 		t.Fatalf("through the proxy: %v, want %v", seen, want)
 	}
 	for _, bad := range []string{"ftp://127.0.0.1:21", "socks4://127.0.0.1:1080"} {
@@ -199,10 +199,10 @@ func TestCheckProxyErrorShowsNoCredentials(t *testing.T) {
 // mirror's. Settings take a full https:// mirror only.
 func TestMirrorFailuresAreTheMirrors(t *testing.T) {
 	updateHome(t)
-	body := []byte("new magpie")
+	body := []byte("new magpie-friday")
 	sum := sha256.Sum256(body)
-	asset := Asset{URL: "https://github.com/yetone/magpie-releases/releases/download/v9.9.9/magpie-cli-linux-amd64", SHA256: hex.EncodeToString(sum[:])}
-	tampered := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.Write([]byte("not magpie")) }))
+	asset := Asset{URL: "https://github.com/cha0sal3r/magpie-friday-releases/releases/download/v9.9.9/magpie-cli-linux-amd64", SHA256: hex.EncodeToString(sum[:])}
+	tampered := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.Write([]byte("not magpie-friday")) }))
 	defer tampered.Close()
 	missing := httptest.NewServer(http.NotFoundHandler())
 	defer missing.Close()
@@ -210,7 +210,7 @@ func TestMirrorFailuresAreTheMirrors(t *testing.T) {
 	// closed server's port can be handed to the next server at once
 	gone := "http://127.0.0.1:1/"
 	for _, m := range []string{tampered.URL + "/", missing.URL + "/", gone} {
-		path := filepath.Join(t.TempDir(), "magpie.new")
+		path := filepath.Join(t.TempDir(), "magpie-friday.new")
 		err := fetch(WithMirror(context.Background(), m), asset, path)
 		if err == nil || MirrorOf(err) != m || !strings.Contains(err.Error(), strings.TrimSuffix(m, "/")) {
 			t.Errorf("through %s: %v (mirror %q)", m, err, MirrorOf(err))

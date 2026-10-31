@@ -8,13 +8,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // Antigravity CLI (agy) asks as Google's Gemini SDK, its User-Agent
 // google-genai-sdk/… with nothing of agy's own, and sends its key as
-// x-goog-api-key; the key magpie starts it with names it (TokenFor), so its
+// x-goog-api-key; the key magpie-friday starts it with names it (TokenFor), so its
 // calls are recorded as agy's, as Gemini's ?key= names it too. A command
 // copied before, with the plain token, still gets an answer, recorded as
 // the SDK's as it was.
@@ -62,7 +62,7 @@ func TestAgyAgent(t *testing.T) {
 // call (captured from agy against a stub): kept there, a conversation that
 // ran a tool ends with the model's turn, and Antigravity answers 400
 // "Requests ending with a model turn are not supported" (#650) — straight
-// from the gateway or through another magpie (Anthropic Messages between
+// from the gateway or through another magpie-friday (Anthropic Messages between
 // the two). A turn with no tool already ended with the user's.
 func TestAgyToolResultsAreTheUsers(t *testing.T) {
 	const ask = `{"role":"user","parts":[{"text":"<USER_REQUEST>\nsay hi\n</USER_REQUEST>"}]}`
@@ -130,7 +130,7 @@ func TestAgyToolResultsAreTheUsers(t *testing.T) {
 
 // Goose's HTTP client sends no User-Agent (reqwest's default,
 // crates/goose-providers/src/api_client.rs), so its requests are Goose's by
-// the key magpie writes into its custom provider (#1083).
+// the key magpie-friday writes into its custom provider (#1083).
 func TestGooseAgentByKey(t *testing.T) {
 	setHome(t, t.TempDir())
 	f := &fake{t: t, reply: sse(

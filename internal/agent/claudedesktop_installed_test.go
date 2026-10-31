@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/desktopdir"
+	"github.com/cha0sal3r/magpie-friday/internal/desktopdir"
 )
 
 // Claude Desktop installed on Windows and not yet opened has none of its

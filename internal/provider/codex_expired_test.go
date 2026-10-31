@@ -86,7 +86,7 @@ func codexExpiredFakes(t *testing.T, refused func(tok string) (int, string), ref
 	return home, refreshes, reads
 }
 
-// staleExpired answers every token magpie didn't refresh as expired.
+// staleExpired answers every token magpie-friday didn't refresh as expired.
 func staleExpired(tok string) (int, string) {
 	if strings.HasPrefix(tok, "fresh-") {
 		return 0, ""

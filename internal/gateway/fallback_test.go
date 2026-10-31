@@ -15,9 +15,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // twoProviders: "plan" (the one agents pick) falls back to "spare".
@@ -366,7 +366,7 @@ func TestSubscriptionAccountsTakeOver(t *testing.T) {
 
 // Two Claude Max accounts ticked (#177): the one Claude Code is signed in to
 // is out of quota, and the request goes to the saved spare, streamed or not.
-// With magpie wired into Claude Code, `claude auth status` tells of magpie's
+// With magpie-friday wired into Claude Code, `claude auth status` tells of magpie-friday's
 // token and no email: the account is still named from ~/.claude.json, so it
 // is the saved me@example.com, not a "Claude Max" served beside it.
 func TestClaudeAccountsTakeOver(t *testing.T) {

@@ -42,7 +42,7 @@ func TestTrialStart(t *testing.T) {
 		t.Skip("no PING.EXE:", err)
 	}
 	dir := t.TempDir()
-	good := filepath.Join(dir, "magpie.exe.new")
+	good := filepath.Join(dir, "magpie-friday.exe.new")
 	os.WriteFile(good, b, 0o755)
 	if err := trialStart(good); err != nil {
 		t.Fatalf("a program: %v", err)
@@ -135,7 +135,7 @@ func TestStartCheckedPutsBackForReal(t *testing.T) {
 	} {
 		t.Run(c.name, func(t *testing.T) {
 			dir := t.TempDir()
-			exe, old := filepath.Join(dir, "magpie.exe"), filepath.Join(dir, "magpie.exe.old")
+			exe, old := filepath.Join(dir, "magpie-friday.exe"), filepath.Join(dir, "magpie-friday.exe.old")
 			os.WriteFile(exe, c.prog, 0o755)
 			os.WriteFile(old, []byte("running version"), 0o755)
 			err := startChecked(exe, old, c.args, os.Environ())

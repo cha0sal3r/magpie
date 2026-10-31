@@ -10,20 +10,20 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// Codex is offered Fast on another magpie's model where that magpie offers
-// its own Codex Fast on it, and a turn in Fast mode goes on to that magpie
+// Codex is offered Fast on another magpie-friday's model where that magpie-friday offers
+// its own Codex Fast on it, and a turn in Fast mode goes on to that magpie-friday
 // with service_tier priority, which it sends its vendor as its own Codex's
-// turn would be (PennyVibe, #1234: remote-magpie/codex/gpt-6.1-sol had no
+// turn would be (PennyVibe, #1234: remote-magpie-friday/codex/gpt-6.1-sol had no
 // tiers while sub2api/gpt-6.1-sol had Fast). A model it offers no tier on
 // is offered none here either. Here the gateway is both computers', as in
 // TestRemoteMagpieNativeAPI: "office" is it, reached over HTTP, and its
 // vendor is a relay the user added by its address.
 func TestRemoteMagpieOffersItsTiers(t *testing.T) {
 	var mu sync.Mutex
-	var vendor, hops []string // service_tier as the vendor, and the remote magpie, were sent it
+	var vendor, hops []string // service_tier as the vendor, and the remote magpie-friday, were sent it
 	tierOf := func(b []byte) string {
 		var v struct {
 			Tier *string `json:"service_tier"`
@@ -118,6 +118,6 @@ func TestRemoteMagpieOffersItsTiers(t *testing.T) {
 	mu.Lock()
 	defer mu.Unlock()
 	if len(hops) != 1 || hops[0] != "priority" || len(vendor) != 1 || vendor[0] != "priority" {
-		t.Errorf("tier sent to the remote magpie %v, by it to its vendor %v; want priority, priority", hops, vendor)
+		t.Errorf("tier sent to the remote magpie-friday %v, by it to its vendor %v; want priority, priority", hops, vendor)
 	}
 }

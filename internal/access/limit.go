@@ -15,7 +15,7 @@ import (
 // window's pace), the first from when the limit was set, each next one a
 // cycle after the last. Tokens counts each call's uncached input, output (reasoning
 // included) and cache writes, and its cache reads too when CacheReads is
-// set; Cost is an estimate in US dollars at the prices magpie shows on
+// set; Cost is an estimate in US dollars at the prices magpie-friday shows on
 // the Usage page, not a vendor's bill. A cap of 0 is no cap; a limit with
 // neither is no limit.
 type Limit struct {
@@ -27,7 +27,7 @@ type Limit struct {
 	Tokens     int64   `json:"tokens,omitempty"`
 	Cost       float64 `json:"cost,omitempty"`
 	CacheReads bool    `json:"cacheReads,omitempty"`
-	// Since is magpie's, never the caller's (Update sets it): for "days"
+	// Since is magpie-friday's, never the caller's (Update sets it): for "days"
 	// and "hours", when the first cycle began, the limit set or last reset; for a
 	// calendar period, when it was last reset, so a call before it in
 	// the same window doesn't count. Zero for a calendar limit never
@@ -68,7 +68,7 @@ func (k *Key) limitList() []Limit {
 	return out
 }
 
-// setLimits keeps ls as k's limits: the first as Limit, so a magpie from
+// setLimits keeps ls as k's limits: the first as Limit, so a magpie-friday from
 // before #2227 still holds the key to it, the rest as More.
 func (k *Key) setLimits(ls []Limit) {
 	k.Limit, k.More = nil, nil

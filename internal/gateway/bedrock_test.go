@@ -12,7 +12,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // bedrock plays Bedrock's runtime: Anthropic's messages under /anthropic,
@@ -173,7 +173,7 @@ func (b *betaBedrock) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // `advanced-tool-use-2025-11-20`, `prompt-caching-scope-2026-01-05`,
 // `redact-thinking-2026-02-12` for the `anthropic-beta` header): tool
 // search is asked by Bedrock's name for it, the ones Bedrock refuses are
-// left out, and one it refuses that magpie didn't know of is dropped on a
+// left out, and one it refuses that magpie-friday didn't know of is dropped on a
 // second try and not sent again.
 func TestBedrockBetas(t *testing.T) {
 	fresh(t)

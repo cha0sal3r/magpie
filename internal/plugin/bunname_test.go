@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-// The Bun magpie downloads is kept as magpie-bun, the name a proxy app's
+// The Bun magpie-friday downloads is kept as magpie-friday-bun, the name a proxy app's
 // PROCESS-NAME rule sees (#1048).
 func TestBunDownloadedAsMagpieBun(t *testing.T) {
 	bunHome(t, BunVersion, time.Now())
@@ -26,11 +26,11 @@ func TestBunDownloadedAsMagpieBun(t *testing.T) {
 		t.Fatalf("Bun = %s after %d downloads, want one named %s", exe, asked.Load(), magpieBun())
 	}
 	if _, err := os.Stat(filepath.Join(filepath.Dir(exe), bunExe())); !os.IsNotExist(err) {
-		t.Fatalf("a bun beside magpie-bun: %v", err)
+		t.Fatalf("a bun beside magpie-friday-bun: %v", err)
 	}
 }
 
-// A Bun downloaded before is renamed magpie-bun, not downloaded again.
+// A Bun downloaded before is renamed magpie-friday-bun, not downloaded again.
 func TestBunDownloadedBeforeTakesTheName(t *testing.T) {
 	bunHome(t, BunVersion, time.Now())
 	asked := bunReleases(t, []byte("new download"))
@@ -56,8 +56,8 @@ func TestBunDownloadedBeforeTakesTheName(t *testing.T) {
 	}
 }
 
-// The plugin host runs as magpie-bun: the process name the system reports
-// for it is magpie-bun, not bun.
+// The plugin host runs as magpie-friday-bun: the process name the system reports
+// for it is magpie-friday-bun, not bun.
 func TestHostRunsAsMagpieBun(t *testing.T) {
 	real, err := exec.LookPath("bun")
 	if err != nil {
@@ -65,7 +65,7 @@ func TestHostRunsAsMagpieBun(t *testing.T) {
 	}
 	bunHome(t, BunVersion, time.Now())
 	t.Cleanup(Settle)
-	// a real Bun as magpie downloaded it before, at the old name: a hard
+	// a real Bun as magpie-friday downloaded it before, at the old name: a hard
 	// link, not a symlink (whose process would take the target's name)
 	old := filepath.Join(bunDirOf(BunVersion), bunExe())
 	if err := os.MkdirAll(filepath.Dir(old), 0o755); err != nil {
@@ -98,7 +98,7 @@ func TestHostRunsAsMagpieBun(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := filepath.Base(strings.TrimSpace(string(out))); got != "magpie-bun" {
+	if got := filepath.Base(strings.TrimSpace(string(out))); got != "magpie-friday-bun" {
 		t.Fatalf("ps says the host is %q", got)
 	}
 }

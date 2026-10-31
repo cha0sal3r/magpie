@@ -1,8 +1,8 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// @jiahao_jayden on X: every skill's row had a chip for each agent magpie
+// @jiahao_jayden on X: every skill's row had a chip for each agent magpie-friday
 // knew of, WorkBuddy among them though it wasn't installed (一排有点密恐了).
 // The library lists an agent gone from this computer (gone: true) only
-// while it still has something magpie gave it, so that can be taken out:
+// while it still has something magpie-friday gave it, so that can be taken out:
 // its chip is on the rows of what it has, lit, and a click takes it away;
 // it is on no other row, All leaves it out, and By agent lists it as Not
 // installed with nothing to turn on. Chromium and WebKit, 1100px and
@@ -20,7 +20,7 @@ const agent = (id, name, more = {}) => ({ id, name, icon: "", skills: `${HOME}/.
 const local = (name, agents) => ({ name, description: name + " does a thing", kind: "local", agents });
 // as Read lists them: one gone from here only while it has something
 const lib = (skills) => ({
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: [agent("claude", "Claude Code"), agent("codex", "Codex"),
     ...(skills.some((s) => s.agents.includes("workbuddy")) ? [agent("workbuddy", "WorkBuddy", { gone: true })] : [])],
   instructions: { agents: [] }, servers: [], skills, foundServers: [], projects: [], foundSkills: [], problems: [],

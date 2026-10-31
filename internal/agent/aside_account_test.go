@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 // asideAccountsJSON is ~/.aside/accounts.json as fjrtdk pasted it on #1499
@@ -20,9 +20,9 @@ const asideAccountsJSON = `{"currentAccountId": 1, "accounts": [
   {"id": 0, "provider": "anonymous", "mode": "local"},
   {"id": 2, "provider": "anonymous", "mode": "local"}]}`
 
-// The settings each account had on #1499: u1's default is magpie's
+// The settings each account had on #1499: u1's default is magpie-friday's
 // group/spacebunny, read back through `aside repl --account u1`; u0's is
-// the Antigravity model magpie kept writing because it only knew u0.
+// the Antigravity model magpie-friday kept writing because it only knew u0.
 const (
 	asideU0Settings = `{"defaultModel":{"provider":"antigravity","modelId":"gemini-3.8-flash-tiered","thinkingLevel":"medium","fastMode":false},"theme":"dark"}`
 	asideU1Settings = `{"defaultModel":{"provider":"google","modelId":"gemini-3-pro","thinkingLevel":"high","fastMode":false},"theme":"light"}`
@@ -92,7 +92,7 @@ func onlyAccount(t *testing.T, calls []string, want string) {
 	}
 }
 
-// #1499: with u1 active in Aside, magpie configured u0. It now follows the
+// #1499: with u1 active in Aside, magpie-friday configured u0. It now follows the
 // account Aside has active, and leaves the other accounts alone.
 func TestAsideFollowsTheActiveAccount(t *testing.T) {
 	home, calls := asideAccountsHome(t)
@@ -101,23 +101,23 @@ func TestAsideFollowsTheActiveAccount(t *testing.T) {
 	if want := asideFile(home, 1, "settings.json"); a.Path != want {
 		t.Fatalf("path %s, want %s", a.Path, want)
 	}
-	if err := a.Pick("model", "magpie/relay/glm-4.6"); err != nil {
+	if err := a.Pick("model", "magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	onlyAccount(t, *calls, "u1")
-	if key, _ := edit.GetJSON(asideFile(home, 1, "models.json"), "providers.magpie.apiKey"); key != gateway.TokenFor("aside") {
-		t.Fatal("u1 has no magpie provider")
+	if key, _ := edit.GetJSON(asideFile(home, 1, "models.json"), "providers.magpie-friday.apiKey"); key != gateway.TokenFor("aside") {
+		t.Fatal("u1 has no magpie-friday provider")
 	}
-	if got := mustFindAside(t).Field("model").Get(); got != "magpie/relay/glm-4.6" {
+	if got := mustFindAside(t).Field("model").Get(); got != "magpie-friday/relay/glm-4.6" {
 		t.Fatalf("u1 model %q", got)
 	}
 	if readFile(asideFile(home, 0, "settings.json"))+readFile(asideFile(home, 0, "models.json")) != u0 {
 		t.Fatal("u0 was written while u1 is active")
 	}
 	if v, _ := edit.GetJSON(asideFile(home, 1, "models.json"), "keepMe"); v != "yes" {
-		t.Fatal("a key magpie doesn't own was dropped")
+		t.Fatal("a key magpie-friday doesn't own was dropped")
 	}
-	// `aside account use 0`: magpie follows it on its next look
+	// `aside account use 0`: magpie-friday follows it on its next look
 	writeFile(t, filepath.Join(home, ".aside", "accounts.json"), strings.Replace(asideAccountsJSON, `"currentAccountId": 1`, `"currentAccountId": 0`, 1))
 	if got := mustFindAside(t).Path; got != asideFile(home, 0, "settings.json") {
 		t.Fatalf("after account use 0: %s", got)
@@ -125,7 +125,7 @@ func TestAsideFollowsTheActiveAccount(t *testing.T) {
 }
 
 // An accounts.json that can't be read says nothing about which account is
-// active: magpie keeps to u0, as before, rather than taking it for none.
+// active: magpie-friday keeps to u0, as before, rather than taking it for none.
 func TestAsideUnreadableAccountsKeepU0(t *testing.T) {
 	for name, body := range map[string]string{
 		"missing":        "",
@@ -146,7 +146,7 @@ func TestAsideUnreadableAccountsKeepU0(t *testing.T) {
 			if a.Path != asideFile(home, 0, "settings.json") {
 				t.Fatalf("path %s", a.Path)
 			}
-			if err := a.Pick("model", "magpie/relay/glm-4.6"); err != nil {
+			if err := a.Pick("model", "magpie-friday/relay/glm-4.6"); err != nil {
 				t.Fatal(err)
 			}
 			onlyAccount(t, *calls, "u0")
@@ -157,7 +157,7 @@ func TestAsideUnreadableAccountsKeepU0(t *testing.T) {
 	}
 }
 
-// The account picked on magpie (the row's account field, `magpie aside
+// The account picked on magpie-friday (the row's account field, `magpie-friday aside
 // account u2`) wins over Aside's active one; Default follows Aside again.
 func TestAsidePickedAccountOverridesActive(t *testing.T) {
 	home, calls := asideAccountsHome(t)
@@ -185,7 +185,7 @@ func TestAsidePickedAccountOverridesActive(t *testing.T) {
 		t.Fatalf("picked u2: %q %s", a.Field("account").Get(), a.Path)
 	}
 	*calls = nil
-	if err := a.Pick("model", "magpie/relay/glm-4.6"); err != nil {
+	if err := a.Pick("model", "magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	onlyAccount(t, *calls, "u2")
@@ -208,7 +208,7 @@ func TestAsidePickedAccountOverridesActive(t *testing.T) {
 	}
 }
 
-// What magpie remembers of an account's settings, to put back on
+// What magpie-friday remembers of an account's settings, to put back on
 // Disconnect, is that account's: switching accounts never restores one
 // account's model into another.
 func TestAsideRestorePointsArePerAccount(t *testing.T) {
@@ -218,11 +218,11 @@ func TestAsideRestorePointsArePerAccount(t *testing.T) {
 		writeFile(t, accounts, strings.Replace(asideAccountsJSON, `"currentAccountId": 1`, `"currentAccountId": `+id, 1))
 	}
 	use("0")
-	if err := mustFindAside(t).Pick("model", "magpie/relay/glm-4.6"); err != nil {
+	if err := mustFindAside(t).Pick("model", "magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	use("1")
-	if err := mustFindAside(t).Pick("model", "magpie/relay/glm-4.6"); err != nil {
+	if err := mustFindAside(t).Pick("model", "magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	if err := mustFindAside(t).Disconnect(); err != nil {
@@ -231,7 +231,7 @@ func TestAsideRestorePointsArePerAccount(t *testing.T) {
 	if !sameJSONText(t, readFile(asideFile(home, 1, "settings.json")), asideU1Settings) {
 		t.Fatalf("u1 restored to %s", readFile(asideFile(home, 1, "settings.json")))
 	}
-	if _, ok := edit.GetJSON(asideFile(home, 1, "models.json"), "providers.magpie"); ok {
+	if _, ok := edit.GetJSON(asideFile(home, 1, "models.json"), "providers.magpie-friday"); ok {
 		t.Fatal("u1's provider kept")
 	}
 	if got, _ := edit.GetJSON(asideFile(home, 0, "settings.json"), "defaultModel.modelId"); got != "relay/glm-4.6" {

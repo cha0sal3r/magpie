@@ -16,7 +16,7 @@ import (
 	"github.com/wailsapp/wails/v3/pkg/application"
 	"github.com/wailsapp/wails/v3/pkg/events"
 
-	"github.com/yetone/magpie/internal/gui/windowshape"
+	"github.com/cha0sal3r/magpie-friday/internal/gui/windowshape"
 )
 
 // titlebarRun is what the separate process measured: the main window, one
@@ -169,7 +169,7 @@ func init() {
 		return
 	}
 	app := application.New(application.Options{
-		Name: "magpie title bar regression",
+		Name: "magpie-friday title bar regression",
 		Mac:  application.MacOptions{ActivationPolicy: application.ActivationPolicyProhibited},
 		Assets: application.AssetOptions{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "text/html")
@@ -223,7 +223,7 @@ func init() {
 		}
 		each(func(_ int, w *application.WebviewWindow) { w.SetSize(900, 600); w.Show() })
 		measure("shown")
-		each(func(_ int, w *application.WebviewWindow) { w.SetTitle("magpie, renamed"); w.SetSize(1000, 680) })
+		each(func(_ int, w *application.WebviewWindow) { w.SetTitle("magpie-friday, renamed"); w.SetSize(1000, 680) })
 		measure("a new title and size")
 		// AppKit draws a new system appearance before the run loop turns:
 		// the windows are measured at once, and again once it has

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // stage is an explicit offline write, separate from confirmed runtime apply.
@@ -43,16 +43,16 @@ func (c *asideConnection) stage(key, value string) error {
 		return err
 	}
 	owned, had := r.Fields[key]
-	if had && !strings.HasPrefix(asideSelection(before), "magpie/") {
+	if had && !strings.HasPrefix(asideSelection(before), "magpie-friday/") {
 		delete(r.Fields, key)
 		had = false
 		owned = asideOwned{}
 	}
-	if p == "magpie" {
+	if p == "magpie-friday" {
 		if err := c.connectLocked(); err != nil {
 			return err
 		}
-		if !had && !strings.HasPrefix(asideSelection(before), "magpie/") {
+		if !had && !strings.HasPrefix(asideSelection(before), "magpie-friday/") {
 			owned.Before = append(json.RawMessage(nil), before...)
 		}
 	}

@@ -2,7 +2,7 @@ package library
 
 // Skills from any git repository (sunset on Discord): GitLab, a company's
 // own GitLab on its intranet, Gitea, a bare repository on this machine.
-// magpie can't ask such a host for a tarball or its commits the way it
+// magpie-friday can't ask such a host for a tarball or its commits the way it
 // asks GitHub, so it runs the user's own git, which signs in to the host
 // the way it does for the user (a credential helper, a token, an SSH key
 // in the agent). The address is data: it reaches git as an argument after
@@ -23,7 +23,7 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // gitPath is where git is, "" when it isn't here; a variable for tests.
@@ -64,7 +64,7 @@ func gitSource(s string) (src Source, ok bool, err error) {
 		return Source{}, true, fmt.Errorf("a repository's address can't start with -")
 	}
 	if remoteHelper.MatchString(s) {
-		return Source{}, true, fmt.Errorf("magpie doesn't install from a git address with a transport (%s): give the repository's https or SSH address", s[:strings.Index(s, "::")+2])
+		return Source{}, true, fmt.Errorf("magpie-friday doesn't install from a git address with a transport (%s): give the repository's https or SSH address", s[:strings.Index(s, "::")+2])
 	}
 	if strings.IndexFunc(s, func(r rune) bool { return unicode.IsSpace(r) || unicode.IsControl(r) }) >= 0 {
 		return Source{}, false, nil
@@ -99,12 +99,12 @@ func gitSource(s string) (src Source, ok bool, err error) {
 			return Source{}, false, nil
 		}
 		if !gitSchemes[strings.ToLower(u.Scheme)] {
-			return Source{}, true, fmt.Errorf("magpie doesn't install from a %s:// address: give the repository's https or SSH address", u.Scheme)
+			return Source{}, true, fmt.Errorf("magpie-friday doesn't install from a %s:// address: give the repository's https or SSH address", u.Scheme)
 		}
 		if _, set := u.User.Password(); set {
 			// it would be kept in library.json, shown on the page and
 			// carried to a backup
-			return Source{}, true, fmt.Errorf("leave the password or token out of the address: magpie runs your own git, which signs in with its credential helper or your SSH key")
+			return Source{}, true, fmt.Errorf("leave the password or token out of the address: magpie-friday runs your own git, which signs in with its credential helper or your SSH key")
 		}
 		if strings.ToLower(u.Scheme) != "file" && (u.Host == "" || strings.HasPrefix(u.Host, "-")) {
 			return Source{}, true, fmt.Errorf("%s names no host", repo)
@@ -197,7 +197,7 @@ func errNoGit() error {
 // gitEnv is the environment git runs in: the user's, so their credential
 // helper, SSH agent and config work, with every question asked on a
 // terminal turned off (no one sees it, and it would wait for ever), and
-// git's messages in English, as magpie reads them.
+// git's messages in English, as magpie-friday reads them.
 func gitEnv(git string) []string {
 	env := append(os.Environ(), "GIT_TERMINAL_PROMPT=0", "LC_ALL=C", "LANGUAGE=C")
 	if os.Getenv("GIT_SSH_COMMAND") == "" && os.Getenv("GIT_SSH") == "" {
@@ -251,7 +251,7 @@ func gitError(src Source, msg string) error {
 		strings.Contains(low, "terminal prompts disabled") || strings.Contains(low, "authentication failed") ||
 		strings.Contains(low, "permission denied") || strings.Contains(low, "access denied") ||
 		strings.Contains(low, "the requested url returned error: 401") || strings.Contains(low, "the requested url returned error: 403"):
-		return fmt.Errorf("git couldn't sign in to %s. magpie runs your own git, so sign in the way git does there (a credential helper or an SSH key that can read the repository), check `git clone %s` works in a terminal, and try again (git said: %s)", host, src.Repo, said)
+		return fmt.Errorf("git couldn't sign in to %s. magpie-friday runs your own git, so sign in the way git does there (a credential helper or an SSH key that can read the repository), check `git clone %s` works in a terminal, and try again (git said: %s)", host, src.Repo, said)
 	case strings.Contains(low, "couldn't find remote ref") || strings.Contains(low, "unknown revision"):
 		return fmt.Errorf("%s has no branch or tag %s", src.Repo, src.Ref)
 	case strings.Contains(low, "repository not found") || strings.Contains(low, "does not appear to be a git repository") ||
@@ -348,7 +348,7 @@ func fetchGit(src Source) (string, error) {
 		return fail(err)
 	}
 	if size := dirSize(tmp); size > maxFetch {
-		return fail(fmt.Errorf("%s is %s, over the %s magpie fetches", src.Repo, mb(size), mb(maxFetch)))
+		return fail(fmt.Errorf("%s is %s, over the %s magpie-friday fetches", src.Repo, mb(size), mb(maxFetch)))
 	}
 	noteGitHead(tmp, strings.TrimSpace(string(out)))
 	return tmp, nil
@@ -457,7 +457,7 @@ func checkGitSkill(s *Skill, f *fetcher, asked map[string]string) (SkillCheck, s
 }
 
 // isGit is whether what the user typed is a git repository's address
-// magpie fetches from.
+// magpie-friday fetches from.
 func isGit(s string) bool {
 	_, ok, err := gitSource(s)
 	return ok && err == nil

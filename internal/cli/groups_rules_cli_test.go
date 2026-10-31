@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 func TestParseTokens(t *testing.T) {
@@ -136,7 +136,7 @@ func TestGroupRuleIntentCmd(t *testing.T) {
 			t.Errorf("%v taken", bad)
 		}
 	}
-	if err := ruleCmd([]string{"add", "opus", "use=gpt-5.5", "intent=  a quick   question ", "classifier=magpie/a/only-a"}); err != nil {
+	if err := ruleCmd([]string{"add", "opus", "use=gpt-5.5", "intent=  a quick   question ", "classifier=magpie-friday/a/only-a"}); err != nil {
 		t.Fatal(err)
 	}
 	g := group()
@@ -172,7 +172,7 @@ func TestGroupRuleIntentCmd(t *testing.T) {
 
 func TestGroupMemberNames(t *testing.T) {
 	g := provider.Group{ID: "x", Members: []string{"a/m", "b/vendor/m", "a/Big", "c/deepseek/deepseek-v4-pro"}}
-	for in, want := range map[string]string{"a/m": "a/m", "magpie/a/m": "a/m", "A/BIG": "a/Big", "big": "a/Big", "vendor/m": "b/vendor/m",
+	for in, want := range map[string]string{"a/m": "a/m", "magpie-friday/a/m": "a/m", "A/BIG": "a/Big", "big": "a/Big", "vendor/m": "b/vendor/m",
 		"deepseek-v4-pro": "c/deepseek/deepseek-v4-pro", "deepseek/deepseek-v4-pro": "c/deepseek/deepseek-v4-pro"} {
 		if got, err := groupMember(g, in); err != nil || got != want {
 			t.Errorf("%q: %q %v", in, got, err)
@@ -230,7 +230,7 @@ func TestGroupRuleSeveralModelsCmd(t *testing.T) {
 
 // A rule's hours typed with no zone are this computer's ($TZ here), kept
 // as its IANA name so a server on another clock reads them as meant; a
-// zone typed is kept, and one magpie doesn't know is refused.
+// zone typed is kept, and one magpie-friday doesn't know is refused.
 func TestGroupRuleTimeZoneCmd(t *testing.T) {
 	groupsHome(t)
 	t.Setenv("TZ", "Asia/Shanghai")
@@ -272,7 +272,7 @@ func TestGroupRuleTimeZoneCmd(t *testing.T) {
 	if g, _ = findGroup("peak"); len(g.Rules) != 3 {
 		t.Errorf("%d rules after the refused ones", len(g.Rules))
 	}
-	// with no zone name to be had, none is kept: magpie's clock, as before
+	// with no zone name to be had, none is kept: magpie-friday's clock, as before
 	t.Setenv("TZ", "UTC+8")
 	if err := ruleCmd([]string{"add", "peak", "use=gpt-5.5", "time=01:00-02:00"}); err != nil {
 		t.Fatal(err)

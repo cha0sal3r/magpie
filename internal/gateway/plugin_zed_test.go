@@ -90,7 +90,7 @@ func TestZedPluginGetsNoDeveloperRole(t *testing.T) {
 		{"type":"message","role":"developer","content":[{"type":"input_text","text":"<permissions instructions>sandboxed</permissions instructions>"}]},
 		{"type":"message","role":"user","content":[{"type":"input_text","text":"hi"}]},
 		{"type":"reasoning","summary":[{"type":"summary_text","text":"thinking"}],"content":null,"encrypted_content":"gAAAAAx"},
-		{"type":"web_search_call","id":"ws_1","status":"completed","action":{"type":"search","query":"magpie"}},
+		{"type":"web_search_call","id":"ws_1","status":"completed","action":{"type":"search","query":"magpie-friday"}},
 		{"type":"message","role":"assistant","content":[{"type":"output_text","text":"hello"}]},
 		{"type":"message","role":"developer","content":[{"type":"input_text","text":"<model_switch>now another model</model_switch>"}]},
 		{"type":"message","role":"user","content":[{"type":"input_text","text":"again"}]}]}`

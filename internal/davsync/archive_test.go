@@ -11,13 +11,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // The gateway's request archive goes to the bucket sync keeps its backup
-// in, signed as the backup is, at <prefix>/magpie/archive/<date>/<id>.json,
+// in, signed as the backup is, at <prefix>/magpie-friday/archive/<date>/<id>.json,
 // and reads back from there — and while it's off, nothing is sent at all.
 func TestRequestArchiveToS3(t *testing.T) {
 	newComputer(t).use(t)
@@ -58,7 +58,7 @@ func TestRequestArchiveToS3(t *testing.T) {
 		f.mu.Lock()
 		defer f.mu.Unlock()
 		for k := range f.objects {
-			if strings.HasPrefix(k, "team x+y/magpie/archive/") {
+			if strings.HasPrefix(k, "team x+y/magpie-friday/archive/") {
 				n++
 			}
 		}
@@ -83,7 +83,7 @@ func TestRequestArchiveToS3(t *testing.T) {
 	// the date is the one the call carries, in UTC, not the clock read
 	// again here, which a UTC midnight can fall between
 	date := s.Recent()[0].Time.UTC().Format("2006-01-02")
-	key := "team x+y/magpie/archive/" + date + "/" + id + ".json"
+	key := "team x+y/magpie-friday/archive/" + date + "/" + id + ".json"
 	deadline := time.Now().Add(5 * time.Second)
 	for archived() == 0 && time.Now().Before(deadline) {
 		time.Sleep(20 * time.Millisecond)

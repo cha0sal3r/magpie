@@ -9,14 +9,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // netube on Discord: a Codex Plus account's turn showed a 922K context
 // window on Routing, models.dev's input limit for gpt-5.5 (OpenAI's API's),
 // where Codex holds the conversation to the 272K its ChatGPT list gives.
-// A turn Codex sends through magpie's Codex backend takes Codex's window;
+// A turn Codex sends through magpie-friday's Codex backend takes Codex's window;
 // one the user set on the codex provider comes first; a model of another
 // provider, of the same id, keeps models.dev's.
 func TestCodexNativeTurnTakesCodexWindow(t *testing.T) {
@@ -73,7 +73,7 @@ func TestCodexNativeTurnTakesCodexWindow(t *testing.T) {
 	if r := turn(); r.Prompt == nil || r.Prompt.Window != 272000 {
 		t.Errorf("Codex's own gpt-5.5: prompt %+v, want Codex's window 272000, not models.dev's 922000", r.Prompt)
 	}
-	// the window magpie's Codex subscription's list gives comes before
+	// the window magpie-friday's Codex subscription's list gives comes before
 	// Codex CLI's cache
 	if err := catalog.SaveLive("codex", provider.CodexBase, []catalog.Model{{ID: "gpt-5.5", Context: 258000}}); err != nil {
 		t.Fatal(err)

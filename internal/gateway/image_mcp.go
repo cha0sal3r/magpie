@@ -17,17 +17,17 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// magpie's image generation, the model Settings › Images › Image generation
+// magpie-friday's image generation, the model Settings › Images › Image generation
 // names, is also an MCP server the gateway serves itself, beside image
-// recognition's (JonahFu on X): Magpie Image (internal/imagemcp) is a stdio
+// recognition's (JonahFu on X): magpie-friday Image (internal/imagemcp) is a stdio
 // server the Library gives an agent on this computer, which a gateway in
 // Docker, or an agent on another computer, has none of. Streamable HTTP at
 // ImageMCPPath, served and guarded as VisionMCPPath is (serveMCP), with
-// Magpie Image's tools and arguments (ImageToolProps, VideoToolProps)
+// magpie-friday Image's tools and arguments (ImageToolProps, VideoToolProps)
 // but where to save: the gateway can't write into the agent's project, so
 // an image comes back in the answer, as MCP image content, and at a URL
 // the gateway keeps it at for an hour (ImageMCPFiles); a video at the
@@ -37,12 +37,12 @@ import (
 // as they hold /v1/images.
 
 // ImageMCPPath is where the image generation MCP server is served.
-const ImageMCPPath = "/mcp/magpie/image"
+const ImageMCPPath = "/mcp/magpie-friday/image"
 
 // ImageMCPFiles is where the images it made are served from.
 const ImageMCPFiles = ImageMCPPath + "/files/"
 
-// The tools Magpie Image and the image MCP server have.
+// The tools magpie-friday Image and the image MCP server have.
 const (
 	GenerateImageTool    = "generate_image"
 	GenerateVideoTool    = "generate_video"
@@ -83,7 +83,7 @@ func ResultToolProps() map[string]any {
 }
 
 // imageMCPWithin is how long a call waits for its image or video before it
-// answers with an id to wait on (generation_result), as Magpie Image's
+// answers with an id to wait on (generation_result), as magpie-friday Image's
 // answerWithin: agents give a tool call as little as 30 s (#575).
 var imageMCPWithin = 20 * time.Second
 
@@ -102,7 +102,7 @@ const (
 	imageMCPJobMost = 15 * time.Minute
 )
 
-const imageMCPFrom = "an http(s) URL or a data URL (data:image/png;base64,...); an absolute file path only for an agent on the computer magpie runs on"
+const imageMCPFrom = "an http(s) URL or a data URL (data:image/png;base64,...); an absolute file path only for an agent on the computer magpie-friday runs on"
 
 func imageMCPTools() []any {
 	ro := func(props map[string]any) map[string]any {
@@ -112,8 +112,8 @@ func imageMCPTools() []any {
 		map[string]any{
 			"name":  GenerateImageTool,
 			"title": "Generate image",
-			"description": "Generate an image from a text prompt, or edit/combine images given as reference_images, with the image model set in Magpie (Settings → Images → Image generation). " +
-				"The image comes back in the answer and at a URL Magpie keeps it at for an hour (from another computer, download it with the same Authorization header this server is called with); nothing is saved in your project, so save it there yourself if you need it. " +
+			"description": "Generate an image from a text prompt, or edit/combine images given as reference_images, with the image model set in magpie-friday (Settings → Images → Image generation). " +
+				"The image comes back in the answer and at a URL magpie-friday keeps it at for an hour (from another computer, download it with the same Authorization header this server is called with); nothing is saved in your project, so save it there yourself if you need it. " +
 				"When it is not ready within about 20 seconds, the answer is an id to wait on with " + GenerationResultTool + " instead. Write a detailed prompt: subject, style, composition, colours, any text to render exactly.",
 			"inputSchema": ro(ImageToolProps(imageMCPFrom + "s")),
 			"annotations": map[string]any{"readOnlyHint": false, "destructiveHint": false, "openWorldHint": true},
@@ -121,7 +121,7 @@ func imageMCPTools() []any {
 		map[string]any{
 			"name":  GenerateVideoTool,
 			"title": "Generate video",
-			"description": "Generate a short video from a text prompt, optionally starting from an image to animate, with a video model set up in Magpie. It takes from ten seconds to a few minutes; " +
+			"description": "Generate a short video from a text prompt, optionally starting from an image to animate, with a video model set up in magpie-friday. It takes from ten seconds to a few minutes; " +
 				"the answer is the URL to download the mp4 from (with the same Authorization header this server is called with), or, when it is not ready within about 20 seconds, an id to wait on with " + GenerationResultTool + ". " +
 				"Nothing is saved in your project. Describe the subject, the motion and the camera: what moves, how, and what the shot is.",
 			"inputSchema": ro(VideoToolProps(imageMCPFrom, imageMCPFrom+"s")),
@@ -165,7 +165,7 @@ type imageFile struct {
 }
 
 func (s *Server) imageMCP(w http.ResponseWriter, r *http.Request) {
-	serveMCP(w, r, "magpie's image generation", visionMCPBody, s.imageMCPCall)
+	serveMCP(w, r, "magpie-friday's image generation", visionMCPBody, s.imageMCPCall)
 }
 
 // imageMCPCall answers one request: its result, or its JSON-RPC error.
@@ -175,8 +175,8 @@ func (s *Server) imageMCPCall(r *http.Request, m mcpMessage) (any, map[string]an
 		return map[string]any{
 			"protocolVersion": mcpVersion(m),
 			"capabilities":    map[string]any{"tools": map[string]any{}},
-			"serverInfo":      map[string]any{"name": "magpie-image", "title": "Magpie Image", "version": Version},
-			"instructions":    GenerateImageTool + " draws with the image model set in magpie (Settings → Images → Image generation) and " + GenerateVideoTool + " makes a short video; images come back in the answer and at a URL, videos at a URL, nothing is saved in your project.",
+			"serverInfo":      map[string]any{"name": "magpie-friday-image", "title": "magpie-friday Image", "version": Version},
+			"instructions":    GenerateImageTool + " draws with the image model set in magpie-friday (Settings → Images → Image generation) and " + GenerateVideoTool + " makes a short video; images come back in the answer and at a URL, videos at a URL, nothing is saved in your project.",
 		}, nil
 	case "ping":
 		return map[string]any{}, nil
@@ -213,7 +213,7 @@ func imageGenOff() (map[string]any, bool) {
 	if settings.Load().ImageGen != "off" {
 		return nil, false
 	}
-	return toolResult("Image generation is off in magpie: pick a model for it in Settings → Images → Image generation", true), true
+	return toolResult("Image generation is off in magpie-friday: pick a model for it in Settings → Images → Image generation", true), true
 }
 
 // imageMCPDraw starts generate_image's drawing and answers with what it
@@ -510,7 +510,7 @@ func (s *Server) imageMCPResult(r *http.Request, id string) map[string]any {
 	j := st.jobs[id]
 	st.mu.Unlock()
 	if j == nil || j.key != access.Caller(r.Context()).KeyID {
-		return toolResult(fmt.Sprintf("no image is being made as %q (magpie may have been restarted, or it was made over an hour ago): generate it again", id), true)
+		return toolResult(fmt.Sprintf("no image is being made as %q (magpie-friday may have been restarted, or it was made over an hour ago): generate it again", id), true)
 	}
 	return s.imageMCPAwait(r, j)
 }
@@ -582,11 +582,11 @@ func (s *Server) imageMCPKeepFile(img []byte, mt, key string) string {
 // made, guarded as the server is.
 func (s *Server) imageMCPFile(w http.ResponseWriter, r *http.Request) {
 	if !local(r) && !sharedWith(r) {
-		http.Error(w, "magpie's images are served to another machine only when magpie is shared on the local network and the request carries a gateway key (Authorization: Bearer <key>)", http.StatusForbidden)
+		http.Error(w, "magpie-friday's images are served to another machine only when magpie-friday is shared on the local network and the request carries a gateway key (Authorization: Bearer <key>)", http.StatusForbidden)
 		return
 	}
 	if o := r.Header.Get("Origin"); o != "" && !corsAllowed(o) {
-		http.Error(w, "magpie's images are served to agents, not web pages", http.StatusForbidden)
+		http.Error(w, "magpie-friday's images are served to agents, not web pages", http.StatusForbidden)
 		return
 	}
 	if r.Method != http.MethodGet && r.Method != http.MethodHead {

@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // raceVendor is a vendor that spends a refresh token once (plugins
@@ -51,7 +51,7 @@ func newRaceVendor(t *testing.T) *raceVendor {
 			<-v.hold
 		}
 		if key, ok := strings.CutPrefix(string(b), "r-raced "); ok {
-			// a magpie from before the lock spent it first and saved
+			// a magpie-friday from before the lock spent it first and saved
 			// what it got, then this one is turned away
 			var all map[string]map[string]any
 			raw, _ := os.ReadFile(v.store)
@@ -133,7 +133,7 @@ func changeStored(key, refresh string) error {
 	return os.WriteFile(AuthPath(), raw, 0o600)
 }
 
-// TestRenewOtherHost is the second magpie of TestRenewOnceAcrossHosts:
+// TestRenewOtherHost is the second magpie-friday of TestRenewOnceAcrossHosts:
 // its host starts, it says "ready", and on "go" it sends a request on the
 // account, says "renewing" once its host is renewing the sign-in, and
 // "said …" for whatever its host says of the sign-in.
@@ -159,7 +159,7 @@ func TestRenewOtherHost(t *testing.T) {
 	sent := make(chan error, 1)
 	go func() { sent <- raceSend(ctx, account) }()
 	// renewing, or done already: a host that didn't wait for the other's
-	// renewal, which the first magpie's checks then find
+	// renewal, which the first magpie-friday's checks then find
 	for h.renewing.Load() == 0 && len(sent) == 0 {
 		time.Sleep(5 * time.Millisecond)
 	}
@@ -171,7 +171,7 @@ func TestRenewOtherHost(t *testing.T) {
 	out("sent")
 }
 
-// plugins #331: each magpie process runs a host of its own, and two hosts
+// plugins #331: each magpie-friday process runs a host of its own, and two hosts
 // renewing one sign-in at once each spent its refresh token, so a vendor
 // that spends one once turned the second away and the account was marked
 // signed out under the token the first had saved. Two hosts, two
@@ -220,7 +220,7 @@ func TestRenewOnceAcrossHosts(t *testing.T) {
 				otherSaid = append(otherSaid, s)
 			}
 		}
-		t.Fatalf("the other magpie ended before %q", want)
+		t.Fatalf("the other magpie-friday ended before %q", want)
 	}
 	expect("ready")
 
@@ -235,7 +235,7 @@ func TestRenewOnceAcrossHosts(t *testing.T) {
 	}
 	expect("sent")
 	if err := other.Wait(); err != nil {
-		t.Fatalf("the other magpie: %v", err)
+		t.Fatalf("the other magpie-friday: %v", err)
 	}
 	Told()
 
@@ -259,11 +259,11 @@ func TestRenewOnceAcrossHosts(t *testing.T) {
 	}
 }
 
-// A renewal lock left by a magpie that died is taken over at once: the
+// A renewal lock left by a magpie-friday that died is taken over at once: the
 // renewal is made inside the wait a request gives it, not after the
 // lock's minute. A token the vendor turns away still says the sign-in
 // expired, and leaves it as it was; one turned away because another
-// magpie spent it and saved the new one meanwhile doesn't.
+// magpie-friday spent it and saved the new one meanwhile doesn't.
 func TestRenewLockOfDeadHostAndRefusal(t *testing.T) {
 	sandbox(t)
 	v := newRaceVendor(t)
@@ -291,7 +291,7 @@ func TestRenewLockOfDeadHostAndRefusal(t *testing.T) {
 		t.Fatalf("said %q", s)
 	}
 	if exchanges, auths := v.seen(); len(exchanges) != 1 || len(auths) != 1 || auths[0] != "Bearer a-r2" {
-		t.Fatalf("exchanges %v, requests %v: the dead magpie's lock was waited out", exchanges, auths)
+		t.Fatalf("exchanges %v, requests %v: the dead magpie-friday's lock was waited out", exchanges, auths)
 	}
 	if _, err := os.Stat(lock); !os.IsNotExist(err) {
 		t.Fatalf("the lock is left: %v", err)
@@ -311,7 +311,7 @@ func TestRenewLockOfDeadHostAndRefusal(t *testing.T) {
 		t.Fatalf("a refused account was changed: %v", a)
 	}
 
-	// turned away because another magpie, one that didn't take the lock,
+	// turned away because another magpie-friday, one that didn't take the lock,
 	// spent the token and saved what it got: not signed out, and its
 	// token is the one sent
 	raced, err := Import(ctx, "raceco", map[string]any{"type": "oauth", "refresh": "r-raced", "access": "a-old", "expires": time.Now().Add(time.Minute).UnixMilli(), "accountId": "raced@race"})
@@ -330,10 +330,10 @@ func TestRenewLockOfDeadHostAndRefusal(t *testing.T) {
 	Told()
 	select {
 	case s := <-said:
-		t.Fatalf("a token another magpie renewed meanwhile said %q", s)
+		t.Fatalf("a token another magpie-friday renewed meanwhile said %q", s)
 	default:
 	}
 	if _, auths := v.seen(); auths[len(auths)-1] != "Bearer a-elsewhere" {
-		t.Fatalf("requests went with %v, want the other magpie's token last", auths)
+		t.Fatalf("requests went with %v, want the other magpie-friday's token last", auths)
 	}
 }

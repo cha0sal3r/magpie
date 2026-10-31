@@ -8,7 +8,7 @@ import (
 // ClaudeDir is the folder Claude Code keeps its files in: settings.json,
 // the credentials it keeps off a keychain, history, sessions, skills. It is
 // $CLAUDE_CONFIG_DIR when that is set, as Claude Code reads it, else
-// ~/.claude. Every place magpie reads or writes Claude Code's files goes
+// ~/.claude. Every place magpie-friday reads or writes Claude Code's files goes
 // through here: the Agents page's wiring once wrote ~/.claude/settings.json
 // and looked for ~/.claude alone while the sessions, the library and the
 // sign-in read $CLAUDE_CONFIG_DIR, so a Claude Code kept there wasn't

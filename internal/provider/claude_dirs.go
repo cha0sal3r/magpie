@@ -3,7 +3,7 @@ package provider
 // A saved Claude account in use beside the one Claude Code is signed in to
 // runs Claude Code in a config directory of its own (CLAUDE_CONFIG_DIR): its
 // sign-in is put there once, from logins.json, and from then on Claude Code
-// keeps it, refreshing it as it does its own. magpie never refreshes a
+// keeps it, refreshing it as it does its own. magpie-friday never refreshes a
 // Claude sign-in nor asks Anthropic anything with one; it only reads back
 // what Claude Code left, so logins.json follows.
 
@@ -21,8 +21,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 	"golang.org/x/text/unicode/norm"
 )
 
@@ -101,7 +101,7 @@ func forgetClaudeDir(user string) {
 	_ = os.RemoveAll(dir)
 }
 
-// claudeDirRuns are the runs magpie waits on in a saved Claude account's
+// claudeDirRuns are the runs magpie-friday waits on in a saved Claude account's
 // config directory (inSavedClaudeDir), by account: its /usage, a warm-up.
 // Claude Code may refresh the sign-in it keeps there as it runs, spending
 // the refresh token, so the account isn't handed over to Claude Code
@@ -273,9 +273,9 @@ func takeClaudeDir(l *savedLogin, c claudeCredentials) (bool, error) {
 
 // claudeStandIn is the saved account served in the place of Claude Code's
 // own while Claude Code is signed out — the user logged out of it, as it
-// tells them to when magpie's token is set beside a claude.ai sign-in.
-// magpie keeps the other accounts' sign-ins itself, each its own, so a
-// logout signs none of them out of magpie: the stand-in runs Claude Code
+// tells them to when magpie-friday's token is set beside a claude.ai sign-in.
+// magpie-friday keeps the other accounts' sign-ins itself, each its own, so a
+// logout signs none of them out of magpie-friday: the stand-in runs Claude Code
 // in a config directory of its own, as the others on do. Never the one
 // Claude Code was signed in to, whose sign-in went with it
 // (claudeLoggedOut, or still Held before rememberLogins next looks: it is
@@ -330,9 +330,9 @@ func claudeListed(ls []savedLogin) string {
 // claudeLogoutLapse is why the account Claude Code was signed in to can't
 // be used once Claude Code let go of it: logged out, which revokes the
 // sign-in it held, or emptied that sign-in once Anthropic refused it.
-const claudeLogoutLapse = "Claude Code is no longer signed in; sign in again in magpie"
+const claudeLogoutLapse = "Claude Code is no longer signed in; sign in again in magpie-friday"
 
-// legacyClaudeLogoutLapse is claudeLogoutLapse as magpie wrote it before,
+// legacyClaudeLogoutLapse is claudeLogoutLapse as magpie-friday wrote it before,
 // which took every such lapse for a /logout.
 const legacyClaudeLogoutLapse = "Claude Code's /logout signed it out (it revokes the sign-in it holds); sign in again"
 
@@ -341,12 +341,12 @@ const legacyClaudeLogoutLapse = "Claude Code's /logout signed it out (it revokes
 const claudeGoneLapse = "its sign-in is gone; sign in again"
 
 // claudeLoggedOut marks the account Claude Code held, now that it holds no
-// sign-in, as lapsed: magpie's copy of that account is the same sign-in,
+// sign-in, as lapsed: magpie-friday's copy of that account is the same sign-in,
 // gone too — revoked by a /logout (POST <token URL>/revoke, Claude Code
 // 2.1.x's performLogout), or refused by Anthropic, as the sign-in Claude
 // Code emptied was. Which it was can't be told from here. Signed in to it
 // again, Claude Code holds it once more (rememberLogins). The accounts
-// magpie keeps in config directories of their own are sign-ins of their own
+// magpie-friday keeps in config directories of their own are sign-ins of their own
 // and stay. It says whether ls changed.
 func claudeLoggedOut(ls []savedLogin) bool {
 	changed := false
@@ -401,7 +401,7 @@ func claudeStandInAccount() (Provider, bool) {
 
 // AgentsOwn says the account is the one the agent itself is signed in to,
 // run in the agent's own home with what it keeps there, not with a sign-in
-// magpie hands it. Which account that is moves with a switch (SwitchLogin):
+// magpie-friday hands it. Which account that is moves with a switch (SwitchLogin):
 // a Claude Code started on it before goes on as whatever Claude Code is
 // signed in to by then, as it reads its keychain again every half minute.
 func (a *Account) AgentsOwn() bool { return a != nil && a.token == nil }
@@ -424,7 +424,7 @@ func ClaudeCodeMovedOff(user string) bool {
 }
 
 // claudeCodeOn is the account Claude Code itself is signed in to now, as
-// magpie names it; "" when signed out or unknown. named: the name is from
+// magpie-friday names it; "" when signed out or unknown. named: the name is from
 // its profile (~/.claude.json), whole, not the email alone `claude auth
 // status` gives.
 func claudeCodeOn() (user string, named bool) {
@@ -435,7 +435,7 @@ func claudeCodeOn() (user string, named bool) {
 	return l.User, len(l.Profile) > 0
 }
 
-// sameClaudeUser: a and b name one account, the one as magpie names a Team
+// sameClaudeUser: a and b name one account, the one as magpie-friday names a Team
 // or Enterprise seat ("me@x.com · Org") and the other as its email alone,
 // as `claude auth status` gives it.
 func sameClaudeUser(a, b string) bool {

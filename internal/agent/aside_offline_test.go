@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 func TestAsideInitialReadOffersStageWithoutWrites(t *testing.T) {
@@ -21,7 +21,7 @@ func TestAsideInitialReadOffersStageWithoutWrites(t *testing.T) {
 	before := readFile(settings) + readFile(models) + readFile(c.record)
 	asideRead = func(string) (map[string]json.RawMessage, error) { return nil, errors.New("offline") }
 	asideSet = func(string, string) error { t.Fatal("unavailable apply called daemon set"); return nil }
-	err := mustFindAside(t).Pick("model", "magpie/relay/glm-4.6")
+	err := mustFindAside(t).Pick("model", "magpie-friday/relay/glm-4.6")
 	var unavailable *RuntimeUnavailableError
 	if !errors.As(err, &unavailable) || unavailable.Offline != OfflineStage {
 		t.Fatalf("initial read must return typed unavailable error, got %T: %v", err, err)
@@ -36,7 +36,7 @@ func TestAsideOfflineDisconnectRestoresWithoutDaemon(t *testing.T) {
 	before := readFile(settings)
 	a := mustFindAside(t)
 	for _, key := range []string{"model", "fast", "deep"} {
-		if err := a.Native.Stage(key, "magpie/relay/glm-4.6"); err != nil {
+		if err := a.Native.Stage(key, "magpie-friday/relay/glm-4.6"); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -49,7 +49,7 @@ func TestAsideOfflineDisconnectRestoresWithoutDaemon(t *testing.T) {
 	if proc.FindTool(a.Bin) != "" {
 		t.Fatal("fixture must have no Aside executable")
 	}
-	missing := &Agent{ID: "dsh", Name: "Native fixture", Bin: "magpie-test-missing-native", Dir: a.Dir, Path: a.Path, Native: a.Native}
+	missing := &Agent{ID: "dsh", Name: "Native fixture", Bin: "magpie-friday-test-missing-native", Dir: a.Dir, Path: a.Path, Native: a.Native}
 	if !missing.CLIMissing() {
 		t.Fatal("native fixture must report missing CLI")
 	}
@@ -62,7 +62,7 @@ func TestAsideOfflineDisconnectRestoresWithoutDaemon(t *testing.T) {
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("restored %s; want %s", readFile(settings), before)
 	}
-	if _, ok := edit.GetJSON(models, "providers.magpie"); ok {
+	if _, ok := edit.GetJSON(models, "providers.magpie-friday"); ok {
 		t.Fatal("provider retained")
 	}
 	r, err := newAsideConnection(here("")).load()
@@ -85,8 +85,8 @@ func TestAsideUnavailableBoundary(t *testing.T) {
 		{"model", "", true, ""},
 		{"unknown", "native/model", false, ""},
 		{"model", "malformed", false, ""},
-		{"model", "magpie/relay/missing", false, ""},
-		{"image", "magpie/relay/glm-4.6", false, ""},
+		{"model", "magpie-friday/relay/missing", false, ""},
+		{"image", "magpie-friday/relay/glm-4.6", false, ""},
 	} {
 		t.Run(tt.key+"/"+tt.value, func(t *testing.T) {
 			settings, models := asideHome(t)
@@ -126,7 +126,7 @@ func TestAsidePostReadFailuresNeverOfferOffline(t *testing.T) {
 			case "corrupt record":
 				writeFile(t, c.record, "{invalid")
 			case "save record":
-				if err := a.Native.Stage("model", "magpie/relay/glm-4.6"); err != nil {
+				if err := a.Native.Stage("model", "magpie-friday/relay/glm-4.6"); err != nil {
 					t.Fatal(err)
 				}
 				refuseWrites(t, c.record)
@@ -145,12 +145,12 @@ func TestAsidePostReadFailuresNeverOfferOffline(t *testing.T) {
 					return inner(account)
 				}
 			}
-			err := a.Pick("fast", "magpie/relay/glm-4.6")
+			err := a.Pick("fast", "magpie-friday/relay/glm-4.6")
 			var unavailable *RuntimeUnavailableError
 			if err == nil || errors.As(err, &unavailable) {
 				t.Fatalf("post-read failure offered fallback: %T %v", err, err)
 			}
-			if _, ok := edit.GetJSON(models, "providers.magpie"); !ok {
+			if _, ok := edit.GetJSON(models, "providers.magpie-friday"); !ok {
 				t.Fatal("failed apply removed provider")
 			}
 		})
@@ -170,9 +170,9 @@ func TestAsideOfflineRestoresCompleteSelectionsAndPreservesUserChanges(t *testin
 	before := readFile(settings)
 	a := mustFindAside(t)
 	for _, key := range []string{"model", "fast", "standard", "deep", "visual", "image"} {
-		value := "magpie/relay/glm-4.6"
+		value := "magpie-friday/relay/glm-4.6"
 		if key == "image" {
-			value = "magpie/art/gpt-image-1"
+			value = "magpie-friday/art/gpt-image-1"
 		}
 		if err := a.Native.Stage(key, value); err != nil {
 			t.Fatal(err)
@@ -203,8 +203,8 @@ func TestAsideOfflineRestoresCompleteSelectionsAndPreservesUserChanges(t *testin
 	if _, ok := edit.GetJSON(models, "providers.native"); !ok {
 		t.Fatal("native provider lost")
 	}
-	if _, ok := edit.GetJSON(models, "providers.magpie"); ok {
-		t.Fatal("magpie retained")
+	if _, ok := edit.GetJSON(models, "providers.magpie-friday"); ok {
+		t.Fatal("magpie-friday retained")
 	}
 	c := newAsideConnection(here(""))
 	r, err := c.load()
@@ -220,7 +220,7 @@ func TestAsideOfflinePlanGuards(t *testing.T) {
 			settings, models := asideHome(t)
 			a := mustFindAside(t)
 			c := newAsideConnection(here(""))
-			if err := a.Native.Stage("model", "magpie/relay/glm-4.6"); err != nil {
+			if err := a.Native.Stage("model", "magpie-friday/relay/glm-4.6"); err != nil {
 				t.Fatal(err)
 			}
 			plan, err := a.Native.Disconnect()
@@ -235,7 +235,7 @@ func TestAsideOfflinePlanGuards(t *testing.T) {
 			case "record":
 				edit.SetJSON(c.record, edit.KV{Path: "fields.model.before.modelId", Value: "changed"})
 			case "foreign":
-				edit.SetJSON(models, edit.KV{Path: "providers.magpie.apiKey", Value: "someone-else"})
+				edit.SetJSON(models, edit.KV{Path: "providers.magpie-friday.apiKey", Value: "someone-else"})
 			case "nil":
 				plan = nil
 			case "structure":
@@ -258,7 +258,7 @@ func TestAsideOfflinePlanGuards(t *testing.T) {
 
 func TestAsideOfflineLegacyRecordDoesNotResurrect(t *testing.T) {
 	settings, _ := asideHome(t)
-	edit.SetJSON(settings, edit.KV{Path: "defaultModel.provider", Value: "magpie"}, edit.KV{Path: "defaultModel.modelId", Value: "relay/glm-4.6"})
+	edit.SetJSON(settings, edit.KV{Path: "defaultModel.provider", Value: "magpie-friday"}, edit.KV{Path: "defaultModel.modelId", Value: "relay/glm-4.6"})
 	stash(map[string]string{"aside.was": "native/native-model"})
 	a := mustFindAside(t)
 	if err := a.Connect(); err != nil {
@@ -294,7 +294,7 @@ func TestAsideOfflineWriteFailureRollsBack(t *testing.T) {
 	settings, models := asideHome(t)
 	a := mustFindAside(t)
 	c := newAsideConnection(here(""))
-	if err := a.Native.Stage("model", "magpie/relay/glm-4.6"); err != nil {
+	if err := a.Native.Stage("model", "magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	plan, err := a.Native.Disconnect()
@@ -318,7 +318,7 @@ func TestAsideDisconnectUnavailableOnlyAtInitialRead(t *testing.T) {
 		t.Run(kind, func(t *testing.T) {
 			_, models := asideHome(t)
 			a := mustFindAside(t)
-			if err := a.Native.Stage("model", "magpie/relay/glm-4.6"); err != nil {
+			if err := a.Native.Stage("model", "magpie-friday/relay/glm-4.6"); err != nil {
 				t.Fatal(err)
 			}
 			plan, err := a.Native.Disconnect()
@@ -353,7 +353,7 @@ func TestAsideDisconnectUnavailableOnlyAtInitialRead(t *testing.T) {
 			if unavailable != nil && unavailable.Offline != OfflineDisconnect {
 				t.Fatal("disconnect action missing")
 			}
-			if _, ok := edit.GetJSON(models, "providers.magpie"); !ok {
+			if _, ok := edit.GetJSON(models, "providers.magpie-friday"); !ok {
 				t.Fatal("failed live disconnect removed provider")
 			}
 		})
@@ -387,7 +387,7 @@ func TestAsideStageAndApplyShareSpellingAndValidation(t *testing.T) {
 	if err := a.Pick("model", "relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
-	if got := mustFindAside(t).Field("model").Get(); got != "magpie/relay/glm-4.6" {
+	if got := mustFindAside(t).Field("model").Get(); got != "magpie-friday/relay/glm-4.6" {
 		t.Fatalf("apply spelling %s", got)
 	}
 	if err := a.Disconnect(); err != nil {
@@ -400,12 +400,12 @@ func TestAsideStageAndApplyShareSpellingAndValidation(t *testing.T) {
 	if err := a.Native.Stage("model", value); err != nil {
 		t.Fatal(err)
 	}
-	if got := mustFindAside(t).Field("model").Get(); got != "magpie/relay/glm-4.6" {
+	if got := mustFindAside(t).Field("model").Get(); got != "magpie-friday/relay/glm-4.6" {
 		t.Fatalf("stage spelling %s", got)
 	}
 	c := newAsideConnection(here(""))
 	before := readFile(settings) + readFile(models) + readFile(c.record)
-	for _, tt := range []struct{ key, value string }{{"unknown", "native/model"}, {"model", "invalid"}, {"model", "magpie/relay/missing"}, {"image", "magpie/relay/glm-4.6"}, {"effort", "high"}, {"fast", ""}} {
+	for _, tt := range []struct{ key, value string }{{"unknown", "native/model"}, {"model", "invalid"}, {"model", "magpie-friday/relay/missing"}, {"image", "magpie-friday/relay/glm-4.6"}, {"effort", "high"}, {"fast", ""}} {
 		if err := a.Native.Stage(tt.key, tt.value); err == nil {
 			t.Fatalf("invalid stage accepted: %+v", tt)
 		}
@@ -421,7 +421,7 @@ func TestAsideOfflineUnsetDefaultIsRemoved(t *testing.T) {
 		t.Fatal(err)
 	}
 	a := mustFindAside(t)
-	if err := a.Native.Stage("model", "magpie/relay/glm-4.6"); err != nil {
+	if err := a.Native.Stage("model", "magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	asideRead = func(string) (map[string]json.RawMessage, error) { t.Fatal("offline read daemon"); return nil, nil }
@@ -468,7 +468,7 @@ func TestAsideOfflineImageRestoresFullSavedObject(t *testing.T) {
 	if err := provider.Save(provider.Provider{ID: "art", Key: "fixture", Chat: "https://art.invalid/v1", Models: []string{"gpt-image-1"}}); err != nil {
 		t.Fatal(err)
 	}
-	if err := a.Native.Stage("image", "magpie/art/gpt-image-1"); err != nil {
+	if err := a.Native.Stage("image", "magpie-friday/art/gpt-image-1"); err != nil {
 		t.Fatal(err)
 	}
 	asideRead = func(string) (map[string]json.RawMessage, error) {
@@ -488,7 +488,7 @@ func TestAsideOfflineImageRestoresFullSavedObject(t *testing.T) {
 func TestAsideOfflineProviderWriteFailureRollsBackAllFiles(t *testing.T) {
 	settings, models := asideHome(t)
 	a := mustFindAside(t)
-	if err := a.Native.Stage("model", "magpie/relay/glm-4.6"); err != nil {
+	if err := a.Native.Stage("model", "magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	targetDir := t.TempDir()

@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // A Claude Code run is kept for its conversation's next turn, turn after
@@ -20,7 +20,7 @@ import (
 // the next turn resumes it in a new Claude Code, which asks Anthropic the
 // same cached prefix.
 //
-// The budget is an eighth of what magpie's processes may use (memLimit on
+// The budget is an eighth of what magpie-friday's processes may use (memLimit on
 // Linux, the computer's memory elsewhere), claudeRunFloor at least; where
 // neither is known, claudeRunUnknown. A Claude Code holds ~100 MiB of its
 // own at the start (claudeRoom).

@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 func clientTraceFeed(t *testing.T, c *traceCursor, bodies bool, lines ...string) []TraceSpan {

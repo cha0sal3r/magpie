@@ -16,8 +16,8 @@ const ccSwitchSchema = `CREATE TABLE IF NOT EXISTS providers (
     PRIMARY KEY (id, app_type))`
 
 // reservedHome is a home signed in to Claude, with a CC Switch whose
-// third-party providers are named as magpie's subscriptions are: a Pi
-// "workbuddy" at a local proxy and an OpenCode "Claude" at a relay magpie
+// third-party providers are named as magpie-friday's subscriptions are: a Pi
+// "workbuddy" at a local proxy and an OpenCode "Claude" at a relay magpie-friday
 // has under another name, as #1487's screenshots show, a Claude Code
 // "claude" at a relay of its own, and a "Kiro" at another.
 func reservedHome(t *testing.T) string {
@@ -129,8 +129,8 @@ func TestImportRenamedInPicker(t *testing.T) {
 func TestImportLinkNamedAsSubscription(t *testing.T) {
 	claudeHome(t)
 	for _, link := range []string{
-		"magpie://import?name=Claude&anthropic=https://relay-1487.example.com&key=sk-x",
-		"magpie://import?name=Relay&id=kiro&anthropic=https://relay-1487.example.com&key=sk-x",
+		"magpie-friday://import?name=Claude&anthropic=https://relay-1487.example.com&key=sk-x",
+		"magpie-friday://import?name=Relay&id=kiro&anthropic=https://relay-1487.example.com&key=sk-x",
 	} {
 		p, err := ParseImport(link)
 		if err != nil {

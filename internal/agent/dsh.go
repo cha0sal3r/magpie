@@ -6,23 +6,23 @@ package agent
 // its own, ~/.dsh/profiles/<name>/cordis.patch.yml (web and desktop read it
 // live); before that there was one, ~/.dsh/config.yaml.
 //
-// Since 0.1.5 magpie is one of dsh's custom model providers: a route named
-// magpie in the llm-pi-ai entry's providers (what dsh's Models page writes
+// Since 0.1.5 magpie-friday is one of dsh's custom model providers: a route named
+// magpie-friday in the llm-pi-ai entry's providers (what dsh's Models page writes
 // for "Add model provider"), with the gateway as its endpoint, the catalog
 // as its models and, as the key, a credential named in apiKeyEnv, which
-// magpie puts in ~/.dsh/.env and dsh's own key store (the desktop app reads
+// magpie-friday puts in ~/.dsh/.env and dsh's own key store (the desktop app reads
 // only the store); agent-default-model names the model new
 // sessions start on. dsh's own DeepSeek row (llm-deepseek) is left to dsh:
 // taken over, it read as DeepSeek in dsh's Models page, and a DeepSeek key
-// entered there went to the gateway under magpie's credential name, over
-// magpie's own (Discord: 集成进 dsh 会被 dsh 覆写). A route of the user's in
-// the same entry stays as it is, and so does one dsh adds beside magpie's.
+// entered there went to the gateway under magpie-friday's credential name, over
+// magpie-friday's own (Discord: 集成进 dsh 会被 dsh 覆写). A route of the user's in
+// the same entry stays as it is, and so does one dsh adds beside magpie-friday's.
 //
-// Before 0.1.5, which has no custom providers, magpie took over
+// Before 0.1.5, which has no custom providers, magpie-friday took over
 // llm-deepseek, with the key in the entry, and set agent-loop's main agent
-// (the TUI) and api-gateway's route (`dsh -p`, `dsh web`). Entries magpie
-// writes whole are marked as magpie's, the user's own entries stay as they
-// are, and one magpie replaces is stashed and put back when it steps out.
+// (the TUI) and api-gateway's route (`dsh -p`, `dsh web`). Entries magpie-friday
+// writes whole are marked as magpie-friday's, the user's own entries stay as they
+// are, and one magpie-friday replaces is stashed and put back when it steps out.
 
 import (
 	"bytes"
@@ -42,18 +42,18 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/beat"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/beat"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-const dshMark = "# magpie"
+const dshMark = "# magpie-friday"
 
 // dshKeyRef is the credential dsh signs gateway requests with. It is not
-// dshOldKeyRef, the one magpie's llm-deepseek entry named: dsh's Models page
+// dshOldKeyRef, the one magpie-friday's llm-deepseek entry named: dsh's Models page
 // showed that entry as DeepSeek, so a DeepSeek key entered there may sit in
 // dsh's own store under that name, which dsh reads over .env.
 const (
@@ -61,8 +61,8 @@ const (
 	dshOldKeyRef = "MAGPIE_API_KEY"
 )
 
-// dshRoute is magpie's route among dsh's custom providers, and the
-// provider agent-default-model names for a model through magpie.
+// dshRoute is magpie-friday's route among dsh's custom providers, and the
+// provider agent-default-model names for a model through magpie-friday.
 const dshRoute = magpieID
 
 // dshPiRow is the row custom providers are configured on, and its plugin.
@@ -72,7 +72,7 @@ const (
 )
 
 // dshModels are the models dsh reaches on its own, as it ships them — under
-// its own name, not DeepSeek: magpie's DeepSeek provider is a group of that
+// its own name, not DeepSeek: magpie-friday's DeepSeek provider is a group of that
 // name too, and two would read as one listed twice (#115).
 var dshModels = []Option{
 	{Value: "deepseek-flash", Label: "DeepSeek-V41-Flash", Icon: "deepseek-color", Group: "DeepSeek Harness"},
@@ -124,7 +124,7 @@ func dshAt(at place) *Agent {
 			if dshSearchesHere(dir) && !gateway.CanSearch() {
 				notes = append(notes, noticeDsh3.String())
 			}
-			// only before 0.1.5 does magpie go through llm-deepseek
+			// only before 0.1.5 does magpie-friday go through llm-deepseek
 			if len(dshProfiles(dir)) == 0 && dshSettingsEndpoint(filepath.Join(dir, "settings.yaml")) {
 				notes = append(notes, noticeDsh4.String())
 			}
@@ -132,8 +132,8 @@ func dshAt(at place) *Agent {
 		},
 		Check: func() string { return dshCheck(dir, gw()) },
 		// a model of DeepSeek's own picked in dsh (saved in its settings)
-		// leaves magpie's route in its list: dsh is still connected, its
-		// /model has magpie's models beside DeepSeek's (Fate on Discord:
+		// leaves magpie-friday's route in its list: dsh is still connected, its
+		// /model has magpie-friday's models beside DeepSeek's (Fate on Discord:
 		// DSH went back to Not connected)
 		Joined: func() bool {
 			files := dshProfiles(dir)
@@ -143,7 +143,7 @@ func dshAt(at place) *Agent {
 			_, items, err := dshRead(files[0])
 			return err == nil && dshWired(dshOver(dir, items))
 		},
-		// connected so, Disconnect takes the route out, the start magpie
+		// connected so, Disconnect takes the route out, the start magpie-friday
 		// wrote and its key; the model picked in dsh stays its own
 		Unwire: func() error {
 			if usesMagpie(dshGet(dir)) {
@@ -164,7 +164,7 @@ func dshAt(at place) *Agent {
 			}
 			return dshEnv(dir, gw(), false, false)
 		},
-		// what magpie made for a desktop app never opened goes (#2279)
+		// what magpie-friday made for a desktop app never opened goes (#2279)
 		Restore: func() error { return dshTidyUnopened(dir) },
 		Fields: []Field{{
 			Key: "model", Label: "model",
@@ -183,7 +183,7 @@ func dshAt(at place) *Agent {
 				own := append([]Option{}, dshModels...)
 				// since 0.1.5 dsh's own go to DeepSeek on its own key, its
 				// llm-deepseek row left to it, and say so as every agent's
-				// own do (EZN7L2C3, #955); before, magpie took that row over
+				// own do (EZN7L2C3, #955); before, magpie-friday took that row over
 				if len(dshProfiles(dir)) > 0 {
 					for i := range own {
 						own[i].Direct = "DeepSeek"
@@ -193,14 +193,14 @@ func dshAt(at place) *Agent {
 			},
 		}, {
 			// the thinking effort sessions start with: agent-default-model's
-			// reasoningEffort since 0.1.5 (a model through magpie offers its
+			// reasoningEffort since 0.1.5 (a model through magpie-friday offers its
 			// own levels), llm-deepseek's before (off, low, high or max;
 			// dsh's own default is high)
 			Key: "effort", Label: "thinking",
 			Get: func() string { return dshGetEffort(dir) },
 			Set: func(v string) error { return dshSetEffort(dir, v, gw()) },
 			Options: func(cur map[string]string) []Option {
-				// a model through magpie that lists no levels has none in
+				// a model through magpie-friday that lists no levels has none in
 				// dsh (its route gives it no reasoningEfforts), so none is
 				// offered: dsh's own four were, and each was turned away
 				if ref, ok := strings.CutPrefix(cur["model"], magpieID+"/"); ok && len(dshProfiles(dir)) > 0 {
@@ -242,12 +242,12 @@ func dshDesktopFile(dir string) string {
 
 // dshMakeDesktop makes the desktop app's patch list, as dsh's template,
 // for an app installed and never opened (#2279, liangjinyuan-sihan): with
-// no profile at all magpie had nowhere to write, and DeepSeek Harness
+// no profile at all magpie-friday had nowhere to write, and DeepSeek Harness
 // Desktop has no ~/.dsh until its first start. The app's initProfile
 // writes each of a profile's files only where it is missing ("Existing
 // files are never touched"), so on its first start it adds its
 // package.json and pnpm-workspace.yaml beside this one and keeps
-// magpie's entries. The folder is owner-only, as the app makes it.
+// magpie-friday's entries. The folder is owner-only, as the app makes it.
 func dshMakeDesktop(dir string) error {
 	f := dshDesktopFile(dir)
 	if err := os.MkdirAll(filepath.Dir(f), 0o700); err != nil {
@@ -259,7 +259,7 @@ func dshMakeDesktop(dir string) error {
 	return os.WriteFile(f, []byte(dshProfileTemplate), 0o644)
 }
 
-// dshUnopened says the desktop app's profile is one magpie made and the
+// dshUnopened says the desktop app's profile is one magpie-friday made and the
 // app hasn't started on yet: it has no package.json, which the app's first
 // start writes.
 func dshUnopened(dir string) bool {
@@ -271,7 +271,7 @@ func dshUnopened(dir string) bool {
 	return errors.Is(err, os.ErrNotExist)
 }
 
-// dshTidyUnopened takes out, on Disconnect, what magpie made for a desktop
+// dshTidyUnopened takes out, on Disconnect, what magpie-friday made for a desktop
 // app never opened since: the profile's patch list back to dsh's template
 // with nothing beside it, and the folders that leaves empty. A patch list
 // holding anything else, or a profile the app has started on, stays.
@@ -301,7 +301,7 @@ func dshTidyUnopened(dir string) error {
 
 // dshHomePatch is dsh's home patch layer, $DSH_HOME/cordis.patch.yml: it is
 // applied over every profile's own, so an entry there replaces the profile's
-// of the same id, whatever magpie wrote in that one (#804).
+// of the same id, whatever magpie-friday wrote in that one (#804).
 func dshHomePatch(dir string) string { return filepath.Join(dir, "cordis.patch.yml") }
 
 // dshOver is a profile's patch list as dsh goes by it. A home patch only
@@ -359,11 +359,11 @@ func dshHomeHas(dir, id string) bool {
 	return err == nil && dshConfigIndex(home, id) >= 0
 }
 
-// dshMirrorHome gives the home layer what magpie wrote in the profiles, for
-// the entries it overrides them with: magpie's route in a llm-pi-ai entry
+// dshMirrorHome gives the home layer what magpie-friday wrote in the profiles, for
+// the entries it overrides them with: magpie-friday's route in a llm-pi-ai entry
 // there (the user's routes beside it stay), and in an agent-default-model
-// there the model magpie set. Without it dsh ran the home layer's snapshot
-// while magpie read as connected (#804). An entry the home layer doesn't
+// there the model magpie-friday set. Without it dsh ran the home layer's snapshot
+// while magpie-friday read as connected (#804). An entry the home layer doesn't
 // have is not added: the profiles' own then apply, as written. start is
 // true only for an explicit model pick or disconnect. Catalog refreshes
 // leave the home layer's start model alone, as they do the profiles'.
@@ -391,7 +391,7 @@ func dshMirrorHome(dir string, models []catalog.Model, gw string, start bool) er
 		}
 	}
 	// a start of the home layer's own on a model now on another route of
-	// magpie's goes with it, as a profile's does (dshPutRoute)
+	// magpie-friday's goes with it, as a profile's does (dshPutRoute)
 	if len(models) > 0 {
 		items = dshStartOnItsRoute(items, models)
 	}
@@ -404,7 +404,7 @@ func dshMirrorHome(dir string, models []catalog.Model, gw string, start bool) er
 			}
 			items[i] = dshItem{id: "agent-default-model", magpie: true, lines: append([]string{}, web[j].lines...)}
 		case dshOurs(items[i]):
-			// magpie's start gone from the profiles: the user's back, or none
+			// magpie-friday's start gone from the profiles: the user's back, or none
 			if old := unstash(dshStashKey(home, "agent-default-model")); old != "" {
 				items[i] = dshItem{id: "agent-default-model", lines: strings.Split(old, "\n")}
 			} else {
@@ -455,10 +455,10 @@ func dshParse(path, raw string) (head []string, items []dshItem, err error) {
 			// with one (#2667), and it stays in the head it is written back
 			// with, so the file keeps it. Only at the left edge and before
 			// anything but comments: a second one starts a second
-			// document, which is no list magpie can edit.
+			// document, which is no list magpie-friday can edit.
 			marker := dshDocStart(l) && !opened
 			if t != "" && !strings.HasPrefix(t, "#") && t != "[]" && !marker {
-				return nil, nil, fmt.Errorf("%s is not a list of entries magpie can edit", path)
+				return nil, nil, fmt.Errorf("%s is not a list of entries magpie-friday can edit", path)
 			}
 			if t != "" && !strings.HasPrefix(t, "#") {
 				opened = true
@@ -468,7 +468,7 @@ func dshParse(path, raw string) (head []string, items []dshItem, err error) {
 			}
 			continue
 		case t != "" && !strings.HasPrefix(t, "#") && !strings.HasPrefix(l, " "):
-			return nil, nil, fmt.Errorf("%s is not a list of entries magpie can edit", path)
+			return nil, nil, fmt.Errorf("%s is not a list of entries magpie-friday can edit", path)
 		default:
 			items[len(items)-1].lines = append(items[len(items)-1].lines, l)
 		}
@@ -540,7 +540,7 @@ func dshNode(it dshItem) (*yaml.Node, error) {
 		return nil, err
 	}
 	if len(doc.Content) == 0 || doc.Content[0].Kind != yaml.SequenceNode || len(doc.Content[0].Content) != 1 || doc.Content[0].Content[0].Kind != yaml.MappingNode {
-		return nil, fmt.Errorf("the %s entry is not one magpie can edit", it.id)
+		return nil, fmt.Errorf("the %s entry is not one magpie-friday can edit", it.id)
 	}
 	return doc.Content[0].Content[0], nil
 }
@@ -617,7 +617,7 @@ func dshConfig(it dshItem) map[string]string {
 	return out
 }
 
-// dshRoutesIn are magpie's routes among the custom providers of a patch
+// dshRoutesIn are magpie-friday's routes among the custom providers of a patch
 // list, by key: none when there are none.
 func dshRoutesIn(items []dshItem) map[string]*yaml.Node {
 	i := dshConfigIndex(items, dshPiRow)
@@ -641,25 +641,25 @@ func dshRoutesIn(items []dshItem) map[string]*yaml.Node {
 	return out
 }
 
-// dshOldWiring reports whether a profile still has what magpie wrote before
+// dshOldWiring reports whether a profile still has what magpie-friday wrote before
 // it was a custom provider: dsh's own DeepSeek row taken over.
 func dshOldWiring(items []dshItem) bool {
 	i := dshFind(items, "llm-deepseek")
 	return i >= 0 && items[i].magpie
 }
 
-// dshOurs reports whether an entry is magpie's: marked so, or — should dsh
-// rewrite it without the mark — a model on magpie's route, which is gone
+// dshOurs reports whether an entry is magpie-friday's: marked so, or — should dsh
+// rewrite it without the mark — a model on magpie-friday's route, which is gone
 // with it.
 func dshOurs(it dshItem) bool {
 	return it.magpie || it.id == "agent-default-model" && isDshRoute(dshConfig(it)["provider"])
 }
 
-// dshWired reports whether a profile's patch list has a route of magpie's.
+// dshWired reports whether a profile's patch list has a route of magpie-friday's.
 func dshWired(items []dshItem) bool { return len(dshRoutesIn(items)) > 0 }
 
-// dshServes reports whether magpie gives dsh this model now: the route
-// written again would list it, where one naming a model magpie no longer
+// dshServes reports whether magpie-friday gives dsh this model now: the route
+// written again would list it, where one naming a model magpie-friday no longer
 // gives dsh would not.
 func dshServes(id string) bool {
 	for _, m := range magpieModels("dsh") {
@@ -670,7 +670,7 @@ func dshServes(id string) bool {
 	return false
 }
 
-// dshRouteLists reports whether a route of magpie's carries a model with
+// dshRouteLists reports whether a route of magpie-friday's carries a model with
 // this id; a route there is none of lists none.
 func dshRouteLists(route *yaml.Node, id string) bool {
 	models := yamlKey(route, "models")
@@ -714,7 +714,7 @@ func dshStart(dir string, items []dshItem) string {
 	case sel["model"] == "":
 		return ""
 	case isDshRoute(sel["provider"]),
-		// set before magpie was a provider of its own, not yet moved
+		// set before magpie-friday was a provider of its own, not yet moved
 		sel["provider"] == "deepseek-official" && dshOldWiring(items):
 		return magpieID + "/" + sel["model"]
 	}
@@ -754,8 +754,8 @@ func dshGetLegacy(path string) string {
 	return model
 }
 
-// dshCheck says what keeps a dsh on one of magpie's models from reaching
-// the gateway: magpie's route (its llm-deepseek entry before 0.1.5) pointed
+// dshCheck says what keeps a dsh on one of magpie-friday's models from reaching
+// the gateway: magpie-friday's route (its llm-deepseek entry before 0.1.5) pointed
 // elsewhere, the model it starts on one the route doesn't list, or — since
 // 0.1.5 — the key it names gone from .env, or another key under that name in
 // dsh's own store, which it reads first.
@@ -783,16 +783,16 @@ func dshCheck(dir, gw string) string {
 	if dshHomeHas(dir, dshPiRow) {
 		routeFile = dshHomePatch(dir)
 		// the home layer's llm-pi-ai goes over every profile's: without
-		// magpie's route it lists none of magpie's models anywhere
+		// magpie-friday's route it lists none of magpie-friday's models anywhere
 		if !dshWired(dshOver(dir, items)) && dshWired(items) {
-			return "DeepSeek Harness's home patch layer (" + routeFile + ") sets llm-pi-ai over every profile without magpie's route, so sessions list none of magpie's models; Apply again writes it there too"
+			return "DeepSeek Harness's home patch layer (" + routeFile + ") sets llm-pi-ai over every profile without magpie-friday's route, so sessions list none of magpie-friday's models; Apply again writes it there too"
 		}
 	}
-	// a profile of dsh's (its desktop app's) without magpie's route: where
-	// the start still names one of magpie's models the route was stripped by
+	// a profile of dsh's (its desktop app's) without magpie-friday's route: where
+	// the start still names one of magpie-friday's models the route was stripped by
 	// dsh's own save, and the serving round writes it back within a round of
-	// magpie serving — so that one is not said, unless there is no catalog
-	// for the round to write it from. A profile taken off magpie for real,
+	// magpie-friday serving — so that one is not said, unless there is no catalog
+	// for the round to write it from. A profile taken off magpie-friday for real,
 	// its start with it, is said as before, and so is one still on the old
 	// wiring, which dshSync moves rather than this round writing beside.
 	canWriteBack := len(magpieModels("dsh")) > 0
@@ -804,10 +804,10 @@ func dshCheck(dir, gw string) string {
 		if canWriteBack && !dshOldWiring(items) && dshStartsOnMagpie(dir, items) {
 			continue
 		}
-		return "DeepSeek Harness's " + filepath.Base(filepath.Dir(f)) + " profile (" + f + ") has none of magpie's models, so sessions there list DeepSeek's own alone"
+		return "DeepSeek Harness's " + filepath.Base(filepath.Dir(f)) + " profile (" + f + ") has none of magpie-friday's models, so sessions there list DeepSeek's own alone"
 	}
 	routes := dshRoutesIn(dshOver(dir, items))
-	// the route gone entirely while the start still names one of magpie's
+	// the route gone entirely while the start still names one of magpie-friday's
 	// models is dsh's own save stripping it: the round writes it back, so
 	// the check is quiet unless nothing can write it (no catalog below). A
 	// start of dsh's own or of the user's fell through usesMagpie already,
@@ -843,7 +843,7 @@ func dshCheck(dir, gw string) string {
 		}
 	}
 	// dsh counts a model its provider doesn't list as none at all and refuses
-	// the turn, so a model of magpie's a profile's route has not is as
+	// the turn, so a model of magpie-friday's a profile's route has not is as
 	// unusable there as a route pointed elsewhere: a catalog that moved on, a
 	// profile written elsewhere, or one dsh's Models page wrote leave it that
 	// way. Every profile carries a route of its own, and dsh runs whichever
@@ -861,7 +861,7 @@ func dshCheck(dir, gw string) string {
 		if dshHomeHas(dir, dshPiRow) {
 			f = dshHomePatch(dir)
 		}
-		// the route the start names (magpie's first for one still on dsh's
+		// the route the start names (magpie-friday's first for one still on dsh's
 		// DeepSeek row), which must list its model
 		on := dshStartSel(dir, over)["provider"]
 		if !isDshRoute(on) {
@@ -869,13 +869,13 @@ func dshCheck(dir, gw string) string {
 		}
 		if ref, ok := strings.CutPrefix(dshStart(dir, it), magpieID+"/"); ok && !dshRouteLists(routes[on], ref) {
 			// a route out of date is written again — Apply again, or picking
-			// a model of magpie's in dsh, does it; one naming a model magpie
+			// a model of magpie-friday's in dsh, does it; one naming a model magpie-friday
 			// no longer gives dsh is not, so that one asks for another model
 			// rather than for a click that cannot help
 			if dshServes(ref) {
-				return "DeepSeek Harness starts on " + magpieID + "/" + ref + ", which magpie's route in " + f + " doesn't list: a session there fails with no such configured model until that route is written again (Apply again, or pick one of magpie's models in dsh)"
+				return "DeepSeek Harness starts on " + magpieID + "/" + ref + ", which magpie-friday's route in " + f + " doesn't list: a session there fails with no such configured model until that route is written again (Apply again, or pick one of magpie-friday's models in dsh)"
 			}
-			return "DeepSeek Harness starts on " + magpieID + "/" + ref + ", which magpie no longer gives dsh: a session there fails with no such configured model until another of magpie's is picked in dsh"
+			return "DeepSeek Harness starts on " + magpieID + "/" + ref + ", which magpie-friday no longer gives dsh: a session there fails with no such configured model until another of magpie-friday's is picked in dsh"
 		}
 	}
 	env := filepath.Join(dir, ".env")
@@ -886,9 +886,9 @@ func dshCheck(dir, gw string) string {
 	creds := filepath.Join(dir, ".credentials.yaml")
 	if v, ok := edit.GetYAML(creds, "refs."+dshKeyRef); ok && v != keyAt(gw) && !gatewayTakes(v) {
 		if onAnotherMachine(gw) {
-			return "DeepSeek Harness's own key store (" + creds + ") holds another " + dshKeyRef + ", which it uses over magpie's; remove it there (dsh's Models page, Magpie's key) to go through magpie"
+			return "DeepSeek Harness's own key store (" + creds + ") holds another " + dshKeyRef + ", which it uses over magpie-friday's; remove it there (dsh's Models page, magpie-friday's key) to go through magpie-friday"
 		}
-		return "DeepSeek Harness's own key store (" + creds + ") holds another " + dshKeyRef + ", which it uses over magpie's and this magpie refuses; Apply again puts magpie's key there (Disconnect puts this one back)"
+		return "DeepSeek Harness's own key store (" + creds + ") holds another " + dshKeyRef + ", which it uses over magpie-friday's and this magpie-friday refuses; Apply again puts magpie-friday's key there (Disconnect puts this one back)"
 	} else if !ok && dshCredsOurs(creds) {
 		// the desktop app doesn't read .env (#969)
 		return "DeepSeek Harness's own key store (" + creds + ") doesn't hold " + dshKeyRef + ": the desktop app reads the key from there, not from .env, and its sessions fail with no credential for provider route " + dshRoute + " until it is written (Apply again)"
@@ -902,7 +902,7 @@ func dshCheck(dir, gw string) string {
 // a route written without its key would fail the turn all the same).
 func dshCheckStripped(dir, gw string) string {
 	if len(magpieModels("dsh")) == 0 {
-		return "DeepSeek Harness starts on one of magpie's models, but magpie's route is out of " + dshHomePatch(dir) + " and the profiles' and there is no model list to write it back from; pick a model of magpie's again once it has one"
+		return "DeepSeek Harness starts on one of magpie-friday's models, but magpie-friday's route is out of " + dshHomePatch(dir) + " and the profiles' and there is no model list to write it back from; pick a model of magpie-friday's again once it has one"
 	}
 	env := filepath.Join(dir, ".env")
 	if off := wiringOff("DeepSeek Harness", env, func(k string) (string, bool) { return edit.GetEnvFile(env, k) },
@@ -928,8 +928,8 @@ func yamlScalar(v string) string {
 
 func dshStashKey(path, id string) string { return "dsh:" + path + ":" + id }
 
-// dshWrites serializes magpie's own writers of dsh's patch lists: the sync a
-// catalog change asks for, a model picked here, and the round magpie does
+// dshWrites serializes magpie-friday's own writers of dsh's patch lists: the sync a
+// catalog change asks for, a model picked here, and the round magpie-friday does
 // while it serves the gateway. Two of them reading one file and then writing
 // it would leave whichever read first as its content.
 var dshWrites sync.Mutex
@@ -977,15 +977,15 @@ func dshSet(dir, v, gw string) error {
 }
 
 // dshKeepPick hands a profile's start back to the user where dsh saved their
-// own pick into magpie's agent-default-model entry. Since 0.2 dsh no longer
+// own pick into magpie-friday's agent-default-model entry. Since 0.2 dsh no longer
 // keeps a pick in ~/.dsh/settings.yaml: its /model (and the one-time import
 // that renames settings.yaml to settings.yaml.imported) writes the config of
-// the profile's last agent-default-model entry, which is magpie's, mark and
-// all (#1392). A start there off magpie's route is the user's then, and
+// the profile's last agent-default-model entry, which is magpie-friday's, mark and
+// all (#1392). A start there off magpie-friday's route is the user's then, and
 // Disconnect leaves it as it is, as it left a pick in settings.yaml before;
-// what magpie stashed from before it wrote the entry is older than that pick.
-// One still on the old wiring names DeepSeek's row for magpie's models and
-// stays magpie's.
+// what magpie-friday stashed from before it wrote the entry is older than that pick.
+// One still on the old wiring names DeepSeek's row for magpie-friday's models and
+// stays magpie-friday's.
 func dshKeepPick(f string) error {
 	head, items, err := dshRead(f)
 	if err != nil || dshOldWiring(items) {
@@ -1006,7 +1006,7 @@ func dshKeepPick(f string) error {
 }
 
 // dshEnv puts the key for the gateway in $DSH_HOME/.env and dsh's own key
-// store, or with on false takes it out; the name magpie's llm-deepseek entry
+// store, or with on false takes it out; the name magpie-friday's llm-deepseek entry
 // used goes either way.
 func dshEnv(dir, gw string, on, take bool) error {
 	if err := dshCreds(dir, gw, on, take); err != nil {
@@ -1021,7 +1021,7 @@ func dshEnv(dir, gw string, on, take bool) error {
 		}
 	}
 	for _, k := range []string{dshKeyRef, dshOldKeyRef} {
-		// the old name only as magpie left it
+		// the old name only as magpie-friday left it
 		if v, ok := edit.GetEnvFile(env, k); ok && !(k == dshKeyRef && on) && (k == dshKeyRef || ourKey(v)) {
 			if err := edit.DelEnvFile(env, k); err != nil {
 				return err
@@ -1032,14 +1032,14 @@ func dshEnv(dir, gw string, on, take bool) error {
 }
 
 // dshCreds puts the key for the gateway in dsh's own key store,
-// $DSH_HOME/.credentials.yaml (refs), or with on false takes magpie's out.
+// $DSH_HOME/.credentials.yaml (refs), or with on false takes magpie-friday's out.
 // Only the product CLI loads the .env files into what dsh resolves keys
 // from: the desktop app reads this store and its own environment, and with
 // the key in .env alone its sessions failed with "no credential for provider
-// route magpie" (#969). The store wins over .env, so a key of the user's
+// route magpie-friday" (#969). The store wins over .env, so a key of the user's
 // there is left as it is by the sync and the serving round (the check says
 // so). take is a model picked, or Apply again: that replaces a key there
-// this gateway refuses, which only fails every turn through magpie, and
+// this gateway refuses, which only fails every turn through magpie-friday, and
 // stashes it for Disconnect to put back (#1419, DannyJRu: Reconnect said
 // done and the row stayed red). A key the gateway takes stays, and so does
 // any key for a gateway on another machine, which only that one can judge.
@@ -1091,7 +1091,7 @@ func dshCreds(dir, gw string, on, take bool) error {
 	return nil
 }
 
-// dshCredsOurs says whether magpie may write dsh's key store: there is none
+// dshCredsOurs says whether magpie-friday may write dsh's key store: there is none
 // yet, or it is in the version 1 layout.
 func dshCredsOurs(creds string) bool {
 	raw, err := os.ReadFile(creds)
@@ -1159,7 +1159,7 @@ func dshSetFile(path, v string, modern bool, models []catalog.Model, gw string) 
 			items = dshPutSearch(items, dshProfileHome(path), "", gw)
 		}
 	case modern && viaGateway:
-		drop("llm-deepseek") // magpie's before it was a provider of its own
+		drop("llm-deepseek") // magpie-friday's before it was a provider of its own
 		if items, err = dshPutRoute(items, true, models, gw); err != nil {
 			return err
 		}
@@ -1190,9 +1190,9 @@ func dshSetFile(path, v string, modern bool, models []catalog.Model, gw string) 
 	return dshWrite(path, head, items)
 }
 
-// dshPutRoute puts magpie's route, with the catalog as it is now, among the
+// dshPutRoute puts magpie-friday's route, with the catalog as it is now, among the
 // custom providers of the llm-pi-ai entry, or with on false takes it out.
-// Other routes there, the user's or ones dsh added beside magpie's, stay; an
+// Other routes there, the user's or ones dsh added beside magpie-friday's, stay; an
 // entry left with nothing goes.
 func dshPutRoute(items []dshItem, on bool, models []catalog.Model, gw string) ([]dshItem, error) {
 	i := dshConfigIndex(items, dshPiRow)
@@ -1239,7 +1239,7 @@ func dshPutRoute(items []dshItem, on bool, models []catalog.Model, gw string) ([
 				return nil, err
 			}
 			// what dsh's Models page added to it (a default level, headers)
-			// stays; magpie's fields are put as they are now
+			// stays; magpie-friday's fields are put as they are now
 			if cur := yamlKey(providers, k.key); cur != nil && cur.Kind == yaml.MappingNode {
 				dshKeepCompat(cur, &route)
 				for j := 0; j+1 < len(route.Content); j += 2 {
@@ -1274,11 +1274,11 @@ func dshPutRoute(items []dshItem, on bool, models []catalog.Model, gw string) ([
 
 // dshKeepCompat carries the compat switches set by hand in dsh's Models page
 // (maxTokensField, say) from route cur, as it is in the file, into route,
-// as magpie writes it now (#2504, h4rk8s): a model that works only with
+// as magpie-friday writes it now (#2504, h4rk8s): a model that works only with
 // them would fail again after each sync. They stay on the same model of a
 // route still on the same protocol; a model new to the route, or a route
-// whose protocol changed, starts without them. A switch magpie sets itself
-// is put as magpie has it now.
+// whose protocol changed, starts without them. A switch magpie-friday sets itself
+// is put as magpie-friday has it now.
 func dshKeepCompat(cur, route *yaml.Node) {
 	api := yamlKey(cur, "api")
 	if api == nil || yamlKey(route, "api") == nil || api.Value != yamlKey(route, "api").Value {
@@ -1311,7 +1311,7 @@ func dshKeepCompat(cur, route *yaml.Node) {
 	}
 }
 
-// dshPiRoute is magpie's route as llm-pi-ai takes a custom provider (the
+// dshPiRoute is magpie-friday's route as llm-pi-ai takes a custom provider (the
 // shape dsh's Models page writes): one of the gateway's APIs (dshAPI), the
 // key a credential named here, the catalog as its models.
 type dshPiRoute struct {
@@ -1345,7 +1345,7 @@ type dshPiCompat struct {
 }
 
 // dshAPIs are the wire protocols of llm-pi-ai's (pi-ai's api names) a route
-// of magpie's may speak, the gateway serving each: openai-completions at
+// of magpie-friday's may speak, the gateway serving each: openai-completions at
 // /v1/chat/completions, openai-responses at /v1/responses and
 // anthropic-messages at /v1/messages. dsh's Models page offers them as
 // OpenAI Chat Completions, OpenAI Responses and Anthropic Messages, set for
@@ -1353,7 +1353,7 @@ type dshPiCompat struct {
 // takes every model on each.
 var dshAPIs = []string{"openai-completions", "openai-responses", "anthropic-messages"}
 
-// dshKind is one of magpie's routes in llm-pi-ai: its key among the
+// dshKind is one of magpie-friday's routes in llm-pi-ai: its key among the
 // providers (what agent-default-model and a session name it by), the wire
 // protocol it is written with, and the name dsh's model list groups it
 // under.
@@ -1361,7 +1361,7 @@ type dshKind struct {
 	key, api, name string
 }
 
-// dshKinds are magpie's routes, one per protocol a model is best asked on
+// dshKinds are magpie-friday's routes, one per protocol a model is best asked on
 // (Discord, 01huadalang: 可以按不同协议分成组来注入，例如 chat 一个组，response
 // 一个组). llm-pi-ai sets the api for a route as a whole, so one route had
 // every model on Chat Completions, and the gateway translated each turn of
@@ -1371,19 +1371,19 @@ type dshKind struct {
 // route of the API its provider serves it on natively (catalog.Model.APIs,
 // as Pi's, omp's and droid's are asked), and every other one — a group, a
 // Chat provider's, a sign-in served through its agent's own API — on
-// magpie's first route, which keeps its key.
+// magpie-friday's first route, which keeps its key.
 var dshKinds = []dshKind{
-	{dshRoute, "openai-completions", "Magpie"},
-	{dshRoute + "-responses", "openai-responses", "Magpie · Responses"},
-	{dshRoute + "-anthropic", "anthropic-messages", "Magpie · Anthropic"},
+	{dshRoute, "openai-completions", "magpie-friday"},
+	{dshRoute + "-responses", "openai-responses", "magpie-friday · Responses"},
+	{dshRoute + "-anthropic", "anthropic-messages", "magpie-friday · Anthropic"},
 }
 
-// isDshRoute reports whether a provider route dsh names is one of magpie's.
+// isDshRoute reports whether a provider route dsh names is one of magpie-friday's.
 func isDshRoute(key string) bool {
 	return dshKindOf(key) != nil
 }
 
-// dshKindOf is magpie's route of this key, nil for a route of anyone else's.
+// dshKindOf is magpie-friday's route of this key, nil for a route of anyone else's.
 func dshKindOf(key string) *dshKind {
 	for i := range dshKinds {
 		if dshKinds[i].key == key {
@@ -1393,7 +1393,7 @@ func dshKindOf(key string) *dshKind {
 	return nil
 }
 
-// dshRouteOf is the route of magpie's a model goes on: the one for the API
+// dshRouteOf is the route of magpie-friday's a model goes on: the one for the API
 // its provider serves it on natively, the first otherwise.
 func dshRouteOf(m catalog.Model) string {
 	switch {
@@ -1405,7 +1405,7 @@ func dshRouteOf(m catalog.Model) string {
 	return dshRoute
 }
 
-// dshRouteFor is the route of magpie's the catalog model id goes on.
+// dshRouteFor is the route of magpie-friday's the catalog model id goes on.
 func dshRouteFor(id string, models []catalog.Model) string {
 	for _, m := range models {
 		if m.ID == id {
@@ -1415,11 +1415,11 @@ func dshRouteFor(id string, models []catalog.Model) string {
 	return dshRoute
 }
 
-// dshAPI is the wire protocol a route of magpie's speaks, given the one it
+// dshAPI is the wire protocol a route of magpie-friday's speaks, given the one it
 // has now and the one it is written with: the one it has when the gateway
 // speaks it — a user who switched a route to OpenAI Responses in dsh's
 // Models page keeps it, where each round put Chat Completions back
-// (Discord, 01huadalang: 这些协议怎么改 responses，在 dsh 改了一会就会被 magpie
+// (Discord, 01huadalang: 这些协议怎么改 responses，在 dsh 改了一会就会被 magpie-friday
 // 接管) — and the route's own otherwise, none or one the gateway has no
 // endpoint for.
 func dshAPI(cur, own string) string {
@@ -1504,7 +1504,7 @@ func dshLevels(ref string) []string {
 	return nil
 }
 
-// dshMaxTokens is the maxTokens magpie lists m with. dsh takes a listed
+// dshMaxTokens is the maxTokens magpie-friday lists m with. dsh takes a listed
 // maxTokens as every request's output and reserves it, with 65536 of
 // headroom, out of contextWindow before it decides when to compact
 // (compaction-basic's resolveCompactSpec: the threshold is the smaller of
@@ -1531,12 +1531,12 @@ func dshMaxTokens(m catalog.Model) int {
 // free beside a request's maxTokens before it compacts.
 const dshHeadroom = 65536
 
-// dshRouteConfig is magpie's first route with every one of models on it.
+// dshRouteConfig is magpie-friday's first route with every one of models on it.
 func dshRouteConfig(models []catalog.Model, api, gw string) dshPiRoute {
 	return dshKindConfig(dshKinds[0], models, api, gw)
 }
 
-// dshKindConfig is magpie's route k for models, of the catalog one round
+// dshKindConfig is magpie-friday's route k for models, of the catalog one round
 // read: what the round decides from and what it writes come from the same
 // list. api is the wire protocol the route has now, kept when the gateway
 // speaks it (dshAPI). A model's reasoningEfforts go on every one of them:
@@ -1570,10 +1570,10 @@ func dshKindConfig(k dshKind, models []catalog.Model, api, gw string) dshPiRoute
 }
 
 // dshStartOnItsRoute moves a start (agent-default-model) on a model of
-// magpie's to the route that model is on now: dsh finds a model by its
+// magpie-friday's to the route that model is on now: dsh finds a model by its
 // route and id, and fails a session started on a route that no longer has
 // it. The model, effort and everything else in the entry stay, and so does
-// a start on a model magpie no longer gives dsh (dshCheck says so).
+// a start on a model magpie-friday no longer gives dsh (dshCheck says so).
 func dshStartOnItsRoute(items []dshItem, models []catalog.Model) []dshItem {
 	for i, it := range items {
 		if it.id != "agent-default-model" {
@@ -1687,7 +1687,7 @@ func dshRouteLines(model string) []string {
 	}
 }
 
-// dshSync puts the catalog as it is now into magpie's route (its
+// dshSync puts the catalog as it is now into magpie-friday's route (its
 // llm-deepseek entry before 0.1.5), in every patch list that has it; a
 // profile still on dsh's DeepSeek row taken over moves to the route.
 // Nothing else in the patch lists changes.
@@ -1730,20 +1730,20 @@ func dshSync(dir, gw string) error {
 }
 
 // dshStartsOnMagpie reports whether the model a profile's sessions start on
-// is one of magpie's, read the way dsh starts sessions.
+// is one of magpie-friday's, read the way dsh starts sessions.
 func dshStartsOnMagpie(dir string, items []dshItem) bool {
 	return strings.HasPrefix(dshStart(dir, items), magpieID+"/")
 }
 
-// dshRouteAgain writes magpie's route again in one patch list where it is no
-// longer what magpie would write, and says whether it wrote; magpie's web
+// dshRouteAgain writes magpie-friday's route again in one patch list where it is no
+// longer what magpie-friday would write, and says whether it wrote; magpie-friday's web
 // search entry in a profile goes to the gateway's address with it. It is the one
-// thing that may be done again at any time: the route is magpie's list of
+// thing that may be done again at any time: the route is magpie-friday's list of
 // its own models, while the model a session starts on is the user's pick
-// (see dshCheck). A patch list without magpie's route is written back only
-// while the start still names one of magpie's models — dsh's own save keeps
+// (see dshCheck). A patch list without magpie-friday's route is written back only
+// while the start still names one of magpie-friday's models — dsh's own save keeps
 // a snapshot and can write the list back without the route, and stripping
-// the route under a start magpie still owes is not the user taking magpie
+// the route under a start magpie-friday still owes is not the user taking magpie-friday
 // out; a start of dsh's own or of the user's says that they were. One
 // written between the read and the write is left as it is: it is the newer
 // of the two, and the next round reads it. models is the catalog the round
@@ -1759,8 +1759,8 @@ func dshRouteAgain(f string, models []catalog.Model, gw string) (bool, error) {
 	}
 	head, items, err := dshParse(f, string(raw))
 	if err != nil || !dshWired(items) {
-		// no route of magpie's in the list: write it back only where the
-		// start still names one of magpie's models — the route was stripped
+		// no route of magpie-friday's in the list: write it back only where the
+		// start still names one of magpie-friday's models — the route was stripped
 		// under it, not taken out. dshPutRoute reads the entry dsh wrote in
 		// its own style, so the route is added beside the user's own. A list
 		// still on the old wiring is dshSync's to move (dshMove), not this
@@ -1803,9 +1803,9 @@ func dirOf(f string) string {
 // dshWriteParsed adds the route to the list as it was read, and writes it
 // back when the file still holds what was read. The home layer is only
 // written into where it already holds an llm-pi-ai entry of its own: its
-// config replaces every profile's whole entry (dshOver), so one magpie added
+// config replaces every profile's whole entry (dshOver), so one magpie-friday added
 // there would take the user's own providers out of dsh's list (#804). A
-// profile's own list may be given the entry, as magpie's apply path does.
+// profile's own list may be given the entry, as magpie-friday's apply path does.
 func dshWriteParsed(f string, head []string, items []dshItem, models []catalog.Model, gw string, raw []byte) (bool, error) {
 	if !dshProfileList(f) && dshFindLast(items, dshPiRow) < 0 {
 		return false, nil
@@ -1822,16 +1822,16 @@ func dshWriteParsed(f string, head []string, items []dshItem, models []catalog.M
 	}
 }
 
-// dshWiredEvery is how often a magpie serving the gateway looks at dsh's
+// dshWiredEvery is how often a magpie-friday serving the gateway looks at dsh's
 // patch lists.
 const dshWiredEvery = 30 * time.Second
 
-// KeepDshWired keeps magpie's route in dsh's patch lists as magpie's catalog
-// is now, for as long as magpie serves the gateway. dsh reads a patch list
+// KeepDshWired keeps magpie-friday's route in dsh's patch lists as magpie-friday's catalog
+// is now, for as long as magpie-friday serves the gateway. dsh reads a patch list
 // live, so one left behind by something else writing the file — dsh's own
-// Models page, an older magpie — fails every session there with no such
+// Models page, an older magpie-friday — fails every session there with no such
 // configured model until the route is written again. What is written is
-// magpie's own list, never the model a session starts on.
+// magpie-friday's own list, never the model a session starts on.
 func KeepDshWired(ctx context.Context) {
 	keepDshWired(ctx, dshWiredEvery)
 }
@@ -1855,7 +1855,7 @@ func keepDshWired(ctx context.Context, every time.Duration) {
 }
 
 // dshSaidOnce is what a round could not write, as it was last said: a round
-// repeating it says nothing, so a profile magpie cannot write to is reported
+// repeating it says nothing, so a profile magpie-friday cannot write to is reported
 // once rather than every 30s.
 type dshSaidOnce struct{ last string }
 
@@ -1868,7 +1868,7 @@ func (s *dshSaidOnce) first(trouble string) bool {
 	return trouble != ""
 }
 
-// dshModelsFor is how long a round takes magpie's models as built before
+// dshModelsFor is how long a round takes magpie-friday's models as built before
 // while provider.StampNow says nothing changed: what the stamp can't see
 // (another app rewriting an account's file, a model retired by its date)
 // reaches dsh's lists within it.
@@ -1876,10 +1876,10 @@ const dshModelsFor = 5 * time.Minute
 
 // dshRounds is what keepDshWired's last round read, so that a round with
 // nothing changed since does nothing. Every 30 seconds a round built
-// magpie's whole catalog and every route again to write nothing: 12 GB of
-// the 35.7 GB a user's magpie allocated in 48 minutes, with ~157 MB live.
+// magpie-friday's whole catalog and every route again to write nothing: 12 GB of
+// the 35.7 GB a user's magpie-friday allocated in 48 minutes, with ~157 MB live.
 // A round is done again when dsh's files it reads, the gateway's address
-// or magpie's models are other than when the last one found nothing to
+// or magpie-friday's models are other than when the last one found nothing to
 // write. The zero dshRounds does every round.
 type dshRounds struct {
 	// the models, and the stamp and time they were built at
@@ -1894,7 +1894,7 @@ type dshRounds struct {
 }
 
 // dshRoundKey is what a round goes by: dsh's files it reads, the gateway's
-// address and magpie's models, each as a sum.
+// address and magpie-friday's models, each as a sum.
 type dshRoundKey struct {
 	files  uint64
 	gw     string
@@ -1943,8 +1943,8 @@ func dshModelsSum(models []catalog.Model) uint64 {
 	return maphash.Bytes(dshSumSeed, b)
 }
 
-// dshWiredOnce writes magpie's route again in every patch list whose route
-// is not what magpie would write now, and says what could not be written.
+// dshWiredOnce writes magpie-friday's route again in every patch list whose route
+// is not what magpie-friday would write now, and says what could not be written.
 func dshWiredOnce() string {
 	var r dshRounds
 	return r.once()
@@ -1962,7 +1962,7 @@ func (r *dshRounds) once() string {
 	files := dshProfiles(dir)
 	if len(files) == 0 {
 		// no dsh: the catalog isn't built for nothing every round, ~34 MB
-		// of garbage a minute in a magpie at rest
+		// of garbage a minute in a magpie-friday at rest
 		r.done = false
 		return ""
 	}
@@ -1987,9 +1987,9 @@ func (r *dshRounds) once() string {
 func dshWiredWith(dir string, files []string, models []catalog.Model) string {
 	var trouble []string
 	// a profile dsh has just made — the desktop app's, opened for the first
-	// time while magpie runs — is its empty template: given magpie's route
+	// time while magpie-friday runs — is its empty template: given magpie-friday's route
 	// and start as the catalog sync would, rather than left listing dsh's
-	// own models alone until magpie's next start (star on Discord). One with
+	// own models alone until magpie-friday's next start (star on Discord). One with
 	// entries of its own and no route is the user's, left to Reapply.
 	fill := []string{}
 	fresh := false
@@ -2005,10 +2005,10 @@ func dshWiredWith(dir string, files []string, models []catalog.Model) string {
 	}
 	if fresh {
 		if err := dshFillNewProfiles(fill, models, gateway.URL()); err != nil {
-			trouble = append(trouble, "giving dsh's new profile magpie's route: "+dshWriteError(err))
+			trouble = append(trouble, "giving dsh's new profile magpie-friday's route: "+dshWriteError(err))
 		}
 	}
-	files = append(files, dshHomePatch(dir)) // left as it is without magpie's route
+	files = append(files, dshHomePatch(dir)) // left as it is without magpie-friday's route
 	for _, f := range files {
 		written, err := dshRouteAgain(f, models, gateway.URL())
 		if err != nil {
@@ -2045,8 +2045,8 @@ func dshHome() string {
 	return filepath.Join(home, ".dsh")
 }
 
-// dshMove moves a profile magpie wired by taking over dsh's DeepSeek row
-// onto magpie's route, the model and effort kept.
+// dshMove moves a profile magpie-friday wired by taking over dsh's DeepSeek row
+// onto magpie-friday's route, the model and effort kept.
 func dshMove(f string, items []dshItem, models []catalog.Model, gw string) error {
 	model := ""
 	if i := dshFindLast(items, "agent-default-model"); i >= 0 {
@@ -2055,7 +2055,7 @@ func dshMove(f string, items []dshItem, models []catalog.Model, gw string) error
 		}
 	}
 	if model == "" || !isMagpie(model) {
-		// nothing of magpie's to start on: dsh's own row back alone
+		// nothing of magpie-friday's to start on: dsh's own row back alone
 		head, items, err := dshRead(f)
 		if err != nil {
 			return err
@@ -2092,9 +2092,9 @@ func dshSyncLegacy(f string, models []catalog.Model, gw string) error {
 	return dshWrite(f, head, items)
 }
 
-// dshFillNewProfiles gives a profile dsh made after magpie set it up — the
+// dshFillNewProfiles gives a profile dsh made after magpie-friday set it up — the
 // desktop app's, opened for the first time after the web's was wired —
-// magpie's route, and the model magpie set in the others when it starts on
+// magpie-friday's route, and the model magpie-friday set in the others when it starts on
 // none of the user's: until then it lists dsh's own models alone.
 func dshFillNewProfiles(files []string, models []catalog.Model, gw string) error {
 	if len(models) == 0 {
@@ -2131,7 +2131,7 @@ func dshFillNewProfiles(files []string, models []catalog.Model, gw string) error
 			}
 			continue
 		}
-		// a model of the user's: magpie's are listed beside it
+		// a model of the user's: magpie-friday's are listed beside it
 		if items, err = dshPutRoute(items, true, models, gw); err != nil {
 			continue
 		}
@@ -2147,7 +2147,7 @@ func dshFillNewProfiles(files []string, models []catalog.Model, gw string) error
 // reasoning_effort before 0.1.7 and output_config.effort from it on.
 var dshEfforts = []string{"off", "low", "high", "max"}
 
-// dshEffortIn is the reasoningEffort of the llm-deepseek entry magpie
+// dshEffortIn is the reasoningEffort of the llm-deepseek entry magpie-friday
 // wrote, "" when there is none.
 func dshEffortIn(items []dshItem) string {
 	i := dshFind(items, "llm-deepseek")
@@ -2163,7 +2163,7 @@ func dshEffortIn(items []dshItem) string {
 }
 
 // dshEffortOf is the effort sessions start with in a profile (0.1.5 on):
-// agent-default-model's, else, not yet moved, magpie's llm-deepseek's.
+// agent-default-model's, else, not yet moved, magpie-friday's llm-deepseek's.
 func dshEffortOf(items []dshItem) string {
 	if i := dshFindLast(items, "agent-default-model"); i >= 0 {
 		if e := dshConfig(items[i])["reasoningEffort"]; e != "" {
@@ -2173,7 +2173,7 @@ func dshEffortOf(items []dshItem) string {
 	return dshEffortIn(items)
 }
 
-// dshFiles are the patch lists magpie writes: every profile's, else
+// dshFiles are the patch lists magpie-friday writes: every profile's, else
 // config.yaml.
 func dshFiles(dir string) []string {
 	if files := dshProfiles(dir); len(files) > 0 {
@@ -2182,7 +2182,7 @@ func dshFiles(dir string) []string {
 	return []string{filepath.Join(dir, "config.yaml")}
 }
 
-// DshPatchFiles are the patch lists of the dsh whose home is dir, as magpie
+// DshPatchFiles are the patch lists of the dsh whose home is dir, as magpie-friday
 // writes them: every profile's (web's first), else config.yaml.
 func DshPatchFiles(dir string) []string { return dshFiles(dir) }
 
@@ -2204,7 +2204,7 @@ func dshGetEffort(dir string) string {
 }
 
 // dshSetEffort writes v as the effort sessions start with: into
-// agent-default-model (0.1.5 on), or into magpie's llm-deepseek entry
+// agent-default-model (0.1.5 on), or into magpie-friday's llm-deepseek entry
 // before, dsh's own row being used whole when there is none.
 func dshSetEffort(dir, v, gw string) error {
 	dshWrites.Lock()
@@ -2225,7 +2225,7 @@ func dshSetEffort(dir, v, gw string) error {
 			route = dshRouteFor(ref, magpieModels("dsh"))
 		}
 		if v != "" && len(levels) == 0 {
-			return fmt.Errorf("DeepSeek Harness has no thinking levels for %s: magpie knows of none the model takes", ref)
+			return fmt.Errorf("DeepSeek Harness has no thinking levels for %s: magpie-friday knows of none the model takes", ref)
 		}
 		if v != "" && !contains(levels, v) {
 			return fmt.Errorf("DeepSeek Harness takes an effort of %s for this model, not %q", strings.Join(levels, ", "), v)
@@ -2280,14 +2280,14 @@ func dshSetEffort(dir, v, gw string) error {
 		if i := dshFind(items, "llm-deepseek"); i >= 0 && items[i].magpie {
 			models := magpieModels("dsh")
 			if len(models) == 0 {
-				return fmt.Errorf("DeepSeek Harness has no models to write: magpie has none to hand it")
+				return fmt.Errorf("DeepSeek Harness has no models to write: magpie-friday has none to hand it")
 			}
 			items[i].lines = dshProviderLines(v, models, gw)
 			return dshWrite(f, head, items)
 		}
 	}
 	if v != "" {
-		return fmt.Errorf("pick a model through magpie for DeepSeek Harness first; the effort is kept with magpie's DeepSeek entry")
+		return fmt.Errorf("pick a model through magpie-friday for DeepSeek Harness first; the effort is kept with magpie-friday's DeepSeek entry")
 	}
 	return nil
 }
@@ -2318,8 +2318,8 @@ func dshSettingsEndpoint(path string) bool {
 var (
 	noticeDsh1 = newNotice("New dsh sessions start on this. A session made before keeps its model, open now or reopened later, until you pick another in it with /model or the model button by its message box. A dsh started with -p or in a terminal reads it at start-up.")
 	noticeDsh2 = newNotice("dsh reads its config at start-up — restart open dsh sessions to use this.")
-	noticeDsh3 = newNotice("dsh's web search goes through magpie, which has nothing to search with yet: set up a provider that searches by itself (DeepSeek, Claude, Codex, …) or a search API under Settings › Web search.")
-	noticeDsh4 = newNotice("~/.dsh/settings.yaml sets its own DeepSeek endpoint or key, which dsh puts over magpie's; clear it in dsh's Models page to go through magpie.")
+	noticeDsh3 = newNotice("dsh's web search goes through magpie-friday, which has nothing to search with yet: set up a provider that searches by itself (DeepSeek, Claude, Codex, …) or a search API under Settings › Web search.")
+	noticeDsh4 = newNotice("~/.dsh/settings.yaml sets its own DeepSeek endpoint or key, which dsh puts over magpie-friday's; clear it in dsh's Models page to go through magpie-friday.")
 	noticeDsh5 = newNotice("DeepSeek Harness Desktop hasn't been opened yet: it starts on this the first time it opens.")
 )
 

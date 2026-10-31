@@ -17,7 +17,7 @@ package sessions
 // config.toml (the rollout names none and keeps no base_instructions, so
 // Codex uses its own), Claude Code from its settings; the assistant lines
 // say "<synthetic>", Claude Code's own name for a line no model wrote here,
-// so magpie's usage counts none of them as a call.
+// so magpie-friday's usage counts none of them as a call.
 //
 // The conversion runs when the user asks for it (CarryOver), never on a
 // listing, and the one made from a file's bytes is handed back again while
@@ -39,8 +39,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/yetone/magpie/internal/codexsummary"
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/codexsummary"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // carryItem is one thing said in a conversation, in neither agent's form.
@@ -522,7 +522,7 @@ func codexItem(p cxCarryPayload, at time.Time) []carryItem {
 	case "function_call_output", "custom_tool_call_output":
 		return []carryItem{{Kind: "result", ID: p.CallID, Text: codexOutput(p.Output), Time: at}}
 	case "compaction", "compaction_summary":
-		// magpie's own summary is read; OpenAI's is encrypted for OpenAI only
+		// magpie-friday's own summary is read; OpenAI's is encrypted for OpenAI only
 		if msg, ours := codexsummary.Message(p.EncryptedContent); ours && msg != nil {
 			c, _ := msg["content"].([]map[string]any)
 			if len(c) > 0 {

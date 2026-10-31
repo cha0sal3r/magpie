@@ -8,13 +8,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // unloadable stands in for Claude Code given --resume on a session it
 // can't load: it says so and exits 1, as Claude Code 2.1.295 does ("No
 // conversation found with session ID"). It reads one line first, so the
-// line magpie wrote is taken and magpie hears of the end only as the
+// line magpie-friday wrote is taken and magpie-friday hears of the end only as the
 // process goes: the order in which the turn was answered 502 "Claude Code
 // ended", with no reason (FrierenF on Discord).
 const unloadable = `if [ -n "$file" ] && [ "$sid" != "s$$" ] && [ ! -s "$file" ]; then
@@ -81,7 +81,7 @@ func TestClaudeUnloadableSessionStartsAnew(t *testing.T) {
 	}
 }
 
-// A Claude Code that ends before it answers magpie's control request
+// A Claude Code that ends before it answers magpie-friday's control request
 // says why: its exit status and the last it wrote to stderr, where the
 // client was told "Claude Code ended" alone.
 func TestClaudeEndedRunSaysWhy(t *testing.T) {

@@ -1,4 +1,4 @@
-// New API's 敏感词过滤 as magpie gateway middleware: words or patterns you
+// New API's 敏感词过滤 as magpie-friday gateway middleware: words or patterns you
 // list are kept out of what agents send, turned away or masked, and can be
 // masked in what comes back.
 //

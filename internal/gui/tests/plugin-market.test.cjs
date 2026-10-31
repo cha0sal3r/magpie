@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// The Plugins tab: Discover lists the plugins magpie suggests in two
+// The Plugins tab: Discover lists the plugins magpie-friday suggests in two
 // sections; a card installs its plugin, then offers its sign-in, which
 // opens in the Providers add sheet. A search filters at once and adds what
 // npm has. A card opens the plugin's page with its README — no pictures,
@@ -140,7 +140,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         assert.equal(await page.locator('#nav button[data-view="plugins"]').getAttribute("class"), "on");
         assert.match(page.url(), /view=plugins/);
 
-        // Discover: magpie's community's plugins alone, others' only found by a search
+        // Discover: magpie-friday's community's plugins alone, others' only found by a search
         await view.locator(".pm-sechead h3", { hasText: w.ours }).waitFor();
         assert.equal(await view.locator(".pm-sec").count(), 1);
         assert.equal(await view.locator('.pm-card[data-pkg="opencode-copilot-auth"]').count(), 0);
@@ -148,7 +148,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         assert.equal(await view.locator('.pm-card[data-pkg="@magpie-community/opencode-qoder-auth"] .pm-act').innerText(), w.soon);
         assert.ok(await view.locator('.pm-card[data-pkg="@magpie-community/opencode-qoder-auth"] .pm-act').isDisabled());
         // a plugin that takes a deprecated built-in's place says so, not
-        // that magpie still has it too (molvqingtai on Discord: a new
+        // that magpie-friday still has it too (molvqingtai on Discord: a new
         // user can't add the built-in at all)
         const replaces = view.locator('.pm-card[data-pkg="@magpie-community/opencode-zed-auth"] .pm-chip.soft');
         assert.equal((await replaces.innerText()).trim(), w.replaces);

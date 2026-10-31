@@ -32,7 +32,7 @@ func (group) join(*exec.Cmd) {}
 // so the group is signalled again until none of it is left. Its leader,
 // killed and not yet waited for, counts until it is: hence behind the
 // caller, which waits for it next. The channel closes once none of the group
-// is left, or killFor has passed: magpie exiting or putting a new version in
+// is left, or killFor has passed: magpie-friday exiting or putting a new version in
 // its place waits for it, since an exit ends the loop with what it missed
 // still running (#1278).
 func (group) kill(cmd *exec.Cmd) <-chan struct{} {

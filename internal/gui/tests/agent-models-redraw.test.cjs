@@ -30,12 +30,12 @@ function fixture() {
     agents: [
       {
         id: "codex", name: "Codex", path: "/test/config.toml", icon: "codex-color", wired: true,
-        fields: [{ key: "model", label: "model", value: "magpie/openai/gpt-5.5", options: [{ value: "magpie/openai/gpt-5.5", label: "GPT-5.5", ref: "openai/gpt-5.5" }] }],
+        fields: [{ key: "model", label: "model", value: "magpie-friday/openai/gpt-5.5", options: [{ value: "magpie-friday/openai/gpt-5.5", label: "GPT-5.5", ref: "openai/gpt-5.5" }] }],
         models: count(),
       },
       {
         id: "claude-desktop", name: "Claude Desktop", path: "/test/claude_desktop_config.json", icon: "claude-color", wired: true,
-        fields: [{ key: "provider", label: "provider", value: "magpie", options: [{ value: "magpie", label: "magpie", icon: "magpie" }] }],
+        fields: [{ key: "provider", label: "provider", value: "magpie-friday", options: [{ value: "magpie-friday", label: "magpie-friday", icon: "magpie-friday" }] }],
         models: count(),
       },
       // nothing to connect: its models counted on the line under its name

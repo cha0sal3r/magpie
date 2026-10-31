@@ -17,14 +17,14 @@ import (
 // clients", "only accessible via the official Claude CLI". The gateway
 // lets those headers go on to a provider reached with a key, as the agent
 // sent them (gateway.go: fromCodex, fromClaudeCode), so the agent's own
-// requests are served, while a test request, magpie's own, was turned away
+// requests are served, while a test request, magpie-friday's own, was turned away
 // and said the provider didn't work (耍赖天都爱 on Discord). A test can be
 // asked as one of them asks instead (TestAs): on the API that agent's
 // requests go to, streamed as they are, with the headers the gateway last
 // let through for it.
 //
 // Claude Code's are never made up: they are the ones a Claude Code request
-// that came through this magpie had, and they go to a relay alone, never to
+// that came through this magpie-friday had, and they go to a relay alone, never to
 // Anthropic's own API or a cloud's, nor to a signed-in account. Until
 // Claude Code has come through, a test as it says so. Codex's, until Codex
 // has come through, are the ones a ChatGPT account's requests are made with
@@ -39,7 +39,7 @@ const (
 type testClientKey struct{}
 
 // TestAs is ctx with Test and TestModels asking as client asks ("" as
-// magpie does).
+// magpie-friday does).
 func TestAs(ctx context.Context, client string) context.Context {
 	return context.WithValue(ctx, testClientKey{}, client)
 }
@@ -216,7 +216,7 @@ func asClient(client string, proto Protocol, body string) string {
 }
 
 // errNotSeen is TestsAs's answer for Claude Code before it has come through.
-const errNotSeen = "no Claude Code request has come through magpie yet: run Claude Code through magpie once, then test again"
+const errNotSeen = "no Claude Code request has come through magpie-friday yet: run Claude Code through magpie-friday once, then test again"
 
 // TestClients is the clients p's models can be tested as, each with why
 // it can't be yet ("" when it can): those whose API p has, of a provider

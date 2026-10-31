@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 func TestDrawingResolvesLiveImageModels(t *testing.T) {
@@ -42,7 +42,7 @@ func TestDrawingResolvesLiveImageModels(t *testing.T) {
 	for _, model := range []string{"gpt-image-2", "gpt-image-2.5-flare", "relay/gpt-image-2"} {
 		t.Run(model, func(t *testing.T) {
 			code, answer, raw := postImages(t, s, "/v1/images/generations", "application/json",
-				fmt.Sprintf(`{"model":%q,"prompt":"a magpie"}`, model))
+				fmt.Sprintf(`{"model":%q,"prompt":"a magpie-friday"}`, model))
 			upstreamModel := strings.TrimPrefix(model, "relay/")
 			if code != 200 || answer.Model != "relay/"+upstreamModel {
 				t.Fatalf("%d %s", code, raw)
@@ -53,12 +53,12 @@ func TestDrawingResolvesLiveImageModels(t *testing.T) {
 			}
 		})
 	}
-	code, answer, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"prompt":"a magpie"}`)
+	code, answer, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"prompt":"a magpie-friday"}`)
 	if code != 200 || answer.Model != st.ImageGen {
 		t.Fatalf("default: %d %s", code, raw)
 	}
 	before := len(e.got("/v1/images/generations"))
-	code, _, raw = postImages(t, s, "/v1/images/generations", "application/json", `{"model":"gpt-image-missing","prompt":"a magpie"}`)
+	code, _, raw = postImages(t, s, "/v1/images/generations", "application/json", `{"model":"gpt-image-missing","prompt":"a magpie-friday"}`)
 	if code != 404 || len(e.got("/v1/images/generations")) != before {
 		t.Fatalf("unknown model: %d %s", code, raw)
 	}
@@ -66,17 +66,17 @@ func TestDrawingResolvesLiveImageModels(t *testing.T) {
 	if err := settings.Save(st); err != nil {
 		t.Fatal(err)
 	}
-	code, _, raw = postImages(t, s, "/v1/images/generations", "application/json", `{"model":"gpt-image-2","prompt":"a magpie"}`)
+	code, _, raw = postImages(t, s, "/v1/images/generations", "application/json", `{"model":"gpt-image-2","prompt":"a magpie-friday"}`)
 	if code != 200 {
 		t.Fatalf("explicit model with default off: %d %s", code, raw)
 	}
-	code, _, raw = postImages(t, s, "/v1/images/generations", "application/json", `{"prompt":"a magpie"}`)
+	code, _, raw = postImages(t, s, "/v1/images/generations", "application/json", `{"prompt":"a magpie-friday"}`)
 	if code != 400 {
 		t.Fatalf("default off: %d %s", code, raw)
 	}
 	image := "data:image/png;base64," + base64.StdEncoding.EncodeToString(pngBytes)
 	code, _, raw = postImages(t, s, "/v1/images/edits", "application/json",
-		fmt.Sprintf(`{"model":"gpt-image-2","prompt":"a blue magpie","image":%q}`, image))
+		fmt.Sprintf(`{"model":"gpt-image-2","prompt":"a blue magpie-friday","image":%q}`, image))
 	if code != 200 || len(e.got("/v1/images/edits")) != 1 || len(e.got("/v1/chat/completions")) != 0 {
 		t.Fatalf("edit: %d %s", code, raw)
 	}
@@ -98,7 +98,7 @@ func TestDrawingResolvesLiveImageModels(t *testing.T) {
 	if err := writer.WriteField("model", "gpt-image-2.5-flare"); err != nil {
 		t.Fatal(err)
 	}
-	if err := writer.WriteField("prompt", "a blue magpie"); err != nil {
+	if err := writer.WriteField("prompt", "a blue magpie-friday"); err != nil {
 		t.Fatal(err)
 	}
 	part, err := writer.CreateFormFile("image", "input.png")

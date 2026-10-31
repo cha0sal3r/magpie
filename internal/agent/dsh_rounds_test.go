@@ -6,12 +6,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// dshSettled is a profile with magpie's route, and keepDshWired's rounds
-// once the route is what magpie writes: the first round writes it, the
+// dshSettled is a profile with magpie-friday's route, and keepDshWired's rounds
+// once the route is what magpie-friday writes: the first round writes it, the
 // second finds nothing to write.
 func dshSettled(t *testing.T) (r *dshRounds, web string) {
 	t.Helper()
@@ -19,7 +19,7 @@ func dshSettled(t *testing.T) (r *dshRounds, web string) {
 	dshKeyFixture(dir)
 	os.WriteFile(web, []byte("# Your patch layer for this dsh profile.\n"+
 		dshRouteFixture("deepseek/pro")+
-		"- id: agent-default-model\n  config:\n    provider: magpie\n    model: deepseek/flash\n"), 0o644)
+		"- id: agent-default-model\n  config:\n    provider: magpie-friday\n    model: deepseek/flash\n"), 0o644)
 	r = &dshRounds{}
 	r.once()
 	r.once()
@@ -28,7 +28,7 @@ func dshSettled(t *testing.T) (r *dshRounds, web string) {
 	}
 	if !dshListed(web, "deepseek/pro") || !dshListed(web, "deepseek/flash") {
 		b, _ := os.ReadFile(web)
-		t.Fatalf("the route is not what magpie writes:\n%s", b)
+		t.Fatalf("the route is not what magpie-friday writes:\n%s", b)
 	}
 	return r, web
 }
@@ -39,9 +39,9 @@ func dshListed(web, model string) bool {
 	return strings.Contains(string(b), "- id: "+model+"\n")
 }
 
-// A user's magpie allocated 35.7 GB in 48 minutes with ~157 MB live, its
+// A user's magpie-friday allocated 35.7 GB in 48 minutes with ~157 MB live, its
 // heap peaking near 885 MB; 12 GB of it was keepDshWired's round, every 30
-// seconds building magpie's whole catalog and every route again to write
+// seconds building magpie-friday's whole catalog and every route again to write
 // nothing. A round with nothing changed since does nothing of that.
 func TestDshRoundWithNothingChangedBuildsNothing(t *testing.T) {
 	r, web := dshSettled(t)
@@ -56,7 +56,7 @@ func TestDshRoundWithNothingChangedBuildsNothing(t *testing.T) {
 
 // What a round goes by changing has the next round write the route again:
 // a provider saved, a setting saved, the patch list written over by dsh,
-// and the providers' file written by another magpie (the CLI).
+// and the providers' file written by another magpie-friday (the CLI).
 func TestDshRoundAfterAChangeWritesAgain(t *testing.T) {
 	t.Run("provider", func(t *testing.T) {
 		r, web := dshSettled(t)
@@ -84,13 +84,13 @@ func TestDshRoundAfterAChangeWritesAgain(t *testing.T) {
 		r, web := dshSettled(t)
 		os.WriteFile(web, []byte("# Your patch layer for this dsh profile.\n"+
 			dshRouteFixture("deepseek/pro")+
-			"- id: agent-default-model\n  config:\n    provider: magpie\n    model: deepseek/flash\n"), 0o644)
+			"- id: agent-default-model\n  config:\n    provider: magpie-friday\n    model: deepseek/flash\n"), 0o644)
 		r.once()
 		if !dshListed(web, "deepseek/flash") {
 			t.Fatal("a route dsh wrote over is not written again by the next round")
 		}
 	})
-	t.Run("another magpie", func(t *testing.T) {
+	t.Run("another magpie-friday", func(t *testing.T) {
 		r, web := dshSettled(t)
 		b, err := os.ReadFile(provider.Path())
 		if err != nil {
@@ -105,7 +105,7 @@ func TestDshRoundAfterAChangeWritesAgain(t *testing.T) {
 		}
 		r.once()
 		if !dshListed(web, "deepseek/max") {
-			t.Fatal("a provider another magpie saved is not in dsh's route after the next round")
+			t.Fatal("a provider another magpie-friday saved is not in dsh's route after the next round")
 		}
 	})
 	// what the stamp can't see (another app's account file, a date) is

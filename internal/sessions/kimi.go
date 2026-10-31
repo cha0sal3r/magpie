@@ -47,8 +47,8 @@ import (
 // written without one (forkedFrom set, no marker) counts from its createdAt,
 // which Kimi sets after the copy.
 //
-// Unlike the call reader, a call made through magpie's own entry (a model
-// keyed magpie/<provider>/<model>) counts here, as the session's own spend,
+// Unlike the call reader, a call made through magpie-friday's own entry (a model
+// keyed magpie-friday/<provider>/<model>) counts here, as the session's own spend,
 // under <provider>/<model>.
 //
 // `kimi --session <id>` picks one up again (apps/kimi-code/src/cli).

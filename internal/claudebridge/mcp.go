@@ -1,6 +1,6 @@
-// Package claudebridge contains the small stdio MCP helper used by magpie's
+// Package claudebridge contains the small stdio MCP helper used by magpie-friday's
 // Claude Subscription bridge. The helper is launched by the genuine Claude
-// Code binary; tool execution is handed back to the parent magpie process.
+// Code binary; tool execution is handed back to the parent magpie-friday process.
 package claudebridge
 
 import (
@@ -64,7 +64,7 @@ func RunMCP(args []string) error {
 	}
 	callbackURL, toolsPath := args[0], args[1]
 	if !strings.HasPrefix(callbackURL, "http://") && !strings.HasPrefix(callbackURL, "https://") {
-		// the file magpie wrote it in, which keeps its token off the
+		// the file magpie-friday wrote it in, which keeps its token off the
 		// command line
 		b, err := os.ReadFile(callbackURL)
 		if err != nil {
@@ -82,8 +82,8 @@ func RunMCP(args []string) error {
 	}
 
 	// a tools/call intentionally blocks until the agent returns its result.
-	// The callback is magpie on this computer, never through a proxy: the
-	// agent hands down the *_PROXY magpie gave it for its vendor, and a
+	// The callback is magpie-friday on this computer, never through a proxy: the
+	// agent hands down the *_PROXY magpie-friday gave it for its vendor, and a
 	// gateway on a LAN or Tailscale address isn't in its NO_PROXY, so the
 	// call went to the proxy, which reset it or couldn't reach back, and
 	// the tool call never reached the run (#2440).
@@ -136,7 +136,7 @@ func RunMCP(args []string) error {
 				result = map[string]any{
 					"protocolVersion": "2025-06-18",
 					"capabilities":    map[string]any{"tools": map[string]any{"listChanged": true}},
-					"serverInfo":      map[string]any{"name": "magpie", "version": "1"},
+					"serverInfo":      map[string]any{"name": "magpie-friday", "version": "1"},
 				}
 			case "tools/list":
 				toolsMu.Lock()

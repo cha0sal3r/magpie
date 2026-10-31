@@ -34,7 +34,7 @@ func copyText(_ *application.App, text string) bool {
 		return true
 	}
 	// off the main thread: GTK answers the read from it when the copy is
-	// magpie's own
+	// magpie-friday's own
 	var out *C.char
 	var n C.size_t
 	got := C.magpie_clipboard_read(display, seat, 2000, &out, &n)

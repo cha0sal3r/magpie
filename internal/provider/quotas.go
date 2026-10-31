@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// Quotas is what is left everywhere magpie can ask: the signed-in
+// Quotas is what is left everywhere magpie-friday can ask: the signed-in
 // subscriptions' windows, the plans bought with a key, and the keys'
 // balances, as the Usage page shows them. The vendors are asked at once;
 // what doesn't answer before ctx ends comes back with an error.
@@ -18,7 +18,7 @@ func Quotas(ctx context.Context) []SubscriptionQuota {
 
 // InProviderOrder is qs in the order the user put the providers in on the
 // Providers page (SetOrder), each provider's cards as they came; a card of
-// no provider here (a remote magpie's) after them all. The window's Usage
+// no provider here (a remote magpie-friday's) after them all. The window's Usage
 // page and the tray panel's Allowances tab draw them so, where the user
 // hasn't arranged the cards themselves (Zhenbao TONG on Discord: the
 // providers moved in the window, the tray kept its own order).
@@ -39,7 +39,7 @@ func InProviderOrder(qs []SubscriptionQuota) []SubscriptionQuota {
 }
 
 // Allotted is Quotas without the keys' balances: the accounts and plans
-// whose allowance runs out and starts again, which is what magpie quota
+// whose allowance runs out and starts again, which is what magpie-friday quota
 // wait waits on; no key's balance is asked for.
 func Allotted(ctx context.Context) []SubscriptionQuota {
 	plans, subs := seatCards(PlanQuotas(ctx), SubscriptionUsage(ctx))
@@ -55,7 +55,7 @@ func quotas(ctx context.Context) (subs, plans, balances []SubscriptionQuota) {
 	go func() { r <- RemoteCards(ctx) }()
 	plans, subs = seatCards(<-p, SubscriptionUsage(ctx))
 	subs, balances = withAccountNames(subs), <-b
-	// a remote magpie's cards, each after this computer's of its kind
+	// a remote magpie-friday's cards, each after this computer's of its kind
 	for _, q := range <-r {
 		switch q.Kind {
 		case "plan":
@@ -69,8 +69,8 @@ func quotas(ctx context.Context) (subs, plans, balances []SubscriptionQuota) {
 	return subs, plans, balances
 }
 
-// Quota is one account's or key's allowance as magpie quota --json and
-// the gateway's GET /v1/magpie/quotas tell it, for an agent choosing
+// Quota is one account's or key's allowance as magpie-friday quota --json and
+// the gateway's GET /v1/magpie-friday/quotas tell it, for an agent choosing
 // where to send its work: Provider is the first part of the models'
 // ids (provider/model) for a key's plan or balance, the agent for a
 // subscription.
@@ -98,7 +98,7 @@ type Quota struct {
 	Renew string     `json:"renew,omitempty"`
 	// Resets are a Codex account's rate-limit resets, when it holds any.
 	Resets *ResetCredits `json:"resets,omitempty"`
-	// ResetsUsed are the Codex account's resets magpie spent, newest
+	// ResetsUsed are the Codex account's resets magpie-friday spent, newest
 	// first, by itself or by hand (codex_resets_used.go)
 	ResetsUsed []ResetUse `json:"resetsUsed,omitempty"`
 	// LastServedAt is when the account, plan or key last answered a
@@ -106,7 +106,7 @@ type Quota struct {
 	// (served.go); Last is on the latest of them (#570).
 	LastServedAt *time.Time `json:"lastServedAt,omitempty"`
 	Last         bool       `json:"last,omitempty"`
-	// From is the remote magpie whose account this is, by its name here
+	// From is the remote magpie-friday whose account this is, by its name here
 	// (remote_quotas.go); "" for this computer's own.
 	From string `json:"from,omitempty"`
 	// Alias is the account's name of the user's own, else Seat: the name

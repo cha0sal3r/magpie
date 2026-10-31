@@ -1,6 +1,6 @@
-// Plugins: the market of OpenCode provider plugins — subscriptions magpie
+// Plugins: the market of OpenCode provider plugins — subscriptions magpie-friday
 // signs in to through someone else's code. Discover lists the plugins
-// magpie suggests (the community repo's list, with what npm says of each
+// magpie-friday suggests (the community repo's list, with what npm says of each
 // now) and finds the rest on npm; Installed is what was added, to sign in
 // with, update, switch off or remove. Each part is drawn as it comes
 // (#488): what's installed from /api/plugins, the plugins suggested from
@@ -13,11 +13,11 @@
 
   let mine = null;       // /api/plugins: what's installed
   let listings = null;   // /api/plugins/listings: the plugins suggested
-  let tagged = null;     // /api/plugins/github: repositories their authors tagged magpie-plugin, as listings
+  let tagged = null;     // /api/plugins/github: repositories their authors tagged magpie-friday-plugin, as listings
   let taggedErr = "";    // why the list isn't GitHub's whole answer: it couldn't be asked, or...
   let taggedKind = "";   // its kind: "slow", "limited" or ""
   let taggedMissing = 0; // ...this many repositories it named couldn't be read
-  let topic = "magpie-plugin";
+  let topic = "magpie-friday-plugin";
   const npm = {};        // /api/plugins/npm: package → what npm says of it
   const heads = {};      // /api/plugins/git: a git plugin's spec → the commit its repository is at
   let failed = "";       // why what's installed couldn't be loaded
@@ -69,7 +69,7 @@
   const lang = () => (document.documentElement.lang || "en").slice(0, 2);
   const summary = (l) => l.summary?.[lang()] || l.summary?.en || l.npm?.description || "";
   const count = (n) => n >= 1e6 ? (n / 1e6).toFixed(n >= 1e7 ? 0 : 1) + "M" : n >= 1e3 ? (n / 1e3).toFixed(n >= 1e4 ? 0 : 1) + "k" : String(n || 0);
-  // a repository tagged magpie-plugin is installed by whichever spec
+  // a repository tagged magpie-friday-plugin is installed by whichever spec
   // names it (github:owner/repo, its page's URL), or as the package its
   // package.json names
   const ghRepo = (spec) => { const m = /^(?:github:|https?:\/\/(?:www\.)?github\.com\/)([^/#\s]+\/[^/#\s]+?)(?:\.git)?(?:[/#].*)?$/i.exec(spec) || (isGit(spec) && /^([^:/#]+\/[^:/#]+)(?:#.*)?$/.exec(spec)); return m ? m[1].toLowerCase() : ""; };
@@ -116,18 +116,18 @@
   // kindChip says what a plugin is: a provider ("pv") signs in to a
   // subscription and serves its models; middleware ("mw") runs in the
   // gateway on every agent's requests and replies, whatever serves them;
-  // an agent ("ag") is one magpie has no wiring of its own for, which it
+  // an agent ("ag") is one magpie-friday has no wiring of its own for, which it
   // then connects as it does its own; tools ("tl") are given to every
-  // agent through magpie's plugin tools MCP server; a page ("pg") is a
+  // agent through magpie-friday's plugin tools MCP server; a page ("pg") is a
   // page of its own in the window's sidebar (pluginpages.js); panels
-  // ("pn") are its parts in magpie's own pages
+  // ("pn") are its parts in magpie-friday's own pages
   const KINDS = {
     pv: [PLUG, "Provider", "Signs in to a subscription and serves its models"],
-    mw: [PIPE, "Middleware", "Runs in magpie's gateway on the requests your agents send and on the replies"],
-    ag: [TERM, "Agent", "Adds an agent magpie has no setup of its own for: pick its model on the Agents page and it goes through magpie"],
-    tl: [TOOL, "Tools", "Gives every agent tools of its own, through magpie's MCP server"],
-    pg: [PAGE, "Page", "Adds a page of its own to the sidebar. It runs shut off from the rest of magpie and can read only what its row lists"],
-    pn: [PAGE, "Panels", "Adds panels to magpie's own pages. They run shut off from the rest of magpie and can read only what its row lists"],
+    mw: [PIPE, "Middleware", "Runs in magpie-friday's gateway on the requests your agents send and on the replies"],
+    ag: [TERM, "Agent", "Adds an agent magpie-friday has no setup of its own for: pick its model on the Agents page and it goes through magpie-friday"],
+    tl: [TOOL, "Tools", "Gives every agent tools of its own, through magpie-friday's MCP server"],
+    pg: [PAGE, "Page", "Adds a page of its own to the sidebar. It runs shut off from the rest of magpie-friday and can read only what its row lists"],
+    pn: [PAGE, "Panels", "Adds panels to magpie-friday's own pages. They run shut off from the rest of magpie-friday and can read only what its row lists"],
   };
   const kindOf = (l) => ({ middleware: "mw", agent: "ag", tools: "tl", page: "pg" })[l.kind] || "pv";
   function kindChip(kind) {
@@ -163,7 +163,7 @@
     }
     merge();
   }
-  // a repository tagged magpie-plugin as the market's cards read a
+  // a repository tagged magpie-friday-plugin as the market's cards read a
   // listing: its owner as the publisher, its version, and installed by its
   // spec (its npm name when its author published it there from the
   // repository, else github:owner/repo)
@@ -176,7 +176,7 @@
   // an empty list was read as there being no unofficial plugins (till on
   // Discord: GitHub unreachable from their desktop, the section gone).
   // A list had before stands through a failed ask that brings none.
-  // again: Try again, which has magpie ask GitHub at once.
+  // again: Try again, which has magpie-friday ask GitHub at once.
   async function loadTagged(again) {
     try {
       const r = await api("plugins/github" + (again ? "?again=1" : ""));
@@ -420,7 +420,7 @@
     if (npm) {
       b.title = t("Update to {v}", { v: "v" + e.latest });
       // the community's would come by itself: Update brings it now
-      if (pkg.startsWith("@magpie-community/") && !/@(?!latest$)[^@/]+$/.test(e.spec.slice(pkg.length))) b.title += "\n" + t("magpie updates it by itself within the hour; Update does it now");
+      if (pkg.startsWith("@magpie-community/") && !/@(?!latest$)[^@/]+$/.test(e.spec.slice(pkg.length))) b.title += "\n" + t("magpie-friday updates it by itself within the hour; Update does it now");
     } else b.title = t("Fetches it from {repo} again", { repo: e.spec }) + "\n" + t("{have} installed, {repo} is at {head}", { have: e.commit, repo: e.spec, head: e.head });
     b.onclick = (ev) => {
       ev.stopPropagation();
@@ -520,8 +520,8 @@
     const by = el("div", "pm-by");
     if (l.community) {
       const v = el("span", "pm-verified");
-      v.append(glyph(SHIELD, 11, 1.5), el("span", "", t("magpie community")));
-      v.title = t("Written for magpie by its community, in github.com/magpie-community/plugins");
+      v.append(glyph(SHIELD, 11, 1.5), el("span", "", t("magpie-friday community")));
+      v.title = t("Written for magpie-friday by its community, in github.com/magpie-community/plugins");
       by.append(v);
     } else by.append(el("span", "", l.npm?.publisher || l.package));
     who.append(by);
@@ -548,7 +548,7 @@
     else if (e?.off) meta.append(el("span", "pm-chip", t("Off")));
     if (l.replaces) {
       const b = el("span", "pm-chip soft", t("Replaces built-in"));
-      b.title = t("magpie's own sign-in to this subscription is deprecated: this plugin takes its place, and accounts signed in there move to it");
+      b.title = t("magpie-friday's own sign-in to this subscription is deprecated: this plugin takes its place, and accounts signed in there move to it");
       meta.append(b);
     }
     c.append(top, sum, meta);
@@ -906,17 +906,17 @@
     const out = [];
     if (!f) {
       out.push(intro());
-      // magpie's community's alone: others' plugins are found by a search
+      // magpie-friday's community's alone: others' plugins are found by a search
       const ours = ls.filter((l) => l.community && kindOf(l) === "pv");
       const mws = ls.filter((l) => l.community && kindOf(l) === "mw");
       const ags = ls.filter((l) => l.community && kindOf(l) === "ag");
       const tls = ls.filter((l) => l.community && kindOf(l) === "tl");
       const pgs = ls.filter((l) => l.community && kindOf(l) === "pg");
-      if (ours.length) out.push(section(t("Subscriptions"), t("written for magpie, checked against its own sign-ins"), ours));
-      if (mws.length) out.push(section(t("Gateway middleware"), t("runs in magpie's gateway on what every agent sends and gets back, whichever provider serves it"), mws));
-      if (ags.length) out.push(section(t("Agents"), t("agents magpie has no setup of its own for, connected to it as its own are"), ags));
-      if (tls.length) out.push(section(t("Tools for agents"), t("tools every agent can call, through magpie's MCP server"), tls));
-      if (pgs.length) out.push(section(t("Pages"), t("pages of their own in magpie's window, each shut off from the rest and reading only what it lists"), pgs));
+      if (ours.length) out.push(section(t("Subscriptions"), t("written for magpie-friday, checked against its own sign-ins"), ours));
+      if (mws.length) out.push(section(t("Gateway middleware"), t("runs in magpie-friday's gateway on what every agent sends and gets back, whichever provider serves it"), mws));
+      if (ags.length) out.push(section(t("Agents"), t("agents magpie-friday has no setup of its own for, connected to it as its own are"), ags));
+      if (tls.length) out.push(section(t("Tools for agents"), t("tools every agent can call, through magpie-friday's MCP server"), tls));
+      if (pgs.length) out.push(section(t("Pages"), t("pages of their own in magpie-friday's window, each shut off from the rest and reading only what it lists"), pgs));
       if (gh.length) out.push(ghSection(gh));
       else if (!tagged) out.push(ghWaiting());
       else if (taggedErr && !tagged.length) out.push(ghFailed());
@@ -950,10 +950,10 @@
   function intro() {
     const box = el("div", "pm-intro");
     const text = el("div", "pm-introtext");
-    text.append(el("h2", "", t("Plugins extend magpie")));
+    text.append(el("h2", "", t("Plugins extend magpie-friday")));
     text.append(el("p", "", t("Plugins sign in to coding plans and make their requests; the models then work in every agent, like any provider's. They're OpenCode's provider plugins or pi's packages, run on Bun.")));
     const mw = el("p", "");
-    mw.append(document.createTextNode(t("A plugin can also run in magpie's gateway on what agents send and get back, pick which account a routing asks, give every agent tools, connect an agent, or add a page of its own.") + " "));
+    mw.append(document.createTextNode(t("A plugin can also run in magpie-friday's gateway on what agents send and get back, pick which account a routing asks, give every agent tools, connect an agent, or add a page of its own.") + " "));
     // the docs in the reader's language: the site has en, zh and ja, and
     // Chinese is nearer a zh-TW reader than English is
     const how = el("a", "pm-link pm-write", "");
@@ -992,8 +992,8 @@
       act("+", "add", { spec: s }, () => status(t("{name} is installed", { name: s }), "ok"));
     };
     box.append(spec);
-    // a folder is picked, not typed, where magpie can show the system's
-    // picker (`magpie web` can't, and the market says so)
+    // a folder is picked, not typed, where magpie-friday can show the system's
+    // picker (`magpie-friday web` can't, and the market says so)
     if (mine?.picker) box.append(browse(spec, go));
     box.append(go);
     return box;
@@ -1025,7 +1025,7 @@
     return b;
   }
 
-  // Built-in: magpie's own plugins (Sessions, Library, routing groups…),
+  // Built-in: magpie-friday's own plugins (Sessions, Library, routing groups…),
   // each with a switch (renderBuiltins in app.js), read afresh each time
   // the tab is drawn
   let builtins = null, builtinsFailed = "";
@@ -1039,7 +1039,7 @@
     if (tab === "builtin") drawBody();
   }
   function drawBuiltin() {
-    const say = el("p", "feat-say", t("Parts of magpie not everyone needs. Switched off, a part leaves the sidebar, its pages and Settings; magpie works the same either way."));
+    const say = el("p", "feat-say", t("Parts of magpie-friday not everyone needs. Switched off, a part leaves the sidebar, its pages and Settings; magpie-friday works the same either way."));
     const list = el("div", "list prefs");
     list.id = "builtinList";
     body.append(say, list);
@@ -1143,9 +1143,9 @@
       c.title = whyText(ck);
       nm.append(c);
     } else if (e.autoUpdated && e.autoUpdated.to === e.version) {
-      // magpie updated it by itself lately: the row says so, quietly
+      // magpie-friday updated it by itself lately: the row says so, quietly
       const c = el("span", "pm-chip soft", t("Auto-updated"));
-      c.title = t("magpie updated it from v{from} to v{to} on {date}", { from: e.autoUpdated.from, to: e.autoUpdated.to, date: new Date(e.autoUpdated.at).toLocaleDateString(intlLang(), { month: "short", day: "numeric" }) });
+      c.title = t("magpie-friday updated it from v{from} to v{to} on {date}", { from: e.autoUpdated.from, to: e.autoUpdated.to, date: new Date(e.autoUpdated.at).toLocaleDateString(intlLang(), { month: "short", day: "numeric" }) });
       nm.append(c);
     } else if ((ck?.status === "current" || ck?.status === "update") && e.version) {
       const c = el("span", "pm-chip soft", t("Up to date"));
@@ -1163,7 +1163,7 @@
       c.title = t("{names} runs on this plugin in place of the built-in", { names });
       nm.append(c);
     }
-    // gateway middleware runs in magpie's gateway, not as a subscription:
+    // gateway middleware runs in magpie-friday's gateway, not as a subscription:
     // the row says so, and how it is doing, on a line of its own
     const mw = e.middleware;
     const gw = e.gateway;
@@ -1206,8 +1206,8 @@
         const s = el("span", "pm-sub" + (x.signedIn ? " in" : ""));
         // its built-in runs it, with its accounts: nothing to fix here
         const builtin = !x.signedIn && cands.some((c) => c.id === x.pid);
-        s.append(el("span", "dot"), el("span", "", x.signedIn ? t("{name}: signed in", { name: x.name }) : builtin ? t("{name}: on magpie's built-in", { name: x.name }) : t("{name}: not signed in", { name: x.name })));
-        if (builtin) s.title = t("{name} runs on magpie's built-in, with your accounts; Move {name} here runs it on this plugin", { name: x.name });
+        s.append(el("span", "dot"), el("span", "", x.signedIn ? t("{name}: signed in", { name: x.name }) : builtin ? t("{name}: on magpie-friday's built-in", { name: x.name }) : t("{name}: not signed in", { name: x.name })));
+        if (builtin) s.title = t("{name} runs on magpie-friday's built-in, with your accounts; Move {name} here runs it on this plugin", { name: x.name });
         else if (!x.signedIn && subs.some((y) => y.signedIn)) s.title = t("{name} is a subscription of its own; {other} works without it", { name: x.name, other: subs.find((y) => y.signedIn).name });
         sub.append(s);
       }
@@ -1218,9 +1218,9 @@
     } else if (e.providers.length) sub.textContent = t("Signs in to {names}", { names: e.providers.join(t(", ")) });
     // an empty list only means "nothing" once the plugins have answered: a
     // plugin installed a moment ago has no names yet, and the page says
-    // nothing rather than claiming here that it signs in to nothing magpie
+    // nothing rather than claiming here that it signs in to nothing magpie-friday
     // can use, which isn't known until the answer comes (#1112)
-    else if (e.named) sub.textContent = t("Signs in to nothing magpie can use");
+    else if (e.named) sub.textContent = t("Signs in to nothing magpie-friday can use");
     if (sub.textContent) who.append(sub);
     if (!ask) for (const c of clashes) who.append(clashLine(e, c, nameOfSpec));
     if (mw && !e.off && !ask) who.append(mwLine(mw));
@@ -1375,8 +1375,8 @@
       ? t("{other} signs in to {name} too; this one serves it", { name: c.name, other: others })
       : t("{name} is served by {other}, which signs in to it too", { name: c.name, other: others })));
     d.title = c.by === e.spec
-      ? t("Two plugins sign in to {name}; magpie runs it on one. Use for {name} on the other one's row switches it", { name: c.name })
-      : t("Two plugins sign in to {name}; magpie runs it on one. Use for {name} switches it to this one, or remove the one you don't want", { name: c.name });
+      ? t("Two plugins sign in to {name}; magpie-friday runs it on one. Use for {name} on the other one's row switches it", { name: c.name })
+      : t("Two plugins sign in to {name}; magpie-friday runs it on one. Use for {name} switches it to this one, or remove the one you don't want", { name: c.name });
     return d;
   }
 
@@ -1394,21 +1394,21 @@
     return d;
   }
 
-  // toolsLine is the tools a plugin gives, which magpie's plugin tools MCP
+  // toolsLine is the tools a plugin gives, which magpie-friday's plugin tools MCP
   // server offers every agent: each by the name an agent sees, its
   // description on hover, and the server's address to copy into an agent
   function toolsLine(tools) {
     const d = el("div", "sub pm-mw pm-tools");
     d.append(el("span", "", t("Tools for every agent: {names}", { names: tools.map((x) => x.mcp || x.name).join(t(", ")) })));
     d.title = tools.map((x) => (x.mcp || x.name) + (x.description ? " — " + x.description : "")).join("\n");
-    const url = mcpAddress(state.settings || {}, "/mcp/magpie/tools");
+    const url = mcpAddress(state.settings || {}, "/mcp/magpie-friday/tools");
     const b = copyBtn(url, t("MCP server address"));
     b.title = t("Copy the MCP server's address ({url}): add it to an agent as an MCP server (Streamable HTTP)", { url });
     d.append(b);
     return d;
   }
 
-  // what a plugin's page may read of magpie's: what its package.json's
+  // what a plugin's page may read of magpie-friday's: what its package.json's
   // magpie.permissions declares, each a read with no secret in it
   const READS = { "usage:summary": "your usage totals, by model", "providers:list": "your providers' names" };
   const PAGES = { sessions: "Sessions", library: "Library", routing: "Routing", usage: "Usage" };
@@ -1419,14 +1419,14 @@
     d.textContent = d.title = page
       ? reads.length
         ? t("Takes the place of the {page} page, and can read {reads}", { page, reads: reads.join(t(", ")) })
-        : t("Takes the place of the {page} page, and reads nothing of magpie's", { page })
+        : t("Takes the place of the {page} page, and reads nothing of magpie-friday's", { page })
       : reads.length
         ? t("Adds a page to the sidebar, which can read {reads}", { reads: reads.join(t(", ")) })
-        : t("Adds a page to the sidebar, which reads nothing of magpie's");
+        : t("Adds a page to the sidebar, which reads nothing of magpie-friday's");
     return d;
   }
 
-  // where a plugin's panels go in magpie's own pages (magpie.panels), and
+  // where a plugin's panels go in magpie-friday's own pages (magpie.panels), and
   // the row menus its page adds items to (magpie.actions), titled with
   // their titles; picking an item tells the page the row's name only
   const SLOTS = { agents: "the Agents page", usage: "the Usage page", settings: "Settings", provider: "each provider's editor" };
@@ -1441,7 +1441,7 @@
     const reads = (panelReads || []).map((r) => t(READS[r] || r)).join(t(", "));
     return whereLine(panels, "slot", SLOTS, (where) => reads
       ? t("Adds panels to {where}, which can read {reads}", { where, reads })
-      : t("Adds panels to {where}, which read nothing of magpie's", { where }));
+      : t("Adds panels to {where}, which read nothing of magpie-friday's", { where }));
   }
   function actionsLine(actions) {
     return whereLine(actions, "menu", MENUS, (where) => t("Adds items to {where}, which open its page", { where }));
@@ -1498,7 +1498,7 @@
     return d;
   }
 
-  // a README on its way: its lines are strings, and magpie's bird drops in
+  // a README on its way: its lines are strings, and magpie-friday's bird drops in
   // and bounces down them, each bending under its feet and wobbling after
   // it; leave() sends it off when the README comes. Its marks are data-*,
   // not classes, so the dialog's observer doesn't place it again each hop
@@ -1596,7 +1596,7 @@
     const nm = el("div", "pm-name");
     nm.append(el("b", "", l.name));
     const by = el("div", "pm-by"); // the words in a span of their own, or a flex row cuts them without the ellipsis
-    by.append(el("span", "", l.community ? t("magpie community") + " · " + l.package : [l.npm?.publisher, l.package].filter(Boolean).join(" · ")));
+    by.append(el("span", "", l.community ? t("magpie-friday community") + " · " + l.package : [l.npm?.publisher, l.package].filter(Boolean).join(" · ")));
     who.append(nm, by);
     const actBox = el("div", "pm-dact");
     // redrawn only when what it would say changes: a button made afresh
@@ -1641,12 +1641,12 @@
       const w = el("p", "pm-note warn");
       // from npm when its author published it there from the repository
       const from = isGit(l.package)
-        ? "Unofficial: {owner} tagged it {topic} on GitHub, and nobody at magpie has reviewed it. It is installed from the repository as it stands, and runs with your sign-in or your requests."
-        : "Unofficial: {owner} tagged it {topic} on GitHub, and nobody at magpie has reviewed it. It is installed from npm, as its author published it from the repository, and runs with your sign-in or your requests.";
+        ? "Unofficial: {owner} tagged it {topic} on GitHub, and nobody at magpie-friday has reviewed it. It is installed from the repository as it stands, and runs with your sign-in or your requests."
+        : "Unofficial: {owner} tagged it {topic} on GitHub, and nobody at magpie-friday has reviewed it. It is installed from npm, as its author published it from the repository, and runs with your sign-in or your requests.";
       w.append(glyph(SHIELD, 12, 1.5), el("span", "", t(from, { owner: l.github.owner, topic })));
       main.append(w);
     }
-    if (l.replaces) main.append(el("p", "pm-note", t("magpie's own sign-in to this subscription is deprecated: this plugin takes its place, and accounts signed in there move to it.")));
+    if (l.replaces) main.append(el("p", "pm-note", t("magpie-friday's own sign-in to this subscription is deprecated: this plugin takes its place, and accounts signed in there move to it.")));
     const readme = el("div", "pm-readme");
     readme.append(bounceLoader());
     main.append(readme);

@@ -1,9 +1,9 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// An answer that is a proxy's own web page, not magpie's: magpie web behind
+// An answer that is a proxy's own web page, not magpie-friday's: magpie-friday web behind
 // Cloudflare, an install that outlasted its 100 seconds, and the toast
 // showed "<!DOCTYPE html> <!--[if lt IE 7]> <html class="no-js ie…"
 // (precisionz installing Zed, #2032). The page says a proxy answered, by
-// its title, and for a timeout that magpie may still be finishing; a
+// its title, and for a timeout that magpie-friday may still be finishing; a
 // plain-text error is still said as it came. English, Chinese, Japanese
 // and German; the API is faked here.
 const assert = require("node:assert/strict");
@@ -22,7 +22,7 @@ const CF524 = `<!DOCTYPE html>
 <!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en-US"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en-US"> <!--<![endif]-->
 <head>
-<title>magpie.example.com | 524: A timeout occurred</title>
+<title>magpie-friday.example.com | 524: A timeout occurred</title>
 <meta charset="UTF-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
@@ -77,23 +77,23 @@ const bad = "magpie.example.com | 502: Bad gateway";
 const L = {
   en: {
     install: "Install",
-    timeout: `A proxy in front of magpie stopped waiting; magpie may still be finishing, check again in a minute (${what})`,
-    other: `A proxy in front of magpie answered, not magpie (${bad})`,
+    timeout: `A proxy in front of magpie-friday stopped waiting; magpie-friday may still be finishing, check again in a minute (${what})`,
+    other: `A proxy in front of magpie-friday answered, not magpie-friday (${bad})`,
   },
   zh: {
     install: "安装",
-    timeout: `magpie 前面的代理等不及先返回了；magpie 可能仍在处理，请过一分钟再看看（${what}）`,
-    other: `这是 magpie 前面的代理返回的，不是 magpie 的回应（${bad}）`,
+    timeout: `magpie-friday 前面的代理等不及先返回了；magpie-friday 可能仍在处理，请过一分钟再看看（${what}）`,
+    other: `这是 magpie-friday 前面的代理返回的，不是 magpie-friday 的回应（${bad}）`,
   },
   ja: {
     install: "インストール",
-    timeout: `magpie の前のプロキシが待ちきれずに応答しました。magpie はまだ処理中かもしれません。1 分ほどして確認してください（${what}）`,
-    other: `magpie ではなく、その前のプロキシからの応答です（${bad}）`,
+    timeout: `magpie-friday の前のプロキシが待ちきれずに応答しました。magpie-friday はまだ処理中かもしれません。1 分ほどして確認してください（${what}）`,
+    other: `magpie-friday ではなく、その前のプロキシからの応答です（${bad}）`,
   },
   de: {
     install: "Installieren",
-    timeout: `Ein Proxy vor magpie hat nicht länger gewartet; magpie arbeitet möglicherweise noch, prüfen Sie es in einer Minute erneut (${what})`,
-    other: `Ein Proxy vor magpie hat geantwortet, nicht magpie (${bad})`,
+    timeout: `Ein Proxy vor magpie-friday hat nicht länger gewartet; magpie-friday arbeitet möglicherweise noch, prüfen Sie es in einer Minute erneut (${what})`,
+    other: `Ein Proxy vor magpie-friday hat geantwortet, nicht magpie-friday (${bad})`,
   },
 };
 

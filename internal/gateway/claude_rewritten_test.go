@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // almaReply is a reply as Alma is given it: its own notification block at
@@ -187,7 +187,7 @@ func TestClaudeSessionTempFilesAreRemoved(t *testing.T) {
 		t.Skip("Claude Code names its temp folder by the uid")
 	}
 	t.Setenv("CLAUDE_CODE_TMPDIR", t.TempDir())
-	dir := filepath.Join(t.TempDir(), "-tmp-magpie-claude-work-1")
+	dir := filepath.Join(t.TempDir(), "-tmp-magpie-friday-claude-work-1")
 	tmp := claudeTempDir(dir)
 	if want := filepath.Join(os.Getenv("CLAUDE_CODE_TMPDIR"), fmt.Sprintf("claude-%d", os.Getuid()), filepath.Base(dir)); tmp != want {
 		t.Fatalf("temp folder %s, want %s", tmp, want)

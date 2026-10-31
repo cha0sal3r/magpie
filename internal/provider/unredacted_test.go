@@ -4,7 +4,7 @@ import "testing"
 
 // Only a provider the user set to go unmasked whose every address is on
 // this machine or the local network skips redaction; one at a vendor's
-// address, a signed-in account or another magpie never does.
+// address, a signed-in account or another magpie-friday never does.
 func TestSkipsRedaction(t *testing.T) {
 	cases := []struct {
 		name string
@@ -22,7 +22,7 @@ func TestSkipsRedaction(t *testing.T) {
 		{"a public ip", Provider{Unredacted: true, Chat: "http://8.8.8.8/v1"}, false},
 		{"no address", Provider{Unredacted: true}, false},
 		{"an account", Provider{Unredacted: true, Chat: "http://localhost:1/v1", Account: &Account{Agent: "codex"}}, false},
-		{"another magpie", Provider{Unredacted: true, Preset: RemoteMagpiePreset, Anthropic: "http://192.168.1.5:3425"}, false},
+		{"another magpie-friday", Provider{Unredacted: true, Preset: RemoteMagpiePreset, Anthropic: "http://192.168.1.5:3425"}, false},
 	}
 	for _, tc := range cases {
 		if got := tc.p.SkipsRedaction(); got != tc.want {

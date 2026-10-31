@@ -12,9 +12,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A WorkBuddy plan draws with the image models its product config lists:
@@ -30,7 +30,7 @@ import (
 // image costs the plan's credits, so AutoDrawer never picks one.
 //
 // It is the same for the built-in and for a WorkBuddy moved onto its
-// plugin (@magpie-community/opencode-workbuddy-auth): magpie shapes the
+// plugin (@magpie-community/opencode-workbuddy-auth): magpie-friday shapes the
 // request, the plugin's fetch signs and sends it.
 
 // wbImagesFor is how long a plan's image models are kept before its config

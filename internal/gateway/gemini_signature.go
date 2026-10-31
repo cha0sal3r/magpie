@@ -37,14 +37,14 @@ import (
 // A signature grows with the step's thinking, to several KB, and an id
 // that long broke a client that indexes ids (#2411, liangxyz: LobeHub's
 // PostgreSQL index takes 2704 bytes). So the signature itself is kept in
-// magpie's folder (sigStore) and the id carries a short reference to it,
-// <id>__tsk16__<key>. A reference magpie no longer has reads as no
+// magpie-friday's folder (sigStore) and the id carries a short reference to it,
+// <id>__tsk16__<key>. A reference magpie-friday no longer has reads as no
 // signature, as a shortened id does.
 
 const (
 	// sigMark begins the signature in an id: __ts<n>__ for the signature's
 	// own bytes, __tsr<n>__ for one that isn't canonical base64, its text.
-	// Ids magpie gave before #1536 have no n (__ts__, __tsr__); they are
+	// Ids magpie-friday gave before #1536 have no n (__ts__, __tsr__); they are
 	// still read, with nothing to check them by.
 	sigMark = "__ts"
 	sigRaw  = "r"

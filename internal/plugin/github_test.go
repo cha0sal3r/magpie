@@ -71,7 +71,7 @@ func fakeGitHub(t *testing.T, up *atomic.Bool, asked *atomic.Int32) {
 		like("someone/page-gone", nil),
 		like("alfaoz/opencode-see-image", nil),
 		like("someone/flaky-entry", map[string]any{"license": map[string]any{"key": "other", "spdx_id": "NOASSERTION"}}),
-		like("cyberElar/magpie-x-search", nil),
+		like("cyberElar/magpie-friday-x-search", nil),
 		like("forker/opencode-claude-auth", map[string]any{"fork": true}),
 		like("old/opencode-old", map[string]any{"archived": true}),
 		like("magpie-community/plugins", nil))
@@ -190,7 +190,7 @@ func TestTaggedRepos(t *testing.T) {
 	}
 	// iPolloWork and learn-opencode (a workspace and a course) have no
 	// index.js to load, nor see-image its dist: installed from GitHub,
-	// none would load. magpie-x-search (real, #1327) is on npm from its
+	// none would load. magpie-friday-x-search (real, #1327) is on npm from its
 	// repository, but a command alone, an MCP server: npm's copy names no
 	// file to load, and it has no index.js
 	want := "rynfar/meridian griffinmartin/opencode-claude-auth slkiser/opencode-quota someone/word-guard someone/agent-aider someone/page-glance someone/flaky-entry"
@@ -209,20 +209,20 @@ func TestTaggedRepos(t *testing.T) {
 	if x := byRepo["someone/flaky-entry"]; x.License != "" {
 		t.Fatalf("NOASSERTION is no license: %+v", x)
 	}
-	// its own picture, package.json's magpie.icon, as an installed
+	// its own picture, package.json's magpie-friday.icon, as an installed
 	// plugin's provider has it; none when it gives none
 	if x := byRepo["someone/flaky-entry"]; !strings.HasPrefix(x.Icon, "data:image/svg+xml;base64,") {
-		t.Fatalf("magpie.icon: %q", x.Icon)
+		t.Fatalf("magpie-friday.icon: %q", x.Icon)
 	}
 	if c.Icon != "" {
-		t.Fatalf("no magpie.icon, yet %q", c.Icon)
+		t.Fatalf("no magpie-friday.icon, yet %q", c.Icon)
 	}
 	if x := byRepo["someone/agent-aider"]; x.Kind != "agent" || x.Spec != "github:someone/agent-aider" {
 		t.Fatalf("an agent alone: %+v", x)
 	}
-	// a page alone: no module, magpie.page's file in the repository; one
+	// a page alone: no module, magpie-friday.page's file in the repository; one
 	// whose file isn't there would show nothing, and isn't listed
-	if x := byRepo["someone/page-glance"]; x.Kind != "page" || x.Spec != "github:someone/page-glance" || x.Package != "magpie-usage-glance" {
+	if x := byRepo["someone/page-glance"]; x.Kind != "page" || x.Spec != "github:someone/page-glance" || x.Package != "magpie-friday-usage-glance" {
 		t.Fatalf("a page alone: %+v", x)
 	}
 	if x := byRepo["someone/word-guard"]; x.Kind != "middleware" || x.Package != "@magpie-community/middleware-word-guard" || x.License != "" {
@@ -338,7 +338,7 @@ func TestTaggedReposSlowRead(t *testing.T) {
 		t.Fatalf("%d repos", len(l))
 	}
 
-	// magpie started again eleven minutes on, word-guard's package.json
+	// magpie-friday started again eleven minutes on, word-guard's package.json
 	// slow to come
 	wait, retry := taggedWait, taggedRetry
 	taggedWait, taggedRetry = 300*time.Millisecond, time.Second
@@ -383,7 +383,7 @@ func TestTaggedReposSlowRead(t *testing.T) {
 	if until.Before(cutAsked.Add(taggedRetry)) || until.After(cutDone.Add(taggedRetry)) {
 		t.Fatalf("a list cut short held till %v, asked between %v and %v", until, cutAsked, cutDone)
 	}
-	// nor is the list cut short kept ten minutes by a magpie started again
+	// nor is the list cut short kept ten minutes by a magpie-friday started again
 	if fi, err := os.Stat(taggedCache()); err != nil || time.Since(fi.ModTime()) < taggedTTL-taggedRetry-time.Second {
 		t.Fatalf("the copy on disk stands till %v", fi.ModTime().Add(taggedTTL))
 	}

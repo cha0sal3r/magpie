@@ -124,7 +124,7 @@ func (s *syncBuffer) String() string {
 }
 
 // A device-code sign-in (Copilot's) canceled once GitHub has given the
-// token and said whose account it is, before magpie keeps it, adds no
+// token and said whose account it is, before magpie-friday keeps it, adds no
 // account (#2054).
 func TestCanceledDeviceSignInAddsNoAccount(t *testing.T) {
 	signIn(t)

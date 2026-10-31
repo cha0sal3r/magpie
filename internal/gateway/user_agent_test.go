@@ -9,11 +9,11 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// uaVendor is a key+URL vendor on every API magpie forwards to one: it
+// uaVendor is a key+URL vendor on every API magpie-friday forwards to one: it
 // keeps the User-Agent each path was asked with, and answers each as its
 // API does.
 type uaVendor struct {
@@ -57,7 +57,7 @@ func (v *uaVendor) sent(path string) (string, bool) {
 }
 
 // uaRoutes are the routes a request reaches a key+URL provider by: what an
-// agent posts magpie, and the path the vendor is asked at.
+// agent posts magpie-friday, and the path the vendor is asked at.
 var uaRoutes = []struct{ name, path, body, upstream string }{
 	{"anthropic", "/v1/messages", `{"model":"ua/m1","max_tokens":8,"messages":[{"role":"user","content":"hi"}]}`, "/v1/messages"},
 	{"count_tokens", "/v1/messages/count_tokens", `{"model":"ua/m1","messages":[{"role":"user","content":"hi"}]}`, "/v1/messages/count_tokens"},
@@ -65,7 +65,7 @@ var uaRoutes = []struct{ name, path, body, upstream string }{
 	{"responses", "/v1/responses", `{"model":"ua/m1","input":"hi"}`, "/v1/responses"},
 	{"gemini", "/v1beta/models/ug/m1:generateContent", `{"contents":[{"role":"user","parts":[{"text":"hi"}]}]}`, "/v1beta/models/m1:streamGenerateContent"},
 	{"embeddings", "/v1/embeddings", `{"model":"ua/embed-1","input":"hi"}`, "/v1/embeddings"},
-	{"images", "/v1/images/generations", `{"model":"ua/gpt-image-1","prompt":"a magpie"}`, "/v1/images/generations"},
+	{"images", "/v1/images/generations", `{"model":"ua/gpt-image-1","prompt":"a magpie-friday"}`, "/v1/images/generations"},
 }
 
 // uaSetup saves a key+URL provider "ua" on every API, at a uaVendor, with
@@ -113,13 +113,13 @@ func askAs(t *testing.T, s *Server, path, body, ua string) {
 // A key+URL provider set to pass the agent's User-Agent on (#1851) is
 // asked with the one the agent sent, on every route that reaches it: a
 // coding plan that serves only agents it names knows them by it. Off, the
-// default, it is asked as magpie; so it is when the agent sent none, and
-// on magpie's own requests (its classifier's, the image tool's), which no
+// default, it is asked as magpie-friday; so it is when the agent sent none, and
+// on magpie-friday's own requests (its classifier's, the image tool's), which no
 // agent sent. A User-Agent the user set in the provider's headers stands
 // over both.
 func TestUserAgentPassedOn(t *testing.T) {
 	const pi = "pi-coding-agent/0.9.1 (darwin; arm64)"
-	magpie := "magpie/" + Version
+	magpie := "magpie-friday/" + Version
 	for _, tt := range []struct {
 		name    string
 		pass    bool
@@ -130,8 +130,8 @@ func TestUserAgentPassedOn(t *testing.T) {
 		{"off", false, nil, pi, magpie},
 		{"on", true, nil, pi, pi},
 		{"on, the agent sent none", true, nil, "", magpie},
-		{"on, magpie's classifier", true, nil, RouterAgent, magpie},
-		{"on, magpie's image tool", true, nil, "claude-code/2.1.0 " + DrawAgent, magpie},
+		{"on, magpie-friday's classifier", true, nil, RouterAgent, magpie},
+		{"on, magpie-friday's image tool", true, nil, "claude-code/2.1.0 " + DrawAgent, magpie},
 		{"on, the user's own header", true, map[string]string{"User-Agent": "mine/1"}, pi, "mine/1"},
 		{"off, the user's own header", false, map[string]string{"User-Agent": "mine/1"}, pi, "mine/1"},
 	} {
@@ -168,12 +168,12 @@ func TestUserAgentClaudeCodeAsBefore(t *testing.T) {
 
 // Which providers pass it on: a key+URL one set to, and not a signed-in
 // account (ZCode's Coding Plan signs without a User-Agent of its own, and
-// goes as magpie), a plugin's, a vendor's own client's gateway (OpenCode,
-// Cline, Kilo) or another magpie, each of which goes as the client it
+// goes as magpie-friday), a plugin's, a vendor's own client's gateway (OpenCode,
+// Cline, Kilo) or another magpie-friday, each of which goes as the client it
 // signs as.
 func TestUserAgentFor(t *testing.T) {
 	const pi = "pi/1"
-	magpie := "magpie/" + Version
+	magpie := "magpie-friday/" + Version
 	for _, tt := range []struct {
 		name string
 		p    provider.Provider
@@ -185,7 +185,7 @@ func TestUserAgentFor(t *testing.T) {
 		{"opencode", provider.Provider{Chat: "https://opencode.ai/zen/v1", PassUserAgent: true}, magpie},
 		{"cline", provider.Provider{Preset: "clinepass", Chat: "https://api.cline.bot/api/v1", PassUserAgent: true}, magpie},
 		{"kilo", provider.Provider{Preset: "kilo", Chat: "https://api.kilo.ai/api/gateway", PassUserAgent: true}, magpie},
-		{"remote magpie", provider.Provider{Preset: provider.RemoteMagpiePreset, Chat: "http://10.0.0.2:3425/v1", PassUserAgent: true}, magpie},
+		{"remote magpie-friday", provider.Provider{Preset: provider.RemoteMagpiePreset, Chat: "http://10.0.0.2:3425/v1", PassUserAgent: true}, magpie},
 	} {
 		if got := userAgentFor(tt.p, pi); got != tt.want {
 			t.Errorf("%s: %q, want %q", tt.name, got, tt.want)

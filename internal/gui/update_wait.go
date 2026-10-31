@@ -3,8 +3,8 @@ package gui
 import (
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // A restart to update ends the gateway this process serves, and with it
@@ -26,7 +26,7 @@ var (
 )
 
 // gatewayBusy is what the gateway this process serves has in flight;
-// nothing when another magpie serves it, which a restart here leaves be.
+// nothing when another magpie-friday serves it, which a restart here leaves be.
 var gatewayBusy = func() gateway.Busy {
 	if gw := served.Load(); gw != nil {
 		return gw.Busy()

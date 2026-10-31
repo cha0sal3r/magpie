@@ -21,7 +21,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 // Development build (`make dev`): the UI is read from internal/gui/assets on

@@ -17,11 +17,11 @@ import (
 // Running reports whether a process whose command line matches a pattern is
 // alive, by asking pgrep -f. Windows has no pgrep, so it answered no for
 // every pattern — and every one of its 25 call sites is the advice an
-// agent's own lists need after magpie changed what that agent reads at
+// agent's own lists need after magpie-friday changed what that agent reads at
 // start ("Codex builds its model list at start-up — restart the Codex app",
 // "New dsh sessions start on this; one already open keeps its model until
 // you pick another in it"), each inside a Notice closure. So on Windows the
-// Agents page wrote the file, said nothing, and a model picked in magpie
+// Agents page wrote the file, said nothing, and a model picked in magpie-friday
 // looked like it had done nothing at all.
 func TestDshRunningOnWindows(t *testing.T) {
 	if runtime.GOOS != "windows" {
@@ -51,7 +51,7 @@ func TestDshAndCodexAdviceOnWindows(t *testing.T) {
 	}
 	home, _, _ := dshRouteHome(t)
 	a := dsh(home)
-	if err := a.Field("model").Set("magpie/deepseek/pro"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	if n := a.Notice(); !strings.Contains(n, "open") {
@@ -63,7 +63,7 @@ func TestDshAndCodexAdviceOnWindows(t *testing.T) {
 		t.Fatal(err)
 	}
 	cx := codex(home)
-	if err := cx.Field("model").Set("magpie/deepseek/pro"); err != nil {
+	if err := cx.Field("model").Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	if n := cx.Notice(); !strings.Contains(n, "restart") {

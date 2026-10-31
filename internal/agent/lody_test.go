@@ -12,8 +12,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 func TestLodyLink(t *testing.T) {
@@ -35,8 +35,8 @@ func TestLodyLink(t *testing.T) {
 				t.Fatal(err)
 			}
 			want := map[string]any{
-				"kind": "custom", "id": "magpie", "name": "Magpie",
-				"auth": map[string]any{"method": "apiKey", "apiKey": "magpie-lody"},
+				"kind": "custom", "id": "magpie-friday", "name": "magpie-friday",
+				"auth": map[string]any{"method": "apiKey", "apiKey": "magpie-friday-lody"},
 				"endpoints": []any{
 					map[string]any{"protocol": "anthropic-messages", "baseUrl": base, "targets": []any{"claude-code"}, "modelsUrl": base + "/v1/models"},
 					map[string]any{"protocol": "openai-responses", "baseUrl": base + "/v1", "targets": []any{"codex"}, "modelsUrl": base + "/v1/models"},
@@ -164,7 +164,7 @@ func TestLodyBundle(t *testing.T) {
 	}
 }
 
-// Lody's link carries only the public magpie-lody token and a loopback
+// Lody's link carries only the public magpie-friday-lody token and a loopback
 // gateway, with LAN sharing on too; with MAGPIE_ADDR pinned beyond
 // loopback, where that token is turned away, there is no link at all
 // rather than one carrying the LAN key.
@@ -209,8 +209,8 @@ func TestLodyLinkCarriesNoSecret(t *testing.T) {
 	if err := json.Unmarshal(data, &got); err != nil {
 		t.Fatal(err)
 	}
-	if got.Auth.APIKey != gateway.TokenFor("lody") || got.Auth.APIKey != "magpie-lody" {
-		t.Fatalf("key %q, want magpie-lody", got.Auth.APIKey)
+	if got.Auth.APIKey != gateway.TokenFor("lody") || got.Auth.APIKey != "magpie-friday-lody" {
+		t.Fatalf("key %q, want magpie-friday-lody", got.Auth.APIKey)
 	}
 	if len(got.Endpoints) == 0 {
 		t.Fatal("no endpoints")

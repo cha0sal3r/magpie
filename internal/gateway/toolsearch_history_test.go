@@ -6,12 +6,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A conversation that searched keeps the search's call and result after
 // the search tool is gone: Codex offers tool_search only while a deferred
-// tool is left to find, and its compaction of a magpie model goes with no
+// tool is left to find, and its compaction of a magpie-friday model goes with no
 // tools at all. A Responses vendor that doesn't know the items refused the
 // whole request. Each refusal is the reporter's, word for word: Anyrouter
 // on the compaction (#1171, tcxp001), Xiaomi MiMo on a later turn (#1755,

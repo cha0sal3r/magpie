@@ -23,7 +23,7 @@ const words = {
 };
 
 // model is the page's /api/privacy-model: a POST is recorded and moves it
-// along, as magpie would (downloading, then on and running on the GPU)
+// along, as magpie-friday would (downloading, then on and running on the GPU)
 function serve(lang, masking, model, posts) {
   const settings = () => ({ lang, theme: "light", redact: masking, redactPersonal: false });
   const state = { agents: [], profiles: [], settings: settings() };

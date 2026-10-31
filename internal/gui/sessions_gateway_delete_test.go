@@ -10,15 +10,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/sessions"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // A Claude Code session seen only through the gateway, its files on another
 // computer, was listed with no delete (lc on Discord: "只可列出？不可删除？").
-// Delete now moves what magpie keeps of it, its row and its recorded text,
-// to magpie's trash; Restore brings both back; a later request lists it
+// Delete now moves what magpie-friday keeps of it, its row and its recorded text,
+// to magpie-friday's trash; Restore brings both back; a later request lists it
 // again; one still going on is left; and clearing the recorded
 // conversations erases the trashed text too.
 func TestSessionsDeleteGatewaySession(t *testing.T) {

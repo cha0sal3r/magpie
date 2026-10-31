@@ -11,8 +11,8 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // astrbotConfig is a cmd_config.json as AstrBot 4.28.2 writes it (json.dump,
@@ -76,7 +76,7 @@ const astrbotConfig = "\xef\xbb\xbf" + `{
 }`
 
 // astrbotHome is a HOME with the AstrBot desktop app's ~/.astrbot holding
-// body as its cmd_config.json, and magpie with a provider of two models.
+// body as its cmd_config.json, and magpie-friday with a provider of two models.
 func astrbotHome(t *testing.T, body string) (home, path string) {
 	t.Helper()
 	home = t.TempDir()
@@ -130,7 +130,7 @@ func astrbotByID(t *testing.T, m map[string]any, k string) map[string]map[string
 }
 
 // astrbotReversed is r indented as AstrBot writes it, every object's keys in
-// the reverse of their order: the same settings, in an order magpie doesn't
+// the reverse of their order: the same settings, in an order magpie-friday doesn't
 // write them in.
 func astrbotReversed(r gjson.Result, in string) string {
 	switch {
@@ -178,11 +178,11 @@ func astrbotPick(m map[string]any) any {
 	return m["agent_runner"].(map[string]any)["config"].(map[string]any)["model"].(map[string]any)["provider_id"]
 }
 
-// Connecting AstrBot adds magpie's provider source and one model entry for
-// each of magpie's models, typed as AstrBot's validator types them, and
+// Connecting AstrBot adds magpie-friday's provider source and one model entry for
+// each of magpie-friday's models, typed as AstrBot's validator types them, and
 // makes the one picked AstrBot's default chat model. The user's own source
 // and model stay as they were, the file keeps its BOM, a copy of it is kept
-// before magpie writes, and Disconnect gives back the file byte for byte.
+// before magpie-friday writes, and Disconnect gives back the file byte for byte.
 func TestAstrBot(t *testing.T) {
 	home, path := astrbotHome(t, astrbotConfig)
 	a := astrbot(home)
@@ -196,48 +196,48 @@ func TestAstrBot(t *testing.T) {
 	var own, ours bool
 	for _, o := range f.Options(a.Values()) {
 		own = own || o.Value == "deepseek/deepseek-chat"
-		ours = ours || o.Value == "magpie/kimi/k2"
+		ours = ours || o.Value == "magpie-friday/kimi/k2"
 	}
 	if !own || !ours {
-		t.Fatalf("options: own %v magpie %v", own, ours)
+		t.Fatalf("options: own %v magpie-friday %v", own, ours)
 	}
 
-	if err := a.Pick("model", "magpie/kimi/k2"); err != nil {
+	if err := a.Pick("model", "magpie-friday/kimi/k2"); err != nil {
 		t.Fatal(err)
 	}
 	m := astrbotRead(t, path)
-	if got := astrbotPick(m); got != "magpie/kimi/k2" {
+	if got := astrbotPick(m); got != "magpie-friday/kimi/k2" {
 		t.Fatalf("default chat model %v", got)
 	}
-	if !a.Wired() || f.Get() != "magpie/kimi/k2" {
+	if !a.Wired() || f.Get() != "magpie-friday/kimi/k2" {
 		t.Fatalf("wired %v, model %q", a.Wired(), f.Get())
 	}
 	if c := a.Check(); c != "" {
 		t.Fatalf("check: %s", c)
 	}
 	sources := astrbotByID(t, m, "provider_sources")
-	src := sources["magpie"]
+	src := sources["magpie-friday"]
 	if src == nil || src["type"] != "openai_chat_completion" || src["provider_type"] != "chat_completion" ||
 		!strings.HasSuffix(src["api_base"].(string), "/v1") || src["timeout"] != float64(120) {
-		t.Fatalf("magpie's source: %v", src)
+		t.Fatalf("magpie-friday's source: %v", src)
 	}
 	if k, _ := src["key"].([]any); len(k) != 1 || k[0] != agentKeyAt("astrbot", here(home).gw()) {
-		t.Fatalf("magpie's key must be a list of the key naming AstrBot: %v", src["key"])
+		t.Fatalf("magpie-friday's key must be a list of the key naming AstrBot: %v", src["key"])
 	}
 	if !reflect.DeepEqual(sources["deepseek"]["key"], []any{"sk-user"}) {
 		t.Fatalf("the user's source: %v", sources["deepseek"])
 	}
 	models := astrbotByID(t, m, "provider")
-	k2, vision := models["magpie/kimi/k2"], models["magpie/kimi/k2-vision"]
+	k2, vision := models["magpie-friday/kimi/k2"], models["magpie-friday/kimi/k2-vision"]
 	if k2 == nil || vision == nil || models["deepseek/deepseek-chat"] == nil {
 		t.Fatalf("models: %v", models)
 	}
-	// k2 takes images only when magpie describes them to it
+	// k2 takes images only when magpie-friday describes them to it
 	k2mods := []any{"text", "tool_use"}
 	if provider.Described != nil && provider.Described() {
 		k2mods = []any{"text", "image", "tool_use"}
 	}
-	if k2["provider_source_id"] != "magpie" || k2["model"] != "kimi/k2" || k2["max_context_tokens"] != float64(262144) ||
+	if k2["provider_source_id"] != "magpie-friday" || k2["model"] != "kimi/k2" || k2["max_context_tokens"] != float64(262144) ||
 		!reflect.DeepEqual(k2["modalities"], k2mods) || !reflect.DeepEqual(k2["custom_extra_body"], map[string]any{}) {
 		t.Fatalf("k2: %v", k2)
 	}
@@ -245,7 +245,7 @@ func TestAstrBot(t *testing.T) {
 		t.Fatalf("k2-vision: %v", vision)
 	}
 	// the user's own entries are as they were, byte for byte, in front of
-	// magpie's
+	// magpie-friday's
 	b, _ := os.ReadFile(path)
 	for _, own := range []string{
 		astrbotConfig[strings.Index(astrbotConfig, "    {\n      \"id\": \"deepseek\",") : strings.Index(astrbotConfig, "  ],\n  \"provider\": [")-1],
@@ -255,16 +255,16 @@ func TestAstrBot(t *testing.T) {
 			t.Fatalf("the user's entry changed or moved:\n%s\nin\n%s", own, b)
 		}
 	}
-	if bk, err := os.ReadFile(path + ".before-magpie"); err != nil || string(bk) != astrbotConfig {
+	if bk, err := os.ReadFile(path + ".before-magpie-friday"); err != nil || string(bk) != astrbotConfig {
 		t.Fatalf("backup: %v\n%s", err, bk)
 	}
 
-	// switching between magpie's models keeps what AstrBot was on before
-	// magpie, and leaves the backup as it was
-	if err := a.Pick("model", "magpie/kimi/k2-vision"); err != nil {
+	// switching between magpie-friday's models keeps what AstrBot was on before
+	// magpie-friday, and leaves the backup as it was
+	if err := a.Pick("model", "magpie-friday/kimi/k2-vision"); err != nil {
 		t.Fatal(err)
 	}
-	if bk, _ := os.ReadFile(path + ".before-magpie"); string(bk) != astrbotConfig {
+	if bk, _ := os.ReadFile(path + ".before-magpie-friday"); string(bk) != astrbotConfig {
 		t.Fatalf("the backup was written over:\n%s", bk)
 	}
 	if err := a.Disconnect(); err != nil {
@@ -278,7 +278,7 @@ func TestAstrBot(t *testing.T) {
 	}
 }
 
-// What the user changes in magpie's entries in AstrBot's WebUI — a timeout,
+// What the user changes in magpie-friday's entries in AstrBot's WebUI — a timeout,
 // a proxy, a model switched off — is theirs: a catalog sync rewrites the
 // list of models and the endpoint, not those. A sync that has nothing to
 // change doesn't write, though AstrBot wrote the entries' keys in an order
@@ -286,16 +286,16 @@ func TestAstrBot(t *testing.T) {
 func TestAstrBotSyncKeepsTheirs(t *testing.T) {
 	home, path := astrbotHome(t, astrbotConfig)
 	a := astrbot(home)
-	if err := a.Pick("model", "magpie/kimi/k2"); err != nil {
+	if err := a.Pick("model", "magpie-friday/kimi/k2"); err != nil {
 		t.Fatal(err)
 	}
 	// as AstrBot's WebUI saves it: the whole file, from what it holds
 	astrbotEdit(t, path, func(m map[string]any) {
-		src := astrbotByID(t, m, "provider_sources")["magpie"]
+		src := astrbotByID(t, m, "provider_sources")["magpie-friday"]
 		src["timeout"], src["proxy"] = 300, "http://127.0.0.1:7890"
-		astrbotByID(t, m, "provider")["magpie/kimi/k2-vision"]["enable"] = false
+		astrbotByID(t, m, "provider")["magpie-friday/kimi/k2-vision"]["enable"] = false
 	})
-	// a model magpie lists no more leaves AstrBot's list; one it lists
+	// a model magpie-friday lists no more leaves AstrBot's list; one it lists
 	// now comes in
 	if err := catalog.SaveLive("kimi", "https://api.moonshot.cn/v1", []catalog.Model{
 		{ID: "k2", Context: 262144}, {ID: "k2-vision", Images: true}, {ID: "k3"},
@@ -310,16 +310,16 @@ func TestAstrBotSyncKeepsTheirs(t *testing.T) {
 		t.Fatal(err)
 	}
 	m := astrbotRead(t, path)
-	src := astrbotByID(t, m, "provider_sources")["magpie"]
+	src := astrbotByID(t, m, "provider_sources")["magpie-friday"]
 	if src["timeout"] != float64(300) || src["proxy"] != "http://127.0.0.1:7890" {
 		t.Fatalf("the user's timeout and proxy were written over: %v", src)
 	}
 	models := astrbotByID(t, m, "provider")
-	if models["magpie/kimi/k2-vision"]["enable"] != false {
-		t.Fatalf("a model the user switched off came back on: %v", models["magpie/kimi/k2-vision"])
+	if models["magpie-friday/kimi/k2-vision"]["enable"] != false {
+		t.Fatalf("a model the user switched off came back on: %v", models["magpie-friday/kimi/k2-vision"])
 	}
-	if models["magpie/kimi/k3"] == nil {
-		t.Fatalf("a model magpie lists now isn't in AstrBot's list: %v", models)
+	if models["magpie-friday/kimi/k3"] == nil {
+		t.Fatalf("a model magpie-friday lists now isn't in AstrBot's list: %v", models)
 	}
 
 	// AstrBot's WebUI writes every key back in an order of its own; the
@@ -335,12 +335,12 @@ func TestAstrBotSyncKeepsTheirs(t *testing.T) {
 	}
 }
 
-// Picking no model of magpie's in the picker puts AstrBot back on the one it
-// was on before magpie, and takes magpie's source and models out.
+// Picking no model of magpie-friday's in the picker puts AstrBot back on the one it
+// was on before magpie-friday, and takes magpie-friday's source and models out.
 func TestAstrBotNoModelPutsTheirsBack(t *testing.T) {
 	home, path := astrbotHome(t, astrbotConfig)
 	a := astrbot(home)
-	if err := a.Pick("model", "magpie/kimi/k2"); err != nil {
+	if err := a.Pick("model", "magpie-friday/kimi/k2"); err != nil {
 		t.Fatal(err)
 	}
 	if err := a.Field("model").Set(""); err != nil {
@@ -351,19 +351,19 @@ func TestAstrBotNoModelPutsTheirsBack(t *testing.T) {
 	}
 }
 
-// A default chat model the user picks in AstrBot while magpie is wired is
-// theirs: Disconnect takes magpie's source and models out and leaves the
+// A default chat model the user picks in AstrBot while magpie-friday is wired is
+// theirs: Disconnect takes magpie-friday's source and models out and leaves the
 // pick as it is.
 func TestAstrBotTheirPickStands(t *testing.T) {
 	home, path := astrbotHome(t, astrbotConfig)
 	a := astrbot(home)
-	if err := a.Pick("model", "magpie/kimi/k2"); err != nil {
+	if err := a.Pick("model", "magpie-friday/kimi/k2"); err != nil {
 		t.Fatal(err)
 	}
 	b, _ := os.ReadFile(path)
-	writeFile(t, path, strings.Replace(string(b), `"provider_id": "magpie/kimi/k2"`, `"provider_id": "openai/gpt-5"`, 1))
+	writeFile(t, path, strings.Replace(string(b), `"provider_id": "magpie-friday/kimi/k2"`, `"provider_id": "openai/gpt-5"`, 1))
 	if !a.Wired() {
-		t.Fatal("magpie's models are still in AstrBot's list: it is connected")
+		t.Fatal("magpie-friday's models are still in AstrBot's list: it is connected")
 	}
 	if err := a.Disconnect(); err != nil {
 		t.Fatal(err)
@@ -372,18 +372,18 @@ func TestAstrBotTheirPickStands(t *testing.T) {
 	if got := astrbotPick(m); got != "openai/gpt-5" {
 		t.Fatalf("the user's pick became %v", got)
 	}
-	if _, ok := astrbotByID(t, m, "provider_sources")["magpie"]; ok {
-		t.Fatal("magpie's source stayed")
+	if _, ok := astrbotByID(t, m, "provider_sources")["magpie-friday"]; ok {
+		t.Fatal("magpie-friday's source stayed")
 	}
 	for id := range astrbotByID(t, m, "provider") {
-		if strings.HasPrefix(id, "magpie/") {
-			t.Fatalf("magpie's model %s stayed", id)
+		if strings.HasPrefix(id, "magpie-friday/") {
+			t.Fatalf("magpie-friday's model %s stayed", id)
 		}
 	}
 }
 
 // Before 4.28 AstrBot named its default chat model in
-// provider_settings.default_provider_id, with no agent_runner; magpie sets
+// provider_settings.default_provider_id, with no agent_runner; magpie-friday sets
 // that one there, and puts it back.
 func TestAstrBotBeforeAgentRunner(t *testing.T) {
 	old := strings.Replace(astrbotConfig, `"web_search": false`, `"web_search": false,
@@ -394,14 +394,14 @@ func TestAstrBotBeforeAgentRunner(t *testing.T) {
 	if got := a.Field("model").Get(); got != "deepseek/deepseek-chat" {
 		t.Fatalf("model %q", got)
 	}
-	if err := a.Pick("model", "magpie/kimi/k2"); err != nil {
+	if err := a.Pick("model", "magpie-friday/kimi/k2"); err != nil {
 		t.Fatal(err)
 	}
 	m := astrbotRead(t, path)
 	if _, ok := m["agent_runner"]; ok {
-		t.Fatal("magpie made an agent_runner of its own")
+		t.Fatal("magpie-friday made an agent_runner of its own")
 	}
-	if got := m["provider_settings"].(map[string]any)["default_provider_id"]; got != "magpie/kimi/k2" {
+	if got := m["provider_settings"].(map[string]any)["default_provider_id"]; got != "magpie-friday/kimi/k2" {
 		t.Fatalf("default_provider_id %v", got)
 	}
 	if err := a.Disconnect(); err != nil {
@@ -412,22 +412,22 @@ func TestAstrBotBeforeAgentRunner(t *testing.T) {
 	}
 }
 
-// magpie writes no AstrBot settings of its own: with no cmd_config.json yet
+// magpie-friday writes no AstrBot settings of its own: with no cmd_config.json yet
 // (AstrBot never started) or one from before provider_sources (older than
 // 4.10), it says what to do and leaves the folder as it is.
 func TestAstrBotRefusesWithoutItsSettings(t *testing.T) {
 	home, path := astrbotHome(t, "")
 	os.MkdirAll(filepath.Join(home, ".astrbot"), 0o755)
 	a := astrbot(home)
-	if err := a.Pick("model", "magpie/kimi/k2"); err == nil || !strings.Contains(err.Error(), "start AstrBot once") {
+	if err := a.Pick("model", "magpie-friday/kimi/k2"); err == nil || !strings.Contains(err.Error(), "start AstrBot once") {
 		t.Fatalf("no settings: %v", err)
 	}
 	if isFile(path) {
-		t.Fatal("magpie made AstrBot's settings")
+		t.Fatal("magpie-friday made AstrBot's settings")
 	}
 	old := `{"provider": [{"id": "openai", "type": "openai_chat_completion", "key": ["sk"]}], "provider_settings": {"default_provider_id": "openai"}}`
 	writeFile(t, path, old)
-	if err := astrbot(home).Pick("model", "magpie/kimi/k2"); err == nil || !strings.Contains(err.Error(), "4.10") {
+	if err := astrbot(home).Pick("model", "magpie-friday/kimi/k2"); err == nil || !strings.Contains(err.Error(), "4.10") {
 		t.Fatalf("before provider_sources: %v", err)
 	}
 	if got, _ := os.ReadFile(path); string(got) != old {
@@ -436,7 +436,7 @@ func TestAstrBotRefusesWithoutItsSettings(t *testing.T) {
 }
 
 // AstrBot's root: ASTRBOT_ROOT, the desktop app's ~/.astrbot, or a folder
-// `astrbot init` was run in that magpie can know of.
+// `astrbot init` was run in that magpie-friday can know of.
 func TestAstrBotRoot(t *testing.T) {
 	home, _ := astrbotHome(t, "")
 	at := here(home)

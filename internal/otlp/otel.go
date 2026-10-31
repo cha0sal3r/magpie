@@ -15,10 +15,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/sessions"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 const otelQueueSize = 128
@@ -39,7 +39,7 @@ type Record = usage.Record
 
 // Exporter sends the gateway's requests, the ledger's rows and the agents'
 // sessions to an OpenTelemetry collector, as settings.OTel says. It is a
-// usage.Observer: plugins/otel registers one while it is on, and magpie's
+// usage.Observer: plugins/otel registers one while it is on, and magpie-friday's
 // core never exports on its own.
 type Exporter struct {
 	running atomic.Pointer[otelExporter]

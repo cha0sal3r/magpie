@@ -9,18 +9,18 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// A magpie added as a Remote magpie lists here what its user picked there,
+// A magpie-friday added as a Remote magpie-friday lists here what its user picked there,
 // and no more (GokoShiki on Discord: 24 picked on the remote, 51 here, the
-// extra ones OpenRouter's). The remote's list for another magpie carried
+// extra ones OpenRouter's). The remote's list for another magpie-friday carried
 // every OpenRouter decision model, picked or not, so each one came here as
 // a model of its own. A model a plugin serves there (the Grok
 // subscription's) and an API provider's (DeepSeek's) come here as picked.
 func TestRemoteMagpieListsThePicks(t *testing.T) {
-	// the remote magpie, under its own HOME
+	// the remote magpie-friday, under its own HOME
 	besideFake(t, "grok", http.NotFoundHandler())
 	var chat, decide []catalog.Model
 	for i := range 40 {
@@ -60,9 +60,9 @@ func TestRemoteMagpieListsThePicks(t *testing.T) {
 		}
 	}
 
-	// the list it gives another magpie, asked as one asks
+	// the list it gives another magpie-friday, asked as one asks
 	req := httptest.NewRequest("GET", "/v1/models", nil)
-	req.Header.Set("User-Agent", "magpie")
+	req.Header.Set("User-Agent", "magpie-friday")
 	for _, h := range []string{provider.DrawersHeader, provider.VideomakersHeader, provider.PricesHeader, provider.DecidersHeader} {
 		req.Header.Set(h, "1")
 	}
@@ -73,7 +73,7 @@ func TestRemoteMagpieListsThePicks(t *testing.T) {
 	}
 	body := rec.Body.Bytes()
 
-	// this magpie, under a HOME of its own, adds the remote
+	// this magpie-friday, under a HOME of its own, adds the remote
 	fresh(t)
 	remote := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/v1/models" {
@@ -101,6 +101,6 @@ func TestRemoteMagpieListsThePicks(t *testing.T) {
 	if !slices.Equal(here, picked) {
 		var v struct{ Data []json.RawMessage }
 		json.Unmarshal(body, &v)
-		t.Fatalf("the remote picked %d: %v\nthis magpie lists %d: %v\n(the remote's list had %d entries)", len(picked), picked, len(here), here, len(v.Data))
+		t.Fatalf("the remote picked %d: %v\nthis magpie-friday lists %d: %v\n(the remote's list had %d entries)", len(picked), picked, len(here), here, len(v.Data))
 	}
 }

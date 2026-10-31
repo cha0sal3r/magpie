@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-// A second Copilot account, signed in from magpie with GitHub's device
+// A second Copilot account, signed in from magpie-friday with GitHub's device
 // code, is kept beside the editors' own and can go first.
 func TestCopilotAccounts(t *testing.T) {
 	signIn(t) // the editors' own: octocat, gho_x

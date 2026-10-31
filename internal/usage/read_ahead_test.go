@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// What magpie reads ahead as it starts leaves the tray panel's first ask,
+// What magpie-friday reads ahead as it starts leaves the tray panel's first ask,
 // today's summary in this computer's zone as /api/usage?period=today asks
 // for it, nothing to parse or work out: the cold parse of the whole log
 // was what its numbers waited for on the first open (CyberCaius).

@@ -8,11 +8,11 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // Ending a Claude Code run lets it clean up first: one holding its OAuth
-// refresh lock removes it as it exits on SIGTERM, and the SIGKILL magpie
+// refresh lock removes it as it exits on SIGTERM, and the SIGKILL magpie-friday
 // sent left ~/.claude/.oauth_refresh.lock for every later request to fail
 // on (#2195, XIQIXIQIXIQI's test).
 func TestClaudeAbortAllowsLockCleanup(t *testing.T) {

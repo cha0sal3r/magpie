@@ -7,7 +7,7 @@ import (
 	"syscall"
 )
 
-// detach keeps a started magpie out of this one's session, so it outlives
+// detach keeps a started magpie-friday out of this one's session, so it outlives
 // it and its terminal.
 func detach(cmd *exec.Cmd) {
 	if cmd.SysProcAttr == nil {

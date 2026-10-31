@@ -15,18 +15,18 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/gwtool"
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/gwtool"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // A client may offer its model the web search of the vendor it was made
 // for: Claude Code's WebSearch, Codex's web_search, a Chat client's
 // web_search_options, Gemini's googleSearch. A provider that searches by
 // itself is asked to; any other model is given a web_search tool of
-// magpie's, which a model that can search — the Claude subscription, a
+// magpie-friday's, which a model that can search — the Claude subscription, a
 // Codex account, OpenAI, Anthropic's API, OpenRouter — answers for it, or,
 // with none of them, a search API the user gave a key to (search_api.go).
 // A Kimi Code plan searches for its own models first, with its search
@@ -42,7 +42,7 @@ const searchRounds = 6
 // provider with it (sideDeadline, #2318).
 const searchTimeout, searchWaitMost = 2 * time.Minute, 5 * time.Minute
 
-// searchingKey marks a search magpie asks for itself, which must not
+// searchingKey marks a search magpie-friday asks for itself, which must not
 // search by way of another model again.
 type searchingKey struct{}
 
@@ -51,36 +51,36 @@ func searching(ctx context.Context) bool {
 	return v
 }
 
-// searchForKey holds the request magpie's searches are run for, which the
-// Routing view names by a search's row: magpie's own call, on the model it
+// searchForKey holds the request magpie-friday's searches are run for, which the
+// Routing view names by a search's row: magpie-friday's own call, on the model it
 // searches with, not the conversation's (#314).
 type searchForKey struct{}
 
-// CallFor is the request a call magpie made on its own was made for: its
+// CallFor is the request a call magpie-friday made on its own was made for: its
 // agent, and the model that agent asked for.
 type CallFor struct {
 	Agent string `json:"agent"`
 	Model string `json:"model"`
 	// Unknown, on an image's description, is that the model was counted
-	// text-only because nothing magpie knows says whether it sees images
+	// text-only because nothing magpie-friday knows says whether it sees images
 	// (blindTo), not because its list or the user says it takes text only.
 	// The Routing view says which, so a user whose model does see knows
 	// to say so (#1287).
 	Unknown bool `json:"unknown,omitempty"`
 	// Missing, on an image's description, is the Image recognition model
-	// the user picked in Settings that magpie can't find any more: the
-	// model that described is the one magpie picks in its place
+	// the user picked in Settings that magpie-friday can't find any more: the
+	// model that described is the one magpie-friday picks in its place
 	// (VisionMissing), and the Routing view names both.
 	Missing string `json:"missing,omitempty"`
 	// MCP, on a web search or an image's description, is that the agent
-	// called magpie's MCP server (SearchMCPPath, VisionMCPPath) itself, for
-	// no model of magpie's.
+	// called magpie-friday's MCP server (SearchMCPPath, VisionMCPPath) itself, for
+	// no model of magpie-friday's.
 	MCP bool `json:"mcp,omitempty"`
 	// Instead, on a web search, is the searcher asked first that failed
 	// or found nothing (Why, NothingFound): the searcher that did search
-	// was the next one magpie tried in its place, and the Routing view
+	// was the next one magpie-friday tried in its place, and the Routing view
 	// says so. Picked is that the first was the one picked in Settings.
-	// A fallback that said nothing read as magpie ignoring the pick
+	// A fallback that said nothing read as magpie-friday ignoring the pick
 	// (Gearclickist on Discord: Grok picked, Codex's model searched).
 	// NotSearched is that the first answered without searching at all
 	// (errNotSearched), apart from searching and naming no page.
@@ -111,7 +111,7 @@ func searchesItself(p provider.Provider, proto provider.Protocol) bool {
 		// serves there: gpt-5.3-codex, gpt-5.4-mini, gpt-6-luna, grok-4.7
 		// and mai-code-1.1-flash each answered a request offering it with
 		// web_search_call items and cited pages (2026-10-17, a real
-		// account). Translated for magpie's search instead, Codex's every
+		// account). Translated for magpie-friday's search instead, Codex's every
 		// turn on Copilot lost the relay (echo_ts on Discord).
 		return (p.Account.Agent == "codex" || p.Account.Agent == "copilot" || p.ID == "grok" || p.PluginProvider() == "grok") && proto == provider.Responses ||
 			p.IsPlugin() && saidTo
@@ -134,7 +134,7 @@ func googleAccount(p provider.Provider) bool {
 // enable tool_config.include_server_side_tool_invocations to use Built-in
 // tools with Function calling", with that flag set in toolConfig too — so
 // only a request that declares none (searchesFor). One that does is given
-// magpie's search, which the account answers itself (ownSearcher, #757).
+// magpie-friday's search, which the account answers itself (ownSearcher, #757).
 func codeAssistSearches(p provider.Provider, proto provider.Protocol, model string) bool {
 	return proto == provider.CodeAssist && googleAccount(p) && searchModel(model)
 }
@@ -155,7 +155,7 @@ func searchesFor(p provider.Provider, proto provider.Protocol, model string, req
 	return codeAssistSearches(p, proto, model) && (len(req.Tools) == 0 || req.ToolChoice == "none")
 }
 
-// searchesModel is searchesItself for one model: a Remote magpie searches
+// searchesModel is searchesItself for one model: a Remote magpie-friday searches
 // for the models its list says it does, on any API (search_remote.go).
 func searchesModel(p provider.Provider, proto provider.Protocol, model string) bool {
 	return searchesItself(p, proto) || proto != provider.Gemini && remoteSearch(p, model) != "" || modelSearches(p, proto, model)
@@ -165,7 +165,7 @@ func searchesModel(p provider.Provider, proto provider.Protocol, model string) b
 // of its models, by API: Command Code's Provider API passes the tool on to
 // the model's vendor, and 12 of its 87 models search (M3chD09's run of all
 // of them, #1590); the rest take the tool and don't search, or have it
-// stripped, so they keep magpie's searcher. Its Claude models search on
+// stripped, so they keep magpie-friday's searcher. Its Claude models search on
 // Messages only, the others on Responses only.
 var searchModels = map[string]map[provider.Protocol][]string{
 	"commandcode": {
@@ -227,9 +227,9 @@ func searchesAlone(p provider.Provider, model string) bool {
 // partSearcher is a provider of searchModels that searches by itself for
 // those of its models alone, on no API for every model, or a plugin's
 // that marks some of its models as ones that search (pluginSearches): one
-// magpie may search with, with those models only (searchableModel).
+// magpie-friday may search with, with those models only (searchableModel).
 // Command Code's searched for themselves but were left out of the
-// searcher picker and magpie's own pick (01huadalang on Discord), and so
+// searcher picker and magpie-friday's own pick (01huadalang on Discord), and so
 // was every plugin's, Trae's search model among them (01huadalang, 10-20).
 func partSearcher(p provider.Provider) bool {
 	if p.IsPlugin() {
@@ -269,7 +269,7 @@ func searchAsked(proto provider.Protocol, body []byte) bool {
 	return err == nil && req.WebSearch
 }
 
-// searchedForIt is whether a relayed request's web search is done by magpie
+// searchedForIt is whether a relayed request's web search is done by magpie-friday
 // for the provider, which can't be relayed: a body offering it to a model
 // that doesn't search by itself. What is known of the provider is asked
 // first: Codex offers web_search on every turn, and each relayed turn was
@@ -278,7 +278,7 @@ func searchedForIt(p provider.Provider, from provider.Protocol, model string, bo
 	return (from == provider.Chat && !p.IsRemoteMagpie() || !searchesModel(p, from, model)) && searchAsked(from, body)
 }
 
-// searcher is the model magpie searches with: the one Settings names, while
+// searcher is the model magpie-friday searches with: the one Settings names, while
 // it can (chosenSearcher), else the first of the providers that search by
 // themselves, with a small model of theirs, as searching needs no more.
 // An explicit "off" leaves only the search APIs.
@@ -295,7 +295,7 @@ func searcher() (provider.Provider, string, bool) {
 // searchRank is where a provider comes among those that can search for a
 // model that can't, -1 when it can't. A relay said to search is left out:
 // it would spend the relay's quota on other models' searches, and one that
-// serves only Claude Code refuses magpie's own request, which has no
+// serves only Claude Code refuses magpie-friday's own request, which has no
 // metadata.user_id (#359).
 func searchRank(p provider.Provider) int {
 	p.Searches = false
@@ -320,13 +320,13 @@ func searchRank(p provider.Provider) int {
 		// Gemini on a Google sign-in, by googleSearch (#757)
 		return 5
 	case remoteSearchesAny(p):
-		// another magpie, with the models it searches natively for
+		// another magpie-friday, with the models it searches natively for
 		return 5
 	}
 	return -1
 }
 
-// manualRelayRank is after every provider magpie picks or falls back to by
+// manualRelayRank is after every provider magpie-friday picks or falls back to by
 // itself: a relay said to search is offered only to be named (#359).
 const manualRelayRank = 6
 
@@ -346,10 +346,10 @@ func namedSearcherRank(p provider.Provider) (int, bool) {
 	return -1, false
 }
 
-// autoSearcher is the searcher magpie picks by itself: the first by
+// autoSearcher is the searcher magpie-friday picks by itself: the first by
 // searchRank that is on, with its small model. One with allowance left
 // goes before one whose every account or key is out of it (smallReady),
-// which is picked only when every searcher is, so that magpie still
+// which is picked only when every searcher is, so that magpie-friday still
 // offers its search (canSearch) (#1801).
 func autoSearcher() (provider.Provider, string, bool) {
 	p, m, _, ok := autoSearcherReady()
@@ -376,7 +376,7 @@ func autoSearcherReady() (provider.Provider, string, bool, bool) {
 	return best, model, bestReady, top >= 0
 }
 
-// Why the searcher Settings names isn't used, and magpie picks one itself.
+// Why the searcher Settings names isn't used, and magpie-friday picks one itself.
 const (
 	SearcherGone   = "gone"    // no such provider any more
 	SearcherOff    = "off"     // turned off, or signed out
@@ -422,7 +422,7 @@ func chosenSearcher() (*provider.Provider, string, string) {
 	return &p, "", SearcherNoneOf
 }
 
-// Searchers are the providers Settings' Searcher may name: those magpie
+// Searchers are the providers Settings' Searcher may name: those magpie-friday
 // would pick, then relays said to search, each with the model it would
 // search with.
 func Searchers() []SearcherChoice {
@@ -535,7 +535,7 @@ func smallCands(p provider.Provider, keep func(catalog.Model) bool) []smallCand 
 			continue
 		}
 		l := strings.ToLower(m.ID)
-		// a subscription's list can have what magpie wrote into its agent
+		// a subscription's list can have what magpie-friday wrote into its agent
 		if strings.HasPrefix(m.ID, provider.GroupPrefix) || strings.HasPrefix(m.ID, provider.AutoPrefix) || (p.Account != nil && strings.Contains(m.ID, "/")) ||
 			strings.ContainsAny(l, ":~") || slices.ContainsFunc([]string{"nano", "lite", "image", "audio", "tts", "embed", "free"}, func(w string) bool { return strings.Contains(l, w) }) {
 			continue
@@ -656,7 +656,7 @@ const searchSystem = "You are a web search tool. Search the web for what is aske
 // first (#928): the providers then search only when none of them answers.
 // With provider search off, only the search APIs are asked.
 func (s *Server) webSearch(ctx context.Context, query string) (string, []Hit, error) {
-	// a search is magpie's own request, not the turn's provider's: the
+	// a search is magpie-friday's own request, not the turn's provider's: the
 	// search APIs go through the global proxy and each searcher through
 	// its own (Provider.Via), never through the proxy the turn's provider
 	// is set to (#1522: Codex asked while a "direct" provider served the
@@ -706,13 +706,13 @@ func (s *Server) webSearch(ctx context.Context, query string) (string, []Hit, er
 	return said, hits, nil
 }
 
-var errNoSearcher = errors.New("no provider that can search the web, nor a search API, is set up in magpie")
+var errNoSearcher = errors.New("no provider that can search the web, nor a search API, is set up in magpie-friday")
 
-// errSearchOff is a search asked of magpie while plugins/search is off.
-var errSearchOff = errors.New("magpie's web search is off: turn the Web search plugin on in magpie's Settings → Plugins")
+// errSearchOff is a search asked of magpie-friday while plugins/search is off.
+var errSearchOff = errors.New("magpie-friday's web search is off: turn the Web search plugin on in magpie-friday's Settings → Plugins")
 
-// searchServed is whether plugins/search serves magpie's web search here
-// (the gateway's tool point, gwtool): off, magpie neither offers its
+// searchServed is whether plugins/search serves magpie-friday's web search here
+// (the gateway's tool point, gwtool): off, magpie-friday neither offers its
 // web_search nor answers one, and a vendor that searches by itself still
 // does.
 func searchServed() bool { return gwtool.Served(gwtool.WebSearch) }
@@ -721,8 +721,8 @@ func searchServed() bool { return gwtool.Served(gwtool.WebSearch) }
 // before it goes to the search APIs.
 const searchersInTurn = 3
 
-// modelSearch searches the web with the searcher's model; one magpie
-// picked that fails or finds nothing gives way to the next searcher magpie
+// modelSearch searches the web with the searcher's model; one magpie-friday
+// picked that fails or finds nothing gives way to the next searcher magpie-friday
 // would pick, all of them within searchWaitMost. One Settings names gives
 // way to none: the search APIs, when set up, search in its place
 // (webSearch), and Settings says it didn't search (SearcherFailed). Handed
@@ -739,7 +739,7 @@ func (s *Server) modelSearch(ctx context.Context, query string) (string, []Hit, 
 	tried := []pick{{p.ID, model}}
 	var said string
 	var hits []Hit
-	// one magpie picked that is out of its allowance isn't asked: it
+	// one magpie-friday picked that is out of its allowance isn't asked: it
 	// would only be refused again (#1801); one the Settings name is
 	err := searcherSpent(p, model)
 	cp, _, why := chosenSearcher()
@@ -916,7 +916,7 @@ var errNotSearched = fmt.Errorf("answered without searching the web: %w", errFou
 // searching for its own models is sent none.
 func (s *Server) searchWith(ctx context.Context, p provider.Provider, model, query, effort string) (string, []Hit, error) {
 	body, _ := json.Marshal(searchBody(p, model, query, effort))
-	r, err := http.NewRequestWithContext(magpieChose(ctx), http.MethodPost, "http://magpie/v1/messages", nil)
+	r, err := http.NewRequestWithContext(magpieChose(ctx), http.MethodPost, "http://magpie-friday/v1/messages", nil)
 	if err != nil {
 		return "", nil, err
 	}
@@ -1037,8 +1037,8 @@ func searchBody(p provider.Provider, model, query, effort string) map[string]any
 	return q
 }
 
-// SearchAgent is the User-Agent of the searches magpie makes for a model.
-const SearchAgent = "magpie-search/1"
+// SearchAgent is the User-Agent of the searches magpie-friday makes for a model.
+const SearchAgent = "magpie-friday-search/1"
 
 // round asks the model once and gives its reply's events, or the status
 // and message of a failure.

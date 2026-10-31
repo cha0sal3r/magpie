@@ -1,6 +1,6 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // Plugins that give tools on the Plugins page: the row lists each tool by
-// the name magpie's plugin tools MCP server gives it, its description on
+// the name magpie-friday's plugin tools MCP server gives it, its description on
 // hover, and a button that copies the server's address. A plugin of tools
 // alone wears no Provider chip and isn't said to sign in to nothing; one
 // that signs in too keeps its line; one switched off lists none. Every
@@ -85,7 +85,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         await line.locator(".copy").click();
         await page.waitForFunction(() => window.__copied.length > 0 || document.querySelector(".toast, #status"));
         const copied = await page.evaluate(() => window.__copied);
-        if (copied.length) assert.equal(copied[0], "http://127.0.0.1:3425/mcp/magpie/tools");
+        if (copied.length) assert.equal(copied[0], "http://127.0.0.1:3425/mcp/magpie-friday/tools");
 
         const both = row("both");
         assert.ok((await both.innerText()).includes("Acme"));

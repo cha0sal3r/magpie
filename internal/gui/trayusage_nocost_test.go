@@ -6,12 +6,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // Settings › Menu bar cost off (settings.TrayNoCost, BussanQ on Discord):
-// magpie's today and last-7-days cards in the menu bar, their tooltip and
+// magpie-friday's today and last-7-days cards in the menu bar, their tooltip and
 // the tooltip with no cards say the tokens and requests alone, no money
 // and no count of calls with no known price; on, the default, the cost.
 func TestTrayNoCost(t *testing.T) {
@@ -45,12 +45,12 @@ func TestTrayNoCost(t *testing.T) {
 			t.Errorf("cost off: cell %s rows %q, want the tokens alone", c.ID, c.Rows)
 		}
 	}
-	if want := "Last 7 days in magpie\n47M tokens (41M in · 6.2M out)\n2310 requests\n\n" +
-		"Today in magpie\n6.3M tokens (912K in · 318K out · 5.1M cached)\n152 requests"; tip != want {
+	if want := "Last 7 days in magpie-friday\n47M tokens (41M in · 6.2M out)\n2310 requests\n\n" +
+		"Today in magpie-friday\n6.3M tokens (912K in · 318K out · 5.1M cached)\n152 requests"; tip != want {
 		t.Errorf("cost off: tooltip %q\nwant %q", tip, want)
 	}
 	// the tooltip with no cards, as the watch loop makes it
-	if got := trayIdleTip(trayMoney(sums[usage.Today], true), "usd", 0); got != "magpie\nToday: 6.3M tokens (912K in · 318K out · 5.1M cached)\n152 requests" {
+	if got := trayIdleTip(trayMoney(sums[usage.Today], true), "usd", 0); got != "magpie-friday\nToday: 6.3M tokens (912K in · 318K out · 5.1M cached)\n152 requests" {
 		t.Errorf("cost off: idle tooltip %q", got)
 	}
 	if got := trayIdleTip(trayMoney(sums[usage.Today], false), "usd", 0); !strings.Contains(got, "≈$3.40+") {

@@ -1,7 +1,7 @@
 {
-  "name": "magpie-provider-notes",
+  "name": "magpie-friday-provider-notes",
   "version": "0.1.0",
-  "description": "An example of a plugin's panels in magpie's own pages: a note in each provider's editor, the top models on Usage, and its settings",
+  "description": "An example of a plugin's panels in magpie-friday's own pages: a note in each provider's editor, the top models on Usage, and its settings",
   "magpie": {
     "panels": [
       { "slot": "provider", "title": "Notes", "file": "ui/notes.html" },

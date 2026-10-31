@@ -22,8 +22,8 @@ On Windows, a WSL project's destination is interpreted inside the same running
 distribution. The CLI can also run directly inside WSL:
 
 ```sh
-magpie sessions relocate-claude --from /home/me/old-project --to /home/me/new-project
-magpie sessions relocate-claude --from /home/me/old-project --to /home/me/new-project --confirm <token-from-preview>
+magpie-friday sessions relocate-claude --from /home/me/old-project --to /home/me/new-project
+magpie-friday sessions relocate-claude --from /home/me/old-project --to /home/me/new-project --confirm <token-from-preview>
 ```
 
 The first command only previews and prints JSON. The confirmation token binds
@@ -44,7 +44,7 @@ the operation to those paths and the source files; changes require a new preview
 ## Recovery
 
 Original project files are kept byte-for-byte under
-`<Claude config>/magpie-relocations/project-*/original`, outside the session
+`<Claude config>/magpie-friday-relocations/project-*/original`, outside the session
 scanner. `manifest.json` records the source, destination and backup paths.
 Staged files live beside that backup until published.
 

@@ -13,17 +13,17 @@ import (
 // chatLanguageModels.json carries the user's notes beside their groups.
 
 func TestDelJSONItemKeepsACommentBeforeTheElement(t *testing.T) {
-	where := map[string]string{"vendor": "customendpoint", "name": "magpie"}
-	magpie := `{"name": "magpie", "vendor": "customendpoint"}`
+	where := map[string]string{"vendor": "customendpoint", "name": "magpie-friday"}
+	magpie := `{"name": "magpie-friday", "vendor": "customendpoint"}`
 	for _, in := range []string{
 		// last element, its comment on the line with it
-		"[\n  {\"name\": \"a\", \"vendor\": \"openai\"},\n  /* magpie's group */ " + magpie + "\n]\n",
+		"[\n  {\"name\": \"a\", \"vendor\": \"openai\"},\n  /* magpie-friday's group */ " + magpie + "\n]\n",
 		// not the last
-		"[\n  /* magpie's group */ " + magpie + ",\n  {\"name\": \"b\", \"vendor\": \"ollama\"}\n]\n",
+		"[\n  /* magpie-friday's group */ " + magpie + ",\n  {\"name\": \"b\", \"vendor\": \"ollama\"}\n]\n",
 		// on one line, the [ on it too
-		"[ {\"name\": \"a\", \"vendor\": \"openai\"}, /* magpie's group */ " + magpie + " ]\n",
+		"[ {\"name\": \"a\", \"vendor\": \"openai\"}, /* magpie-friday's group */ " + magpie + " ]\n",
 		// a block comment that ends on the element's line
-		"[\n  {\"name\": \"a\", \"vendor\": \"openai\"},\n  /* magpie's group\n     */ " + magpie + "\n]\n",
+		"[\n  {\"name\": \"a\", \"vendor\": \"openai\"},\n  /* magpie-friday's group\n     */ " + magpie + "\n]\n",
 	} {
 		p := tmpFile(t, "chatLanguageModels.json", in)
 		if err := DelJSONItem(p, where); err != nil {
@@ -40,7 +40,7 @@ func TestDelJSONItemKeepsACommentBeforeTheElement(t *testing.T) {
 		if _, ok := GetJSONItem(p, where); ok {
 			t.Fatalf("%q: the element is still there:\n%s", in, b)
 		}
-		if !strings.Contains(b, "/* magpie's group") || !strings.Contains(b, "*/") {
+		if !strings.Contains(b, "/* magpie-friday's group") || !strings.Contains(b, "*/") {
 			t.Fatalf("%q: the comment before the element went with it:\n%s", in, b)
 		}
 	}

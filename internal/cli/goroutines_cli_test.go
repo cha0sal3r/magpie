@@ -11,10 +11,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
-// --help and its other forms print magpie goroutines' usage, ask nothing
+// --help and its other forms print magpie-friday goroutines' usage, ask nothing
 // and write nothing; a flag it doesn't take, "-", or a second file are
 // refused the same way, before the gateway is asked.
 func TestGoroutinesHelpAndBadArgsWriteNothing(t *testing.T) {
@@ -26,13 +26,13 @@ func TestGoroutinesHelpAndBadArgsWriteNothing(t *testing.T) {
 	before := tree(t, root)
 	for _, args := range [][]string{{"goroutines", "--help"}, {"goroutines", "-h"}, {"goroutines", "help"}, {"goroutines", "out.txt", "--help"}} {
 		out, err := runOut(t, args...)
-		if err != nil || !strings.Contains(out, "usage: magpie goroutines [<file>]") {
-			t.Errorf("magpie %s: %v %q", strings.Join(args, " "), err, out)
+		if err != nil || !strings.Contains(out, "usage: magpie-friday goroutines [<file>]") {
+			t.Errorf("magpie-friday %s: %v %q", strings.Join(args, " "), err, out)
 		}
 	}
 	for _, args := range [][]string{{"goroutines", "--out", "x"}, {"goroutines", "-o"}, {"goroutines", "-"}, {"goroutines", "a.txt", "b.txt"}, {"goroutines", " "}} {
 		if _, err := runOut(t, args...); err == nil || !strings.Contains(err.Error(), "nothing was written") {
-			t.Errorf("magpie %s: %v", strings.Join(args, " "), err)
+			t.Errorf("magpie-friday %s: %v", strings.Join(args, " "), err)
 		}
 	}
 	if asked {
@@ -43,7 +43,7 @@ func TestGoroutinesHelpAndBadArgsWriteNothing(t *testing.T) {
 	}
 }
 
-// Against a running gateway (its Handler, on loopback), magpie goroutines
+// Against a running gateway (its Handler, on loopback), magpie-friday goroutines
 // writes the dump into the working folder, prints its path and which
 // process it is of, and never writes over a file there.
 func TestGoroutinesWritesTheRunningGatewaysDump(t *testing.T) {
@@ -82,24 +82,24 @@ func TestGoroutinesWritesTheRunningGatewaysDump(t *testing.T) {
 		t.Fatal("the first dump changed")
 	}
 
-	// no name: magpie-goroutines-<date>-<time>.txt here
+	// no name: magpie-friday-goroutines-<date>-<time>.txt here
 	if _, err := runOut(t, "goroutines"); err != nil {
 		t.Fatal(err)
 	}
-	if m, _ := filepath.Glob(filepath.Join(dir, "magpie-goroutines-*.txt")); len(m) != 1 {
+	if m, _ := filepath.Glob(filepath.Join(dir, "magpie-friday-goroutines-*.txt")); len(m) != 1 {
 		t.Fatalf("no default file: %v", m)
 	}
 }
 
-// A magpie older than this one answers 404: magpie goroutines says to
-// update it and writes nothing. With no magpie answering, it says so.
+// A magpie-friday older than this one answers 404: magpie-friday goroutines says to
+// update it and writes nothing. With no magpie-friday answering, it says so.
 func TestGoroutinesWithAnOlderOrNoGateway(t *testing.T) {
 	_, dir := heapDir(t)
 	old := httptest.NewServer(http.NotFoundHandler())
 	defer old.Close()
 	t.Setenv("MAGPIE_ADDR", strings.TrimPrefix(old.URL, "http://"))
 	if _, err := runOut(t, "goroutines", "x.txt"); err == nil || !strings.Contains(err.Error(), "older than this one") {
-		t.Fatalf("an older magpie: %v", err)
+		t.Fatalf("an older magpie-friday: %v", err)
 	}
 
 	// a port kept by the test that hangs up on every call: one freed
@@ -119,8 +119,8 @@ func TestGoroutinesWithAnOlderOrNoGateway(t *testing.T) {
 		}
 	}()
 	t.Setenv("MAGPIE_ADDR", ln.Addr().String())
-	if _, err := runOut(t, "goroutines", "x.txt"); err == nil || !strings.Contains(err.Error(), "is magpie running") {
-		t.Fatalf("no magpie: %v", err)
+	if _, err := runOut(t, "goroutines", "x.txt"); err == nil || !strings.Contains(err.Error(), "is magpie-friday running") {
+		t.Fatalf("no magpie-friday: %v", err)
 	}
 	if ents, _ := os.ReadDir(dir); len(ents) != 0 {
 		t.Fatalf("written: %v", ents)

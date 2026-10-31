@@ -6,7 +6,7 @@ import (
 )
 
 func TestPatchJSONPreservesInputAndUnrelatedSettings(t *testing.T) {
-	before := []byte("{\n // keep this comment\n \"theme\": \"dark\",\n \"model\": {\"provider\":\"magpie\",\"id\":\"old\"}\n}\n")
+	before := []byte("{\n // keep this comment\n \"theme\": \"dark\",\n \"model\": {\"provider\":\"magpie-friday\",\"id\":\"old\"}\n}\n")
 	original := string(before)
 	after, err := PatchJSON(before, []KV{{Path: "model.provider", Value: "native"}}, []string{"model.id"})
 	if err != nil {

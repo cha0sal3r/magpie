@@ -47,7 +47,7 @@ func TestOmpProfiles(t *testing.T) {
 	}
 
 	before, labBefore := readFile(filepath.Join(def, "config.yml")), readFile(filepath.Join(lab, "config.yml"))
-	if err := w.Field("model").Set("magpie/relay/glm-4.6"); err != nil {
+	if err := w.Field("model").Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	if readFile(filepath.Join(work, "config.yml")) == "modelRoles:\n  default: b/model-b\n" {
@@ -110,7 +110,7 @@ func TestOmpProfilesNameRules(t *testing.T) {
 	if !f.Detected() {
 		t.Fatal("a profile folder is not detected")
 	}
-	if err := f.Field("model").Set("magpie/relay/glm-4.6"); err != nil {
+	if err := f.Field("model").Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := os.Stat(filepath.Join(fresh, "agent", "config.yml")); err != nil {
@@ -224,11 +224,11 @@ func TestWSLOmpProfilesFromProbe(t *testing.T) {
 		t.Fatalf("Dir %q", a.Dir)
 	}
 	before := readFile(defCfg)
-	if err := a.Field("model").Set("magpie/relay/glm-4.6"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	workCfg := filepath.Join(dhome, ".omp", "profiles", "work", "agent", "config.yml")
-	if !strings.Contains(readFile(workCfg), "magpie/relay/glm-4.6") {
+	if !strings.Contains(readFile(workCfg), "magpie-friday/relay/glm-4.6") {
 		t.Fatalf("work config:\n%s", readFile(workCfg))
 	}
 	if readFile(defCfg) != before {

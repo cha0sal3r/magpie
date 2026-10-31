@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// The calls an app reported itself, through POST /v1/magpie/usage/requests
+// The calls an app reported itself, through POST /v1/magpie-friday/usage/requests
 // (#1874), are a fourth source on the Requests tab, beside the gateway's and
 // the session files': a cell of their own, there only once there are some,
 // that lists only them when picked (via=reported, which a link can carry
@@ -39,7 +39,7 @@ function server(lang, theme, reported, asked) {
     if (url.pathname === "/api/state") return json({ agents: [], profiles: [], settings: { lang, theme }, fx: { rate: 7.2, at: new Date().toISOString() } });
     if (url.pathname === "/api/usage/requests") { asked.push(url.searchParams); return json(page(url.searchParams, reported)); }
     if (url.pathname === "/api/usage/quotas") return json([]);
-    if (url.pathname === "/api/usage") return json({ calls: 1, errors: 0, input: 1, output: 1, cache_read: 0, cache_write: 0, reasoning: 0, unpriced: 0, cost: 1, bucket: "day", series: [], agents: [], models: [], path: "~/.config/magpie/usage.jsonl" });
+    if (url.pathname === "/api/usage") return json({ calls: 1, errors: 0, input: 1, output: 1, cache_read: 0, cache_write: 0, reasoning: 0, unpriced: 0, cost: 1, bucket: "day", series: [], agents: [], models: [], path: "~/.config/magpie-friday/usage.jsonl" });
     if (url.pathname === "/api/sessions") return json({ sessions: [], dirs: [] });
     if (url.pathname === "/api/sessions/stats") return json({ from: "", to: "", days: [], agents: {} });
     if (url.pathname === "/api/groups") return json({ groups: [], models: [] });
@@ -52,11 +52,11 @@ function server(lang, theme, reported, asked) {
 
 // the four cells, and the row's badge, as each language says them
 const L = {
-  en: { cells: ["all requests", "through magpie", "not through magpie", "reported by apps"], badge: "Reported", reqs: "requests" },
-  zh: { cells: ["全部请求", "经过 magpie", "不经过 magpie", "由应用上报"], badge: "上报" },
-  "zh-TW": { cells: ["全部請求", "經過 magpie", "不經過 magpie", "由應用程式回報"], badge: "回報" },
-  ja: { cells: ["すべてのリクエスト", "magpie 経由", "magpie を経由しない", "アプリからの報告"], badge: "報告" },
-  de: { cells: ["alle Anfragen", "über magpie", "nicht über magpie", "von Apps gemeldet"], badge: "Gemeldet" },
+  en: { cells: ["all requests", "through magpie-friday", "not through magpie-friday", "reported by apps"], badge: "Reported", reqs: "requests" },
+  zh: { cells: ["全部请求", "经过 magpie-friday", "不经过 magpie-friday", "由应用上报"], badge: "上报" },
+  "zh-TW": { cells: ["全部請求", "經過 magpie-friday", "不經過 magpie-friday", "由應用程式回報"], badge: "回報" },
+  ja: { cells: ["すべてのリクエスト", "magpie-friday 経由", "magpie-friday を経由しない", "アプリからの報告"], badge: "報告" },
+  de: { cells: ["alle Anfragen", "über magpie-friday", "nicht über magpie-friday", "von Apps gemeldet"], badge: "Gemeldet" },
 };
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
@@ -115,7 +115,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
           await badge.first().waitFor();
           assert.equal(await badge.count(), 1);
           assert.equal(await badge.textContent(), w.badge);
-          assert((await badge.getAttribute("title")).includes("POST /v1/magpie/usage/requests"));
+          assert((await badge.getAttribute("title")).includes("POST /v1/magpie-friday/usage/requests"));
           if (shots) await p.screenshot({ path: path.join(shots, `reported-${engine}-${lang}-${width}.png`) });
 
           // picking it lists only them, and the total is the way back

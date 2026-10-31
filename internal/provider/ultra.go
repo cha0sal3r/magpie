@@ -12,7 +12,7 @@ import (
 // (codex-rs core/src/session/multi_agents.rs). Codex offers it on a model
 // whose entry lists "ultra"; its own catalog (models-manager/models.json)
 // lists it for these alone — GPT-6 Luna and GPT-5.6 Luna stop at max — so
-// magpie offers it on them wherever they are served (Copilot's, a key's, a
+// magpie-friday offers it on them wherever they are served (Copilot's, a key's, a
 // relay's: #656), never on every model that reaches max.
 var ultraModels = []string{"gpt-6.1-sol", "gpt-6-sol", "gpt-6-astra", "gpt-5.6-sol", "gpt-5.6-terra"}
 

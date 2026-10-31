@@ -9,14 +9,14 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/update"
+	"github.com/cha0sal3r/magpie-friday/internal/update"
 )
 
 // Settings' What's new offers, besides the notes since the last update,
 // this version and the 10, 20, 50 or 100 before it (Linka on Discord). The
 // site is asked for that many alone, once per language and longest range:
 // a shorter range, or the same again, is cut from what was had. A failed
-// ask is said, with the shorter range had before; a range magpie doesn't
+// ask is said, with the shorter range had before; a range magpie-friday doesn't
 // offer is the default. The site's list is magpie-releases' shape, with
 // 0.1.1407 never released and each note's Install section.
 func TestWhatsNewBackRanges(t *testing.T) {
@@ -30,7 +30,7 @@ func TestWhatsNewBackRanges(t *testing.T) {
 		s := strconv.Itoa(v)
 		list = append(list, update.Note{
 			Version: "0.1." + s,
-			Notes:   "## Bug Fixes\n\n- fix " + s + "\n\n## Install\n\n- macOS: [magpie-0.1." + s + "-mac-arm64.dmg](https://github.com/yetone/magpie-releases/releases/download/v0.1." + s + "/magpie-0.1." + s + "-mac-arm64.dmg)",
+			Notes:   "## Bug Fixes\n\n- fix " + s + "\n\n## Install\n\n- macOS: [magpie-friday-0.1." + s + "-mac-arm64.dmg](https://github.com/cha0sal3r/magpie-friday-releases/releases/download/v0.1." + s + "/magpie-friday-0.1." + s + "-mac-arm64.dmg)",
 		})
 	}
 	var mu sync.Mutex
@@ -128,7 +128,7 @@ func TestWhatsNewBackRanges(t *testing.T) {
 			t.Fatalf("%d after 100 asked %q, got %v", n, got, versions(j))
 		}
 	}
-	// a range magpie doesn't offer: the default, the site not asked for it
+	// a range magpie-friday doesn't offer: the default, the site not asked for it
 	for _, q := range []string{"&last=7", "&last=x", "&last=1000"} {
 		if j, _ = ask(q); !slices.Equal(versions(j), []string{"0.1.1410", "0.1.1409"}) {
 			t.Fatalf("%s: %v", q, versions(j))

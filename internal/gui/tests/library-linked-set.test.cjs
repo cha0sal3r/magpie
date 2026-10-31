@@ -16,7 +16,7 @@ const assets = path.resolve(__dirname, "../assets");
 const HOME = "/Users/xv";
 const FILE = `${HOME}/.agents/AGENTS.md`;
 const library = () => ({
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: [
     { id: "claude", name: "Claude Code", icon: "", instructions: `${HOME}/.claude/CLAUDE.md` },
     { id: "droid", name: "Droid", icon: "", instructions: `${HOME}/.factory/AGENTS.md` },

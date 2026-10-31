@@ -87,7 +87,7 @@ func TestEchoArgs(t *testing.T) {
 	os.Exit(0)
 }
 
-// a probe still asking when magpie exits is ended by EndProbes, and
+// a probe still asking when magpie-friday exits is ended by EndProbes, and
 // EndProbes returns once its kill is over, not after its whole wait (#1278)
 func TestEndProbesWindows(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)

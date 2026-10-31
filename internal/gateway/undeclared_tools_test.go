@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // piDeferred is pi's request (openai-completions) after its tool_search
@@ -98,8 +98,8 @@ func TestUndeclaredHistoryToolRefusedThenStubbed(t *testing.T) {
 			if c := gjson.GetBytes(last, "tool_choice"); c.Exists() {
 				t.Fatalf("tool_choice %s set where the client offered tools", c.Raw)
 			}
-			if strings.Contains(strings.ToLower(string(last)), "magpie") {
-				t.Fatalf("the stub names magpie: %s", last)
+			if strings.Contains(strings.ToLower(string(last)), "magpie-friday") {
+				t.Fatalf("the stub names magpie-friday: %s", last)
 			}
 			asked = nil
 			if code, out := postChatTo(h, piDeferred); code != 200 || len(asked) != 1 {

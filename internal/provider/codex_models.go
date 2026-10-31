@@ -18,10 +18,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/codexcat"
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/codexcat"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // codexClientVersion is the Codex CLI version the models list is asked for
@@ -111,7 +111,7 @@ func newerVersion(a, b string) string {
 }
 
 // codexSeen is the newest version a Codex client that came through the
-// gateway said it was. Codex CLI is often out of magpie's reach — installed
+// gateway said it was. Codex CLI is often out of magpie-friday's reach — installed
 // where a desktop app's PATH doesn't go, its models_cache.json written by
 // the version before an update — and the backend serves a model only to a
 // client new enough for it: signed by the pool as an older Codex, a model
@@ -233,7 +233,7 @@ func accountModels(agent, user string) string {
 	return agent + "@" + keyID(strings.ToLower(user))
 }
 
-// Lists reports whether the account's plan has the model, as far as magpie
+// Lists reports whether the account's plan has the model, as far as magpie-friday
 // knows: one whose list was never fetched is taken to have them all.
 func (a *Account) Lists(model string) bool {
 	if a == nil {
@@ -385,7 +385,7 @@ func codexFetchSaved(ctx context.Context) {
 }
 
 // CodexListed is the catalog as a Codex signed in to ChatGPT is handed it,
-// after the backend's own models: all but a ChatGPT account's in magpie,
+// after the backend's own models: all but a ChatGPT account's in magpie-friday,
 // which the backend lists already. A group answers for its first member
 // but is not that provider's.
 func CodexListed() []catalog.Model {
@@ -397,10 +397,10 @@ func CodexListed() []catalog.Model {
 	}, false)
 }
 
-// CodexCatalog is shown as a Codex that names magpie its model_provider is
+// CodexCatalog is shown as a Codex that names magpie-friday its model_provider is
 // handed it from GET /v1/codex/models (#1281): every model, a ChatGPT
-// account's own among them, since that Codex reaches them through magpie's
-// /v1 by magpie's id, not through the ChatGPT backend's list.
+// account's own among them, since that Codex reaches them through magpie-friday's
+// /v1 by magpie-friday's id, not through the ChatGPT backend's list.
 func CodexCatalog(shown []Entry) []catalog.Model {
 	find := GroupFinder()
 	return codexListed(shown, func(id string) []Member {
@@ -482,14 +482,14 @@ func CodexOrder() (map[string]int, bool) {
 	return out, true
 }
 
-// CodexListTag names the list Codex is handed, for its ETag: magpie's models,
+// CodexListTag names the list Codex is handed, for its ETag: magpie-friday's models,
 // the account's own taken out of it, the order they are in, the windows set on them, the auto-review model, and whether its OpenAI models say
 // multi-agent V1 (settings.CodexAgentsV1), so any of them changing has
 // Codex ask for the list again.
 func CodexListTag() string { return codexListTag("") }
 
-// CodexOwnListTag names the list a Codex that reaches magpie for account
-// failover alone is handed, its own models without magpie's (#1385). Neither
+// CodexOwnListTag names the list a Codex that reaches magpie-friday for account
+// failover alone is handed, its own models without magpie-friday's (#1385). Neither
 // it nor CodexListTag's is a part of the other, so Codex asks again when it
 // moves from one list to the other; a V1 list's mark stays in front.
 func CodexOwnListTag() string { return codexListTag("own") }
@@ -527,7 +527,7 @@ func buildCodexListTag(kind string) string {
 	if v := settings.Load().CodexAutoReview; v != "" {
 		ms = append(ms, catalog.Model{ID: "~autoreview:" + v})
 	}
-	// and the effort new sessions start at, which magpie's models take as
+	// and the effort new sessions start at, which magpie-friday's models take as
 	// their default (codexcat.ModelDefault): another one set, Codex asks
 	// for the list again
 	if v := codexcat.NewSessionEffort(); v != "" {
@@ -563,7 +563,7 @@ func CodexNativePicked() (map[string]bool, bool) {
 // provider (Provider.ContextOf), as /v1/models says it (#674). ok is false
 // for a model the user set none for, whose entry keeps the backend's window
 // — unless restore, for an entry not fresh from the backend: Codex's
-// models_cache.json keeps what magpie last handed it, a window since taken
+// models_cache.json keeps what magpie-friday last handed it, a window since taken
 // away among it, so such an entry takes the account's own list's again.
 func CodexNativeWindow(restore bool) func(slug string) (n, most int, ok bool) {
 	p, _ := find(All(), "codex")
@@ -577,7 +577,7 @@ func CodexNativeWindow(restore bool) func(slug string) (n, most int, ok bool) {
 		}
 		for _, m := range live {
 			if m.ID == slug && m.Context > 0 {
-				// a list without the max (saved before magpie kept
+				// a list without the max (saved before magpie-friday kept
 				// it) leaves the cache's own; Window still raises it to
 				// the window when it's below
 				return m.Context, m.MaxContext, true
@@ -589,9 +589,9 @@ func CodexNativeWindow(restore bool) func(slug string) (n, most int, ok bool) {
 
 // CodexWindow is the context window Codex works in for one of its own
 // models, by the backend's slug, for a request to the ChatGPT backend or
-// OpenAI's API that Codex sent through magpie: the window the user set on
+// OpenAI's API that Codex sent through magpie-friday: the window the user set on
 // the codex provider, else the one the account's own list gives (user, ""
-// for any), else magpie's Codex subscription's, else Codex CLI's
+// for any), else magpie-friday's Codex subscription's, else Codex CLI's
 // models_cache.json's; 0 when none says. models.dev's input limit for the
 // same id is OpenAI's API's (gpt-5.5's 922K), not the window Codex holds
 // a conversation to (272K): netube on Discord saw Routing say 922K for a
@@ -660,12 +660,12 @@ func codexListed(shown []Entry, members func(id string) []Member, own bool) []ca
 // CodexTiers sets on m what Codex is offered on e's service tiers
 // (codexcat.Entries turns them into the entry's service_tiers): one source
 // for every list Codex is handed, the gateway's and the models.json file
-// magpie writes for a Codex CLI that names magpie its provider (#1530).
+// magpie-friday writes for a Codex CLI that names magpie-friday its provider (#1530).
 func CodexTiers(m *catalog.Model, e Entry, members func(id string) []Member) {
 	// a provider the user added by its address is sent the tier Codex
 	// asks for as it is (hsiangron on X)
 	m.OwnTier = e.Group == "" && e.Provider.Preset == "" && e.Provider.Account == nil && e.Provider.ID != ""
-	// another magpie offers the tiers its own Codex is offered on the
+	// another magpie-friday offers the tiers its own Codex is offered on the
 	// model, and is sent the one Codex asks for as it is (#1234); a
 	// provider plugin, those it says its vendor serves the model at, and
 	// is sent the one Codex asks for when it is among them (#2514)

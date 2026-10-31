@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/filememo"
+	"github.com/cha0sal3r/magpie-friday/internal/filememo"
 )
 
 // desktopTitle is what a Desktop session record (local_<id>.json) says of

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/yetone/magpie/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
 )
 
 // upstreamTLS is what the gateway's transports dial TLS with: nil, the
@@ -69,7 +69,7 @@ func (t drawsApart) RoundTrip(r *http.Request) (*http.Response, error) {
 // idle (#2136: Pi's Codex turn through Clash, "write: broken pipe" then
 // "EOF", 14.5s before the third try). The mark is an X-Idempotency-Key with
 // no value, which Go reads and never sends: the vendor sees the request as
-// before. magpie already asked the same request again after these errors,
+// before. magpie-friday already asked the same request again after these errors,
 // so nothing is sent that wasn't before, only sooner.
 type replayable struct{ http.RoundTripper }
 

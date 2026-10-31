@@ -12,8 +12,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // A heap profile of a gateway at work (~1,000 requests in 10 minutes)
@@ -35,7 +35,7 @@ func TestRequestsParseUnchangedSettingsOnce(t *testing.T) {
 	if err := provider.Save(provider.Provider{ID: "relay", Name: "Relay", Key: "k", Chat: up.URL + "/v1", Models: []string{"m1"}}); err != nil {
 		t.Fatal(err)
 	}
-	// a long-used magpie's settings: answers about many models
+	// a long-used magpie-friday's settings: answers about many models
 	images := map[string]bool{}
 	for i := range 200 {
 		images[fmt.Sprintf("p%d/model-%d", i%30, i)] = i%2 == 0

@@ -15,8 +15,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/redact"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/redact"
 )
 
 // hello is the line pf-serve writes once the model is loaded.
@@ -38,7 +38,7 @@ type helper struct {
 	exited chan struct{}
 }
 
-// srv is the pf-serve magpie runs, one at a time. Its requests take
+// srv is the pf-serve magpie-friday runs, one at a time. Its requests take
 // turns on its one pipe: turn is held for each, from start to answer, and
 // a request's caller can stop waiting for it (FindContext). mu guards
 // only the fields below, and is never held while pf-serve loads or
@@ -136,7 +136,7 @@ func startOne(path string, cpu bool, stop <-chan struct{}) (*helper, error) {
 	// Without GGML_METAL_NO_RESIDENCY, ggml's Metal residency set keeps a
 	// heartbeat that woke an idle pf-serve ~146 times a second for the 10
 	// minutes it stays up after a request, and macOS's Energy Impact
-	// counted magpie among the top for it (#3185). With it set: 0.3 a
+	// counted magpie-friday among the top for it (#3185). With it set: 0.3 a
 	// second, and the first request after an idle spell takes 0.1-0.45s
 	// more (51-78ms hot either way).
 	cmd.Env = append(os.Environ(), "GGML_METAL_NO_RESIDENCY=1")

@@ -3,11 +3,11 @@ package usage
 import (
 	"time"
 
-	"github.com/yetone/magpie/internal/probelog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/probelog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// SourceProbe is Record.Source for a request magpie sent a provider on its
+// SourceProbe is Record.Source for a request magpie-friday sent a provider on its
 // own, outside any agent's turn (probelog): the editor's Test, Detect
 // APIs, a model list's refresh. Its Kind says which (probelog.KindTest,
 // KindDetect, KindList). Such a row is listed on the request log, told
@@ -16,7 +16,7 @@ import (
 // the calls (logSnapshot.probes) so a reader of those never meets it.
 const SourceProbe = "probe"
 
-// IsProbe is a request magpie sent on its own (SourceProbe).
+// IsProbe is a request magpie-friday sent on its own (SourceProbe).
 func (r Record) IsProbe() bool { return r.Source == SourceProbe }
 
 // IsProbe is a row of such a request. A packed row keeps the row's Source,
@@ -32,7 +32,7 @@ type probeRow struct {
 
 func init() {
 	probelog.Sink = func(p probelog.Row) {
-		Append(Record{Time: p.Time, Agent: "magpie", Provider: p.Provider, ProviderAccount: p.Account,
+		Append(Record{Time: p.Time, Agent: "magpie-friday", Provider: p.Provider, ProviderAccount: p.Account,
 			Host: p.Host, Model: p.Model, Requested: p.Model, Status: p.Status, Millis: p.Millis,
 			Error: clipProbeError(p.Error), Endpoint: p.Endpoint, Kind: p.Kind, Source: SourceProbe})
 	}

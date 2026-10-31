@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // claudeSettings is a Claude Code home with settings.json as given.
@@ -27,7 +27,7 @@ func claudeSettings(t *testing.T, settings string) (home, path string) {
 }
 
 // Opus 5.5 and later ignore the effortLevel at the top of the user's
-// settings.json and read modelSettings.<model>.effortLevel (#351): magpie
+// settings.json and read modelSettings.<model>.effortLevel (#351): magpie-friday
 // writes the level there, beside the user's other models and keys, and a
 // reset takes out only the level. Opus 5 and before, and another vendor's
 // model, still read the top one.
@@ -87,7 +87,7 @@ func TestClaudeEffortModelSettings(t *testing.T) {
 		t.Fatalf("opus 5 reset:\n%s", readFile(path))
 	}
 
-	// another vendor's model through magpie: the top one only
+	// another vendor's model through magpie-friday: the top one only
 	home, path = claudeSettings(t, `{}`)
 	if err := provider.Save(provider.Provider{ID: "deepseek", Name: "DeepSeek", Chat: "https://api.deepseek.com/v1", Key: "k", Models: []string{"pro"}}); err != nil {
 		t.Fatal(err)
@@ -151,7 +151,7 @@ func TestClaudeEffortPerModel(t *testing.T) {
 }
 
 // ultracode is settings.json's "ultracode": true (#352), there for a model
-// that takes xhigh; magpie claude ultra is refused, not written as the model.
+// that takes xhigh; magpie-friday claude ultra is refused, not written as the model.
 func TestClaudeUltracode(t *testing.T) {
 	home, path := claudeSettings(t, `{"model": "claude-opus-5-5"}`)
 	a := claude(home)

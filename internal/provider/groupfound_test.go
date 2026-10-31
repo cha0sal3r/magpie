@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// The groups magpie finds can be turned off all at once (蓝猫 on Discord),
+// The groups magpie-friday finds can be turned off all at once (蓝猫 on Discord),
 // not only removed one by one: off, none is listed, served or picked for a
 // bare model id; the user's own groups, a found one they changed among
 // them, and the records of those removed stay; on again, every found group

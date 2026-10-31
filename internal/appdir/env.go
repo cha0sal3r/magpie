@@ -8,7 +8,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/yetone/magpie/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
 )
 
 // homeVar is the variable Go's os.UserHomeDir reads the home folder from.
@@ -33,13 +33,13 @@ func rooted(p string) bool {
 
 // Home is the user's home folder, or an error when its variable is unset,
 // empty or relative. os.UserHomeDir hands back "" there, which
-// filepath.Join turns into a path under the folder magpie was started in,
+// filepath.Join turns into a path under the folder magpie-friday was started in,
 // and on Android it falls back to the shared /sdcard.
 func Home() (string, error) {
 	v := homeVar()
 	switch h := os.Getenv(v); {
 	case h == "":
-		return "", fmt.Errorf("%s is not set: magpie needs the home folder to find its own files and the agents'", v)
+		return "", fmt.Errorf("%s is not set: magpie-friday needs the home folder to find its own files and the agents'", v)
 	case !rooted(h):
 		return "", fmt.Errorf("%s is %q, not an absolute path", v, h)
 	default:
@@ -59,7 +59,7 @@ func mustHome() string {
 }
 
 // pathVars are the variables folders and files are built from: the XDG
-// folders, Windows' application data folders, magpie's own and every
+// folders, Windows' application data folders, magpie-friday's own and every
 // agent's.
 var pathVars = sync.OnceValue(func() map[string]bool {
 	vs := map[string]bool{}
@@ -92,10 +92,10 @@ func usable(name, v string) bool {
 	return false
 }
 
-// LookupEnv is os.LookupEnv for what magpie itself reads: a folder variable
+// LookupEnv is os.LookupEnv for what magpie-friday itself reads: a folder variable
 // (pathVars) holding a relative path reads as unset, as the XDG spec asks of
-// one, so no file of magpie's or an agent's is written under the working
-// folder. The environment is left as it is: the programs magpie starts get
+// one, so no file of magpie-friday's or an agent's is written under the working
+// folder. The environment is left as it is: the programs magpie-friday starts get
 // the variable as the user set it. The variables a login shell lends the
 // desktop app (proc.UserPath) are read through here too.
 func LookupEnv(name string) (string, bool) {

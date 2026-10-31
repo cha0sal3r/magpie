@@ -14,10 +14,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// claudeRoom counts the Claude Code processes magpie has running for
+// claudeRoom counts the Claude Code processes magpie-friday has running for
 // Claude subscriptions: each conversation's run, busy, waiting for its next
 // turn or on its caller's tool results, and each one-off test, warm-up and
 // /usage read. Each holds about 100 MiB of its own (Claude Code 2.1.303 on
@@ -31,7 +31,7 @@ import (
 type claudeRoomT struct {
 	mu sync.Mutex
 	// live is how many Claude Code processes run; leaving how many of them
-	// magpie has asked to end, not ended yet; waiting how many asks wait
+	// magpie-friday has asked to end, not ended yet; waiting how many asks wait
 	// for room
 	live, leaving, waiting int
 	// freed is closed, and made anew, each time one ends, or a run comes
@@ -64,7 +64,7 @@ func claudeNoRoom(status int, body []byte) bool {
 
 func (e *claudeFull) Error() string {
 	return fmt.Sprintf("%d "+claudeNoRoomSaid+" (%s); none ended within %s. "+
-		"Set how many may run with `magpie claude-code runs N` (claudeRunsMost in settings.json)",
+		"Set how many may run with `magpie-friday claude-code runs N` (claudeRunsMost in settings.json)",
 		e.live, e.why, e.waited)
 }
 
@@ -79,10 +79,10 @@ func claudeRunsMost() (int, string) {
 }
 
 // ClaudeMemRuns is how many Claude Code processes this machine's memory
-// holds, and why; 0 when not bounded by it (`magpie claude-code runs`).
+// holds, and why; 0 when not bounded by it (`magpie-friday claude-code runs`).
 func ClaudeMemRuns() (int, string) { return claudeMemRuns() }
 
-// The memory a Claude Code process is given, and what is kept for magpie
+// The memory a Claude Code process is given, and what is kept for magpie-friday
 // and the rest of the machine, as the bound is sized from memory: 512 MiB
 // holds 2, 1 GiB 6.
 const (
@@ -129,7 +129,7 @@ var (
 	memRoot = "/"
 )
 
-// memLimit is the memory magpie's processes may use, in bytes, and where
+// memLimit is the memory magpie-friday's processes may use, in bytes, and where
 // that is said; 0 when not known.
 func memLimit(goos, root string) (int64, string) {
 	if goos != "linux" {
@@ -204,7 +204,7 @@ func readLimit(path string) (int64, bool) {
 
 // take waits for room for one Claude Code process, what naming it in the
 // log, and gives the func that frees it once the process has ended; left
-// says magpie ended it (leave). An ask that finds the room full lets go of
+// says magpie-friday ended it (leave). An ask that finds the room full lets go of
 // an idle or long-parked run for it, unless enough are ending already, and
 // waits for one to end: claudeRoomWait at most, or as long as ctx lasts.
 func (c *claudeRoomT) take(ctx context.Context, what string) (func(left bool), error) {
@@ -261,7 +261,7 @@ func (c *claudeRoomT) take(ctx context.Context, what string) (func(left bool), e
 	}
 }
 
-// leave counts a process magpie has asked to end as ending, so asks
+// leave counts a process magpie-friday has asked to end as ending, so asks
 // waiting for room don't let go of another for it.
 func (c *claudeRoomT) leave() {
 	c.mu.Lock()
@@ -326,7 +326,7 @@ func letGoForRoom(most int) bool {
 		b.mu.Unlock()
 		return true
 	})
-	why := "magpie let it go to make room for another Claude Code (" + strconv.Itoa(most) + " may run at once)"
+	why := "magpie-friday let it go to make room for another Claude Code (" + strconv.Itoa(most) + " may run at once)"
 	if idle != nil {
 		b := idleBridge
 		b.mu.Lock()

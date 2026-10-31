@@ -4,19 +4,19 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 // A turn's end is said in the page's language: the agent, how long the
 // turn took, and the folder's own name when the agent says one.
 func TestTurnDoneText(t *testing.T) {
-	long := gateway.TurnEnd{Agent: "claude", Session: "s", Folder: "/Users/u/work/magpie/", Took: 3*time.Minute + 12*time.Second}
+	long := gateway.TurnEnd{Agent: "claude", Session: "s", Folder: "/Users/u/work/magpie-friday/", Took: 3*time.Minute + 12*time.Second}
 	for _, c := range []struct{ lang, title, body string }{
-		{"en", "Claude Code is done", "Took 3m 12s · magpie"},
-		{"zh", "Claude Code 已完成", "用时 3 分 12 秒 · magpie"},
-		{"zh-TW", "Claude Code 已完成", "用時 3 分 12 秒 · magpie"},
-		{"ja", "Claude Code が完了しました", "所要時間 3 分 12 秒 · magpie"},
-		{"de", "Claude Code ist fertig", "Dauer: 3 Min. 12 Sek. · magpie"},
+		{"en", "Claude Code is done", "Took 3m 12s · magpie-friday"},
+		{"zh", "Claude Code 已完成", "用时 3 分 12 秒 · magpie-friday"},
+		{"zh-TW", "Claude Code 已完成", "用時 3 分 12 秒 · magpie-friday"},
+		{"ja", "Claude Code が完了しました", "所要時間 3 分 12 秒 · magpie-friday"},
+		{"de", "Claude Code ist fertig", "Dauer: 3 Min. 12 Sek. · magpie-friday"},
 	} {
 		if title, body := turnDoneText(c.lang, "Claude Code", long); title != c.title || body != c.body {
 			t.Errorf("%s: %q / %q", c.lang, title, body)

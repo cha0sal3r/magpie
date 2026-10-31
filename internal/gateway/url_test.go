@@ -9,8 +9,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 func TestPublicURL(t *testing.T) {
@@ -24,28 +24,28 @@ func TestPublicURL(t *testing.T) {
 	}
 	for _, c := range []struct{ public, want string }{
 		{"", ""},
-		{"https://magpie.example.com", "https://magpie.example.com"},
-		{"https://magpie.example.com/", "https://magpie.example.com"},
-		{"https://magpie.example.com/magpie///", "https://magpie.example.com/magpie"},
-		{"http://magpie.example.com:3425/", "http://magpie.example.com:3425"},
+		{"https://magpie-friday.example.com", "https://magpie-friday.example.com"},
+		{"https://magpie-friday.example.com/", "https://magpie-friday.example.com"},
+		{"https://magpie-friday.example.com/magpie-friday///", "https://magpie-friday.example.com/magpie-friday"},
+		{"http://magpie-friday.example.com:3425/", "http://magpie-friday.example.com:3425"},
 		{"http://[::1]:3425/", "http://[::1]:3425"},
-		{"magpie.example.com", "http://magpie.example.com"},
+		{"magpie-friday.example.com", "http://magpie-friday.example.com"},
 		{"nas.lan:3425///", "http://nas.lan:3425"},
 		{"[fd00::20]:3425", "http://[fd00::20]:3425"},
 		{"///", ""},
-		{"ftp://magpie.example.com", ""},
-		{"//magpie.example.com", ""},
-		{"https:///magpie", ""},
+		{"ftp://magpie-friday.example.com", ""},
+		{"//magpie-friday.example.com", ""},
+		{"https:///magpie-friday", ""},
 		{"http://", ""},
 		{"https:///", ""},
 		{"ftp://", ""},
-		{"https://magpie.example.com:bad", ""},
-		{"https://magpie.example.com/%zz", ""},
-		{" https://magpie.example.com", "https://magpie.example.com"},
-		{"\thttps://magpie.example.com/magpie/ ", "https://magpie.example.com/magpie"},
-		{"https://magpie.example.com/magpie?x=1", ""},
-		{"https://magpie.example.com/magpie#frag", ""},
-		{"https://user:pass@magpie.example.com", ""},
+		{"https://magpie-friday.example.com:bad", ""},
+		{"https://magpie-friday.example.com/%zz", ""},
+		{" https://magpie-friday.example.com", "https://magpie-friday.example.com"},
+		{"\thttps://magpie-friday.example.com/magpie-friday/ ", "https://magpie-friday.example.com/magpie-friday"},
+		{"https://magpie-friday.example.com/magpie-friday?x=1", ""},
+		{"https://magpie-friday.example.com/magpie-friday#frag", ""},
+		{"https://user:pass@magpie-friday.example.com", ""},
 	} {
 		t.Run(c.public, func(t *testing.T) {
 			t.Setenv("MAGPIE_PUBLIC_URL", c.public)
@@ -114,7 +114,7 @@ func TestPublicURLWarningOnce(t *testing.T) {
 		t.Fatalf("first invalid URL: %q, want exactly one warning", logs.String())
 	}
 	logs.Reset()
-	for _, u := range []string{"ftp://nas.lan", "https:///magpie", "https://nas.lan:bad"} {
+	for _, u := range []string{"ftp://nas.lan", "https:///magpie-friday", "https://nas.lan:bad"} {
 		t.Setenv("MAGPIE_PUBLIC_URL", u)
 		for range 3 {
 			PublicURL()

@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// Usage counts, per model, the replies magpie ended because the model
+// Usage counts, per model, the replies magpie-friday ended because the model
 // was stuck in a loop (#1858): they are among its failed calls, and the
 // model's row says how many of them were loops, apart from the vendor's
 // own errors. The Overview's model groups and the Requests ranking both

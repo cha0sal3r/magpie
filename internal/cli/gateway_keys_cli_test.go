@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/budget"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/budget"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 func TestGatewayKeyCLI(t *testing.T) {
@@ -105,7 +105,7 @@ func TestGatewayKeyCLIOwnValue(t *testing.T) {
 
 func TestGatewayKeyListWithReadOnlyMigration(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
-	s := settings.Settings{LAN: true, LANKey: "sk-magpie-fixture-cli"}
+	s := settings.Settings{LAN: true, LANKey: "sk-magpie-friday-fixture-cli"}
 	if err := settings.Save(s); err != nil {
 		t.Fatal(err)
 	}
@@ -117,12 +117,12 @@ func TestGatewayKeyListWithReadOnlyMigration(t *testing.T) {
 		t.Skip("settings.json remains writable")
 	}
 	var out bytes.Buffer
-	if err := gatewayKeysTo(&out, []string{"gateway-key", "list"}); err != nil || !strings.Contains(out.String(), "Magpie") {
+	if err := gatewayKeysTo(&out, []string{"gateway-key", "list"}); err != nil || !strings.Contains(out.String(), "magpie-friday") {
 		t.Fatal("read-only migration blocked CLI list", out.String(), err)
 	}
 }
 
-// magpie gateway-key limit sets, shows and takes off a key's limit, and
+// magpie-friday gateway-key limit sets, shows and takes off a key's limit, and
 // list says what each key has used of its own (#585).
 func TestGatewayKeyLimitCLI(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
@@ -271,7 +271,7 @@ func TestGatewayKeyModelsCLI(t *testing.T) {
 	}
 }
 
-// magpie gateway-key accounts sets, shows and takes off a key's account
+// magpie-friday gateway-key accounts sets, shows and takes off a key's account
 // whitelist, and refuses an account no provider has (#905). An account's
 // stable id, named by who is signed in, is exercised against a real
 // sign-in in the gateway's tests; a key's fingerprint is one here.
@@ -322,7 +322,7 @@ func TestGatewayKeyAccountsCLI(t *testing.T) {
 	}
 }
 
-// magpie gateway-key limit adds, lists, changes and removes a key's
+// magpie-friday gateway-key limit adds, lists, changes and removes a key's
 // several limits (#2227); the single-limit form still sets an only limit.
 func TestGatewayKeySeveralLimitsCLI(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())

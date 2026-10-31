@@ -4,7 +4,7 @@ package provider
 // time left by its own exp (willz on Discord, #2973: two saved Team
 // accounts, /wham/usage answering 401 "Provided authentication token is
 // expired. Please try refreshing it." until each was signed in again).
-// magpie refreshes a token only as its exp nears, so it kept sending the
+// magpie-friday refreshes a token only as its exp nears, so it kept sending the
 // one turned away. Such an answer is mended by one refresh: forced here,
 // and the read made once more with the new token, never more.
 
@@ -42,7 +42,7 @@ func codexExpired(err error) bool {
 }
 
 // errCodexStillExpired is a usage read turned away as expired again with
-// the token refreshed just for it: nothing magpie holds will do.
+// the token refreshed just for it: nothing magpie-friday holds will do.
 var errCodexStillExpired = errors.New("ChatGPT turned the refreshed sign-in away too; sign in to this account again")
 
 // codexWindowsRenewing is codexWindows, read once more with the sign-in

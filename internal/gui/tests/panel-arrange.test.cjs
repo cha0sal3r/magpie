@@ -185,7 +185,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       await page.waitForFunction(() => !document.querySelector('#panelQuota .pq-card[data-card="deepseek"]'));
 
       // the Usage page keeps every card, in the shared order. The window reads
-      // the settings saved above from magpie, as it does: set into state by hand,
+      // the settings saved above from magpie-friday, as it does: set into state by hand,
       // its own load could answer after and put the first order back
       const win = await context.newPage();
       win.on("pageerror", (e) => errors.push(e.message));

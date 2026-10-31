@@ -4,7 +4,7 @@ package gui
 
 import (
 	"github.com/wailsapp/wails/v3/pkg/application"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 func (h *host) fontsChanged() {

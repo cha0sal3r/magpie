@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // yanjieee (#1575): with one subscription's 30 models and a routing group,
@@ -69,7 +69,7 @@ func TestClaudePickerListsRoutingGroups(t *testing.T) {
 		t.Fatalf("picker has %d options, want the group and 30 models: %v", len(opts), listed())
 	}
 	// the group, first, as the model Claude Code was set to is spelled
-	if g := opts[0]; g["model"] != main || g["label"] != "Auto DeepSeek · routing group" || g["description"] != "via magpie" {
+	if g := opts[0]; g["model"] != main || g["label"] != "Auto DeepSeek · routing group" || g["description"] != "via magpie-friday" {
 		t.Fatalf("first option %v, want the group as %q: %v", g, main, listed())
 	}
 	for _, m := range models {
@@ -80,7 +80,7 @@ func TestClaudePickerListsRoutingGroups(t *testing.T) {
 		}
 	}
 
-	// a group saved after it is in /model once magpie syncs Claude Code
+	// a group saved after it is in /model once magpie-friday syncs Claude Code
 	if err := provider.SaveGroup(provider.Group{ID: "second", Name: "Second", Members: []string{"commandcode/model-07"}}); err != nil {
 		t.Fatal(err)
 	}

@@ -11,13 +11,13 @@ import (
 	"time"
 )
 
-// fakeBundle makes an app at dir/magpie.app whose Info.plist names exe as
+// fakeBundle makes an app at dir/magpie-friday.app whose Info.plist names exe as
 // its program, a script that writes the arguments it was run with to
 // dir/started: the new version, started.
 func fakeBundle(t *testing.T, exe string) (bundle, started string) {
 	t.Helper()
 	dir := t.TempDir()
-	bundle = filepath.Join(dir, "magpie.app")
+	bundle = filepath.Join(dir, "magpie-friday.app")
 	started = filepath.Join(dir, "started")
 	macos := filepath.Join(bundle, "Contents", "MacOS")
 	if err := os.MkdirAll(macos, 0o755); err != nil {
@@ -27,7 +27,7 @@ func fakeBundle(t *testing.T, exe string) (bundle, started string) {
 <plist version="1.0"><dict>
 	<key>CFBundleExecutable</key>
 	<string>` + exe + `</string>
-	<key>CFBundleIdentifier</key><string>com.yetone.magpie</string>
+	<key>CFBundleIdentifier</key><string>com.cha0sal3r.magpie-friday</string>
 </dict></plist>
 `
 	if err := os.WriteFile(filepath.Join(bundle, "Contents", "Info.plist"), []byte(plist), 0o644); err != nil {
@@ -54,7 +54,7 @@ func waitFor(t *testing.T, path, what string) string {
 
 var shortWaits = []string{"0.1", "0.1", "0.1"}
 
-// The report after fb23bca5c (molvqingtai): with the screen locked, magpie
+// The report after fb23bca5c (molvqingtai): with the screen locked, magpie-friday
 // updated itself and still never came back, though open was tried for
 // 13s. Every open is refused here, as LaunchServices refused them; once
 // the tries are spent the bundle's own program is run, by its path, with
@@ -65,7 +65,7 @@ func TestRelaunchStartsTheBundleWhenOpenNeverWorks(t *testing.T) {
 		args   string
 	}{{false, "tray"}, {true, "gui"}} {
 		dir := fakeOpen(t, 1000)
-		bundle, started := fakeBundle(t, "magpie")
+		bundle, started := fakeBundle(t, "magpie-friday")
 		log := filepath.Join(t.TempDir(), relaunchLogName)
 		if err := runAfterExit(gonePid(t), relaunchScript(bundle, c.window, log, shortWaits)); err != nil {
 			t.Fatal(err)
@@ -83,7 +83,7 @@ func TestRelaunchStartsTheBundleWhenOpenNeverWorks(t *testing.T) {
 }
 
 // runScript runs the relaunch's shell to its end, as runAfterExit's shell
-// would once magpie is gone, and says how it exited.
+// would once magpie-friday is gone, and says how it exited.
 func runScript(t *testing.T, script string) error {
 	t.Helper()
 	c := exec.Command("/bin/sh", "-c", script)
@@ -107,7 +107,7 @@ func runScript(t *testing.T, script string) error {
 // and the start it fell back to: the next report says what happened.
 func TestRelaunchLogsEachTry(t *testing.T) {
 	fakeOpen(t, 1000)
-	bundle, started := fakeBundle(t, "magpie")
+	bundle, started := fakeBundle(t, "magpie-friday")
 	log := filepath.Join(t.TempDir(), relaunchLogName)
 	if err := runScript(t, relaunchScript(bundle, false, log, shortWaits)); err != nil {
 		t.Fatalf("the shell: %v", err)
@@ -122,7 +122,7 @@ func TestRelaunchLogsEachTry(t *testing.T) {
 		"opening " + bundle,
 		"open try 1: exit 1 _LSOpenURLsWithCompletionHandler() failed for the application " + bundle + " with error -600.",
 		"open try 4: exit 1 ",
-		"open gave up after 4 tries; starting '" + filepath.Join(bundle, "Contents", "MacOS", "magpie") + "' 'tray'",
+		"open gave up after 4 tries; starting '" + filepath.Join(bundle, "Contents", "MacOS", "magpie-friday") + "' 'tray'",
 	} {
 		if !strings.Contains(got, want) {
 			t.Errorf("the log has no %q:\n%s", want, got)
@@ -134,7 +134,7 @@ func TestRelaunchLogsEachTry(t *testing.T) {
 // it as well, and the log says the open went through.
 func TestRelaunchOpenedStartsNothingElse(t *testing.T) {
 	dir := fakeOpen(t, 1)
-	bundle, started := fakeBundle(t, "magpie")
+	bundle, started := fakeBundle(t, "magpie-friday")
 	log := filepath.Join(t.TempDir(), relaunchLogName)
 	if err := runScript(t, relaunchScript(bundle, false, log, shortWaits)); err != nil {
 		t.Fatalf("opened on the second try, and the shell said %v", err)
@@ -154,8 +154,8 @@ func TestRelaunchOpenedStartsNothingElse(t *testing.T) {
 // shell that says nothing.
 func TestRelaunchNoProgramIsLogged(t *testing.T) {
 	fakeOpen(t, 1000)
-	bundle, _ := fakeBundle(t, "magpie")
-	exe := filepath.Join(bundle, "Contents", "MacOS", "magpie")
+	bundle, _ := fakeBundle(t, "magpie-friday")
+	exe := filepath.Join(bundle, "Contents", "MacOS", "magpie-friday")
 	os.Remove(exe)
 	log := filepath.Join(t.TempDir(), relaunchLogName)
 	if err := runScript(t, relaunchScript(bundle, false, log, shortWaits)); err == nil {
@@ -167,11 +167,11 @@ func TestRelaunchNoProgramIsLogged(t *testing.T) {
 }
 
 // The program is the one the bundle's Info.plist names, even where it
-// isn't magpie, and a quote in the bundle's path stays in it.
+// isn't magpie-friday, and a quote in the bundle's path stays in it.
 func TestRelaunchRunsTheProgramInfoPlistNames(t *testing.T) {
 	fakeOpen(t, 1000)
-	bundle, started := fakeBundle(t, "magpie dev")
-	moved := filepath.Join(filepath.Dir(bundle), "it's magpie.app")
+	bundle, started := fakeBundle(t, "magpie-friday dev")
+	moved := filepath.Join(filepath.Dir(bundle), "it's magpie-friday.app")
 	if err := os.Rename(bundle, moved); err != nil {
 		t.Fatal(err)
 	}
@@ -184,12 +184,12 @@ func TestRelaunchRunsTheProgramInfoPlistNames(t *testing.T) {
 	}
 }
 
-// The log is in magpie's own folder, where the rest of its state is, and
+// The log is in magpie-friday's own folder, where the rest of its state is, and
 // is kept small: past 64KB the last one is moved aside, not added to.
 func TestRelaunchLogInMagpiesFolder(t *testing.T) {
 	cfg := t.TempDir()
 	t.Setenv("XDG_CONFIG_HOME", cfg)
-	want := filepath.Join(cfg, "magpie", relaunchLogName)
+	want := filepath.Join(cfg, "magpie-friday", relaunchLogName)
 	if got := relaunchLog(); got != want {
 		t.Fatalf("log at %q, want %q", got, want)
 	}

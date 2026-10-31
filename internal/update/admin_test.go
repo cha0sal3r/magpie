@@ -30,7 +30,7 @@ func version(t *testing.T, path string) string {
 	return string(b)
 }
 
-// A folder magpie may not write to: Install fails with a permission error,
+// A folder magpie-friday may not write to: Install fails with a permission error,
 // leaves the app as it was, and keeps what it staged.
 func TestInstallNeedsAdmin(t *testing.T) {
 	if runtime.GOOS == "windows" {
@@ -41,14 +41,14 @@ func TestInstallNeedsAdmin(t *testing.T) {
 	}
 	root := t.TempDir()
 	apps := filepath.Join(root, "Applications")
-	bundle := filepath.Join(apps, "magpie.app")
+	bundle := filepath.Join(apps, "magpie-friday.app")
 	app(t, bundle, "old")
-	staged := filepath.Join(root, "cache", "app", "magpie.app")
+	staged := filepath.Join(root, "cache", "app", "magpie-friday.app")
 	app(t, staged, "new")
 	os.Chmod(apps, 0o555)
 	defer os.Chmod(apps, 0o755)
 
-	if stageDir(apps) == filepath.Join(apps, ".magpie-update") {
+	if stageDir(apps) == filepath.Join(apps, ".magpie-friday-update") {
 		t.Error("stageDir picked a folder it can't write to")
 	}
 	err := Install(staged, bundle)
@@ -67,7 +67,7 @@ func TestSwapScript(t *testing.T) {
 		t.Skip("the swap runs as root under /bin/sh, on a Mac or Linux")
 	}
 	dir := filepath.Join(t.TempDir(), `it's "a" \ $(dir) `)
-	bundle, staged, old := filepath.Join(dir, "magpie.app"), filepath.Join(dir, "s", "magpie.app"), filepath.Join(dir, "s", "old.app")
+	bundle, staged, old := filepath.Join(dir, "magpie-friday.app"), filepath.Join(dir, "s", "magpie-friday.app"), filepath.Join(dir, "s", "old.app")
 	app(t, bundle, "old")
 	app(t, staged, "new")
 	if b, err := exec.Command("/bin/sh", "-c", swapScript(staged, bundle, old)).CombinedOutput(); err != nil {
@@ -117,7 +117,7 @@ func TestAsAdmin(t *testing.T) {
 }
 
 func TestStuck(t *testing.T) {
-	if Stuck("/private/var/folders/xy/T/AppTranslocation/1234/d/magpie.app") != "translocated" {
+	if Stuck("/private/var/folders/xy/T/AppTranslocation/1234/d/magpie-friday.app") != "translocated" {
 		t.Error("a translocated app isn't stuck")
 	}
 	if Stuck(t.TempDir()) != "" {

@@ -7,13 +7,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // qwenUser is a settings.json as Qwen Code leaves it for someone with a
-// custom model provider of their own, and settings magpie has nothing to
+// custom model provider of their own, and settings magpie-friday has nothing to
 // do with.
 const qwenUser = `{
   "env": {
@@ -87,20 +87,20 @@ func TestQwen(t *testing.T) {
 	if got := a.Values()["model"]; got != "glm-5" {
 		t.Fatalf("model: %q", got)
 	}
-	// the picker: the user's own entries, then magpie's catalog
+	// the picker: the user's own entries, then magpie-friday's catalog
 	opts := a.Field("model").Options(a.Values())
 	if opts[0].Value != "glm-5" || opts[0].Label != "[IdeaLab] glm-5" || opts[0].Group != "Qwen Code" {
 		t.Fatalf("own options: %+v", opts[:1])
 	}
 	var via bool
 	for _, o := range opts {
-		via = via || o.Value == "magpie/deepseek/pro"
+		via = via || o.Value == "magpie-friday/deepseek/pro"
 	}
 	if !via {
-		t.Fatalf("no magpie/deepseek/pro in %+v", opts)
+		t.Fatalf("no magpie-friday/deepseek/pro in %+v", opts)
 	}
 
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	ms, order, f := qwenFile(t, path)
@@ -135,14 +135,14 @@ func TestQwen(t *testing.T) {
 			t.Errorf("%s: %v", id, e)
 		}
 	}
-	if got := a.Values()["model"]; got != "magpie/deepseek/pro" {
+	if got := a.Values()["model"]; got != "magpie-friday/deepseek/pro" {
 		t.Fatalf("model read back: %q", got)
 	}
 	if d := a.Check(); d != "" {
 		t.Fatalf("check: %s", d)
 	}
-	// another of magpie's: the stash keeps the user's own
-	if err := a.Apply("model", "magpie/anth/claude-sonnet-5"); err != nil {
+	// another of magpie-friday's: the stash keeps the user's own
+	if err := a.Apply("model", "magpie-friday/anth/claude-sonnet-5"); err != nil {
 		t.Fatal(err)
 	}
 	// a provider added since joins the picker on Sync
@@ -153,7 +153,7 @@ func TestQwen(t *testing.T) {
 	if ms, _, _ = qwenFile(t, path); ms["later/m1"] == nil {
 		t.Fatalf("sync: %v", ms)
 	}
-	// something else rewrote magpie's entry: its baseUrl is the one
+	// something else rewrote magpie-friday's entry: its baseUrl is the one
 	// before its id, as the fields are ordered
 	cur := readFile(path)
 	at := strings.Index(cur, `"id": "anth/claude-sonnet-5"`)
@@ -171,7 +171,7 @@ func TestQwen(t *testing.T) {
 		t.Fatalf("check after sync: %s", d)
 	}
 
-	// reset: the user's model back, magpie's entries and key gone, the
+	// reset: the user's model back, magpie-friday's entries and key gone, the
 	// rest as it was
 	if err := a.Apply("model", ""); err != nil {
 		t.Fatal(err)
@@ -185,12 +185,12 @@ func TestQwen(t *testing.T) {
 	_ = home
 }
 
-// Picking one of the user's own models while on magpie's takes magpie out.
+// Picking one of the user's own models while on magpie-friday's takes magpie-friday out.
 func TestQwenOwnModel(t *testing.T) {
 	_, path := qwenHome(t)
 	os.WriteFile(path, []byte(qwenUser), 0o644)
 	a := qwen(os.Getenv("HOME"))
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	if err := a.Apply("model", "glm-5"); err != nil {
@@ -209,7 +209,7 @@ func TestQwenOwnModel(t *testing.T) {
 		t.Fatalf("key left: %v", env)
 	}
 	// and a reset after that leaves the user's choice, not the stash
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	a.Apply("model", "")
@@ -218,7 +218,7 @@ func TestQwenOwnModel(t *testing.T) {
 	}
 }
 
-// No settings.json at all: magpie adds only its own, and a reset leaves
+// No settings.json at all: magpie-friday adds only its own, and a reset leaves
 // the file as empty as it began.
 func TestQwenFresh(t *testing.T) {
 	home, path := qwenHome(t)
@@ -226,7 +226,7 @@ func TestQwenFresh(t *testing.T) {
 	if a.Values()["model"] != "" {
 		t.Fatal("model without a file")
 	}
-	if err := a.Apply("model", "magpie/deepseek/flash"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
 	if _, order, f := qwenFile(t, path); len(order) != 4 {
@@ -241,7 +241,7 @@ func TestQwenFresh(t *testing.T) {
 		t.Fatalf("left: %s", got)
 	}
 	// a file Qwen Code never put a modelProviders in reads as no models
-	// of anyone at all, and magpie touches none of it
+	// of anyone at all, and magpie-friday touches none of it
 	os.WriteFile(path, []byte("{\n  \"fastModel\": \"qwen3.8-flash\"\n}\n"), 0o644)
 	if got := a.Values()["model"]; got != "" {
 		t.Fatalf("model without modelProviders: %q", got)
@@ -250,13 +250,13 @@ func TestQwenFresh(t *testing.T) {
 		t.Fatal(err)
 	}
 	if got := readFile(path); got != "{\n  \"fastModel\": \"qwen3.8-flash\"\n}\n" {
-		t.Fatalf("nothing of magpie's to take out:\n%s", got)
+		t.Fatalf("nothing of magpie-friday's to take out:\n%s", got)
 	}
 }
 
 // A model the user picked without a matching entry keeps no baseUrl;
-// one of the user's under magpie's own env key name, and their auth
-// type, are stashed and put back when magpie steps out.
+// one of the user's under magpie-friday's own env key name, and their auth
+// type, are stashed and put back when magpie-friday steps out.
 func TestQwenBareModelAndOwnEnvKey(t *testing.T) {
 	_, path := qwenHome(t)
 	bare := `{
@@ -278,11 +278,11 @@ func TestQwenBareModelAndOwnEnvKey(t *testing.T) {
 	if got := a.Values()["model"]; got != "qwen3.8-max" {
 		t.Fatalf("bare model: %q", got)
 	}
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	if _, _, f := qwenFile(t, path); f["env"].(map[string]any)["MAGPIE_QWEN_API_KEY"] != gateway.Token {
-		t.Fatalf("key not magpie's: %v", f["env"])
+		t.Fatalf("key not magpie-friday's: %v", f["env"])
 	}
 	if err := a.Apply("model", ""); err != nil {
 		t.Fatal(err)
@@ -305,7 +305,7 @@ func TestQwenBareModelAndOwnEnvKey(t *testing.T) {
 }
 
 // An auth type of "openai" the user set themselves is told from
-// magpie's, and stays when magpie steps out.
+// magpie-friday's, and stays when magpie-friday steps out.
 func TestQwenAuthOpenAIOfTheUsersOwn(t *testing.T) {
 	_, path := qwenHome(t)
 	os.WriteFile(path, []byte(`{
@@ -320,7 +320,7 @@ func TestQwenAuthOpenAIOfTheUsersOwn(t *testing.T) {
 }
 `), 0o644)
 	a := qwen(os.Getenv("HOME"))
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	if err := a.Sync(); err != nil {
@@ -348,8 +348,8 @@ func TestQwenHomeOverride(t *testing.T) {
 }
 
 // love1sbug on X: Names in agents' lists changed nothing in Qwen Code's
-// /model, which shows an entry's name (the id beside it), as magpie named
-// every entry magpie/<id>. The name follows the setting now, written again
+// /model, which shows an entry's name (the id beside it), as magpie-friday named
+// every entry magpie-friday/<id>. The name follows the setting now, written again
 // as it changes.
 func TestQwenNamesFollowSuffixMode(t *testing.T) {
 	_, path := qwenHome(t)
@@ -361,7 +361,7 @@ func TestQwenNamesFollowSuffixMode(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := a.Apply("model", "magpie/deepseek/pro"); err != nil {
+	if err := a.Apply("model", "magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	catalog.Changed = SyncCatalog

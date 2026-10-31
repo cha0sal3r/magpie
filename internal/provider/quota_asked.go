@@ -6,12 +6,12 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // Allowances read only when asked (#1518, RooobinYe): with Settings →
-// Usage → Allowance reads at "When I ask", magpie asks no vendor for an
+// Usage → Allowance reads at "When I ask", magpie-friday asks no vendor for an
 // account's allowance or a key's balance on its own — not for the Usage
 // page's or tray's timed refresh, the menu bar, alerts, routing, or the
 // switch to an account with room. Each shows the reading kept from the
@@ -20,13 +20,13 @@ import (
 // vendor just turned away for its quota (StaleAllowance), which routing
 // must not keep sending to.
 //
-// magpie started at login comes up before the proxy app does, and its own
+// magpie-friday started at login comes up before the proxy app does, and its own
 // reads went out direct from the user's real address.
 
 type askedKey struct{}
 
 // Asked is ctx for a read the user asked for: the Usage page opened or
-// refreshed, a card's refresh, `magpie quota`, `magpie accounts`.
+// refreshed, a card's refresh, `magpie-friday quota`, `magpie-friday accounts`.
 func Asked(ctx context.Context) context.Context {
 	return context.WithValue(ctx, askedKey{}, true)
 }
@@ -38,7 +38,7 @@ func wasAsked(ctx context.Context) bool {
 
 // errNotAsked is what a read held back says: "not read yet", so keepLast
 // gives the reading kept from the last time instead.
-var errNotAsked = errors.New("not read yet: magpie reads allowances only when you ask (Settings → Usage)")
+var errNotAsked = errors.New("not read yet: magpie-friday reads allowances only when you ask (Settings → Usage)")
 
 // readsAsked is whether the user has allowances read only when asked.
 func readsAsked() bool { return settings.Load().QuotaReads == "asked" }

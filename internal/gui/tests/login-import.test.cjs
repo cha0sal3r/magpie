@@ -56,7 +56,7 @@ function serve(lang, posted) {
 }
 
 const want = {
-  en: { imp: "Import accounts from a file…", instead: "Import from a file instead…", title: "Import ChatGPT accounts", intro: /Codex's auth\.json, codexbar's config\.json \(in ~\/\.codexbar\), or an export from Cockpit Tools, CLIProxyAPI or Sub2API/, spent: /signed out of that account.*only read/, checking: "Checking the accounts with ChatGPT…", done: ["Added", "Already in magpie", "Not added", "Not added"], pasted: "The pasted text" },
+  en: { imp: "Import accounts from a file…", instead: "Import from a file instead…", title: "Import ChatGPT accounts", intro: /Codex's auth\.json, codexbar's config\.json \(in ~\/\.codexbar\), or an export from Cockpit Tools, CLIProxyAPI or Sub2API/, spent: /signed out of that account.*only read/, checking: "Checking the accounts with ChatGPT…", done: ["Added", "Already in magpie-friday", "Not added", "Not added"], pasted: "The pasted text" },
   zh: { imp: null, instead: null, title: null, intro: /codexbar 的 config\.json.*Cockpit Tools.*Sub2API/, spent: /退出该账号/, checking: null, done: null, pasted: "粘贴的内容" },
 };
 
@@ -130,7 +130,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       await page.locator(".signing.import .results").waitFor();
       assert.deepEqual(posted, [{ agent: "codex", files: [cpa] }]);
       const done = await page.locator(".signing.import .res .st").allTextContents();
-      assert.deepEqual(done, w.done || [await T("Added"), await T("Already in magpie"), await T("Not added"), await T("Not added")]);
+      assert.deepEqual(done, w.done || [await T("Added"), await T("Already in magpie-friday"), await T("Not added"), await T("Not added")]);
       const failed = page.locator(".signing.import .res.failed");
       assert.match(await failed.nth(0).locator(".why").textContent(), /used since/);
       // a text that held no account is named, not a blank row

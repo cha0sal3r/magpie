@@ -18,7 +18,7 @@ func TestPiToolsAndMessages(t *testing.T) {
 	ts := func(s string) string { return `"timestamp":"2026-09-27T10:` + s + `.000Z"` }
 	asst := func(at, content string) string {
 		return `{"type":"message","id":"a` + at + `","parentId":null,` + ts(at) + `,"message":{"role":"assistant","content":` + content +
-			`,"api":"openai-completions","provider":"magpie","model":"group/auto","usage":{"input":10,"output":5,"cacheRead":0,"cacheWrite":0,"totalTokens":15},"stopReason":"toolUse","timestamp":1790503200000}}` + "\n"
+			`,"api":"openai-completions","provider":"magpie-friday","model":"group/auto","usage":{"input":10,"output":5,"cacheRead":0,"cacheWrite":0,"totalTokens":15},"stopReason":"toolUse","timestamp":1790503200000}}` + "\n"
 	}
 	user := func(at, content string) string {
 		return `{"type":"message","id":"u` + at + `","parentId":null,` + ts(at) + `,"message":{"role":"user","content":` + content + `,"timestamp":1790503200000}}` + "\n"
@@ -28,7 +28,7 @@ func TestPiToolsAndMessages(t *testing.T) {
 			`","content":[{"type":"text","text":"ok"}],"isError":false` + extra + `,"timestamp":1790503200000}}` + "\n"
 	}
 	lines := `{"type":"session","version":3,"id":"` + id + `",` + ts("00:00") + `,"cwd":"/work/pitools"}` + "\n" +
-		`{"type":"model_change","id":"m1","parentId":null,` + ts("00:00") + `,"provider":"magpie","modelId":"group/auto"}` + "\n" +
+		`{"type":"model_change","id":"m1","parentId":null,` + ts("00:00") + `,"provider":"magpie-friday","modelId":"group/auto"}` + "\n" +
 		`{"type":"message","id":"s1","parentId":null,` + ts("00:01") + `,"message":{"role":"system","content":"<available_skills>…</available_skills>","timestamp":1790503200000}}` + "\n" +
 		user("00:02", `[{"type":"text","text":"what tools can you use"}]`) +
 		asst("00:03", `[{"type":"thinking","thinking":"…"},{"type":"toolCall","id":"c1","name":"bash","arguments":{"command":"ls"}},{"type":"toolCall","id":"c2","name":"read","arguments":{"path":"/home/me/.pi/agent/skills/pdf/SKILL.md"}}]`) +

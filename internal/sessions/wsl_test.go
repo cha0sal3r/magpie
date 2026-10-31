@@ -111,7 +111,7 @@ func TestWSLSessionsListed(t *testing.T) {
 }
 
 // A session in a WSL distro is deleted as this computer's are (TJHHHH: 请问
-// 是否可以增加wsl内对于会话的删除呢): moved to magpie's trash, its Claude Code
+// 是否可以增加wsl内对于会话的删除呢): moved to magpie-friday's trash, its Claude Code
 // files from the distro's ~/.claude and not this computer's, gone from the
 // listing at once; restored, it is back in the distro and listed again.
 func TestWSLSessionDeleted(t *testing.T) {
@@ -283,7 +283,7 @@ func TestWSLStoppedDistroKept(t *testing.T) {
 	}
 	wslSettle()
 	Saved()
-	// magpie starts again; the distro has stopped, and its files can't be
+	// magpie-friday starts again; the distro has stopped, and its files can't be
 	// read (a read would start it): here they are gone
 	*running = false
 	Reset()
@@ -305,7 +305,7 @@ func TestWSLStoppedDistroKept(t *testing.T) {
 }
 
 // A distro the user stops after the last listing (wsl --shutdown, to repair
-// WSL: TJHHHH on Discord, magpie kept starting it) isn't opened, though
+// WSL: TJHHHH on Discord, magpie-friday kept starting it) isn't opened, though
 // WSLHomes, as old as internal/agent's last look, still says it runs: the
 // next listing and every read ask WSLRunning first. Once it runs again its
 // files are read as before.

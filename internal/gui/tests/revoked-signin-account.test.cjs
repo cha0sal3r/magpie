@@ -1,7 +1,7 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // A ChatGPT account whose sign-in OpenAI revoked (#1793, ysicing: 401
 // token_revoked on every request, the account asked again each time) reads
-// as signed out on its own row once magpie marks it (signin_revoked.go):
+// as signed out on its own row once magpie-friday marks it (signin_revoked.go):
 // "Sign-in required", the reason on its allowance line in the user's
 // language, with Sign in again, which runs Codex's sign-in for that
 // account, and Remove. The card's pill says Signed out once every account

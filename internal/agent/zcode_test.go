@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 func TestZCode(t *testing.T) {
@@ -38,7 +38,7 @@ func TestZCode(t *testing.T) {
 		if c.Provider["builtin:bigmodel"] == nil {
 			t.Fatalf("ZCode's own provider went: %s", b)
 		}
-		return c.Provider["magpie"]
+		return c.Provider["magpie-friday"]
 	}
 
 	a := zcode(home)
@@ -49,24 +49,24 @@ func TestZCode(t *testing.T) {
 	if f.Get() != "" {
 		t.Fatalf("get: %q", f.Get())
 	}
-	if err := f.Set("magpie"); err != nil {
+	if err := f.Set("magpie-friday"); err != nil {
 		t.Fatal(err)
 	}
 	m := read()
 	opts, _ := m["options"].(map[string]any)
 	models, _ := m["models"].(map[string]any)
 	pro, _ := models["deepseek/pro"].(map[string]any)
-	if m["kind"] != "anthropic" || m["enabled"] != true || m["source"] != "custom" || opts["apiKey"] != "magpie" ||
+	if m["kind"] != "anthropic" || m["enabled"] != true || m["source"] != "custom" || opts["apiKey"] != "magpie-friday" ||
 		opts["baseURL"] == "" || pro == nil || pro["limit"] == nil || pro["modalities"] == nil {
-		t.Fatalf("magpie provider: %v", m)
+		t.Fatalf("magpie-friday provider: %v", m)
 	}
-	if f.Get() != "magpie" {
+	if f.Get() != "magpie-friday" {
 		t.Fatalf("get: %q", f.Get())
 	}
 	// ZCode 3.14 reads provider_config.json
 	rules := filepath.Join(home, ".zcode", "v2", "provider_config.json")
-	os.WriteFile(rules, []byte(`{"schemaVersion":1,"config":{"providerConfigRules":{"providerRules":[{"providerId":"mine","config":{}}]},"modelConfigRules":{"providerModelRules":[],"manualProviderModelRules":[{"providerId":"magpie","modelId":"deepseek/pro","config":{"enabled":true}}]}},"other":1}`), 0o600)
-	if err := f.Set("magpie"); err != nil {
+	os.WriteFile(rules, []byte(`{"schemaVersion":1,"config":{"providerConfigRules":{"providerRules":[{"providerId":"mine","config":{}}]},"modelConfigRules":{"providerModelRules":[],"manualProviderModelRules":[{"providerId":"magpie-friday","modelId":"deepseek/pro","config":{"enabled":true}}]}},"other":1}`), 0o600)
+	if err := f.Set("magpie-friday"); err != nil {
 		t.Fatal(err)
 	}
 	type rulesDoc struct {
@@ -100,10 +100,10 @@ func TestZCode(t *testing.T) {
 	cfg, _ := pr[1]["config"].(map[string]any)
 	access, _ := cfg["access"].(map[string]any)
 	api, _ := cfg["api"].(map[string]any)
-	if pr[1]["providerId"] != "magpie" || pr[1]["enabled"] != true || cfg["group"] != "standard-personal" ||
-		access["type"] != "api-key" || access["apiKey"] != "magpie" || api["type"] != "anthropic-messages" || api["baseUrl"] == "" ||
+	if pr[1]["providerId"] != "magpie-friday" || pr[1]["enabled"] != true || cfg["group"] != "standard-personal" ||
+		access["type"] != "api-key" || access["apiKey"] != "magpie-friday" || api["type"] != "anthropic-messages" || api["baseUrl"] == "" ||
 		len(cfg["personalModelIds"].([]any)) != 1 {
-		t.Fatalf("magpie rule: %v", pr[1])
+		t.Fatalf("magpie-friday rule: %v", pr[1])
 	}
 	// a model set by hand in ZCode keeps its manual rule, and gets no second one
 	if len(d.Config.ModelConfigRules.ManualProviderModelRules) != 1 || len(d.Config.ModelConfigRules.ProviderModelRules) != 0 {
@@ -129,20 +129,20 @@ func TestZCode(t *testing.T) {
 		t.Fatal(err)
 	}
 	if read() != nil || f.Get() != "" {
-		t.Fatal("magpie provider left behind")
+		t.Fatal("magpie-friday provider left behind")
 	}
 	if d := readRules(); len(d.Config.ProviderConfigRules.ProviderRules) != 1 || len(d.Config.ModelConfigRules.ManualProviderModelRules) != 0 {
-		t.Fatalf("magpie rules left behind: %+v", d.Config)
+		t.Fatalf("magpie-friday rules left behind: %+v", d.Config)
 	}
-	// nothing to sync into a config that has no magpie provider
+	// nothing to sync into a config that has no magpie-friday provider
 	if err := a.Sync(); err != nil || read() != nil {
 		t.Fatal("sync added the provider")
 	}
 }
 
-// What the user did in ZCode stays: magpie turned off stays off, in both
+// What the user did in ZCode stays: magpie-friday turned off stays off, in both
 // files; its rule stays where it is among theirs; and a rule they removed
-// isn't put back when magpie syncs.
+// isn't put back when magpie-friday syncs.
 func TestZCodeKeepsUserChoices(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
@@ -155,9 +155,9 @@ func TestZCodeKeepsUserChoices(t *testing.T) {
 	path := filepath.Join(home, ".zcode", "v2", "config.json")
 	rules := filepath.Join(home, ".zcode", "v2", "provider_config.json")
 	os.MkdirAll(filepath.Dir(path), 0o755)
-	os.WriteFile(path, []byte(`{"provider":{"magpie":{"name":"magpie","kind":"anthropic","enabled":false}}}`), 0o644)
+	os.WriteFile(path, []byte(`{"provider":{"magpie-friday":{"name":"magpie-friday","kind":"anthropic","enabled":false}}}`), 0o644)
 	os.WriteFile(rules, []byte(`{"schemaVersion":1,"config":{"providerConfigRules":{"providerRules":[
-	  {"providerId":"a","config":{}},{"providerId":"magpie","enabled":false,"config":{}},{"providerId":"b","config":{}}]}}}`), 0o600)
+	  {"providerId":"a","config":{}},{"providerId":"magpie-friday","enabled":false,"config":{}},{"providerId":"b","config":{}}]}}}`), 0o600)
 	a := zcode(home)
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
@@ -178,7 +178,7 @@ func TestZCodeKeepsUserChoices(t *testing.T) {
 		}
 		return out, on
 	}
-	if got, on := ids(); len(got) != 3 || got[1] != "magpie" || on[1] != false {
+	if got, on := ids(); len(got) != 3 || got[1] != "magpie-friday" || on[1] != false {
 		t.Fatalf("rules %v %v", got, on)
 	}
 	var c struct {
@@ -186,7 +186,7 @@ func TestZCodeKeepsUserChoices(t *testing.T) {
 	}
 	b, _ := os.ReadFile(path)
 	json.Unmarshal(b, &c)
-	if c.Provider["magpie"]["enabled"] != false || c.Provider["magpie"]["models"] == nil {
+	if c.Provider["magpie-friday"]["enabled"] != false || c.Provider["magpie-friday"]["models"] == nil {
 		t.Fatalf("config.json: %s", b)
 	}
 
@@ -196,7 +196,7 @@ func TestZCodeKeepsUserChoices(t *testing.T) {
 		t.Fatal(err)
 	}
 	if got, _ := ids(); len(got) != 1 {
-		t.Fatalf("magpie put back: %v", got)
+		t.Fatalf("magpie-friday put back: %v", got)
 	}
 }
 
@@ -214,7 +214,7 @@ func TestZCodeOutputAndReasoning(t *testing.T) {
 	os.MkdirAll(filepath.Dir(path), 0o755)
 	os.WriteFile(path, []byte(`{"provider":{"builtin:zai":{"models":{"GLM-5-Turbo":{"reasoning":{"enabled":true,"variants":["enabled","off"],"defaultVariant":"enabled"},"limit":{"context":200000,"output":64000}}}}}}`), 0o644)
 	os.WriteFile(rules, []byte(`{"schemaVersion":1,"config":{"providerConfigRules":{"providerRules":[]},"modelConfigRules":{"providerModelRules":[{"providerId":"mine","modelId":"x","config":{"optionSpecs":{"maxOutputTokens":{"max":7}}}}],"manualProviderModelRules":[]}}}`), 0o600)
-	if err := zcode(home).Field("provider").Set("magpie"); err != nil {
+	if err := zcode(home).Field("provider").Set("magpie-friday"); err != nil {
 		t.Fatal(err)
 	}
 	b, _ := os.ReadFile(path)
@@ -266,9 +266,9 @@ func TestZCodeDefaultLevel(t *testing.T) {
 	}
 }
 
-// A provider the user pointed at a magpie on another machine (a NAS) keeps
+// A provider the user pointed at a magpie-friday on another machine (a NAS) keeps
 // that address and key through a sync, in both of ZCode's files; one on
-// loopback follows the gateway, and connecting it in magpie points it here.
+// loopback follows the gateway, and connecting it in magpie-friday points it here.
 func TestZCodeKeepsRemoteAddress(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
@@ -359,11 +359,11 @@ func TestZCodeKeepsRemoteAddress(t *testing.T) {
 		t.Fatal(err)
 	}
 	if b, k, rb, rk := addr(); b != gateway.URL() || k != gateway.Token || rb != b || rk != k {
-		t.Fatalf("connecting in magpie kept the NAS address: config %s %s, rules %s %s", b, k, rb, rk)
+		t.Fatalf("connecting in magpie-friday kept the NAS address: config %s %s, rules %s %s", b, k, rb, rk)
 	}
 
 	// ZCode's own settings change one file only (Discord, 悠悠哥: the NAS
-	// address kept going back to this machine's magpie): a sync carries the
+	// address kept going back to this machine's magpie-friday): a sync carries the
 	// NAS address to the other one rather than taking it back
 	only := func(file, base, key string) {
 		t.Helper()
@@ -394,10 +394,10 @@ func TestZCodeKeepsRemoteAddress(t *testing.T) {
 	}
 }
 
-// The API format the user picks for magpie's provider in ZCode's settings
-// stays theirs: magpie answers all three, and a sync put Anthropic Messages
+// The API format the user picks for magpie-friday's provider in ZCode's settings
+// stays theirs: magpie-friday answers all three, and a sync put Anthropic Messages
 // back on every start (杰多夫 on Discord). A change made in either file is
-// carried to the other; a provider magpie adds new starts on Anthropic.
+// carried to the other; a provider magpie-friday adds new starts on Anthropic.
 func TestZCodeKeepsUserFormat(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
@@ -410,7 +410,7 @@ func TestZCodeKeepsUserFormat(t *testing.T) {
 	dir := filepath.Join(home, ".zcode", "v2")
 	path, rules := filepath.Join(dir, "config.json"), filepath.Join(dir, "provider_config.json")
 	os.MkdirAll(dir, 0o755)
-	// what ZCode's own settings do: write the file, after magpie's write
+	// what ZCode's own settings do: write the file, after magpie-friday's write
 	edited := func(p string, change func(doc map[string]any)) {
 		b, _ := os.ReadFile(p)
 		doc := map[string]any{}
@@ -425,15 +425,15 @@ func TestZCodeKeepsUserFormat(t *testing.T) {
 	}
 	rule := func(doc map[string]any) map[string]any {
 		for _, r := range doc["config"].(map[string]any)["providerConfigRules"].(map[string]any)["providerRules"].([]any) {
-			if r := r.(map[string]any); r["providerId"] == "magpie" {
+			if r := r.(map[string]any); r["providerId"] == "magpie-friday" {
 				return r["config"].(map[string]any)["api"].(map[string]any)
 			}
 		}
-		t.Fatal("no magpie rule")
+		t.Fatal("no magpie-friday rule")
 		return nil
 	}
 	formats := func() (kind, api string) {
-		k, _ := edit.GetJSON(path, "provider.magpie.kind")
+		k, _ := edit.GetJSON(path, "provider.magpie-friday.kind")
 		b, _ := os.ReadFile(rules)
 		doc := map[string]any{}
 		json.Unmarshal(b, &doc)
@@ -445,7 +445,7 @@ func TestZCodeKeepsUserFormat(t *testing.T) {
 		return k, api
 	}
 	a := zcode(home)
-	if err := a.Field("provider").Set("magpie"); err != nil {
+	if err := a.Field("provider").Set("magpie-friday"); err != nil {
 		t.Fatal(err)
 	}
 	if k, api := formats(); k != "anthropic" || api != "anthropic-messages" {
@@ -471,7 +471,7 @@ func TestZCodeKeepsUserFormat(t *testing.T) {
 
 	// an older ZCode writes config.json
 	edited(path, func(doc map[string]any) {
-		doc["provider"].(map[string]any)["magpie"].(map[string]any)["kind"] = "openai-compatible"
+		doc["provider"].(map[string]any)["magpie-friday"].(map[string]any)["kind"] = "openai-compatible"
 	})
 	later := time.Now().Add(2 * time.Minute) // past rules' edit above
 	os.Chtimes(path, later, later)
@@ -484,7 +484,7 @@ func TestZCodeKeepsUserFormat(t *testing.T) {
 
 	// a format ZCode doesn't have isn't kept
 	edited(rules, func(doc map[string]any) { rule(doc)["type"] = "grpc" })
-	edited(path, func(doc map[string]any) { doc["provider"].(map[string]any)["magpie"].(map[string]any)["kind"] = "grpc" })
+	edited(path, func(doc map[string]any) { doc["provider"].(map[string]any)["magpie-friday"].(map[string]any)["kind"] = "grpc" })
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
@@ -494,9 +494,9 @@ func TestZCodeKeepsUserFormat(t *testing.T) {
 }
 
 // A ZCode whose data the user moved in its settings (数据存储路径) reads its
-// providers from the new folder: magpie's provider goes there, and the home
+// providers from the new folder: magpie-friday's provider goes there, and the home
 // folder's .zcode, where only setting.json is left, gets none (flower on
-// Discord: magpie said connected, and ZCode's settings had no magpie).
+// Discord: magpie-friday said connected, and ZCode's settings had no magpie-friday).
 func TestZCodeMovedDataFolder(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
@@ -519,22 +519,22 @@ func TestZCodeMovedDataFolder(t *testing.T) {
 
 	a := zcode(home)
 	f := a.Field("provider")
-	if err := f.Set("magpie"); err != nil {
+	if err := f.Set("magpie-friday"); err != nil {
 		t.Fatal(err)
 	}
 	if !zcodeRuled(filepath.Join(movedV2, "provider_config.json")) {
 		b, _ := os.ReadFile(filepath.Join(movedV2, "provider_config.json"))
-		t.Fatalf("no magpie in the moved folder's provider_config.json: %s", b)
+		t.Fatalf("no magpie-friday in the moved folder's provider_config.json: %s", b)
 	}
-	if _, ok := edit.GetJSON(filepath.Join(movedV2, "config.json"), "provider.magpie"); !ok {
-		t.Fatal("no magpie in the moved folder's config.json")
+	if _, ok := edit.GetJSON(filepath.Join(movedV2, "config.json"), "provider.magpie-friday"); !ok {
+		t.Fatal("no magpie-friday in the moved folder's config.json")
 	}
 	for _, n := range []string{"provider_config.json", "config.json"} {
 		if _, err := os.Stat(filepath.Join(homeV2, n)); err == nil {
 			t.Fatalf("%s written in the home folder ZCode no longer reads", n)
 		}
 	}
-	if f.Get() != "magpie" {
+	if f.Get() != "magpie-friday" {
 		t.Fatalf("get: %q", f.Get())
 	}
 
@@ -548,10 +548,10 @@ func TestZCodeMovedDataFolder(t *testing.T) {
 	}
 }
 
-// What the user set on magpie's provider rule in ZCode's provider_config.json
+// What the user set on magpie-friday's provider rule in ZCode's provider_config.json
 // stays through every sync and pick (#2030's siblings): its name, logo,
 // visibility, a header, the key's management link. The address, key, format
-// and model lists stay magpie's.
+// and model lists stay magpie-friday's.
 func TestZCodeKeepsTheUsersSettings(t *testing.T) {
 	home := syncHome(t)
 	rules := filepath.Join(home, ".zcode", "v2", "provider_config.json")
@@ -559,7 +559,7 @@ func TestZCodeKeepsTheUsersSettings(t *testing.T) {
 	os.WriteFile(filepath.Join(filepath.Dir(rules), "config.json"), []byte(`{}`), 0o644)
 	a := zcode(home)
 	f := a.Field("provider")
-	if err := f.Set("magpie"); err != nil {
+	if err := f.Set("magpie-friday"); err != nil {
 		t.Fatal(err)
 	}
 	type rule = map[string]any
@@ -609,11 +609,11 @@ func TestZCodeKeepsTheUsersSettings(t *testing.T) {
 		}
 		ids, _ := cfg["personalModelIds"].([]any)
 		if api["baseUrl"] == "http://127.0.0.1:1/v1" || access["apiKey"] == "" || slices.Contains(ids, any("gone/old")) || !slices.Contains(ids, any("deepseek/pro")) {
-			t.Errorf("%s: magpie's own parts not written:\n%s", when, readFile(rules))
+			t.Errorf("%s: magpie-friday's own parts not written:\n%s", when, readFile(rules))
 		}
 	}
 	check("sync")
-	if err := f.Set("magpie"); err != nil {
+	if err := f.Set("magpie-friday"); err != nil {
 		t.Fatal(err)
 	}
 	check("pick")
@@ -622,8 +622,8 @@ func TestZCodeKeepsTheUsersSettings(t *testing.T) {
 // ZCode reads $HOME before os.homedir() on every OS, so on a Windows where
 // the user set HOME (for Git Bash, MSYS2, Emacs) its providers, settings
 // and moved data folder are under %HOME%\.zcode, not %USERPROFILE%\.zcode,
-// Go's home. magpie wrote its provider under USERPROFILE: connected, no
-// error, and no magpie in ZCode (Gearclickist on Discord).
+// Go's home. magpie-friday wrote its provider under USERPROFILE: connected, no
+// error, and no magpie-friday in ZCode (Gearclickist on Discord).
 func TestZCodeOnWindowsUsesTheHomeZCodeReads(t *testing.T) {
 	profile := syncHome(t)
 	old := zcodeOS
@@ -640,14 +640,14 @@ func TestZCodeOnWindowsUsesTheHomeZCodeReads(t *testing.T) {
 	if a.Dir != want || a.Path != filepath.Join(want, "v2", "config.json") {
 		t.Fatalf("ZCode's folder on Windows with HOME set: %s, %s; want %s", a.Dir, a.Path, want)
 	}
-	if err := a.Field("provider").Set("magpie"); err != nil {
+	if err := a.Field("provider").Set("magpie-friday"); err != nil {
 		t.Fatal(err)
 	}
 	if !zcodeRuled(filepath.Join(want, "v2", "provider_config.json")) {
-		t.Fatalf("no magpie in %s:\n%s", want, readFile(filepath.Join(want, "v2", "provider_config.json")))
+		t.Fatalf("no magpie-friday in %s:\n%s", want, readFile(filepath.Join(want, "v2", "provider_config.json")))
 	}
-	if _, ok := edit.GetJSON(filepath.Join(want, "v2", "config.json"), "provider.magpie"); !ok {
-		t.Fatal("no magpie in config.json under HOME")
+	if _, ok := edit.GetJSON(filepath.Join(want, "v2", "config.json"), "provider.magpie-friday"); !ok {
+		t.Fatal("no magpie-friday in config.json under HOME")
 	}
 	if _, err := os.Stat(filepath.Join(profile, ".zcode")); err == nil {
 		t.Fatal("written under USERPROFILE, which ZCode doesn't read while HOME is set")

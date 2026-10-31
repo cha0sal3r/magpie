@@ -1,14 +1,14 @@
 package provider
 
-// The id agents are given for a group magpie found (ZeroClover on X): "auto/<model>",
+// The id agents are given for a group magpie-friday found (ZeroClover on X): "auto/<model>",
 // the model's own id as a vendor spells it (auto/claude-opus-5.5), so that a
 // client reading the part after the slash as a model id — as models.dev keys
 // its models — knows the model. It was "group/auto-<slug>" (Slug's, dots
-// dashed), which nothing outside magpie could read, and that id is still
+// dashed), which nothing outside magpie-friday could read, and that id is still
 // served as it was, forever: agents' configs, gateway keys, saved groups and
 // rules hold it.
 //
-// Inside magpie a found group stays "group/auto-<slug>": providers.json's
+// Inside magpie-friday a found group stays "group/auto-<slug>": providers.json's
 // members, rules and classifiers, the gateway's routing, a key's limits and
 // the usage log keep that one id, so a group is counted under one name
 // whichever an agent sent (CanonicalRef, taken back in the gateway before
@@ -28,10 +28,10 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
-// AutoPrefix starts the id agents are given for a group magpie found:
+// AutoPrefix starts the id agents are given for a group magpie-friday found:
 // "auto/<model>".
 const AutoPrefix = "auto/"
 
@@ -39,8 +39,8 @@ const AutoPrefix = "auto/"
 const autoID = "auto"
 
 // errAutoID refuses "auto" as a new provider's id: auto/<model> names the
-// groups magpie finds.
-var errAutoID = errors.New(`"auto" starts the ids of the groups magpie finds (auto/<model>); pick another id`)
+// groups magpie-friday finds.
+var errAutoID = errors.New(`"auto" starts the ids of the groups magpie-friday finds (auto/<model>); pick another id`)
 
 // autoRefsOn reports whether auto/<model> names found groups: unless the
 // user has a provider of their own with the id "auto", saved before the
@@ -51,7 +51,7 @@ func autoRefsOn() bool { return !customIDs()[autoID] }
 func AutoRefsOn() bool { return autoRefsOn() }
 
 // autoGroupOfRef is the group id auto/<model> names, model as any vendor
-// spells it: the id magpie gives the group it finds for the model
+// spells it: the id magpie-friday gives the group it finds for the model
 // (AutoGroupID).
 func autoGroupOfRef(model string) string { return AutoGroupID(model) }
 
@@ -62,7 +62,7 @@ func IsGroupRef(ref string) bool {
 	return ok
 }
 
-// CanonicalRef is ref as magpie keeps it: a found group's auto/<model> as
+// CanonicalRef is ref as magpie-friday keeps it: a found group's auto/<model> as
 // group/auto-<slug>, an effort after it (":high") and Claude Code's [1m]
 // mark kept; any other ref as it is. The gateway takes a request's model
 // back to it before key limits, routing and the usage log see it, so the
@@ -89,7 +89,7 @@ func CanonicalRef(ref string) string {
 	return out
 }
 
-// canonicalRefs spells every model or group g names as magpie keeps it
+// canonicalRefs spells every model or group g names as magpie-friday keeps it
 // (CanonicalRef): a found group a picker listed as auto/<model> is stored
 // as group/auto-<slug>, so its members, off and fast lists, weights, rules
 // and classifier name it by one id. g's lists are its own (Group.own).
@@ -117,7 +117,7 @@ func SameRef(a, b string) bool {
 	return a == b || CanonicalRef(a) == CanonicalRef(b)
 }
 
-// Ref is the id agents pick the group by: auto/<model> for a group magpie
+// Ref is the id agents pick the group by: auto/<model> for a group magpie-friday
 // found (one with an auto-… id whose members are that model), its model
 // spelt as a vendor spells it; group/<id> for any other, and for every
 // group while a provider of the user's is called auto.
@@ -130,7 +130,7 @@ func (g Group) Ref() string {
 
 // PublicRef is the id agents are given for ref: a found group's
 // group/auto-<slug> as its auto/<model> (Group.Ref), its effort and [1m]
-// mark kept; any other ref as it is, a found group magpie has none of now
+// mark kept; any other ref as it is, a found group magpie-friday has none of now
 // too.
 func PublicRef(ref string) string {
 	s := strings.TrimSpace(ref)

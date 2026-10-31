@@ -3,7 +3,7 @@
 // guess at the user's next message, a hidden turn that reads the whole
 // conversation again, goes where this says. By default Codex's own
 // (ChatGPT); Off answers it with no prediction; the app's menu (no native
-// select) offers magpie's models; a pick posts settings/codex-predictions
+// select) offers magpie-friday's models; a pick posts settings/codex-predictions
 // on its own, the titles' and descriptions' settings untouched, its button
 // shows the choice under a name with no line of its own (as its siblings,
 // 1ooogle on X), and no click scrolls the Agents page, where Codex's row holds it.
@@ -24,7 +24,7 @@ function settingsPayload(over) {
     dock: false, dockWindow: false, proxy: "", redact: false, redactPersonal: false, redactWords: [],
     codexWarmup: "", claudeWarmup: "", codexWarmAt: "", claudeWarmAt: "", workbuddyCheckin: false, noStats: false,
     trayUsage: "", trayUsageEvery: 3, vision: "", imageGen: "",
-    version: "0.1.400", dir: "~/.config/magpie", gateway: "http://127.0.0.1:3425",
+    version: "0.1.400", dir: "~/.config/magpie-friday", gateway: "http://127.0.0.1:3425",
     proxyNow: "none", proxySource: "none", login: false,
     visionModels: [], imageGenModels: [], workbuddyCheckins: [], lanURLs: [],
     titleModels: [
@@ -130,7 +130,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
           await page.locator("#list li:not(.group)").filter({ hasText: s }).first().click();
         };
 
-        // the app's menu: Codex's own, Off and magpie's models
+        // the app's menu: Codex's own, Off and magpie-friday's models
         await pick.click();
         await page.locator("#pop:not([hidden]) #list li").first().waitFor();
         const items = (await page.locator("#list li:not(.group)").allTextContents()).join("|");
@@ -138,12 +138,12 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         await page.keyboard.press("Escape");
         await page.locator("#pop:not([hidden])").waitFor({ state: "hidden" });
 
-        // off: answered by magpie with no prediction
+        // off: answered by magpie-friday with no prediction
         await pickItem(want[lang].off);
         await shows(want[lang].off);
         assert.deepEqual(posted, [["codex-predictions", { model: "off" }]]);
 
-        // a model of magpie's
+        // a model of magpie-friday's
         await pickItem("DeepSeek V4 Flash");
         await shows("DeepSeek V4 Flash");
         assert.deepEqual(posted.at(-1), ["codex-predictions", { model: "deepseek/deepseek-v4-flash" }]);

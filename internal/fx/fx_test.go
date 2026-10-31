@@ -100,7 +100,7 @@ func TestGetRefetchesOnceCacheIsStale(t *testing.T) {
 	t.Setenv("XDG_CACHE_HOME", dir)
 	Reset()
 	// a stale cache file on disk already
-	stalePath := filepath.Join(dir, "magpie", "fxrate.json")
+	stalePath := filepath.Join(dir, "magpie-friday", "fxrate.json")
 	if err := os.MkdirAll(filepath.Dir(stalePath), 0o755); err != nil {
 		t.Fatal(err)
 	}

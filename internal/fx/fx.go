@@ -1,7 +1,7 @@
 // Package fx keeps the dollar-to-yuan rate the CNY currency preference (see
 // internal/settings) converts list-price costs with. It asks a free,
 // no-key endpoint for it, keeps what it got for TTL in a small cache file
-// beside magpie's other caches, and falls back to the last rate it ever
+// beside magpie-friday's other caches, and falls back to the last rate it ever
 // had — or a fixed default, when it has never reached the network — while
 // offline. Nothing here changes what usage.Record and its Totals store:
 // they stay in USD, and only what's shown is converted.
@@ -18,7 +18,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
 )
 
 // rateURL is a free, no-key endpoint that gives every currency's rate
@@ -36,7 +36,7 @@ func SetRateURL(u string) (restore func()) {
 // TTL is how long a fetched rate is used before another is asked for.
 const TTL = 12 * time.Hour
 
-// Fallback is the rate shown when magpie has never reached rateURL and has
+// Fallback is the rate shown when magpie-friday has never reached rateURL and has
 // no cache of its own: roughly what a dollar has been worth in yuan,
 // fixed so a first run offline still shows something plausible rather
 // than nothing.
@@ -183,7 +183,7 @@ func fetchLive(ctx context.Context) (Rate, error) {
 	if err != nil {
 		return Rate{}, err
 	}
-	req.Header.Set("User-Agent", "magpie")
+	req.Header.Set("User-Agent", "magpie-friday")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return Rate{}, err

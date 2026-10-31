@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // reseatHome is a sandbox HOME with two providers, one of them "cop" in the
@@ -44,7 +44,7 @@ func TestSameModelTakesTheOneMMarkOffAGroupRef(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	opts := []Option{{Value: "magpie/group/auto-gpt-5", Ref: "group/auto-gpt-5"}, {Value: "other/gpt-5", Ref: "other/gpt-5"}}
+	opts := []Option{{Value: "magpie-friday/group/auto-gpt-5", Ref: "group/auto-gpt-5"}, {Value: "other/gpt-5", Ref: "other/gpt-5"}}
 	if got := sameModel(opts, "group/auto-gpt-5[1m]"); got.Ref != "other/gpt-5" {
 		t.Errorf("[1m] on the group: %+v", got)
 	}
@@ -52,7 +52,7 @@ func TestSameModelTakesTheOneMMarkOffAGroupRef(t *testing.T) {
 		t.Errorf("the bare group: %+v", got)
 	}
 	// a group that is nobody else's still gives nothing (nothing to move to)
-	none := []Option{{Value: "magpie/group/mine", Ref: "group/mine"}, {Value: "other/gpt-5", Ref: "other/gpt-5"}}
+	none := []Option{{Value: "magpie-friday/group/mine", Ref: "group/mine"}, {Value: "other/gpt-5", Ref: "other/gpt-5"}}
 	if got := sameModel(none, "group/mine[1m]"); got.Ref != "" {
 		t.Errorf("a group of the user's own: %+v", got)
 	}
@@ -95,7 +95,7 @@ func TestReseatOff(t *testing.T) {
 	mustApply(t, c, "opus", "cop/claude-sonnet-4.5")
 	mustApply(t, c, "haiku", "cop/only-here")
 	mustApply(t, c, "sonnet", "ds/gpt-5")
-	mustApply(t, h, "model", "magpie/cop/only-here")
+	mustApply(t, h, "model", "magpie-friday/cop/only-here")
 
 	moves, err := Reseat(func() error { return provider.SetOff("cop", true) })
 	if err != nil {
@@ -179,7 +179,7 @@ func TestReseatUnmovable(t *testing.T) {
 	home := reseatHome(t)
 	c, h := mustFind(t, "claude"), mustFind(t, "hermes")
 	mustApply(t, c, "model", "cop/only-here")
-	mustApply(t, h, "model", "magpie/cop/only-here")
+	mustApply(t, h, "model", "magpie-friday/cop/only-here")
 	dir := appdir.HermesHomeIn(home)
 	if err := os.Chmod(dir, 0o555); err != nil {
 		t.Fatal(err)
@@ -226,7 +226,7 @@ func TestReseatFoundGroupsOff(t *testing.T) {
 	// group gone reads back as auto/claude-sonnet-4-5: still moved
 	mustApplyAs(t, c, "model", "group/auto-gpt-5", "auto/gpt-5")
 	mustApplyAs(t, c, "opus", "group/auto-claude-sonnet-4-5", provider.PublicRef("group/auto-claude-sonnet-4-5"))
-	mustApplyAs(t, h, "model", "magpie/group/auto-gpt-5", "magpie/auto/gpt-5")
+	mustApplyAs(t, h, "model", "magpie-friday/group/auto-gpt-5", "magpie-friday/auto/gpt-5")
 	moves, err := Reseat(func() error { return provider.SetAutoGroups(false) })
 	if err != nil {
 		t.Fatal(err)
@@ -236,7 +236,7 @@ func TestReseatFoundGroupsOff(t *testing.T) {
 			t.Errorf("claude %s: %q, want %q", k, got, w)
 		}
 	}
-	if got := h.Field("model").Get(); got != "magpie/cop/gpt-5" {
+	if got := h.Field("model").Get(); got != "magpie-friday/cop/gpt-5" {
 		t.Errorf("hermes: %q", got)
 	}
 	if len(moves) != 3 || moves[0].From != "auto/gpt-5" || moves[0].To != "cop/gpt-5" {
@@ -258,7 +258,7 @@ func TestReseatKeepsAFoundGroupWithAProviderOff(t *testing.T) {
 	c, h := mustFind(t, "claude"), mustFind(t, "hermes")
 	mustApplyAs(t, c, "model", "group/auto-gpt-5", "auto/gpt-5")
 	mustApply(t, c, "haiku", "cop/only-here")
-	mustApplyAs(t, h, "model", "magpie/group/auto-gpt-5", "magpie/auto/gpt-5")
+	mustApplyAs(t, h, "model", "magpie-friday/group/auto-gpt-5", "magpie-friday/auto/gpt-5")
 	moves, err := Reseat(func() error { return provider.SetOff("cop", true) })
 	if err != nil {
 		t.Fatal(err)
@@ -266,7 +266,7 @@ func TestReseatKeepsAFoundGroupWithAProviderOff(t *testing.T) {
 	if got := c.Field("model").Get(); got != "auto/gpt-5" {
 		t.Errorf("claude model with cop off: %q", got)
 	}
-	if got := h.Field("model").Get(); got != "magpie/auto/gpt-5" {
+	if got := h.Field("model").Get(); got != "magpie-friday/auto/gpt-5" {
 		t.Errorf("hermes with cop off: %q", got)
 	}
 	if len(moves) != 1 || moves[0].Field != "haiku" || moves[0].From != "cop/only-here" {

@@ -13,7 +13,7 @@ import (
 
 func rollbackFiles(t *testing.T) (string, string) {
 	t.Helper()
-	exe := filepath.Join(t.TempDir(), "magpie.exe")
+	exe := filepath.Join(t.TempDir(), "magpie-friday.exe")
 	staged := exe + ".new"
 	for path, content := range map[string]string{exe: "old version", staged: "new version"} {
 		if err := os.WriteFile(path, []byte(content), 0o755); err != nil {

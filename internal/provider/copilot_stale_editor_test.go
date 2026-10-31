@@ -117,9 +117,9 @@ func TestCopilotStaleEditorNotAnotherAccount(t *testing.T) {
 	}
 }
 
-// Signed in again from magpie, the same account as the editors' refused
+// Signed in again from magpie-friday, the same account as the editors' refused
 // sign-in is kept and used, not let go as the editors' own (#1238: "Repeating
-// the Magpie device login still leaves the editor credential selected").
+// the magpie-friday device login still leaves the editor credential selected").
 func TestCopilotSignInKeptOverStaleEditor(t *testing.T) {
 	staleEditor(t, "nobody")
 	os.RemoveAll(copilotCLIHome()) // no CLI sign-in
@@ -137,11 +137,11 @@ func TestCopilotSignInKeptOverStaleEditor(t *testing.T) {
 		t.Fatal("no copilot")
 	}
 	if _, err := p.Fetch(context.Background()); err != nil {
-		t.Fatalf("fetch with magpie's sign-in: %v", err)
+		t.Fatalf("fetch with magpie-friday's sign-in: %v", err)
 	}
 }
 
-// The editors' sign-in still taken, a sign-in from magpie of the same
+// The editors' sign-in still taken, a sign-in from magpie-friday of the same
 // account is let go as before: the editors' own stands for it.
 func TestCopilotSignInSameAsWorkingEditor(t *testing.T) {
 	staleEditor(t, "nobody")

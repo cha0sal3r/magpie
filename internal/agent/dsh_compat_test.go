@@ -9,7 +9,7 @@ import (
 )
 
 // dshRouteCompat is each model's compat on route key of a patch list's
-// llm-pi-ai entry, every switch in it, the ones magpie doesn't know too.
+// llm-pi-ai entry, every switch in it, the ones magpie-friday doesn't know too.
 func dshRouteCompat(t *testing.T, path, key string) (models []string, compat map[string]map[string]any) {
 	t.Helper()
 	b, err := os.ReadFile(path)
@@ -47,7 +47,7 @@ func dshRouteCompat(t *testing.T, path, key string) (models []string, compat map
 }
 
 // #2504 (h4rk8s): a compat switch set by hand in dsh's Models page — a
-// maxTokensField a provider needs — went on every refresh of magpie's model
+// maxTokensField a provider needs — went on every refresh of magpie-friday's model
 // list, and a model that worked failed again. It now stays on the same model
 // of the same route on the same protocol, while the name and limits are
 // written as the catalog has them; a model on another route doesn't take it.
@@ -55,20 +55,20 @@ func TestDshRefreshKeepsHandSetCompat(t *testing.T) {
 	home, dir, web := dshRouteHome(t)
 	dshKeyFixture(dir)
 	route := func(key, api string) string {
-		return "      " + key + ":\n        displayName: Magpie\n        apiKeyEnv: " + dshKeyRef + "\n        api: " + api + "\n        baseURL: " + gatewayV1() + "\n        models:\n" +
+		return "      " + key + ":\n        displayName: magpie-friday\n        apiKeyEnv: " + dshKeyRef + "\n        api: " + api + "\n        baseURL: " + gatewayV1() + "\n        models:\n" +
 			"          - id: deepseek/pro\n            name: stale\n            contextWindow: 1\n            compat:\n              maxTokensField: max_tokens\n              supportsStore: false\n"
 	}
 	os.WriteFile(web, []byte("# Your patch layer for this dsh profile.\n"+
 		"- id: llm-pi-ai\n  name: \"@deepseek-ai/dsh-llm-pi-ai\"\n  config:\n    providers:\n"+
-		route("magpie", "openai-completions")+route("magpie-responses", "openai-responses")+
-		"- id: agent-default-model\n  config:\n    provider: magpie\n    model: deepseek/pro\n"), 0o644)
+		route("magpie-friday", "openai-completions")+route("magpie-friday-responses", "openai-responses")+
+		"- id: agent-default-model\n  config:\n    provider: magpie-friday\n    model: deepseek/pro\n"), 0o644)
 	a := dsh(home)
 	for i := 0; i < 2; i++ {
 		if err := a.Sync(); err != nil {
 			t.Fatal(err)
 		}
 		b, _ := os.ReadFile(web)
-		models, compat := dshRouteCompat(t, web, "magpie")
+		models, compat := dshRouteCompat(t, web, "magpie-friday")
 		if len(models) == 0 || strings.Contains(strings.Join(models, ","), "stale") {
 			t.Fatalf("the route wasn't written as the catalog has it: %v\n%s", models, b)
 		}
@@ -78,10 +78,10 @@ func TestDshRefreshKeepsHandSetCompat(t *testing.T) {
 		if c, ok := compat["deepseek/flash"]; ok {
 			t.Fatalf("a model new to the route took another's compat: %v", c)
 		}
-		if strings.Contains(string(b), "magpie-responses:") {
+		if strings.Contains(string(b), "magpie-friday-responses:") {
 			// the route went with its last model, so its compat can't
 			// follow the model onto another one
-			t.Fatalf("a route with none of magpie's models stayed:\n%s", b)
+			t.Fatalf("a route with none of magpie-friday's models stayed:\n%s", b)
 		}
 	}
 }

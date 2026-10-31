@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // A provider's Save carries what its editor's Names & levels changed
@@ -38,7 +38,7 @@ func TestProviderSaveModelPrefs(t *testing.T) {
 	if s.ModelNames["relay/sol"] != "My Sol" || !slices.Equal(s.ModelEfforts["relay/sol"], []string{"low", "high"}) || !s.ModelImages["relay/sol"] {
 		t.Fatalf("names %v, efforts %v, images %v", s.ModelNames, s.ModelEfforts, s.ModelImages)
 	}
-	// the model it is the same as, for the groups magpie finds (#583)
+	// the model it is the same as, for the groups magpie-friday finds (#583)
 	if w := post(`{"id":"relay","from":"relay","name":"Relay","chat":"http://127.0.0.1:1/v1","models":["sol"],"modelPrefs":{"sol":{"same":"deepseek-v4.1-flash"}}}`); w.Code != 200 {
 		t.Fatalf("%d %s", w.Code, w.Body)
 	}

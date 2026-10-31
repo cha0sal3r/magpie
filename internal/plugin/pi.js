@@ -1,5 +1,5 @@
 // pi's extensions and packages (pi coding agent, @earendil-works) run as
-// magpie's plugins: host.js loads this module when a plugin it is given is
+// magpie-friday's plugins: host.js loads this module when a plugin it is given is
 // one, and turns each provider the extensions register into the hooks an
 // OpenCode plugin gives.
 //
@@ -7,7 +7,7 @@
 // so they import pi's packages as in pi, and their providers are composed
 // by pi's ModelRuntime, as pi composes them: its sign-in (OAuth or a key),
 // its renewal, its models and its requests are pi's. The runtime keeps
-// its sign-ins in magpie's plugin-auth.json, each account as host.js keeps
+// its sign-ins in magpie-friday's plugin-auth.json, each account as host.js keeps
 // an OpenCode plugin's (an OAuth one as {type: "oauth", refresh, access,
 // expires, …}, a key as {type: "api", key}), read in the scope of the
 // request's account. What else an extension registers (commands, tools,
@@ -500,7 +500,7 @@ export async function load(h, list) {
   // pi keeps its settings and caches here, not in the user's ~/.pi. This
   // overrides any PI_CODING_AGENT_DIR from the user's shell: with that one,
   // the auth.json written below would be the user's own pi sign-ins, and
-  // magpie would delete every sign-in it doesn't hold itself.
+  // magpie-friday would delete every sign-in it doesn't hold itself.
   process.env.PI_CODING_AGENT_DIR = home
   // pi makes it on start; packages write their files into it (pi-antigravity
   // its accounts) and fail with ENOENT when it isn't there
@@ -600,7 +600,7 @@ export async function load(h, list) {
         .emit({ type: "session_start", reason })
         .catch(() => {})
         .then(() => {
-          // magpie asks the models again when they changed
+          // magpie-friday asks the models again when they changed
           if (JSON.stringify([...runners.keys()].map((id) => (mr.getModels(id) ?? []).map((m) => m.id))) !== before) h.send({ event: "auth" })
         })
     }
@@ -680,7 +680,7 @@ function bind(pi, r, mr, cwd, h, spec) {
         compact: nothing,
         getSystemPrompt: () => "",
         executeTool: async () => {
-          throw new Error("magpie runs no tools of pi's")
+          throw new Error("magpie-friday runs no tools of pi's")
         },
         getCallableTools: () => [],
       },
@@ -723,7 +723,7 @@ async function entriesOf(pi, target, none) {
 // ---- a package's own UI ----------------------------------------------------------
 
 // asking is the sign-in a package's UI is shown in: pi's dialogs and its
-// components (ctx.ui) are asked as the sign-in's questions, as magpie asks
+// components (ctx.ui) are asked as the sign-in's questions, as magpie-friday asks
 // them, and outside one they answer as pi's do with no UI.
 const asking = new AsyncLocalStorage()
 
@@ -927,7 +927,7 @@ function hooksOf(h, mr, ai, id) {
       }
       const index = out.length
       // what the login asks before it shows its page, asked one at a time
-      // as magpie asks a method's prompts (magpie's own hook)
+      // as magpie-friday asks a method's prompts (magpie-friday's own hook)
       m.ask = async (inputs = {}) => {
         let run = runs.get(index)
         const answered = !!run?.asked && run.asked.key in inputs
@@ -1000,7 +1000,7 @@ function hooksOf(h, mr, ai, id) {
     async loader() {
       return { apiKey: "pi", baseURL: "http://pi.magpie/v1", fetch: (url, init) => piFetch(url, init) }
     },
-    // renewed by magpie ahead of its expiry, as pi renews it
+    // renewed by magpie-friday ahead of its expiry, as pi renews it
     async refresh(stored) {
       const oauth = prov()?.auth?.oauth
       if (!oauth?.refresh) return undefined

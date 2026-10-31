@@ -12,13 +12,13 @@ package provider
 // menu-bar switcher, keeps its ChatGPT accounts in ~/.codexbar/config.json
 // (see codexbarEntries); its own export is Sub2API's. A bare refresh token
 // a line is taken too. They all sign in with the agents' own OAuth clients, the ones
-// magpie uses.
+// magpie-friday uses.
 //
 // A ChatGPT one is checked the way a sign-in is finished: its refresh token
 // traded for new tokens and the account asked for. That rotates the token,
-// so the file it came from stops working: the account is magpie's from then
-// on, as a sign-in in magpie would make it. A Claude one is kept as it
-// came, magpie asking Anthropic nothing; Claude Code refreshes it the first
+// so the file it came from stops working: the account is magpie-friday's from then
+// on, as a sign-in in magpie-friday would make it. A Claude one is kept as it
+// came, magpie-friday asking Anthropic nothing; Claude Code refreshes it the first
 // time it runs on it. Tokens are never logged or sent back.
 
 import (
@@ -31,7 +31,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // loginImport is one account read from a file.
@@ -280,7 +280,7 @@ func ImportLogins(ctx context.Context, agent string, files []string) ([]Imported
 	if len(all) > maxGoogleImport {
 		return nil, fmt.Errorf("%d accounts; at most %d at a time", len(all), maxGoogleImport)
 	}
-	// the refresh tokens magpie holds already, the agent's own included
+	// the refresh tokens magpie-friday holds already, the agent's own included
 	have := map[string]string{}
 	loginsMu.Lock()
 	ls := readLogins()
@@ -392,13 +392,13 @@ func importLogin(ctx context.Context, agent string, e loginImport, name string, 
 			scopes = claudeImportScopes
 		}
 		// kept as it came, not tried: trying it would ask Anthropic, which
-		// magpie never does with a Claude sign-in. Claude Code refreshes it
+		// magpie-friday never does with a Claude sign-in. Claude Code refreshes it
 		// the first time it runs on the account, its access token taken
 		// for spent.
 		c := claudeCredentials{raw: map[string]any{}, OAuth: claudeAuth{AccessToken: e.accessToken, RefreshToken: e.refreshToken,
 			ExpiresAt: 1, Scopes: scopes}}
 		if e.email == "" {
-			return fail("the file doesn't say which Claude account this is; sign in to it from magpie instead")
+			return fail("the file doesn't say which Claude account this is; sign in to it from magpie-friday instead")
 		}
 		acct := map[string]any{"emailAddress": e.email}
 		if e.claudeAccount != "" {

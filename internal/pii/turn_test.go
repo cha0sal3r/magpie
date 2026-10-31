@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/redact"
+	"github.com/cha0sal3r/magpie-friday/internal/redact"
 )
 
 // waitFor waits for ok, up to 10s.
@@ -143,7 +143,7 @@ func TestQueuedRequestReadsWhatTheOneAheadLearned(t *testing.T) {
 	}
 }
 
-// restart is magpie started again: nothing in memory, pf-serve not running.
+// restart is magpie-friday started again: nothing in memory, pf-serve not running.
 func restart(t *testing.T) {
 	t.Helper()
 	Stop()

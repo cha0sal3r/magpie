@@ -9,7 +9,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // tokenhub plays TokenHub's pay-as-you-go endpoints: chat completions,
@@ -76,7 +76,7 @@ func (q *tokenhub) last() tokenhubCall {
 // OpenAI APIs and as x-api-key on Anthropic's, which TokenHub's docs ask.
 // TokenHub is now Tencent Cloud's pay as you go (one preset, its regions):
 // a provider added under either old preset, saved under its id with that
-// preset as an older magpie stored it, routes as before, and one added as
+// preset as an older magpie-friday stored it, routes as before, and one added as
 // Tencent Cloud at either region alike.
 func TestTencentTokenHubRoutes(t *testing.T) {
 	for _, c := range []struct{ id, preset string }{

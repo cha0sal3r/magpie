@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A relay whose one key serves a model only on Anthropic's messages, while
@@ -97,7 +97,7 @@ data: {"type":"message_stop"}`))
 // once answers it there with "use /v1/chat/completions" (01huadalang on
 // Discord: 为什么会转成 chat，我都设置的 response): the next request was
 // sent on chat completions, the first API the provider has a URL for,
-// for as long as magpie ran. Now it is asked on Responses again, and the
+// for as long as magpie-friday ran. Now it is asked on Responses again, and the
 // relay's error reaches the agent rather than a request on an API the
 // user said the model isn't asked on.
 func TestModelAPIPickHoldsAfterWrongEndpoint(t *testing.T) {

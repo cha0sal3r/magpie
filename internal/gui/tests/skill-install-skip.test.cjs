@@ -17,11 +17,11 @@ const agent = (id, name) => ({ id, name, icon: "", skills: `${HOME}/.${id}/skill
 const cand = (name) => ({ path: "skills/" + name, name, description: name + " like caveman", have: false });
 const probe = { source: "JuliusBrussee/caveman", kind: "github", candidates: [cand("caveman"), cand("caveman-commit"), cand("caveman-review")] };
 const lib = () => ({
-  dir: `${HOME}/.config/magpie/library`, backups: `${HOME}/.config/magpie/backups`, home: HOME,
+  dir: `${HOME}/.config/magpie-friday/library`, backups: `${HOME}/.config/magpie-friday/backups`, home: HOME,
   agents: [agent("claude", "Claude Code")],
   instructions: { agents: [] }, servers: [], skills: [], foundServers: [], projects: [], foundSkills: [],
 });
-const why = `the library's folder already has a caveman-commit that isn't this one (${HOME}/.config/magpie/library/skills/caveman-commit), left as it is: bring it in from the skills found there to use it`;
+const why = `the library's folder already has a caveman-commit that isn't this one (${HOME}/.config/magpie-friday/library/skills/caveman-commit), left as it is: bring it in from the skills found there to use it`;
 
 function server(lang, posts) {
   return async (route) => {

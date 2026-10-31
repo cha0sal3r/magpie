@@ -222,7 +222,7 @@ func TestBunThroughBridge(t *testing.T) {
 	defer tls.Close()
 	socks, n := fakeSOCKS(t, "me", "pw")
 	b, _ := Bridge(socks)
-	// loopback is never proxied by magpie, but the test's servers are on it:
+	// loopback is never proxied by magpie-friday, but the test's servers are on it:
 	// Bun is given the proxy outright
 	js := `for (const u of process.env.URLS.split(" ")) console.log(await (await fetch(u, { proxy: "` + b + `", tls: { rejectUnauthorized: false } })).text())`
 	cmd := exec.Command(bun, "-e", js)

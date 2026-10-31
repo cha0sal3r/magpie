@@ -16,11 +16,11 @@ import (
 
 // Mitsuha on Discord (v0.1.1364) and audie: after an update the Mac's menu
 // bar icon was gone, and quitting and reopening didn't bring it back. From
-// v0.1.1354 a restart to update hands the gateway over, and the magpie
+// v0.1.1354 a restart to update hands the gateway over, and the magpie-friday
 // before hid its item with setVisible:NO. AppKit keeps that in the app's
 // defaults ("NSStatusItem VisibleCC Item-0" = 0), so the new version's item
 // and every later one started hidden. The hide leaves nothing kept, and a
-// hide an older magpie kept is undone once per computer; a later one is
+// hide an older magpie-friday kept is undone once per computer; a later one is
 // the user's and stays.
 func TestHandoverLeavesTheMenuBarIconForTheNextMagpie(t *testing.T) {
 	out, err := runAppKit(t, 30*time.Second, []string{"MAGPIE_TEST_TRAY_SHOWN=1"})
@@ -34,11 +34,11 @@ func init() {
 		return
 	}
 	app := application.New(application.Options{
-		Name: "magpie tray shown regression",
+		Name: "magpie-friday tray shown regression",
 		Mac:  application.MacOptions{ActivationPolicy: application.ActivationPolicyAccessory},
 		Assets: application.AssetOptions{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "text/html")
-			fmt.Fprint(w, `<p>magpie</p>`)
+			fmt.Fprint(w, `<p>magpie-friday</p>`)
 		})},
 	})
 	h := &host{app: app}
@@ -50,7 +50,7 @@ func init() {
 	}
 	app.Event.OnApplicationEvent(events.Common.ApplicationStarted, func(*application.ApplicationEvent) {
 		go func() {
-			// what a magpie before this fix did as it handed over: the hide
+			// what a magpie-friday before this fix did as it handed over: the hide
 			// is kept for the app (the item is up a moment after the start)
 			for deadline := time.Now().Add(5 * time.Second); trayHidden() == 0; {
 				if time.Now().After(deadline) {
@@ -61,16 +61,16 @@ func init() {
 				time.Sleep(50 * time.Millisecond)
 			}
 			if still := bringTrayBack(); still || trayHidden() != 0 {
-				fail("the icon an older magpie hid wasn't brought back (still hidden %v, %d kept)", still, trayHidden())
+				fail("the icon an older magpie-friday hid wasn't brought back (still hidden %v, %d kept)", still, trayHidden())
 			}
 			h.tray.Show()
 			mainSettled()
 
-			// this magpie handing over
+			// this magpie-friday handing over
 			h.leaveMenuBar()
 			mainSettled()
 			if n := trayHidden(); n != 0 {
-				fail("handing over kept the menu bar icon hidden for the next magpie (%d kept)", n)
+				fail("handing over kept the menu bar icon hidden for the next magpie-friday (%d kept)", n)
 			}
 
 			// the user's own hide, after the one-time bring-back (shown

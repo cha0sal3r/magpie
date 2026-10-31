@@ -67,7 +67,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         await page.locator("#view-routing .rt-req").nth(11).waitFor();
         await page.waitForTimeout(500);
 
-        // the layouts by width: magpie and the agent side by side over the
+        // the layouts by width: magpie-friday and the agent side by side over the
         // accounts when the stage is narrow, each request on three lines in
         // a narrow list, the accounts beside the requests on a wide page
         const narrow = width <= 600;

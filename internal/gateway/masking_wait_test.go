@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gwmw"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/gwmw"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // waitingMasker is masking that waits for the local model, which never
@@ -56,10 +56,10 @@ func (waitingMasker) Writer(w http.ResponseWriter) (http.ResponseWriter, func())
 }
 
 // #3682: with Settings → Privacy's local model on, every request after a
-// restart waited for it, and was answered after 2m that magpie "held this
+// restart waited for it, and was answered after 2m that magpie-friday "held this
 // request without routing it to any provider". Its answer says it waited
 // for the local masking model, what the model was doing and how to send
-// without it, and the wait lets go when magpie answers, rather than keep
+// without it, and the wait lets go when magpie-friday answers, rather than keep
 // its place in the model's queue.
 func TestHeldForTheMaskingModelSaysSo(t *testing.T) {
 	unroutedLimits(t, 50*time.Millisecond, 500*time.Millisecond)
@@ -97,7 +97,7 @@ func TestHeldForTheMaskingModelSaysSo(t *testing.T) {
 	select {
 	case <-m.left:
 	case <-time.After(10 * time.Second):
-		t.Fatal("the request's wait for the model went on after magpie answered it")
+		t.Fatal("the request's wait for the model went on after magpie-friday answered it")
 	}
 	rs := routesOf(s, "probe/text")
 	if len(rs) != 1 || !strings.Contains(rs[0].Error, "waiting for the local masking model") {

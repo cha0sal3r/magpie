@@ -38,7 +38,7 @@ function serve(lang, saved, { stateDelay = 0 } = {}, posts) {
       if (stateDelay) await new Promise((res) => setTimeout(res, stateDelay));
       return json(state);
     }
-    if (url.pathname === "/api/settings") return json({ ...cur, version: "0.1.1140", dir: "~/.config/magpie", gateway: "http://127.0.0.1:3999" });
+    if (url.pathname === "/api/settings") return json({ ...cur, version: "0.1.1140", dir: "~/.config/magpie-friday", gateway: "http://127.0.0.1:3999" });
     if (url.pathname === "/api/plugins") return json({ plugins: [] });
     if (url.pathname === "/api/gateway/trace") {
       if (url.searchParams.get("wait")) return new Promise(() => {});

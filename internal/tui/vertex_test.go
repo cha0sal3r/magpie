@@ -8,11 +8,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Google Vertex AI is added from the TUI with its Google Cloud project, as
-// magpie provider add google-vertex project=… adds it, and no key is asked
+// magpie-friday provider add google-vertex project=… adds it, and no key is asked
 // for: its row says the Google credentials that sign it, and e and w, which
 // would ask a key or an address it has no use for, say the command that
 // changes what it has instead.
@@ -32,7 +32,7 @@ func TestTUIAddsVertexWithItsProject(t *testing.T) {
 	if m.mode != modeAsk || m.ask.input.Placeholder != "your Google Cloud project's id" {
 		t.Fatalf("picking Google Vertex AI asked %q (mode %v), not its project", m.ask.input.Placeholder, m.mode)
 	}
-	if v := m.View(); !strings.Contains(v, "gcloud's Application Default Credentials") || !strings.Contains(v, "magpie provider set google-vertex location=") {
+	if v := m.View(); !strings.Contains(v, "gcloud's Application Default Credentials") || !strings.Contains(v, "magpie-friday provider set google-vertex location=") {
 		t.Fatalf("the project's line says nothing of what signs it:\n%s", v)
 	}
 	// nothing typed: said to be needed, nothing added
@@ -96,12 +96,12 @@ func TestTUIAddsVertexWithItsProject(t *testing.T) {
 	if m.mode == modeAsk {
 		t.Fatalf("e asked %q of Vertex AI", m.ask.input.Placeholder)
 	}
-	wantFlash(t, m, false, "magpie provider set google-vertex credentials=")
+	wantFlash(t, m, false, "magpie-friday provider set google-vertex credentials=")
 	m = press(t, m, "w")
 	if m.mode == modeAsk {
 		t.Fatalf("w asked %q of Vertex AI", m.ask.input.Placeholder)
 	}
-	wantFlash(t, m, false, "magpie provider set google-vertex project=")
+	wantFlash(t, m, false, "magpie-friday provider set google-vertex project=")
 }
 
 // A Vertex AI provider with no project (providers.json edited by hand)

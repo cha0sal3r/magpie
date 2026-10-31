@@ -190,7 +190,7 @@ func TestSystemProxyToolThatHangsIsEnded(t *testing.T) {
 }
 
 // A read that answers within readWait is what the request waiting for it
-// goes through: magpie started where only the system's proxy reaches the
+// goes through: magpie-friday started where only the system's proxy reaches the
 // vendors sends its first requests through it, not direct.
 func TestQuickSystemProxyReadIsWaitedFor(t *testing.T) {
 	_, answers := holdReads(t, Proxy{}, time.Time{}, 5*time.Second)

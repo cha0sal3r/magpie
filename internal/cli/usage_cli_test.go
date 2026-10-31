@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/sessions"
-	stats "github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
+	stats "github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // holdUsageClock stops the usage clock at at for the test and gives at back,
@@ -26,7 +26,7 @@ func holdUsageClock(t *testing.T, at time.Time) time.Time {
 
 // midnightUsageClock sets the usage clock to read a tenth of a second before
 // midnight the first time and a tenth of a second after it from then on, as
-// when midnight falls while magpie usage is worked out.
+// when midnight falls while magpie-friday usage is worked out.
 func midnightUsageClock(t *testing.T, midnight time.Time) {
 	t.Helper()
 	var read atomic.Bool
@@ -40,7 +40,7 @@ func midnightUsageClock(t *testing.T, midnight time.Time) {
 	t.Cleanup(func() { stats.Clock = old })
 }
 
-// magpie usage --csv writes the period's requests, newest first, one row
+// magpie-friday usage --csv writes the period's requests, newest first, one row
 // each, with the model asked for, sent and served.
 func TestUsageCSV(t *testing.T) {
 	groupsHome(t)
@@ -101,9 +101,9 @@ func TestUsageProviderKeys(t *testing.T) {
 	}
 }
 
-// magpie usage shows, beside the gateway's calls, those the agents made on
+// magpie-friday usage shows, beside the gateway's calls, those the agents made on
 // their own, read from their session files, as the window's Usage page
-// does (Kumo31 on Discord: Codex used outside magpie wasn't in it).
+// does (Kumo31 on Discord: Codex used outside magpie-friday wasn't in it).
 func TestUsageShowsCallsNotThroughMagpie(t *testing.T) {
 	groupsHome(t)
 	now := holdUsageClock(t, time.Date(2026, 9, 30, 12, 0, 0, 0, time.Local))
@@ -118,7 +118,7 @@ func TestUsageShowsCallsNotThroughMagpie(t *testing.T) {
 		t.Fatal(err)
 	}
 	out := b.String()
-	gw, own, ok := strings.Cut(out, "not through magpie")
+	gw, own, ok := strings.Cut(out, "not through magpie-friday")
 	if !ok || !strings.Contains(gw, "relay/m") || strings.Contains(gw, "gpt-6-luna") || !strings.Contains(own, "gpt-6-luna") || !strings.Contains(own, "1.5K") {
 		t.Fatal(out)
 	}
@@ -128,14 +128,14 @@ func TestUsageShowsCallsNotThroughMagpie(t *testing.T) {
 		return []sessions.Call{{Time: now.AddDate(0, 0, -40), Agent: "codex", Model: "gpt-6-luna", Tokens: sessions.Tokens{Input: 7}}}
 	}
 	b.Reset()
-	if err := usageTo(&b, []string{"usage", "all"}); err != nil || !strings.Contains(b.String(), "not through magpie") || !strings.Contains(b.String(), "gpt-6-luna") {
+	if err := usageTo(&b, []string{"usage", "all"}); err != nil || !strings.Contains(b.String(), "not through magpie-friday") || !strings.Contains(b.String(), "gpt-6-luna") {
 		t.Fatal(b.String(), err)
 	}
 }
 
-// magpie usage asked as midnight falls shows the calls through magpie and
+// magpie-friday usage asked as midnight falls shows the calls through magpie-friday and
 // those not through it of one day, the day it was asked on. Asked apart,
-// the calls not through magpie were the next day's, none yet, and left out.
+// the calls not through magpie-friday were the next day's, none yet, and left out.
 func TestUsageAskedAtMidnight(t *testing.T) {
 	groupsHome(t)
 	midnight := time.Date(2026, 10, 1, 0, 0, 0, 0, time.Local)
@@ -150,13 +150,13 @@ func TestUsageAskedAtMidnight(t *testing.T) {
 	if err := usageTo(&b, []string{"usage", "today"}); err != nil {
 		t.Fatal(err)
 	}
-	gw, own, ok := strings.Cut(b.String(), "not through magpie")
+	gw, own, ok := strings.Cut(b.String(), "not through magpie-friday")
 	if !ok || !strings.Contains(gw, "relay/m") || !strings.Contains(own, "gpt-6-luna") {
 		t.Fatal(b.String())
 	}
 }
 
-// magpie usage's headline says how many calls its cost leaves out for
+// magpie-friday usage's headline says how many calls its cost leaves out for
 // having no known price, beside the sum, not only a "+" after it (#1856):
 // a Kimi K3 Auto that nobody prices is never read as costing nothing.
 func TestUsageSaysCallsUnpriced(t *testing.T) {
@@ -179,7 +179,7 @@ func TestUsageSaysCallsUnpriced(t *testing.T) {
 	}
 }
 
-// magpie usage says what the requests cost in their plans' credits where
+// magpie-friday usage says what the requests cost in their plans' credits where
 // the replies said (WorkBuddy's usage.credit, #2512): in the summary, and
 // on each agent's, model's and session's row of them; nothing where none did.
 func TestUsageSaysCredits(t *testing.T) {

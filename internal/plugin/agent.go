@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-// Agent is the agent a plugin at target adds magpie's wiring for: the
-// file its package.json's magpie.agent names, or the file itself for a
+// Agent is the agent a plugin at target adds magpie-friday's wiring for: the
+// file its package.json's magpie-friday.agent names, or the file itself for a
 // path to a *.agent.js (or .mjs). only is whether it is nothing else: no
 // OpenCode plugin for the host to load (no main, no exports).
 func Agent(target string) (file string, only bool) {
@@ -42,7 +42,7 @@ func Agent(target string) (file string, only bool) {
 }
 
 // InMagpieOnly is whether everything a plugin at target has runs in
-// magpie's own process, its gateway middleware, its agent and what it adds
+// magpie-friday's own process, its gateway middleware, its agent and what it adds
 // to the window, so the host has nothing of it to load.
 func InMagpieOnly(target string) bool {
 	if Gateway(target) != "" {

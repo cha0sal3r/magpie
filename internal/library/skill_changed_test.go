@@ -154,7 +154,7 @@ func TestUpdateKeepsACopyEditedInAnAgent(t *testing.T) {
 	}
 }
 
-// A skill installed before magpie kept the hash of what it fetched can't
+// A skill installed before magpie-friday kept the hash of what it fetched can't
 // be told changed or not: it isn't said to be, and an update keeps the
 // version it replaces, in case it was.
 func TestUpdateKeepsWhatItCantTell(t *testing.T) {
@@ -185,7 +185,7 @@ func TestUpdateKeepsWhatItCantTell(t *testing.T) {
 }
 
 // The page checks the skills from GitHub by itself when they weren't
-// checked since magpie started, or not for checkEvery; a library with none
+// checked since magpie-friday started, or not for checkEvery; a library with none
 // from there has nothing to check.
 func TestCheckDue(t *testing.T) {
 	sandbox(t)

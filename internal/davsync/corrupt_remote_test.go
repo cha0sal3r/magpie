@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/backup"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/backup"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // A server whose file a relay cut short used to stop every sync after: the
@@ -21,7 +21,7 @@ import (
 // never get wrong are pinned here: a fresh computer that never synced, an
 // out-of-date computer whose copy isn't the one that broke, and a server
 // that answers with a page instead of a backup at all.
-const backupFile = "/dav/magpie/magpie.magpie-backup"
+const backupFile = "/dav/magpie-friday/magpie-friday.magpie-friday-backup"
 
 func cut(fake *fakeDAV, file string, keep int) {
 	fake.mu.Lock()

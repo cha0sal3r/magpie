@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // #2316 (clxsh, their test as filed): Codex includes web_search even when
@@ -91,7 +91,7 @@ func TestSearchQueueKeepsCodexAlive(t *testing.T) {
 			defer cancel()
 			req, _ := http.NewRequestWithContext(ctx, "POST", server.URL+CodexPath+"/responses", strings.NewReader(`{"model":"fake/m1","stream":true,"input":"Use get_value","tools":[{"type":"web_search"},{"type":"function","name":"get_value","parameters":{"type":"object","properties":{}}}]}`))
 			req.Header.Set("Content-Type", "application/json")
-			req.Header.Set("Authorization", "Bearer magpie")
+			req.Header.Set("Authorization", "Bearer magpie-friday")
 			// The idle deadline is much longer than the simulated queue tick;
 			// comments cannot reset it. A hard cap also catches runaway pings.
 			hard := time.AfterFunc(5*time.Second, cancel)

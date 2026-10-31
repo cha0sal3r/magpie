@@ -20,7 +20,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // computerUseShots are n distinct w×h JPEG screenshots as data URLs: a
@@ -84,7 +84,7 @@ func computerUseTurn(model string, shots []string) []byte {
 
 // turnTimer stands in for an upstream that answers at once, and notes when
 // each request reached it: the time from the agent's request to then is
-// magpie's own work on it, the upload to a local server aside.
+// magpie-friday's own work on it, the upload to a local server aside.
 type turnTimer struct {
 	mu      sync.Mutex
 	arrived time.Time
@@ -102,7 +102,7 @@ func (tt *turnTimer) handler(w http.ResponseWriter, r *http.Request) {
 		`data: {"type":"response.completed","response":{"id":"r1","status":"completed","output":[],"usage":{"input_tokens":7,"output_tokens":2}}}`))
 }
 
-// turn sends body to s and says how long magpie took before the upstream
+// turn sends body to s and says how long magpie-friday took before the upstream
 // had it, and in all. Its CPU profile samples carry the label turn=name,
 // for pprof's -tagfocus: on a loaded machine the time a turn's work took
 // says more than how long it waited.
@@ -122,7 +122,7 @@ func (tt *turnTimer) turn(t *testing.T, s *Server, body []byte, name string) (lo
 	return tt.arrived.Sub(start), all
 }
 
-// TestComputerUseTurnTiming times magpie's own work on a long Computer
+// TestComputerUseTurnTiming times magpie-friday's own work on a long Computer
 // Use turn to a ChatGPT account, as fflake33's (Discord): the first turn,
 // and the next, which sends every past screenshot again. Run it with
 // MAGPIE_TURN_TIMING=1 (and -cpuprofile/-memprofile to see where).
@@ -148,11 +148,11 @@ func TestComputerUseTurnTiming(t *testing.T) {
 		// each turn adds a screenshot to those sent before
 		body := computerUseTurn("codex/gpt-5.5", shots[:n+turn-1])
 		local, all := tt.turn(t, s, body, fmt.Sprint(turn))
-		t.Logf("turn %d: %d images, %d MB: magpie %v before the upstream had it, %v in all", turn, n+turn-1, len(body)>>20, local, all)
+		t.Logf("turn %d: %d images, %d MB: magpie-friday %v before the upstream had it, %v in all", turn, n+turn-1, len(body)>>20, local, all)
 	}
 }
 
-// TestCopilotLongTurnTiming times magpie's own work on a long Codex turn
+// TestCopilotLongTurnTiming times magpie-friday's own work on a long Codex turn
 // with no images to a Copilot account (echo_ts, Discord). Run it with
 // MAGPIE_TURN_TIMING=1.
 func TestCopilotLongTurnTiming(t *testing.T) {
@@ -197,7 +197,7 @@ func TestCopilotLongTurnTiming(t *testing.T) {
 		body := largeConversation(provider.Responses, "copilot/gpt-6.1-sol", words)
 		for turn := 1; turn <= 3; turn++ {
 			local, all := tt.turn(t, s, body, fmt.Sprintf("%dk-%d", words/1000, turn))
-			t.Logf("%d KB, turn %d: magpie %v before the upstream had it, %v in all", len(body)>>10, turn, local, all)
+			t.Logf("%d KB, turn %d: magpie-friday %v before the upstream had it, %v in all", len(body)>>10, turn, local, all)
 		}
 	}
 }

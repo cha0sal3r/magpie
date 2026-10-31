@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 func forgetLifts(t *testing.T) {
@@ -23,7 +23,7 @@ func forgetLifts(t *testing.T) {
 
 // zoecats on Discord: an account rate limited (429) with Sink on, lifted
 // with Try now in the provider's editor, is asked again in its place, not
-// left at the back of the order until magpie restarts.
+// left at the back of the order until magpie-friday restarts.
 func TestTryNowPutsASunkAccountBack(t *testing.T) {
 	forgetSinks(t)
 	forgetLifts(t)
@@ -72,7 +72,7 @@ func TestTryNowPutsASunkAccountBack(t *testing.T) {
 // A rest lifted before its time is told to the Routing page, wherever it
 // was lifted: the trace says when, by the rest's key, and a page waiting
 // on the trace hears of it at once though no route changed. Before, the
-// page kept showing the routes' old 429 until magpie restarted.
+// page kept showing the routes' old 429 until magpie-friday restarted.
 func TestTryNowToldToTheRoutingPage(t *testing.T) {
 	forgetSinks(t)
 	forgetLifts(t)

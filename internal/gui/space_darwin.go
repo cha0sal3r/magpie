@@ -66,7 +66,7 @@ static int windowOpen(void *win) {
 	return w.isVisible && !w.isMiniaturized;
 }
 
-// The windows that were open as magpie was hidden (Command-H, Hide
+// The windows that were open as magpie-friday was hidden (Command-H, Hide
 // Others): hiding orders every window out, and Command-Tab back orders
 // these in again. Weak, so a window let go isn't kept.
 static NSHashTable *openWhenHidden;
@@ -83,7 +83,7 @@ static void watchHide(void) {
 }
 
 // Up: ordered in on any Space, covered by other windows or not, or
-// minimised, or open as magpie was hidden. Only a window magpie closed
+// minimised, or open as magpie-friday was hidden. Only a window magpie-friday closed
 // itself is down. The occlusion state, Wails' IsVisible, says a window
 // covered by another app's is not visible.
 static int windowUp(void *win) {
@@ -135,13 +135,13 @@ func canBeKey(w *application.WebviewWindow) bool {
 func sessionKeysPanels() bool { return C.sessionKeysPanels() != 0 }
 
 // nonActivating says whether w shows and takes the keyboard without
-// activating magpie, as the quick panel does (#2141); on the main thread.
+// activating magpie-friday, as the quick panel does (#2141); on the main thread.
 func nonActivating(w *application.WebviewWindow) bool {
 	p := w.NativeWindow()
 	return p != nil && C.nonActivating(p) != 0
 }
 
-// appFrontmost says whether magpie is the frontmost app, the one whose
+// appFrontmost says whether magpie-friday is the frontmost app, the one whose
 // menu bar shows; on the main thread.
 func appFrontmost() bool { return C.appFrontmost() != 0 }
 
@@ -153,7 +153,7 @@ func windowOpen(w *application.WebviewWindow) bool {
 }
 
 // windowUp says whether w is up, as the user sees it: open on any Space,
-// covered or not, minimised, or open as magpie was hidden; on the main thread.
+// covered or not, minimised, or open as magpie-friday was hidden; on the main thread.
 // Lightweight mode lets go only of a window that isn't, and the Dock and a
 // restart keep the window that is (#1381).
 func windowUp(w *application.WebviewWindow) bool {
@@ -161,11 +161,11 @@ func windowUp(w *application.WebviewWindow) bool {
 	return p != nil && C.windowUp(p) != 0
 }
 
-// watchHide keeps which windows were open as magpie was hidden, for
+// watchHide keeps which windows were open as magpie-friday was hidden, for
 // windowUp; called once, before the app runs.
 func watchHide() { C.watchHide() }
 
-// activateApp brings magpie to the front as the Mac does for a click on its
+// activateApp brings magpie-friday to the front as the Mac does for a click on its
 // Dock icon: to the Space its window is on, as the user's Mission Control
 // settings say; on the main thread.
 func activateApp() { C.activateApp() }

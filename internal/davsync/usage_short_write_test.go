@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // shortUsageDAV keeps the first cut usage writes short (-1 cuts them all),
@@ -27,7 +27,7 @@ type shortUsageDAV struct {
 }
 
 func (d *shortUsageDAV) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if !strings.HasPrefix(r.URL.Path, "/dav/magpie/usage/") {
+	if !strings.HasPrefix(r.URL.Path, "/dav/magpie-friday/usage/") {
 		d.usageDAV.ServeHTTP(w, r)
 		return
 	}
@@ -80,7 +80,7 @@ func usageShortServer(t *testing.T, cut int) (*shortUsageDAV, Config) {
 	t.Helper()
 	f := &shortUsageDAV{usageDAV: &usageDAV{fakeDAV: &fakeDAV{
 		files: map[string][]byte{}, etags: map[string]string{},
-		dirs: map[string]bool{"/dav": true, "/dav/magpie": true, "/dav/magpie/usage": true},
+		dirs: map[string]bool{"/dav": true, "/dav/magpie-friday": true, "/dav/magpie-friday/usage": true},
 	}}, cut: cut}
 	srv := httptest.NewServer(f)
 	t.Cleanup(srv.Close)
@@ -128,7 +128,7 @@ func TestUsageSharedShortWrite(t *testing.T) {
 			err = shareWith(ctx, cfg, st, d)
 			f.mu.Lock()
 			writes := f.writes
-			kept, sent := len(f.files["/dav/magpie/usage/"+name]), f.sent
+			kept, sent := len(f.files["/dav/magpie-friday/usage/"+name]), f.sent
 			f.mu.Unlock()
 			if writes != c.writes {
 				t.Errorf("writes=%d, want %d", writes, c.writes)

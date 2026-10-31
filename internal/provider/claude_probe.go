@@ -1,7 +1,7 @@
 package provider
 
 // A Claude account is tested as it is used: by Claude Code itself, never
-// by a request magpie makes to Anthropic's API with the account's sign-in.
+// by a request magpie-friday makes to Anthropic's API with the account's sign-in.
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/yetone/magpie/internal/probelog"
+	"github.com/cha0sal3r/magpie-friday/internal/probelog"
 )
 
 // errClaudeViaCLI is what a request straight to Anthropic's API on a
@@ -51,7 +51,7 @@ func (p Provider) testClaude(ctx context.Context, model string) Result {
 	version := ClaudeLoginVersion(p.Account.User)
 	err = claudeCLIProbe(probelog.Taken(ctx), dir, model)
 	r.Millis = time.Since(start).Milliseconds()
-	// Claude Code sent it, not a client of magpie's: written down from
+	// Claude Code sent it, not a client of magpie-friday's: written down from
 	// what it came to
 	status, msg := http.StatusOK, ""
 	if err != nil {

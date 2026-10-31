@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/tidwall/jsonc"
-	"github.com/yetone/magpie/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
 )
 
 // RoutePolicy is a per-provider routing strategy: the model-family
@@ -32,10 +32,10 @@ type RoutePolicy struct {
 }
 
 // RouteFamily is the model-family fallback plan: an alias starts at its
-// mapped model, a concrete model falls through to lower-priority siblings
-// only, never up, and past its own family to the families listed below it
-// in matching order, so a series with a single member still has a fallback
-// and a model never climbs to a newer family.
+// mapped model, and a concrete model falls through to lower-priority
+// siblings of its own family only — never up and never on to another
+// family, each family falling back within itself alone — so a series with a
+// single member has no fallback beyond itself.
 type RouteFamily struct {
 	// Aliases maps a model alias to the concrete model it starts at
 	// ("gpt" → "gpt-6-astra").

@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // A plugin's accounts show their allowance as the built-ins' do: beside
@@ -84,7 +84,7 @@ func TestPluginUsage(t *testing.T) {
 			t.Fatalf("%s: the key's usage error = %q (%v)", agent, e, u)
 		}
 		// the plugin's own words are said on the card, not only hovered
-		// (aqiu817/magpie-sensenova#1); a clean reading is no error of it
+		// (aqiu817/magpie-friday-sensenova#1); a clean reading is no error of it
 		if !u["API key"].PluginError || q.PluginError {
 			t.Fatalf("%s: plugin error = %v, a@fake's = %v", agent, u["API key"].PluginError, q.PluginError)
 		}

@@ -9,13 +9,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/filememo"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/filememo"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // listTagHome is a ChatGPT account signed in to Codex beside 8 providers
-// of 40 models each, as a magpie in daily use has them, its files written
+// of 40 models each, as a magpie-friday in daily use has them, its files written
 // long ago.
 func listTagHome(t *testing.T) {
 	t.Helper()
@@ -51,7 +51,7 @@ func writeCodexConfig(t *testing.T, body string) {
 }
 
 // ageListFiles has the files the tag is stamped by written long ago, as
-// a magpie at rest has them, all at one time: a file changes its stamp
+// a magpie-friday at rest has them, all at one time: a file changes its stamp
 // by its size alone, as a write within one tick of a coarse clock does.
 func ageListFiles(t *testing.T) {
 	t.Helper()
@@ -81,7 +81,7 @@ func measure(f func()) (allocs, bytes float64) {
 
 // The tag of Codex's list is asked for on every GET of Codex's models and
 // every backend reply, and built the whole catalog each time: 22 MB a call
-// here, 2.1 GB in an hour of a magpie at rest. While nothing it is built
+// here, 2.1 GB in an hour of a magpie-friday at rest. While nothing it is built
 // from changed, it is kept.
 func TestCodexListTagKeptWhileNothingChanged(t *testing.T) {
 	listTagHome(t)
@@ -107,7 +107,7 @@ func TestCodexListTagKeptWhileNothingChanged(t *testing.T) {
 	}
 }
 
-// A kept tag follows every change to what it is built from: magpie's own
+// A kept tag follows every change to what it is built from: magpie-friday's own
 // writes, and files another process writes behind its back.
 func TestCodexListTagFollowsChanges(t *testing.T) {
 	listTagHome(t)
@@ -169,7 +169,7 @@ func TestCodexListTagFollowsChanges(t *testing.T) {
 		writeCodexConfig(t, "model_reasoning_effort = \"low\"\n")
 	})
 
-	// the providers' file as another magpie (the CLI) leaves it: nothing
+	// the providers' file as another magpie-friday (the CLI) leaves it: nothing
 	// in this process is told
 	before, err := os.ReadFile(Path())
 	if err != nil {
@@ -186,7 +186,7 @@ func TestCodexListTagFollowsChanges(t *testing.T) {
 		t.Fatal(err)
 	}
 	ageListFiles(t)
-	step("the providers' file written by another magpie", func() {
+	step("the providers' file written by another magpie-friday", func() {
 		if err := os.WriteFile(Path(), after, 0o600); err != nil {
 			t.Fatal(err)
 		}

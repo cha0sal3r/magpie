@@ -14,7 +14,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // memBucket is a bucket in memory, or one that refuses every write.
@@ -58,7 +58,7 @@ func archivePost(t *testing.T, s *Server) *httptest.ResponseRecorder {
 	t.Helper()
 	body := `{"model":"fake/m1","messages":[{"role":"user","content":"deploy with ` + archiveKey + `"}],"api_key":"named-secret"}`
 	req := httptest.NewRequest("POST", "/v1/chat/completions?key=query-secret&beta=true", strings.NewReader(body))
-	req.Header.Set("Authorization", "Bearer magpie-gateway-key")
+	req.Header.Set("Authorization", "Bearer magpie-friday-gateway-key")
 	req.Header.Set("x-api-key", "another-secret")
 	req.Header.Set("Cookie", "sid=cookie-secret")
 	req.Header.Set("User-Agent", "claude-cli/2.1.0")
@@ -122,7 +122,7 @@ func TestArchiveOn(t *testing.T) {
 	if !ok || len(b.objs) != 1 {
 		t.Fatalf("uploaded %v", keys(b.objs))
 	}
-	for _, secret := range []string{archiveKey, "named-secret", "magpie-gateway-key", "another-secret", "cookie-secret", "abc123", "query-secret"} {
+	for _, secret := range []string{archiveKey, "named-secret", "magpie-friday-gateway-key", "another-secret", "cookie-secret", "abc123", "query-secret"} {
 		if strings.Contains(string(data), secret) {
 			t.Errorf("%s in the archive:\n%s", secret, data)
 		}
@@ -157,7 +157,7 @@ func TestArchiveOn(t *testing.T) {
 	}
 }
 
-// The archive's names are only ever a date and an id of magpie's shape,
+// The archive's names are only ever a date and an id of magpie-friday's shape,
 // never a path out of the archive folder.
 func TestArchiveName(t *testing.T) {
 	for _, c := range [][2]string{{"2026-10-01", "../backup"}, {"../x", "a"}, {"2026-13-01", "a"}, {"2026-10-01", ""}, {"2026-10-01", "A/b"}} {

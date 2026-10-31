@@ -5,7 +5,7 @@ import "testing"
 // oMLX (omlx.ai, github.com/jundot/omlx) is a local server on :8000 that
 // speaks all three APIs. A fresh install binds loopback and asks no key, so
 // it's a NoKey local preset; its Anthropic base is the root, /v1/messages is
-// magpie's path there, as it is for Ollama.
+// magpie-friday's path there, as it is for Ollama.
 func TestOmlxPreset(t *testing.T) {
 	pr := Preset("omlx")
 	if pr == nil {

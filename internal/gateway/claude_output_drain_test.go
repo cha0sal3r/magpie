@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // What Claude Code writes as it exits reaches the client: its output is
@@ -55,7 +55,7 @@ echo '{"type":"stream_event","event":{"type":"message_stop"}}'
 // it said on stderr, not the pipe Wait closed under the write ("write |1:
 // file already closed", CI on main, where the run's first prompt failed
 // so and nothing told why): the cause after any warnings before it. One
-// magpie ended says so, not how a kill ended it.
+// magpie-friday ended says so, not how a kill ended it.
 func TestClaudeEndedBeforeItsInputSaysWhy(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("a shell script stands in for Claude Code")
@@ -85,8 +85,8 @@ func TestClaudeEndedBeforeItsInputSaysWhy(t *testing.T) {
 		t.Errorf("a write after Claude Code exited: %v", err)
 	}
 	err = write("#!/bin/sh\nread -r line\nsleep 30\n", func(run *subscriptionRun) { run.abort() })
-	if err == nil || !strings.Contains(err.Error(), "ended by magpie") || strings.Contains(err.Error(), "signal") {
-		t.Errorf("a write after magpie ended Claude Code: %v", err)
+	if err == nil || !strings.Contains(err.Error(), "ended by magpie-friday") || strings.Contains(err.Error(), "signal") {
+		t.Errorf("a write after magpie-friday ended Claude Code: %v", err)
 	}
 	// at once, before Claude Code has been reaped (red on ubuntu CI, where
 	// the write went into a pipe still open and nothing was said)
@@ -95,7 +95,7 @@ func TestClaudeEndedBeforeItsInputSaysWhy(t *testing.T) {
 		t.Fatal(err)
 	}
 	run.abort()
-	if err := run.setEffort("high"); err == nil || !strings.Contains(err.Error(), "ended by magpie") {
-		t.Errorf("a write right after magpie ended Claude Code: %v", err)
+	if err := run.setEffort("high"); err == nil || !strings.Contains(err.Error(), "ended by magpie-friday") {
+		t.Errorf("a write right after magpie-friday ended Claude Code: %v", err)
 	}
 }

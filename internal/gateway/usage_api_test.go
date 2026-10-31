@@ -8,13 +8,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usageapi"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usageapi"
 )
 
 // The Usage page's numbers are read over the gateway too (HoGee_xxl on
-// X): /v1/magpie/usage and /v1/magpie/usage/requests answer this machine,
+// X): /v1/magpie-friday/usage and /v1/magpie-friday/usage/requests answer this machine,
 // another one only with a gateway key, and a key held to a budget only
 // with its own calls. A Claude Code subagent's call says which subagent
 // made it and which one started that.
@@ -58,12 +58,12 @@ func TestUsageOverGateway(t *testing.T) {
 	}
 
 	var sum usageapi.Usage
-	c, b := do("GET", "/v1/magpie/usage?period=all", "127.0.0.1:5000", nil)
+	c, b := do("GET", "/v1/magpie-friday/usage?period=all", "127.0.0.1:5000", nil)
 	if c != 200 || json.Unmarshal([]byte(b), &sum) != nil || sum.Calls != 3 || len(sum.CallerKeys) != 2 || sum.Path == "" {
 		t.Fatal("loopback summary:", c, b)
 	}
 	var page usageapi.Ledger
-	c, b = do("GET", "/v1/magpie/usage/requests?period=all", "127.0.0.1:5000", nil)
+	c, b = do("GET", "/v1/magpie-friday/usage/requests?period=all", "127.0.0.1:5000", nil)
 	if c != 200 || json.Unmarshal([]byte(b), &page) != nil || page.Total != 3 {
 		t.Fatal("loopback requests:", c, b)
 	}
@@ -90,22 +90,22 @@ func TestUsageOverGateway(t *testing.T) {
 		t.Fatal("the split by key:", page.By["callerKey"])
 	}
 
-	if c, _ := do("GET", "/v1/magpie/usage", "192.168.1.9:5000", nil); c != http.StatusUnauthorized {
+	if c, _ := do("GET", "/v1/magpie-friday/usage", "192.168.1.9:5000", nil); c != http.StatusUnauthorized {
 		t.Fatal("another machine with no key got", c)
 	}
 	sum = usageapi.Usage{}
-	c, b = do("GET", "/v1/magpie/usage?period=all", "192.168.1.9:5000", nil, "Authorization", "Bearer "+secrets[0])
+	c, b = do("GET", "/v1/magpie-friday/usage?period=all", "192.168.1.9:5000", nil, "Authorization", "Bearer "+secrets[0])
 	if c != 200 || json.Unmarshal([]byte(b), &sum) != nil || sum.Calls != 3 || sum.Path != "" {
 		t.Fatal("another machine with a key:", c, b)
 	}
 
 	// the held key: no summary of everyone, and its own calls alone
 	for _, from := range []string{"127.0.0.1:5000", "192.168.1.9:5000"} {
-		if c, b := do("GET", "/v1/magpie/usage?period=all", from, nil, "x-api-key", secrets[1]); c != http.StatusForbidden || !strings.Contains(b, "/v1/magpie/usage/requests") {
+		if c, b := do("GET", "/v1/magpie-friday/usage?period=all", from, nil, "x-api-key", secrets[1]); c != http.StatusForbidden || !strings.Contains(b, "/v1/magpie-friday/usage/requests") {
 			t.Fatal("held key's summary from", from, c, b)
 		}
 		page = usageapi.Ledger{}
-		c, b := do("GET", "/v1/magpie/usage/requests?period=all&callerKey="+keys[0].ID, from, nil, "x-api-key", secrets[1])
+		c, b := do("GET", "/v1/magpie-friday/usage/requests?period=all&callerKey="+keys[0].ID, from, nil, "x-api-key", secrets[1])
 		if c != 200 || json.Unmarshal([]byte(b), &page) != nil || page.Total != 1 || len(page.Rows) != 1 || page.Rows[0].CallerKeyID != keys[1].ID {
 			t.Fatal("held key's requests from", from, c, b)
 		}

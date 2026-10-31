@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // These connections belong to the trace reader, not the Sessions listing cache.

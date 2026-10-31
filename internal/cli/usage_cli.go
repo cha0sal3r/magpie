@@ -11,11 +11,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/fx"
-	pr "github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
-	stats "github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/fx"
+	pr "github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	stats "github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // costCurrency and costRate are cost's currency and, for cny, the
@@ -39,19 +39,19 @@ func loadCostCurrency() {
 	}
 }
 
-// usageCmd: `magpie usage [today|7d|30d|all]` — tokens and cost per agent,
+// usageCmd: `magpie-friday usage [today|7d|30d|all]` — tokens and cost per agent,
 // model, subscription account and session; with --csv, every request of the
 // period as CSV, one row each, to set beside a vendor's bill, and with
 // --account <name> too, only the calls that account answered (#557). With
 // --days or --last, a rolling window ending now rather than a preset's
-// calendar boundary (#2075), as magpie sessions and magpie quota history
+// calendar boundary (#2075), as magpie-friday sessions and magpie-friday quota history
 // take --days.
 func usageCmd(args []string) error {
 	return usageTo(os.Stdout, args)
 }
 
 func usageTo(out io.Writer, args []string) error {
-	const how = "usage: magpie usage [--csv [--account <name>]] [--days <n>|--last <dur>] [today|7d|30d|all]"
+	const how = "usage: magpie-friday usage [--csv [--account <name>]] [--days <n>|--last <dur>] [today|7d|30d|all]"
 	asCSV := false
 	if i := slices.Index(args, "--csv"); i > 0 {
 		asCSV, args = true, slices.Delete(slices.Clone(args), i, i+1)
@@ -64,7 +64,7 @@ func usageTo(out io.Writer, args []string) error {
 		f.Account, args = args[i+1], slices.Delete(slices.Clone(args), i, i+2)
 	}
 	// a rolling window: --days takes a number of days (1, 7, even 1.5, as
-	// magpie quota history's does) and --last a duration (24h, 90m), both
+	// magpie-friday quota history's does) and --last a duration (24h, 90m), both
 	// ending now, where the presets begin at a local midnight (#2075)
 	var last time.Duration
 	take := func(flag string, parse func(string) (time.Duration, error)) (bool, error) {
@@ -139,7 +139,7 @@ func usageTo(out io.Writer, args []string) error {
 		return stats.WriteCSV(out, rows)
 	}
 	loadCostCurrency()
-	// s is the calls through magpie, d the calls the agents made on their
+	// s is the calls through magpie-friday, d the calls the agents made on their
 	// own, read from their session files: the window's Requests tab counts
 	// them too (Kumo31 on Discord). Asked together, both are of one day when
 	// midnight falls while they are read.
@@ -149,7 +149,7 @@ func usageTo(out io.Writer, args []string) error {
 		title = "last " + humanWindow(dur)
 	}
 	if s.Calls == 0 && d.Calls == 0 {
-		fmt.Fprintln(out, muted.Render("no calls "+title+" ·"), "route an agent through magpie and its usage shows up here")
+		fmt.Fprintln(out, muted.Render("no calls "+title+" ·"), "route an agent through magpie-friday and its usage shows up here")
 		fmt.Fprintln(out, faint.Render("  "+stats.Path()))
 		return nil
 	}
@@ -158,13 +158,13 @@ func usageTo(out io.Writer, args []string) error {
 		names[a.ID] = a.Name
 	}
 	if s.Calls == 0 {
-		fmt.Fprintln(out, muted.Render("no calls through magpie "+title))
+		fmt.Fprintln(out, muted.Render("no calls through magpie-friday "+title))
 	} else {
 		printUsage(out, s, title, names)
 	}
 	if d.Calls > 0 {
 		fmt.Fprintln(out)
-		fmt.Fprintln(out, muted.Render("not through magpie · the agents' own requests, read from their session files"))
+		fmt.Fprintln(out, muted.Render("not through magpie-friday · the agents' own requests, read from their session files"))
 		printUsage(out, d, title, names)
 	}
 	fmt.Fprintln(out, faint.Render("  "+stats.Path()))

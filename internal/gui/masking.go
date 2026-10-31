@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/yetone/magpie/internal/gwmw"
-	"github.com/yetone/magpie/internal/masking"
-	"github.com/yetone/magpie/internal/maskrec"
+	"github.com/cha0sal3r/magpie-friday/internal/gwmw"
+	"github.com/cha0sal3r/magpie-friday/internal/masking"
+	"github.com/cha0sal3r/magpie-friday/internal/maskrec"
 )
 
 // previewMax is how much text the preview masks.
@@ -61,10 +61,10 @@ func shownRecord(r maskrec.Record, t gwmw.Teller) maskedRecord {
 //     commas; blocked=1 keeps the requests held back);
 //   - GET /api/masking/record?key= one record;
 //   - GET /api/masking/value?p= what a placeholder stood for, while this
-//     magpie's masker remembers it (404 after a restart: it is never on
+//     magpie-friday's masker remembers it (404 after a restart: it is never on
 //     disk);
 //   - GET /api/masking/sent?key= the body a record's request went to its
-//     vendor with, masked, while this magpie keeps it (the latest
+//     vendor with, masked, while this magpie-friday keeps it (the latest
 //     maskrec keeps; 404 after a restart);
 //   - POST /api/masking/values {ps} what each placeholder stood for, of
 //     those the masker still remembers, for the page to show the request

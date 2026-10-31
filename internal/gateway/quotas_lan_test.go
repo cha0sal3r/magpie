@@ -6,11 +6,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// GET /v1/magpie/quotas answers another machine with the key of the
+// GET /v1/magpie-friday/quotas answers another machine with the key of the
 // gateway shared on the local network (#389: read over a LAN or tailscale);
 // a wrong key, none, or a gateway not shared still get nothing, and the
 // refusal says how.
@@ -19,7 +19,7 @@ func TestQuotasOverLAN(t *testing.T) {
 	t.Setenv("MAGPIE_ADDR", "")
 	h := lanGuard(New().Handler())
 	call := func(from string, hdr ...string) (int, string) {
-		r := httptest.NewRequest("GET", "/v1/magpie/quotas", nil)
+		r := httptest.NewRequest("GET", "/v1/magpie-friday/quotas", nil)
 		r.RemoteAddr = from
 		for i := 0; i+1 < len(hdr); i += 2 {
 			r.Header.Set(hdr[i], hdr[i+1])

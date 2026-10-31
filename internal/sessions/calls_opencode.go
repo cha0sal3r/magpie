@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // OpenCode's own calls (#680): each assistant message is one, with its
@@ -22,12 +22,12 @@ import (
 // and its time the latest change to one, so only a session that changed is
 // read again, and what it holds is kept in the call cache as a file's is.
 //
-// A reply through magpie's gateway (provider "magpie", or "dial" as magpie
+// A reply through magpie-friday's gateway (provider "magpie-friday", or "dial" as magpie-friday
 // was once called) the gateway has logged already: it is left out, not
 // matched afterwards.
 
-// ocGatewayProvider is whether an OpenCode provider id is magpie's gateway.
-func ocGatewayProvider(id string) bool { return id == "magpie" || id == "dial" }
+// ocGatewayProvider is whether an OpenCode provider id is magpie-friday's gateway.
+func ocGatewayProvider(id string) bool { return id == "magpie-friday" || id == "dial" }
 
 // ocCallList is the last listing of OpenCode's database, kept while the
 // database and its WAL are as they were.

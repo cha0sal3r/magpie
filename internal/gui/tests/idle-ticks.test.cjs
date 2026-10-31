@@ -21,7 +21,7 @@ async function server(route) {
   if (url.pathname === "/wails/runtime.js") return route.fulfill({ contentType: "text/javascript", body: "export const Window = {};" });
   if (url.pathname === "/api/state") return json({ agents: [], profiles: [], settings: { lang: "en", theme: "light" }, fx: { rate: 7.2, at: new Date().toISOString() } });
   if (url.pathname === "/api/usage/requests") return json({ period: "30d", rows: [], offset: 0, total: 0, calls: 0, errors: 0, input: 0, output: 0, cache_read: 0, cache_write: 0, reasoning: 0, cost: 0, unpriced: 0, bucket: "day", series: [], by: { provider: [], agent: [], model: [] }, agents: [], providers: [] });
-  if (url.pathname === "/api/usage") return json({ calls: 0, errors: 0, input: 0, output: 0, cache_read: 0, cache_write: 0, reasoning: 0, unpriced: 0, cost: 0, bucket: "day", series: [], agents: [], models: [], path: "~/.config/magpie/usage.jsonl" });
+  if (url.pathname === "/api/usage") return json({ calls: 0, errors: 0, input: 0, output: 0, cache_read: 0, cache_write: 0, reasoning: 0, unpriced: 0, cost: 0, bucket: "day", series: [], agents: [], models: [], path: "~/.config/magpie-friday/usage.jsonl" });
   if (url.pathname === "/api/usage/quotas") return json([]);
   if (url.pathname === "/api/sessions") return json({ sessions: [], dirs: [] });
   if (url.pathname === "/api/sessions/stats") return json({ from: "", to: "", days: [], agents: {} });
@@ -37,7 +37,7 @@ const census = () => {
   window.ticks = {};
   const set = window.setInterval;
   window.setInterval = function (fn, ms, ...rest) {
-    const at = (new Error().stack || "").split("\n").map((l) => /magpie\.test\/((?:plugins\/\w+\/)?[\w-]+\.js):\d+/.exec(l)).find(Boolean);
+    const at = (new Error().stack || "").split("\n").map((l) => /magpie-friday\.test\/((?:plugins\/\w+\/)?[\w-]+\.js):\d+/.exec(l)).find(Boolean);
     const key = `${at ? at[1] : "?"} ${ms}`;
     return set.call(window, function () { window.ticks[key] = (window.ticks[key] || 0) + 1; return typeof fn === "function" ? fn.apply(this, arguments) : undefined; }, ms, ...rest);
   };

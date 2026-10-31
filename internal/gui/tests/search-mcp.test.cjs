@@ -1,10 +1,10 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// magpie's web search as an MCP server (Kayphoon on Discord): Settings ›
+// magpie-friday's web search as an MCP server (Kayphoon on Discord): Settings ›
 // Models › Web search has an "MCP server" row with the gateway's address of
-// it, /mcp/magpie/web-search, to copy into Cursor, Claude Desktop or any
+// it, /mcp/magpie-friday/web-search, to copy into Cursor, Claude Desktop or any
 // other agent, and says a gateway key goes with it from another computer.
 // A search an agent asked of it reads in Routing as that agent's MCP call,
-// not as a search magpie ran for one of its models. In every language.
+// not as a search magpie-friday ran for one of its models. In every language.
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
@@ -12,19 +12,19 @@ const { test } = require("node:test");
 const { chromium, webkit } = require("playwright");
 
 const assets = path.resolve(__dirname, "../assets");
-const address = "http://127.0.0.1:3999/mcp/magpie/web-search";
+const address = "http://127.0.0.1:3999/mcp/magpie-friday/web-search";
 const words = {
-  en: { name: "MCP server", sub: /Cursor, Claude Desktop .*web_search.*Authorization: Bearer <key>/, story: /Claude Code called magpie's web_search MCP tool: codex\/gpt-6\.1-sol searched for it/ },
-  zh: { name: "MCP 服务器", sub: /Cursor、Claude Desktop .*web_search.*Authorization: Bearer <key>/, story: /Claude Code 调用了 magpie 的 web_search MCP 工具：由 codex\/gpt-6\.1-sol 代为搜索/ },
-  "zh-TW": { name: "MCP 伺服器", sub: /web_search.*Authorization: Bearer <key>/, story: /Claude Code 呼叫了 magpie 的 web_search MCP 工具：由 codex\/gpt-6\.1-sol 代為搜尋/ },
-  ja: { name: "MCP サーバー", sub: /web_search.*Authorization: Bearer <key>/, story: /Claude Code が magpie の web_search MCP ツールを呼び出しました。codex\/gpt-6\.1-sol が代わりに検索しました/ },
-  de: { name: "MCP-Server", sub: /web_search.*Authorization: Bearer <key>/, story: /Claude Code hat das web_search-MCP-Tool von magpie aufgerufen: codex\/gpt-6\.1-sol hat dafür gesucht/ },
+  en: { name: "MCP server", sub: /Cursor, Claude Desktop .*web_search.*Authorization: Bearer <key>/, story: /Claude Code called magpie-friday's web_search MCP tool: codex\/gpt-6\.1-sol searched for it/ },
+  zh: { name: "MCP 服务器", sub: /Cursor、Claude Desktop .*web_search.*Authorization: Bearer <key>/, story: /Claude Code 调用了 magpie-friday 的 web_search MCP 工具：由 codex\/gpt-6\.1-sol 代为搜索/ },
+  "zh-TW": { name: "MCP 伺服器", sub: /web_search.*Authorization: Bearer <key>/, story: /Claude Code 呼叫了 magpie-friday 的 web_search MCP 工具：由 codex\/gpt-6\.1-sol 代為搜尋/ },
+  ja: { name: "MCP サーバー", sub: /web_search.*Authorization: Bearer <key>/, story: /Claude Code が magpie-friday の web_search MCP ツールを呼び出しました。codex\/gpt-6\.1-sol が代わりに検索しました/ },
+  de: { name: "MCP-Server", sub: /web_search.*Authorization: Bearer <key>/, story: /Claude Code hat das web_search-MCP-Tool von magpie-friday aufgerufen: codex\/gpt-6\.1-sol hat dafür gesucht/ },
 };
 
 const now = new Date();
 const day = [now.getFullYear(), now.getMonth() + 1, now.getDate()].map((n) => String(n).padStart(2, "0")).join("-");
 const routes = [{
-  id: 7, seq: 7, time: new Date(now.getTime() - 60e3).toISOString(), agent: "magpie", model: "codex/gpt-6.1-sol", provider: "codex",
+  id: 7, seq: 7, time: new Date(now.getTime() - 60e3).toISOString(), agent: "magpie-friday", model: "codex/gpt-6.1-sol", provider: "codex",
   kind: "web_search", for: { agent: "claude-code", mcp: true },
   order: [{ id: "codex", provider: "codex", name: "Codex", who: "a@b.c", kind: "account", model: "gpt-6.1-sol" }],
   tries: [{ id: "codex", model: "gpt-6.1-sol", start: new Date(now.getTime() - 60e3).toISOString(), done: true, status: 200, ms: 900 }],
@@ -37,7 +37,7 @@ function serve(lang) {
     searchAPIs: [{ vendor: "tavily", name: "Tavily", key: "tvly…abcd", ready: true }], searchChoices: [] };
   const state = {
     agents: [], profiles: [], settings,
-    clients: [{ id: "claude-code", name: "Claude Code", icon: "claude-color" }, { id: "magpie", name: "magpie", icon: "magpie" }],
+    clients: [{ id: "claude-code", name: "Claude Code", icon: "claude-color" }, { id: "magpie-friday", name: "magpie-friday", icon: "magpie-friday" }],
   };
   return async (r) => {
     const url = new URL(r.request().url());

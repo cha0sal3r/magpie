@@ -34,30 +34,30 @@ func TestYAMLNested(t *testing.T) {
 		Reasoning bool   `yaml:"reasoning,omitempty"`
 	}
 	err := SetYAML(p,
-		KV{Path: "modelRoles.default", Value: "magpie/deepseek/pro"},
-		KV{Path: "providers.magpie", Value: map[string]any{"baseUrl": "http://127.0.0.1/v1", "models": []model{{ID: "deepseek/pro", Reasoning: true}}}},
+		KV{Path: "modelRoles.default", Value: "magpie-friday/deepseek/pro"},
+		KV{Path: "providers.magpie-friday", Value: map[string]any{"baseUrl": "http://127.0.0.1/v1", "models": []model{{ID: "deepseek/pro", Reasoning: true}}}},
 		KV{Path: "a.b.c", Value: 3},
 	)
 	if err != nil {
 		t.Fatal(err)
 	}
 	got := read(t, p)
-	for _, want := range []string{"# omp settings", "theme: dark # mine", "# the main one", "default: magpie/deepseek/pro # keep",
-		"smol: openai/gpt-6-mini", "  mine:\n    baseUrl: https://x", "  magpie:\n    baseUrl: http://127.0.0.1/v1\n    models:\n      - id: deepseek/pro\n        reasoning: true",
+	for _, want := range []string{"# omp settings", "theme: dark # mine", "# the main one", "default: magpie-friday/deepseek/pro # keep",
+		"smol: openai/gpt-6-mini", "  mine:\n    baseUrl: https://x", "  magpie-friday:\n    baseUrl: http://127.0.0.1/v1\n    models:\n      - id: deepseek/pro\n        reasoning: true",
 		"a:\n  b:\n    c: 3"} {
 		if !strings.Contains(got, want) {
 			t.Errorf("missing %q in\n%s", want, got)
 		}
 	}
-	if strings.Index(got, "theme") > strings.Index(got, "modelRoles") || strings.Index(got, "mine:") > strings.Index(got, "magpie:") {
+	if strings.Index(got, "theme") > strings.Index(got, "modelRoles") || strings.Index(got, "mine:") > strings.Index(got, "magpie-friday:") {
 		t.Errorf("order changed:\n%s", got)
 	}
 
-	if err := DelYAML(p, "modelRoles.default", "providers.magpie", "no.such"); err != nil {
+	if err := DelYAML(p, "modelRoles.default", "providers.magpie-friday", "no.such"); err != nil {
 		t.Fatal(err)
 	}
 	got = read(t, p)
-	if strings.Contains(got, "default:") || strings.Contains(got, "magpie") || !strings.Contains(got, "smol:") || !strings.Contains(got, "mine:") {
+	if strings.Contains(got, "default:") || strings.Contains(got, "magpie-friday") || !strings.Contains(got, "smol:") || !strings.Contains(got, "mine:") {
 		t.Fatalf("del:\n%s", got)
 	}
 }

@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // A model can also loop across turns: it asks for the same tool call, the
@@ -306,12 +306,12 @@ func (l toolLoop) called() string {
 
 // why is what the Routing, Usage and Sessions views say of the turn.
 func (l toolLoop) why() string {
-	return fmt.Sprintf("tool loop: the same tool call got the same result %d turns in a row (%s); answered by magpie, sent nowhere", l.turns, l.called())
+	return fmt.Sprintf("tool loop: the same tool call got the same result %d turns in a row (%s); answered by magpie-friday, sent nowhere", l.turns, l.called())
 }
 
 // notice is what the agent shows the user, as the turn's answer.
 func (l toolLoop) notice() string {
-	return fmt.Sprintf("magpie stopped this turn before it reached the model: the agent ran the same tool call %d times in a row and got the same result every time (%s). The model is stuck repeating it, and each further turn would spend your quota with no progress, so this turn was sent nowhere. Tell the agent how to go on and the conversation continues; Settings › Models › Replies › Stop looping replies turns this check off.",
+	return fmt.Sprintf("magpie-friday stopped this turn before it reached the model: the agent ran the same tool call %d times in a row and got the same result every time (%s). The model is stuck repeating it, and each further turn would spend your quota with no progress, so this turn was sent nowhere. Tell the agent how to go on and the conversation continues; Settings › Models › Replies › Stop looping replies turns this check off.",
 		l.turns, l.called())
 }
 
@@ -323,5 +323,5 @@ func writeLocalText(w http.ResponseWriter, from provider.Protocol, req *Request,
 	events <- Event{Kind: KText, Text: text}
 	events <- Event{Kind: KStop, Stop: "stop"}
 	close(events)
-	relayStatus(w, from, "magpie", req, events, &Usage{}, func() {})
+	relayStatus(w, from, "magpie-friday", req, events, &Usage{}, func() {})
 }

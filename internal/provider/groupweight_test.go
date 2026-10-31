@@ -11,7 +11,7 @@ import (
 // out, one not in the group dropped, and one outside 1 to 1000 refused.
 // The weight follows its member when the member's effort, its provider's
 // id or a group in it is renamed, and when the group is shared to another
-// magpie.
+// magpie-friday.
 func TestSaveGroupWeights(t *testing.T) {
 	fastHome(t)
 	weights := func(id string) map[string]int {
@@ -79,7 +79,7 @@ func TestSaveGroupWeights(t *testing.T) {
 		t.Fatalf("after the renames %v, want %v", weights("spread"), want)
 	}
 
-	// shared to another magpie, under the same models
+	// shared to another magpie-friday, under the same models
 	text, err := ShareGroup("spread")
 	if err != nil {
 		t.Fatal(err)

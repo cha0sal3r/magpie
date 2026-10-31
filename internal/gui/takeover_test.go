@@ -8,11 +8,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
-// A magpie that found the gateway taken serves it once the one that had it
-// is gone (one left running from before an update, a magpie serve).
+// A magpie-friday that found the gateway taken serves it once the one that had it
+// is gone (one left running from before an update, a magpie-friday serve).
 func TestGatewayTakenOver(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
 	t.Setenv("USERPROFILE", os.Getenv("HOME"))
@@ -24,7 +24,7 @@ func TestGatewayTakenOver(t *testing.T) {
 	}
 	t.Setenv("MAGPIE_ADDR", ln.Addr().String())
 	other := &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`{"name":"magpie"}`))
+		w.Write([]byte(`{"name":"magpie-friday"}`))
 	})}
 	go other.Serve(ln)
 	defer other.Close()
@@ -48,7 +48,7 @@ func TestGatewayTakenOver(t *testing.T) {
 		watchGateway(ctx, 50*time.Millisecond)
 	}()
 	if serveGateway() != nil {
-		t.Fatal("served over another magpie")
+		t.Fatal("served over another magpie-friday")
 	}
 	time.Sleep(200 * time.Millisecond)
 	if served.Load() != nil {
@@ -62,8 +62,8 @@ func TestGatewayTakenOver(t *testing.T) {
 	}
 }
 
-// A magpie that holds the gateway's port but doesn't answer in time (the
-// service busy on a small server, or starting) still has it: magpie web
+// A magpie-friday that holds the gateway's port but doesn't answer in time (the
+// service busy on a small server, or starting) still has it: magpie-friday web
 // beside it doesn't listen a second time, which only failed with "bind:
 // address already in use" (K.Liu on Discord), and leaves the port to it.
 func TestGatewayNotServedBesideASlowOne(t *testing.T) {
@@ -79,7 +79,7 @@ func TestGatewayNotServedBesideASlowOne(t *testing.T) {
 	slow := make(chan struct{})
 	other := &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		<-slow
-		w.Write([]byte(`{"name":"magpie"}`))
+		w.Write([]byte(`{"name":"magpie-friday"}`))
 	})}
 	go other.Serve(ln)
 	defer other.Close()
@@ -96,6 +96,6 @@ func TestGatewayNotServedBesideASlowOne(t *testing.T) {
 		takenSaid.Store(false)
 	})
 	if gw != nil {
-		t.Fatal("listened for the gateway on a port another magpie holds")
+		t.Fatal("listened for the gateway on a port another magpie-friday holds")
 	}
 }

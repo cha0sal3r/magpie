@@ -12,8 +12,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // specUp is a Chat vendor that keeps each body it was sent.
@@ -44,7 +44,7 @@ func (u *specUp) last(t *testing.T) map[string]any {
 }
 
 // Dani Ariyanto on Discord: a relay's models came with nothing known —
-// no window, no reply limit, no levels. What magpie model spec sets is
+// no window, no reply limit, no levels. What magpie-friday model spec sets is
 // what the gateway lists and asks by: /v1/models has the window, the
 // reply limit and the levels, a request asking more than the reply limit
 // is lowered to it, and one asking a level the model wasn't given is
@@ -124,8 +124,8 @@ func TestModelSpecReachesTheGateway(t *testing.T) {
 	}
 }
 
-// Levels the user keeps of a model's own (magpie model efforts, Names &
-// levels, magpie model spec --reasoning) only narrow what agents are
+// Levels the user keeps of a model's own (magpie-friday model efforts, Names &
+// levels, magpie-friday model spec --reasoning) only narrow what agents are
 // offered (#92, 47e12df41): the vendor is still asked at any level it
 // has, so an agent's xhigh goes as xhigh. Only a model with no levels
 // known is fitted to the ones the user declared
@@ -173,7 +173,7 @@ func TestNarrowedVendorLevelsAskAsBefore(t *testing.T) {
 }
 
 // AutoVision, which picks the model that describes an image for one that
-// can't see, takes the user's word on which see (magpie model spec
+// can't see, takes the user's word on which see (magpie-friday model spec
 // --vision): one marked text-only is passed over, one marked seeing is
 // picked.
 func TestAutoVisionTakesTheUsersVision(t *testing.T) {

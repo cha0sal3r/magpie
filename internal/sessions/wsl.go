@@ -11,11 +11,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/lastgood"
+	"github.com/cha0sal3r/magpie-friday/internal/lastgood"
 )
 
 // Sessions in WSL. On Windows an agent installed in a WSL distro keeps its
-// sessions in the distro's home, which magpie opens through
+// sessions in the distro's home, which magpie-friday opens through
 // \\wsl.localhost\<distro> — the distros internal/agent's wsl.go already
 // finds and probes for the agents it sets up (WSLHomes, which that package
 // sets; this one can't import it). Claude Code's, Codex's, Pi's and omp's
@@ -29,8 +29,8 @@ import (
 // distro's files stay listed as they were found and are never opened
 // (file.cold), and their parses, kept by path as every file's are, stand.
 
-// WSLHome is a WSL distro magpie found agents in: its name, its user's home
-// as magpie opens it (\\wsl.localhost\Ubuntu\home\me), and whether it runs.
+// WSLHome is a WSL distro magpie-friday found agents in: its name, its user's home
+// as magpie-friday opens it (\\wsl.localhost\Ubuntu\home\me), and whether it runs.
 type WSLHome struct {
 	Distro  string
 	Home    string

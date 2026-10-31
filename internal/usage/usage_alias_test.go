@@ -5,11 +5,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// A model counted under another id (magpie model alias) is one row in the
+// A model counted under another id (magpie-friday model alias) is one row in the
 // usage summary and in a gateway session, and each call keeps the price of
 // the id it was made under: the alias's own price is never put on the
 // other id's calls (SlouchyQuill507 on Discord: deepseek-v4.1-flash and

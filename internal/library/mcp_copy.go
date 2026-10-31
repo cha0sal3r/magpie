@@ -7,13 +7,13 @@ import (
 	"path/filepath"
 	"slices"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 // ServersConfig is what an agent's project file would hold with the
-// library's servers called names in it, as magpie writes them into a
+// library's servers called names in it, as magpie-friday writes them into a
 // project it has (syncProjectMCP): for the user to paste into a project
-// magpie doesn't keep (#1478, xiaozhu1337: 不建项目、一次性添加项目级
+// magpie-friday doesn't keep (#1478, xiaozhu1337: 不建项目、一次性添加项目级
 // MCP). File is the file in the project, Text the file whole, and Skipped
 // the servers the agent can't reach that way (SSE for Codex or Pi).
 type ServersConfig struct {
@@ -24,12 +24,12 @@ type ServersConfig struct {
 
 // ConfigOfServers writes the servers into a fresh file in agent's project
 // format, in a folder of its own, and reads it back: the same encoder, the
-// same references to variables, a server magpie is signed in to through
-// the gateway as a project of magpie's is given it.
+// same references to variables, a server magpie-friday is signed in to through
+// the gateway as a project of magpie-friday's is given it.
 func ConfigOfServers(agent string, names []string) (*ServersConfig, error) {
 	pf, ok := projectMCPFiles[agent]
 	if !ok {
-		return nil, fmt.Errorf("magpie knows of no file %s reads a project's MCP servers from", agent)
+		return nil, fmt.Errorf("magpie-friday knows of no file %s reads a project's MCP servers from", agent)
 	}
 	if len(names) == 0 {
 		return nil, errors.New("no servers named")
@@ -40,7 +40,7 @@ func ConfigOfServers(agent string, names []string) (*ServersConfig, error) {
 	if err != nil {
 		return nil, err
 	}
-	tmp, err := os.MkdirTemp("", "magpie-mcp-config-")
+	tmp, err := os.MkdirTemp("", "magpie-friday-mcp-config-")
 	if err != nil {
 		return nil, err
 	}

@@ -19,7 +19,7 @@ import (
 // reads, not one made for each. A decoder made fresh allocates its window
 // (the Codex app packs rollouts with a 2 MiB one, which a low-memory
 // decoder holds in 3 MiB) and its block buffers on every open: a live
-// magpie's first read of 11,591 packed rollouts allocated 75 GB in zstd
+// magpie-friday's first read of 11,591 packed rollouts allocated 75 GB in zstd
 // alone, 64.5 GB of it windows.
 
 // packedWords is the text a fixture's lines are made of: varied enough
@@ -289,7 +289,7 @@ func BenchmarkDshFramesOn(b *testing.B) {
 
 // A packed rollout that hasn't changed (its size and time the same) is not
 // decompressed again by the listing or by the calls read from it, while
-// magpie runs or after it starts again from what it saved.
+// magpie-friday runs or after it starts again from what it saved.
 func TestUnchangedPackedNotReadAgain(t *testing.T) {
 	_, codex := setup(t)
 	var zs []string

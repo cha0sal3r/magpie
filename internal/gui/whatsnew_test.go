@@ -13,15 +13,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/update"
+	"github.com/cha0sal3r/magpie-friday/internal/update"
 )
 
-// The version last run is kept in magpie's folder, and the notes since are
+// The version last run is kept in magpie-friday's folder, and the notes since are
 // shown once after an upgrade: not on a fresh install, nor offline.
 func TestWhatsNewAfterUpgrade(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("XDG_CONFIG_HOME", home)
-	dir := filepath.Join(home, "magpie")
+	dir := filepath.Join(home, "magpie-friday")
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]any{"releases": []update.Note{
 			{Version: "0.1.604", Notes: "- four (#464)\n\n### Install\n\nlinks"},
@@ -96,12 +96,12 @@ func TestUpdateNotesWithoutInstall(t *testing.T) {
 	}
 }
 
-// A magpie from before the version was kept, already in use, shows its own
+// A magpie-friday from before the version was kept, already in use, shows its own
 // version's notes; the site without the list yet leaves the update feed's.
 func TestWhatsNewFromBefore(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("XDG_CONFIG_HOME", home)
-	dir := filepath.Join(home, "magpie")
+	dir := filepath.Join(home, "magpie-friday")
 	os.MkdirAll(dir, 0o755)
 	os.WriteFile(filepath.Join(dir, "settings.json"), []byte("{}"), 0o644)
 	os.Chtimes(filepath.Join(dir, "settings.json"), started.Add(-time.Hour), started.Add(-time.Hour))
@@ -122,12 +122,12 @@ func TestWhatsNewFromBefore(t *testing.T) {
 }
 
 // #525: the dialog comes up by itself on the first start of an update the
-// user didn't ask for from magpie; after "Restart to update" its notes wait
+// user didn't ask for from magpie-friday; after "Restart to update" its notes wait
 // in Settings, and "Don't show again today" keeps it quiet for the day.
 func TestWhatsNewQuietAfterRestartToUpdate(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("XDG_CONFIG_HOME", home)
-	dir := filepath.Join(home, "magpie")
+	dir := filepath.Join(home, "magpie-friday")
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]any{"releases": []update.Note{
 			{Version: "0.1.606", Notes: "- six"},
@@ -159,7 +159,7 @@ func TestWhatsNewQuietAfterRestartToUpdate(t *testing.T) {
 		updates.exe, updates.self, updates.latest, updates.staged = oExe, oSelf, oLatest, oStaged
 		updates.mu.Unlock()
 	}()
-	exe := filepath.Join(t.TempDir(), "magpie")
+	exe := filepath.Join(t.TempDir(), "magpie-friday")
 	os.WriteFile(exe, []byte("old"), 0o755)
 	self, _ := os.Stat(exe)
 	os.WriteFile(exe, []byte("newer"), 0o755) // in already: install has nothing to swap
@@ -264,8 +264,8 @@ func TestWhatsNewListsEveryReleaseUpToTheWaitingUpdate(t *testing.T) {
 		s := strconv.Itoa(v)
 		list = append(list, update.Note{
 			Version: "0.1." + s,
-			Notes:   "## Bug Fixes\n\n- fix " + s + "\n\n## Install\n\n- macOS: [magpie-0.1." + s + "-mac-arm64.dmg](https://github.com/yetone/magpie-releases/releases/download/v0.1." + s + "/magpie-0.1." + s + "-mac-arm64.dmg)",
-			URL:     "https://github.com/yetone/magpie-releases/releases/tag/v0.1." + s,
+			Notes:   "## Bug Fixes\n\n- fix " + s + "\n\n## Install\n\n- macOS: [magpie-friday-0.1." + s + "-mac-arm64.dmg](https://github.com/cha0sal3r/magpie-friday-releases/releases/download/v0.1." + s + "/magpie-friday-0.1." + s + "-mac-arm64.dmg)",
+			URL:     "https://github.com/cha0sal3r/magpie-friday-releases/releases/tag/v0.1." + s,
 		})
 	}
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

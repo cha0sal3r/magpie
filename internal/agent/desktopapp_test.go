@@ -7,14 +7,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // #1823 (mdwsk88): HasApp read the developer's own /Applications, so on a
 // Mac with DeepSeek Harness.app installed
 // TestAsideOfflineDisconnectRestoresWithoutDaemon found dsh's app, and its
-// CLI was never missing. Every folder magpie looks for installed apps in —
+// CLI was never missing. Every folder magpie-friday looks for installed apps in —
 // the desktop apps', Pencil's, T3 Code's, Reasonix Studio's, Cursor Private
 // Inference's — lies under the test's home, on every OS, and an app a test
 // installs in the sandbox's /Applications is the one found.
@@ -142,7 +142,7 @@ func TestCodexAppVersion(t *testing.T) {
 		}
 	}
 
-	// an agent with no app magpie knows, and Codex's twin in WSL, have none
+	// an agent with no app magpie-friday knows, and Codex's twin in WSL, have none
 	if v := (&Agent{ID: "gemini", Bin: "gemini"}).AppVersion(); v != "" {
 		t.Fatalf("gemini: %q", v)
 	}

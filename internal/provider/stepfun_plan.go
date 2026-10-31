@@ -5,9 +5,9 @@ package provider
 // platform.stepfun.ai or .com), not to a key, which is refused there ("api
 // key not permitted for this method"). The user signs in there in their
 // own browser; the session's cookie is HttpOnly and the platform returns
-// to no app, so a bookmarklet of magpie's, run on the signed-in page, asks
+// to no app, so a bookmarklet of magpie-friday's, run on the signed-in page, asks
 // the platform to renew it as the page does and copies what it gets, and
-// the user pastes that into magpie (SaveStepFunPaste). From then on magpie
+// the user pastes that into magpie-friday (SaveStepFunPaste). From then on magpie-friday
 // renews the session and asks the platform itself, as the page does:
 //
 //	POST <platform>/passport/proto.api.passport.v1.PassportService/RefreshToken
@@ -39,7 +39,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/lastgood"
+	"github.com/cha0sal3r/magpie-friday/internal/lastgood"
 )
 
 // stepfunSites are StepFun's two platforms, by the API host a provider uses.
@@ -72,11 +72,11 @@ func StepFunSignInURL(site string) string {
 }
 
 // stepfunPaste starts what the bookmarklet copies, the JSON of a session.
-const stepfunPaste = "magpie-stepfun:"
+const stepfunPaste = "magpie-friday-stepfun:"
 
 // StepFunBookmarklet is the bookmarklet the user runs on a StepFun platform
 // page they are signed in on: it renews the session as the page does, on
-// either site, and copies it to be pasted into magpie.
+// either site, and copies it to be pasted into magpie-friday.
 func StepFunBookmarklet() string {
 	sites := map[string][2]string{}
 	for id, s := range stepfunSites {
@@ -91,8 +91,8 @@ func StepFunBookmarklet() string {
 		`const c=a?JSON.parse(atob(a.split(".")[1].replace(/-/g,"+").replace(/_/g,"/"))):{};` +
 		`if(!c.activated||!f){alert("Sign in to StepFun first / 请先登录 StepFun");return}` +
 		`const t="` + stepfunPaste + `"+JSON.stringify({site:s[0],access:a,refresh:f,webId:w});` +
-		`try{await navigator.clipboard.writeText(t);alert("Copied: paste it into magpie / 已复制，回 magpie 粘贴")}` +
-		`catch{prompt("Copy this and paste it into magpie / 复制这段，回 magpie 粘贴",t)}` +
+		`try{await navigator.clipboard.writeText(t);alert("Copied: paste it into magpie-friday / 已复制，回 magpie-friday 粘贴")}` +
+		`catch{prompt("Copy this and paste it into magpie-friday / 复制这段，回 magpie-friday 粘贴",t)}` +
 		`}catch(e){alert(String(e))}})()`
 }
 
@@ -275,7 +275,7 @@ func (c stepfunClaims) account() string {
 	return ""
 }
 
-// StepFunSignedIn reports whether magpie has a sign-in for the provider.
+// StepFunSignedIn reports whether magpie-friday has a sign-in for the provider.
 func StepFunSignedIn(id string) bool {
 	stepfunMu.Lock()
 	defer stepfunMu.Unlock()
@@ -586,7 +586,7 @@ func stepPlanQuota(ctx context.Context, p Provider) SubscriptionQuota {
 	return q
 }
 
-// stepPlanQuotas is a card for each StepFun provider in use that magpie
+// stepPlanQuotas is a card for each StepFun provider in use that magpie-friday
 // has a sign-in for: one per provider, not per site, as two on one site
 // can be two accounts (#2384).
 func stepPlanQuotas(ctx context.Context) []SubscriptionQuota {

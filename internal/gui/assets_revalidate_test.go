@@ -13,7 +13,7 @@ import (
 )
 
 // The page's files go out to be asked for again by their content's hash,
-// so a browser or a cache in front of `magpie web` never keeps an older
+// so a browser or a cache in front of `magpie-friday web` never keeps an older
 // version's app.js under a newer page (Jorben on Discord); an unchanged
 // one comes back as a 304, and boot.js and the API keep their own rules.
 func TestPageFilesRevalidate(t *testing.T) {
@@ -61,12 +61,12 @@ func TestPageFilesRevalidate(t *testing.T) {
 		t.Errorf("boot.js: Cache-Control %q, want no-store", cc)
 	}
 	if rec := get("/wails/runtime.js", ""); rec.Code != http.StatusNotFound || rec.Header().Get("ETag") != "" {
-		t.Errorf("magpie web has no Wails runtime: %d, ETag %q", rec.Code, rec.Header().Get("ETag"))
+		t.Errorf("magpie-friday web has no Wails runtime: %d, ETag %q", rec.Code, rec.Header().Get("ETag"))
 	}
 }
 
-// A cache in front of `magpie web` that kept a page file from before they
-// were sent to be asked for again goes on serving it whatever magpie says
+// A cache in front of `magpie-friday web` that kept a page file from before they
+// were sent to be asked for again goes on serving it whatever magpie-friday says
 // now: a Docker user behind an HTTPS proxy had v0.1.630's page run
 // v0.1.582's app.js and routing.js, in a private window too. app.js
 // stopped at its first lines over an element the page no longer had

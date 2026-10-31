@@ -15,14 +15,14 @@ import (
 	"time"
 )
 
-// TLS: `magpie serve --tls-cert <file> --tls-key <file>` (or
-// MAGPIE_TLS_CERT and MAGPIE_TLS_KEY) serves the gateway, and `magpie
-// web`'s page, over HTTPS to other computers (RoderickZH on Discord: magpie
+// TLS: `magpie-friday serve --tls-cert <file> --tls-key <file>` (or
+// MAGPIE_TLS_CERT and MAGPIE_TLS_KEY) serves the gateway, and `magpie-friday
+// web`'s page, over HTTPS to other computers (RoderickZH on Discord: magpie-friday
 // on a server as a relay, reached over the internet). The certificate is
 // read again when its files change, so a certbot renewal is served without
 // a restart. A connection from this computer itself (loopback, or this
 // computer calling its own address) may still speak plain HTTP on the same
-// port: the agents, MCP servers and status checks magpie wires here call
+// port: the agents, MCP servers and status checks magpie-friday wires here call
 // http://127.0.0.1, which no certificate for a server's name covers, and
 // their requests never leave the machine. Every other peer gets TLS alone;
 // plain HTTP from it is answered 400 by net/http.

@@ -3,8 +3,8 @@
 package cli
 
 import (
-	"github.com/yetone/magpie/internal/gui"
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/gui"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 const hasGUI = true

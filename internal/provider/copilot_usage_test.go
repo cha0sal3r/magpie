@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// copilotUsageOf is the card magpie makes of one /copilot_internal/user body.
+// copilotUsageOf is the card magpie-friday makes of one /copilot_internal/user body.
 func copilotUsageOf(t *testing.T, body string) SubscriptionQuota {
 	t.Helper()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

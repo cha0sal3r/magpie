@@ -1,9 +1,11 @@
-/magpie
-/magpie.exe
-/magpie.app/
+/magpie-friday
+/magpie-friday.exe
+/magpie-friday.app/
 /dist/
-/magpie-dev
+/magpie-friday-dev
 /rsrc_windows_*.syso
-/magpie-dev-backend
-/magpie-dev.new
+/magpie-friday-dev-backend
+/magpie-friday-dev.new
 /.verification/
+/.gocache/
+/.gomodcache/

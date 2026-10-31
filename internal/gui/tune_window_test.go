@@ -5,13 +5,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
 )
 
 // tuneCalls is an agent's conversations on one model that grow by 5K a
 // call from 20K, n calls each, and are never compacted: at 80 the largest
-// prompt magpie has seen is 415K, whatever the model's window.
+// prompt magpie-friday has seen is 415K, whatever the model's window.
 func tuneCalls(agent, model string, n int) []sessions.Call {
 	var out []sessions.Call
 	t0 := time.Now().Add(-48 * time.Hour)
@@ -29,11 +29,11 @@ func tuneCalls(agent, model string, n int) []sessions.Call {
 // The windows Tuned for you offers Codex for a model (zhemu on Discord: a
 // CLIProxyAPI provider's GPT model with 1M, Settings › Long conversations
 // at 750K, offered no more than 412K, the largest prompt it had been sent).
-// A model whose window magpie doesn't know is offered up to 1M, not capped
+// A model whose window magpie-friday doesn't know is offered up to 1M, not capped
 // under the user's 750K; one typed at 1M is offered to 1M and runs now at
-// the 750K magpie tells Codex; one typed at 400K is capped at its window.
+// the 750K magpie-friday tells Codex; one typed at 400K is capped at its window.
 // Claude Code is offered no window for another vendor's model, whose
-// window is magpie's own (Settings), and a Claude model keeps its 1M.
+// window is magpie-friday's own (Settings), and a Claude model keeps its 1M.
 func TestTuneWindowsAreTheUsers(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
 	t.Setenv("XDG_CACHE_HOME", t.TempDir())
@@ -48,7 +48,7 @@ func TestTuneWindowsAreTheUsers(t *testing.T) {
 	}
 	for _, e := range provider.Catalog() {
 		if e.ID == "cpa/gpt-cpa-open" && e.Context != 0 {
-			t.Fatalf("cpa/gpt-cpa-open has a window of %d: the case needs one magpie doesn't know", e.Context)
+			t.Fatalf("cpa/gpt-cpa-open has a window of %d: the case needs one magpie-friday doesn't know", e.Context)
 		}
 	}
 	codex := func(model string) tuneAdvice {
@@ -95,7 +95,7 @@ func TestTuneWindowsAreTheUsers(t *testing.T) {
 		for _, ag := range st.Agents {
 			for _, a := range ag.Advice {
 				if a.Compact != nil {
-					t.Errorf("Claude Code on %s is offered windows %+v; its window is magpie's own", m, a.Compact.Curve)
+					t.Errorf("Claude Code on %s is offered windows %+v; its window is magpie-friday's own", m, a.Compact.Curve)
 				}
 			}
 		}

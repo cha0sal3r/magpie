@@ -12,7 +12,7 @@ import (
 	"testing"
 
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // daybreakBackend stands in for the ChatGPT backend as OpenAI's Daybreak
@@ -178,7 +178,7 @@ func TestCodexAccessProgramsReachBackend(t *testing.T) {
 // as a key provider's does — filling in what the client left out, a
 // "!name" replacing it — on every API the request came in on. What Codex
 // CLI's request needs to be answered at all (store false, tool_choice
-// auto, its sealed reasoning asked back) stays magpie's.
+// auto, its sealed reasoning asked back) stays magpie-friday's.
 func TestCodexAccountTakesExtraBody(t *testing.T) {
 	codexSignedIn(t)
 	d := daybreak(t)

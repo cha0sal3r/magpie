@@ -13,19 +13,19 @@ import (
 
 	"github.com/klauspost/compress/zstd"
 
-	"github.com/yetone/magpie/internal/codexsummary"
-	"github.com/yetone/magpie/internal/filelock"
+	"github.com/cha0sal3r/magpie-friday/internal/codexsummary"
+	"github.com/cha0sal3r/magpie-friday/internal/filelock"
 )
 
 const portThread = "01a15820-ff81-7840-bb3f-e18771c53aa8"
 
-// portRolloutLines is a Codex 0.162 rollout of a thread magpie compacted,
+// portRolloutLines is a Codex 0.162 rollout of a thread magpie-friday compacted,
 // in the shapes Codex writes (codex-rs/history/src/rollout_payload.rs,
-// CompactedItemWire; the compaction item as magpie's gateway streams it):
+// CompactedItemWire; the compaction item as magpie-friday's gateway streams it):
 // a session_meta, a user message that talks about "magpie1:" (text, never
-// changed), magpie's compaction item as a response_item, the compacted
+// changed), magpie-friday's compaction item as a response_item, the compacted
 // checkpoint holding it in replacement_history with its metadata beside,
-// a checkpoint with an unreadable one of magpie's, OpenAI's own sealed
+// a checkpoint with an unreadable one of magpie-friday's, OpenAI's own sealed
 // compaction, and a later turn.
 func portRolloutLines(summary string) []string {
 	enc := codexsummary.Encrypted(summary)
@@ -92,9 +92,9 @@ func decode(t *testing.T, line string) map[string]any {
 	return v
 }
 
-// LukeMa (X): a Codex conversation magpie compacted errored once magpie
-// was quit, as OpenAI can't read magpie's compaction item
-// (invalid_encrypted_content). PortCodexRollouts writes each of magpie's
+// LukeMa (X): a Codex conversation magpie-friday compacted errored once magpie-friday
+// was quit, as OpenAI can't read magpie-friday's compaction item
+// (invalid_encrypted_content). PortCodexRollouts writes each of magpie-friday's
 // items as Codex's own summary message, the one the gateway sends for it,
 // and changes nothing else: the other lines keep their bytes, the file
 // its line count, mode and time, and a compacted line's metadata stays
@@ -159,10 +159,10 @@ func TestPortCodexRollouts(t *testing.T) {
 			if m := p4["replacement_history_metadata"].([]any); len(m) != 1 || !reflect.DeepEqual(m[0], map[string]any{"client_authored": true}) {
 				t.Errorf("metadata %v", m)
 			}
-			// nothing of magpie's that OpenAI would refuse is left
+			// nothing of magpie-friday's that OpenAI would refuse is left
 			for i, l := range got {
 				if i != 1 && strings.Contains(l, codexsummary.Mark) {
-					t.Errorf("line %d still has magpie's item: %s", i, l)
+					t.Errorf("line %d still has magpie-friday's item: %s", i, l)
 				}
 			}
 			// a second pass has nothing to do
@@ -196,7 +196,7 @@ func TestPortCodexRolloutsLeavesAnOpenThread(t *testing.T) {
 	if b, _ := os.ReadFile(path); !bytes.Equal(b, orig) {
 		t.Fatal("written while a Codex had the thread open")
 	}
-	if left, _ := filepath.Glob(filepath.Join(filepath.Dir(path), ".magpie-*")); len(left) > 0 {
+	if left, _ := filepath.Glob(filepath.Join(filepath.Dir(path), ".magpie-friday-*")); len(left) > 0 {
 		t.Fatalf("left behind: %v", left)
 	}
 	filelock.Unlock(lf)
@@ -217,9 +217,9 @@ func TestPortCodexRolloutsLeavesAnOpenThread(t *testing.T) {
 	}
 }
 
-// A line is parsed only for magpie's item; text that only mentions
+// A line is parsed only for magpie-friday's item; text that only mentions
 // "magpie1:" keeps its bytes, and a line that is one unreadable item of
-// magpie's alone stays (leaving it out would move the lines after it).
+// magpie-friday's alone stays (leaving it out would move the lines after it).
 func TestPortLineLeavesOthers(t *testing.T) {
 	for _, l := range []string{
 		`{"type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"magpie1:abc"}]}}` + "\n",

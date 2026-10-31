@@ -8,9 +8,9 @@ import (
 )
 
 // Cursor CLI's row had no version where Pi's said 1.2.0 (@G_Z_Y on X):
-// magpie never asked cursor-agent. Its installer's link into
+// magpie-friday never asked cursor-agent. Its installer's link into
 // ~/.local/share/cursor-agent/versions/<v>/ is read with --version, and
-// nothing is offered to update it: it updates itself, and magpie knows no
+// nothing is offered to update it: it updates itself, and magpie-friday knows no
 // package of it.
 func TestCursorCLIVersionShown(t *testing.T) {
 	home := t.TempDir()

@@ -7,7 +7,7 @@ const { chromium, webkit } = require("playwright");
 const { watchSettingsReads, settingsDrawn } = require("./reader.cjs");
 const assets = path.resolve(__dirname, "../assets");
 const settings = { theme: "light", lang: "en", tray: "panel", textSize: 100, currency: "usd",
-  dir: "/config/magpie", gateway: "http://127.0.0.1:3999", version: "0.1.900",
+  dir: "/config/magpie-friday", gateway: "http://127.0.0.1:3999", version: "0.1.900",
   proxy: "", proxyNow: "none", proxySource: "none", redactWords: [], otel: {},
   visionModels: [], imageGenModels: [], workbuddyCheckins: [], lanURLs: [],
   fx: { rate: 7.2, at: new Date().toISOString(), stale: false } };

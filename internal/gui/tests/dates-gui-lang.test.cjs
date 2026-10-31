@@ -1,6 +1,6 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // Dates and times read in the GUI's language, not the system's (#1843): a
-// Mac in Chinese with magpie set to English showed Routing's day pills as
+// Mac in Chinese with magpie-friday set to English showed Routing's day pills as
 // "10月11日 周日", since they were formatted with no locale and so followed
 // the system. Every language is tried on a system in another one (English
 // on zh-CN, the rest on en-US), and English on an en-GB system keeps the

@@ -10,7 +10,7 @@ package provider
 // min in internal/provider/migrate_kiro.go.
 
 // Several Kiro subscriptions. kiro-cli and the Kiro IDE keep one account,
-// which magpie only ever reads. Each account magpie signs in gets a home of
+// which magpie-friday only ever reads. Each account magpie-friday signs in gets a home of
 // its own holding its kiro-auth-token.json, refreshed there, so each refresh
 // token has one holder. logins.json names those homes; Kiro's own account is
 // remembered there too, with no home, so it can stand behind another or be
@@ -29,10 +29,10 @@ import (
 // kiroTokenFile is what an account's home holds, in the IDE's shape.
 const kiroTokenFile = "kiro-auth-token.json"
 
-// kiroAccountsDir holds the homes of the Kiro accounts magpie signed in.
+// kiroAccountsDir holds the homes of the Kiro accounts magpie-friday signed in.
 func kiroAccountsDir() string { return filepath.Join(filepath.Dir(Path()), "kiro") }
 
-// kiroLegacyPath is where magpie kept the one Kiro account it signed in
+// kiroLegacyPath is where magpie-friday kept the one Kiro account it signed in
 // before it kept several (v0.1.374).
 func kiroLegacyPath() string { return filepath.Join(filepath.Dir(Path()), kiroTokenFile) }
 
@@ -67,7 +67,7 @@ func kiroLogins() []kiroLogin {
 	return out
 }
 
-// kiroAdoptLegacy moves the account magpie kept alone into a home of its
+// kiroAdoptLegacy moves the account magpie-friday kept alone into a home of its
 // own, among the rest, once Kiro says whose it is; until it can, the file
 // stays where it was and is tried again a few minutes on.
 func kiroAdoptLegacy() {
@@ -107,7 +107,7 @@ func newKiroHome() (string, error) {
 	return home, os.MkdirAll(home, 0o700)
 }
 
-// removeKiroHome deletes a home magpie made, and nothing else.
+// removeKiroHome deletes a home magpie-friday made, and nothing else.
 func removeKiroHome(home string) {
 	if rel, err := filepath.Rel(kiroAccountsDir(), home); err == nil && rel != "." && !strings.HasPrefix(rel, "..") {
 		_ = os.RemoveAll(home)
@@ -127,7 +127,7 @@ func addKiroLogin(home string) (string, error) {
 		func(l savedLogin) { removeKiroHome(l.Home) })
 }
 
-// kiroSaved is a Kiro sign-in of magpie's as it is kept: the IDE's shape, with
+// kiroSaved is a Kiro sign-in of magpie-friday's as it is kept: the IDE's shape, with
 // an AWS sign-in's client beside it.
 type kiroSaved struct {
 	AccessToken  string `json:"accessToken"`
@@ -141,7 +141,7 @@ type kiroSaved struct {
 	ClientSecret string `json:"clientSecret,omitempty"`
 }
 
-// readKiroFile reads a sign-in made in magpie.
+// readKiroFile reads a sign-in made in magpie-friday.
 func readKiroFile(path string) (kiroCred, bool) {
 	b, err := readAccountFile(path)
 	if err != nil {

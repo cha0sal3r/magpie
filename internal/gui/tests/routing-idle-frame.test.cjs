@@ -3,7 +3,7 @@
 // sight. With Agents selected — #view-routing.hidden, the window drawing
 // frames, the tab in sight — the loop must stop asking for frames: the
 // function frame that drew the page every frame until now asked for the
-// next one whatever the page was showing, so the magpies were posed (and
+// next one whatever the page was showing, so the magpie-fridays were posed (and
 // the loop kept awake) forever while nobody looked at Routing. In sight
 // again the view is picked and the loop resumes. What the poll lists came
 // in meanwhile is another test's business (routing-flood); this one counts

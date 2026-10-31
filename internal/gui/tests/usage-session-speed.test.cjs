@@ -5,7 +5,7 @@
 // no speed at all, and each said "Not streamed", though the replies were
 // streamed. A long one now tells the least it wrote at, its tokens over that
 // whole time ("≥98 tok/s"); a short one says the file has no first token; a
-// call magpie timed keeps its own speed. Claude Code's, Claude Desktop's
+// call magpie-friday timed keeps its own speed. Claude Code's, Claude Desktop's
 // and Codex's files tell one: a Codex call in a turn of several is timed
 // from what asked for it, before its first output item, to its last
 // (Fallmonkey on Discord). A narrow window shows it as a wide one does. The rows are real ledger rows read
@@ -39,7 +39,7 @@ const ROWS = [
   { ...LOG, t: at(0), out: 2558, ms: 25987 },
   // 1: a short one: its tokens over the wait tell too little
   { ...LOG, t: at(1), out: 462, ms: 5340 },
-  // 2: a call magpie timed keeps its own speed: 135 tokens in 1.8 s after its first
+  // 2: a call magpie-friday timed keeps its own speed: 135 tokens in 1.8 s after its first
   { ...GATEWAY, t: at(2), out: 135, ms: 2400, ttft_ms: 600 },
   // 3: a gateway call not streamed is still told so, with the least it
   // wrote at over its whole time: 1500 tokens in 3 s (夜松云 on Discord)
@@ -61,7 +61,7 @@ function ledger(period) {
   return {
     period, rows: ROWS, offset: 0, total: ROWS.length, calls: ROWS.length, errors: 1,
     input: 1, output: 12355, cache_read: 0, cache_write: 0, cost: 0.02, unpriced: 5,
-    // only what magpie timed: 135 tokens in 1.8 s and 1200 in 8 s
+    // only what magpie-friday timed: 135 tokens in 1.8 s and 1200 in 8 s
     timed: 2, ttft_ms: 2600, decode_ms: 9800, decode_out: 1335,
     by: { model: [] }, bucket: "hour", series: [],
     agents: [{ id: "claude", name: "Claude Code", icon: "claudecode-color" }, { id: "codex", name: "Codex", icon: "codex-color" }, { id: "claude-desktop", name: "Claude Desktop", icon: "claude-color" }],
@@ -143,7 +143,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         // a short one: no speed, and not called "not streamed"
         assert.equal(await text(1), "—");
         assert.equal(await tip(1), w.noFirst);
-        // what magpie timed is as it was
+        // what magpie-friday timed is as it was
         assert.equal(await text(2), w.timed);
         assert.equal(await text(3), w.gatewayFloor);
         assert((await tip(3)).includes(w.notStreamed), await tip(3));

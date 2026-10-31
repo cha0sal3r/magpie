@@ -10,10 +10,10 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
 )
 
-// A remote magpie that offers fewer models, one of its providers renamed:
+// A remote magpie-friday that offers fewer models, one of its providers renamed:
 // a Refresh here drops the picks made from its old list, keeps the one
 // typed in by hand, and a Refresh that fails changes nothing (akic404 on
 // Discord).

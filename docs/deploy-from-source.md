@@ -1,6 +1,6 @@
 # Running a source build as a background service
 
-How to build magpie from this repository, put the command on `PATH`, and run
+How to build magpie-friday from this repository, put the command on `PATH`, and run
 it as a persistent gateway service (with the web UI) on a server or a machine
 you reach over SSH. The full service reference is
 [As a background service](reference.md#as-a-background-service); the make
@@ -8,7 +8,7 @@ targets are in [Install](reference.md#install).
 
 ## 1 · Sync this fork with upstream
 
-magpie is a fork: `origin` is ours, `upstream` is `yetone/magpie`. `main`
+magpie-friday is a fork: `origin` is ours, `upstream` is `yetone/magpie`. `main`
 mirrors upstream and carries no commits of its own; the work lives on a
 feature branch (here `provider-429-cooldown`).
 
@@ -34,50 +34,50 @@ After a sync, rebuild and restart — see the Rebuild step below.
 ## 2 · Build
 
 ```sh
-make cli     # terminal-only, no cgo: everything `magpie serve` and `daemon` need
+make cli     # terminal-only, no cgo: everything `magpie-friday serve` and `daemon` need
 ```
 
 `make build` (or `make app` on macOS) adds the desktop app, at the cost of
 cgo and the platform webview. A headless service only needs `make cli`, which
-leaves `./magpie` in the repository.
+leaves `./magpie-friday` in the repository.
 
 ## 3 · Put the command on PATH — link it, don't copy it
 
-`go install github.com/yetone/magpie@latest` installs to `GOBIN`. If you
-instead place a `magpie` command in `~/.local/bin` (or `$MAGPIE_BIN_DIR`)
+`go install github.com/cha0sal3r/magpie-friday@latest` installs to `GOBIN`. If you
+instead place a `magpie-friday` command in `~/.local/bin` (or `$MAGPIE_BIN_DIR`)
 yourself, make it a **symlink**, not a plain copied file.
 
-On macOS magpie checks that path, and when it is a copy rather than a link the
+On macOS magpie-friday checks that path, and when it is a copy rather than a link the
 window and the web UI advise that the command can't follow updates
 (`internal/update/relink.go`'s `CopiedCLI`). A copy placed there by hand — an
 older installer or a `cp` — keeps running its own build after the app moves
 on. Link it instead:
 
 ```sh
-ln -sf /path/to/built/magpie ~/.local/bin/magpie
+ln -sf /path/to/built/magpie-friday ~/.local/bin/magpie-friday
 ```
 
-`magpie daemon install` runs the command it was started from by the name on
+`magpie-friday daemon install` runs the command it was started from by the name on
 `PATH` when that is the same file, so a link also keeps the service pointed at
 the binary you rebuild in place.
 
 ## 4 · Run as a service
 
 ```sh
-magpie daemon install       # launch agent (macOS) / systemd --user unit (Linux)
-magpie daemon web on        # also serve the web UI; `magpie daemon status` prints the link
+magpie-friday daemon install       # launch agent (macOS) / systemd --user unit (Linux)
+magpie-friday daemon web on        # also serve the web UI; `magpie-friday daemon status` prints the link
 ```
 
 The service starts at login, restarts itself when it stops with a failure,
-and runs `magpie serve` with no window. `--web`, `--lan`, `--addr`, TLS and
+and runs `magpie-friday serve` with no window. `--web`, `--lan`, `--addr`, TLS and
 the per-platform notes are in the reference linked above.
 
 ## 5 · Rebuild
 
-`make cli` overwrites `./magpie` in place; restart the service to load it:
+`make cli` overwrites `./magpie-friday` in place; restart the service to load it:
 
 ```sh
-make cli && magpie daemon restart
+make cli && magpie-friday daemon restart
 ```
 
 Don't `make clean` a binary that a linked command or service points at — it

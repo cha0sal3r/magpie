@@ -12,7 +12,7 @@ import (
 
 	"github.com/klauspost/compress/zstd"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // zstdTurns sends turns to the ChatGPT backend compressed, as the gateway
@@ -83,7 +83,7 @@ func turnsBackend(t *testing.T, drop int) (*[]sentTurn, *sync.Mutex) {
 
 // textTurn is ylorn's turn: text alone, about n bytes of it, no image.
 func textTurn(n int) string {
-	line := "The quick brown fox jumps over the lazy dog while magpie relays this text-only request. "
+	line := "The quick brown fox jumps over the lazy dog while magpie-friday relays this text-only request. "
 	b, _ := json.Marshal(map[string]any{"model": "gpt-6-luna", "stream": true, "input": []any{
 		map[string]any{"type": "message", "role": "user", "content": []any{
 			map[string]any{"type": "input_text", "text": strings.Repeat(line, n/len(line)+1)[:n]}}}}})
@@ -128,7 +128,7 @@ func checkZstd(t *testing.T, s sentTurn, model string) {
 
 // ylorn (X, v0.1.1202): a text-only gpt-6-luna turn of 1.1 MB through a
 // ChatGPT account was answered 503 when sent plain, and 200 sent
-// zstd-compressed as Codex's own client sends it. Through magpie's
+// zstd-compressed as Codex's own client sends it. Through magpie-friday's
 // accounts it now goes compressed and is answered; on the old code every
 // account was asked plain and the agent got the 503.
 func TestCodexAccountTextTurnGoesZstd(t *testing.T) {
@@ -152,7 +152,7 @@ func TestCodexAccountTextTurnGoesZstd(t *testing.T) {
 }
 
 // With Codex's own sign-in alone the turn is relayed, and goes compressed
-// again whether Codex sent it zstd (it does, which magpie reads) or plain.
+// again whether Codex sent it zstd (it does, which magpie-friday reads) or plain.
 func TestCodexRelayedTextTurnGoesZstd(t *testing.T) {
 	zstdTurns(t)
 	codexSignedIn(t)

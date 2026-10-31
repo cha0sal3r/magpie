@@ -13,7 +13,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A WorkBuddy plan, the China build's or WorkBuddy AI's, searches the web
@@ -29,11 +29,11 @@ import (
 //
 // or a refusal as {"code","msg"} (15001 is its search quota spent). Its
 // models have no search tool of their own, so before, a Claude Code turn
-// on WorkBuddy with nothing else in magpie that searches had the server
+// on WorkBuddy with nothing else in magpie-friday that searches had the server
 // tool taken away and WebSearch came back empty (#1798). As with a Kimi
 // Code plan, a WorkBuddy model's searches are done here first, and only
 // for its own models. It is the same for the built-in and for a WorkBuddy
-// moved onto its plugin: magpie shapes the request, Sign and Do send it
+// moved onto its plugin: magpie-friday shapes the request, Sign and Do send it
 // (the plugin's fetch signs it there).
 
 // wbSearchPath is where a WorkBuddy site's search service is, and

@@ -37,7 +37,7 @@ func TestShowNotes(t *testing.T) {
 }
 
 func TestStripInstall(t *testing.T) {
-	md := "## Bug Fixes\n\n- Fixed a thing. (#464)\n\n### Install\n\nDownload from [usemagpie.ai](https://usemagpie.ai).\n\n- **macOS:** `magpie.dmg`\n"
+	md := "## Bug Fixes\n\n- Fixed a thing. (#464)\n\n### Install\n\nDownload from [usemagpie.ai](https://usemagpie.ai).\n\n- **macOS:** `magpie-friday.dmg`\n"
 	if got, want := StripInstall(md), "## Bug Fixes\n\n- Fixed a thing. (#464)"; got != want {
 		t.Errorf("got %q, want %q", got, want)
 	}

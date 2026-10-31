@@ -3,10 +3,10 @@ package agent
 import (
 	"testing"
 
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
-// The gateway takes a client that is no agent magpie knows, with the plain
+// The gateway takes a client that is no agent magpie-friday knows, with the plain
 // token, for a script Claude Code started (tbxark on X); every agent's own
 // User-Agent must still read as an agent, and a script's must not.
 func TestIsAgentByUserAgent(t *testing.T) {

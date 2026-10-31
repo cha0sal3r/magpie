@@ -7,10 +7,10 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// What magpie model spec sets (Dani Ariyanto on Discord) is what the
+// What magpie-friday model spec sets (Dani Ariyanto on Discord) is what the
 // providers' state behind the app's model badges says: the window, the
 // reply limit, images and the levels given a model nothing knew; a model
 // sent no reasoning field is said to be so, with no level kept.

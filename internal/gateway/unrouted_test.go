@@ -66,7 +66,7 @@ func routesOf(s *Server, model string) []Route {
 }
 
 // heyusaku6 on X: Codex thought for over ten minutes on a model served
-// through magpie, the Routing page showed nothing, and only restarting
+// through magpie-friday, the Routing page showed nothing, and only restarting
 // both ended it. A request held before any route is begun for it shows on
 // the Routing page as routing, and is answered with an error in bounded
 // time, whole, rather than left to wait with nothing said.
@@ -170,7 +170,7 @@ func TestUnroutedQuickRequestLeavesNoTrace(t *testing.T) {
 	}
 	time.Sleep(50 * time.Millisecond)
 	for _, r := range s.Trace(context.Background(), 0, 0).Routes {
-		if r.Provider == "magpie" && !r.Done {
+		if r.Provider == "magpie-friday" && !r.Done {
 			t.Fatalf("a route left showing a request that was answered: %+v", r)
 		}
 	}

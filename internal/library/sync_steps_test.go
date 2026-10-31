@@ -11,10 +11,10 @@ import (
 	"time"
 )
 
-// magpie syncs the library into the agents at every start, and the
+// magpie-friday syncs the library into the agents at every start, and the
 // Library page's reads and changes wait on the same lock. Held for the
 // whole sync, through every agent's skills, the first operations after
-// opening magpie took seconds on Windows (#1624, Hipple). The sync lets go
+// opening magpie-friday took seconds on Windows (#1624, Hipple). The sync lets go
 // after each agent's part: a read that comes meanwhile waits for one
 // part, and the sync goes on after it.
 func TestReadDuringSyncWaitsForOnePart(t *testing.T) {

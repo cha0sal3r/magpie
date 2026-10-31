@@ -3,11 +3,11 @@ package davsync
 import (
 	"testing"
 
-	"github.com/yetone/magpie/internal/backup"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/backup"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// #1821: an upload with keys from a magpie that knows no access key (one
+// #1821: an upload with keys from a magpie-friday that knows no access key (one
 // before v0.1.1142, or one it was never given on) has the provider's key
 // and no AccessKey ID or Secret. The server's are kept while the key is
 // the same, so the next computer to sync doesn't lose them; a keyless

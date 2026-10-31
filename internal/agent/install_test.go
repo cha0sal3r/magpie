@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // The install commands are the vendors' own (#727): the installer their
@@ -39,7 +39,7 @@ func TestInstallCommands(t *testing.T) {
 		{"deveco", "windows", []string{"npm: npm install -g @deveco/deveco-code"}},
 		{"deveco", "linux", nil}, // no Linux build in its package
 		{"pi", "linux", []string{"npm: npm install -g @earendil-works/pi-coding-agent"}},
-		{"cursor", "darwin", nil}, // no command magpie knows
+		{"cursor", "darwin", nil}, // no command magpie-friday knows
 	} {
 		if got := cmds(c.id, c.goos); !reflect.DeepEqual(got, c.want) {
 			t.Errorf("%s on %s: %q, want %q", c.id, c.goos, got, c.want)

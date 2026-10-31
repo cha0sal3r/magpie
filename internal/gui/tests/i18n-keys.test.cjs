@@ -76,7 +76,7 @@ test("every word the window says has a key", () => {
     }
   };
   walk(assets);
-  const english = new Set(["magpie", "ID"]), missing = [];
+  const english = new Set(["magpie-friday", "ID"]), missing = [];
   for (const f of files) {
     const src = fs.readFileSync(f, "utf8"), re = /\bt\(\s*"((?:[^"\\]|\\.)*)"\s*[,)]/g;
     for (let m; (m = re.exec(src)); ) {

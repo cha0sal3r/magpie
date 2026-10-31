@@ -13,7 +13,7 @@ package gateway
 // reasons less on an update than on the same effort at the top, so only a
 // lower effort goes as one: a higher one starts the thread again at it.
 //
-// The agent's own history has no such items, so magpie keeps, for each
+// The agent's own history has no such items, so magpie-friday keeps, for each
 // thread on each account and model, the effort it started at and where it
 // put each update, and puts them back on every later request. A history
 // that isn't the last one with more after it (compacted, edited, another
@@ -31,10 +31,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// effortThread is a thread's reasoning as magpie sends it.
+// effortThread is a thread's reasoning as magpie-friday sends it.
 type effortThread struct {
 	base    string         // the effort at the top, the thread's first
 	updates []effortUpdate // in order of where they go

@@ -18,7 +18,7 @@ const assets = path.resolve(__dirname, "../assets");
 const at = (h) => new Date(Date.now() + h * 36e5).toISOString();
 const model = (name, family, pool, used, h) => ({ name, family, pool, used, resetsAt: at(h) });
 const pool = (pool, name, used, h) => ({ name, pool, used, resetsAt: at(h) });
-// as magpie reports it: the models, then each group's windows as Google
+// as magpie-friday reports it: the models, then each group's windows as Google
 // lists the groups, Argon's last with its week alone
 const ag = (user) => ({
   provider: "antigravity", name: "Antigravity", icon: "antigravity-color", user, plan: "Google AI Pro",

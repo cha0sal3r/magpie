@@ -48,8 +48,8 @@ func cxThreadRows(t *testing.T, home string, rows map[string]string) string {
 }
 
 // Codex lists only the threads of the provider it is on now, so the threads
-// started while magpie was its provider ("magpie") were gone from Codex
-// once it was off magpie (kaizaoji on X). MoveCodexThreads moves every
+// started while magpie-friday was its provider ("magpie-friday") were gone from Codex
+// once it was off magpie-friday (kaizaoji on X). MoveCodexThreads moves every
 // thread on one provider to another, in its files and its row, a copy of
 // each kept: an archived one too; one Codex wrote to in the last minute
 // waits; a thread of another provider (CC Switch's "custom") stays.
@@ -62,13 +62,13 @@ func TestMoveCodexThreads(t *testing.T) {
 		theirs   = "019a0000-0000-7000-8000-00000000000d"
 	)
 	day := time.Now().Add(-24 * time.Hour).Truncate(time.Second)
-	oldPath := cxRollout(t, home, "sessions", old, "magpie", day)
-	arPath := cxRollout(t, home, "archived_sessions", archived, "magpie", day)
-	hotPath := cxRollout(t, home, "sessions", hot, "magpie", time.Now())
+	oldPath := cxRollout(t, home, "sessions", old, "magpie-friday", day)
+	arPath := cxRollout(t, home, "archived_sessions", archived, "magpie-friday", day)
+	hotPath := cxRollout(t, home, "sessions", hot, "magpie-friday", time.Now())
 	theirPath := cxRollout(t, home, "sessions", theirs, "custom", day)
-	db := cxThreadRows(t, home, map[string]string{old: "magpie", archived: "magpie", hot: "magpie", theirs: "custom"})
+	db := cxThreadRows(t, home, map[string]string{old: "magpie-friday", archived: "magpie-friday", hot: "magpie-friday", theirs: "custom"})
 
-	moved, err := MoveCodexThreads(home, "magpie", "openai")
+	moved, err := MoveCodexThreads(home, "magpie-friday", "openai")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -76,14 +76,14 @@ func TestMoveCodexThreads(t *testing.T) {
 		t.Fatalf("moved %+v, want the two not written to lately", moved)
 	}
 	for _, mv := range moved {
-		if mv.From != "magpie" || mv.To != "openai" || len(mv.DB) != 1 || mv.Backup == "" {
+		if mv.From != "magpie-friday" || mv.To != "openai" || len(mv.DB) != 1 || mv.Backup == "" {
 			t.Fatalf("moved %+v", mv)
 		}
 		if _, err := os.Stat(filepath.Join(mv.Backup, "move.json")); err != nil {
 			t.Fatalf("no copy kept: %v", err)
 		}
 	}
-	want := map[string]string{oldPath: "openai", arPath: "openai", hotPath: "magpie", theirPath: "custom"}
+	want := map[string]string{oldPath: "openai", arPath: "openai", hotPath: "magpie-friday", theirPath: "custom"}
 	for p, prov := range want {
 		if got := codexMetaProvider(p); got != prov {
 			t.Errorf("%s: file on %q, want %q", filepath.Base(p), got, prov)
@@ -92,7 +92,7 @@ func TestMoveCodexThreads(t *testing.T) {
 			t.Errorf("%s: time %v, want %v kept", filepath.Base(p), fi.ModTime(), day)
 		}
 	}
-	for id, prov := range map[string]string{old: "openai", archived: "openai", hot: "magpie", theirs: "custom"} {
+	for id, prov := range map[string]string{old: "openai", archived: "openai", hot: "magpie-friday", theirs: "custom"} {
 		if got, _, _ := threadProvider(t, db, id); got != prov {
 			t.Errorf("row %s on %q, want %q", id, got, prov)
 		}
@@ -105,10 +105,10 @@ func TestMoveCodexThreads(t *testing.T) {
 	// the one written to lately goes once Codex is done with it
 	hour := time.Now().Add(-time.Hour)
 	os.Chtimes(hotPath, hour, hour)
-	if moved, err = MoveCodexThreads(home, "magpie", "openai"); err != nil || len(moved) != 1 || moved[0].ID != hot {
+	if moved, err = MoveCodexThreads(home, "magpie-friday", "openai"); err != nil || len(moved) != 1 || moved[0].ID != hot {
 		t.Fatalf("again: %+v %v", moved, err)
 	}
-	if moved, err = MoveCodexThreads(home, "magpie", "openai"); err != nil || len(moved) != 0 {
+	if moved, err = MoveCodexThreads(home, "magpie-friday", "openai"); err != nil || len(moved) != 0 {
 		t.Fatalf("a third time: %+v %v", moved, err)
 	}
 }
@@ -118,14 +118,14 @@ func TestMoveCodexThreads(t *testing.T) {
 func TestMoveCodexThreadsNone(t *testing.T) {
 	_, home := manageSetup(t)
 	day := time.Now().Add(-24 * time.Hour)
-	p := cxRollout(t, home, "sessions", "019a0000-0000-7000-8000-00000000000e", "magpie", day)
-	if moved, err := MoveCodexThreads(home, "magpie", "openai"); err != nil || len(moved) != 0 {
+	p := cxRollout(t, home, "sessions", "019a0000-0000-7000-8000-00000000000e", "magpie-friday", day)
+	if moved, err := MoveCodexThreads(home, "magpie-friday", "openai"); err != nil || len(moved) != 0 {
 		t.Fatalf("no database: %+v %v", moved, err)
 	}
-	if got := codexMetaProvider(p); got != "magpie" {
+	if got := codexMetaProvider(p); got != "magpie-friday" {
 		t.Fatalf("file on %q", got)
 	}
-	if _, err := MoveCodexThreads(home, "magpie", "magpie"); err == nil {
+	if _, err := MoveCodexThreads(home, "magpie-friday", "magpie-friday"); err == nil {
 		t.Fatal("a move to the same provider went")
 	}
 }

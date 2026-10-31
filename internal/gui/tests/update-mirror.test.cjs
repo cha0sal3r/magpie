@@ -1,7 +1,7 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // Settings › About › Download source (#893): updates come from GitHub, or
 // through a mirror typed in (a full https:// address, the same setting as
-// `magpie update mirror`), and GitHub is one click back. A download that
+// `magpie-friday update mirror`), and GitHub is one click back. A download that
 // failed through the mirror says it's the mirror's and offers GitHub, which
 // takes the mirror away and downloads again. No click moves the page,
 // nothing is a native select, no left border. English and Chinese; no
@@ -20,7 +20,7 @@ const words = {
     tip: "a file from the mirror that doesn't match it is not installed",
     viaGitHub: "downloaded from GitHub", viaMirror: "through this mirror", failed: "through the mirror", official: "Download from GitHub" },
   zh: { row: "下载源", use: "使用镜像…", save: "保存", github: "恢复官方", change: "修改", bad: "完整的 https:// 地址",
-    tip: "从镜像下载的文件如果与校验和不符，magpie 不会安装它",
+    tip: "从镜像下载的文件如果与校验和不符，magpie-friday 不会安装它",
     viaGitHub: "从官方 GitHub 下载", viaMirror: "经此镜像下载", failed: "经镜像", official: "改用官方下载" },
 };
 
@@ -30,7 +30,7 @@ function server(lang, ctl) {
   return async (route) => {
     const req = route.request(), url = new URL(req.url());
     const json = (data, status) => route.fulfill({ json: data, status: status || 200 });
-    const settings = () => ({ theme: "light", lang, version: "0.1.900", dir: "~/.config/magpie", gateway: "http://127.0.0.1:3425", lanURLs: [], fx: { rate: 7.2 }, ...(ctl.mirror ? { updateMirror: ctl.mirror } : {}) });
+    const settings = () => ({ theme: "light", lang, version: "0.1.900", dir: "~/.config/magpie-friday", gateway: "http://127.0.0.1:3425", lanURLs: [], fx: { rate: 7.2 }, ...(ctl.mirror ? { updateMirror: ctl.mirror } : {}) });
     if (url.pathname === "/boot.js") return route.fulfill({ contentType: "text/javascript", body: `window.bootPrefs = {lang:"${lang}",theme:"light",web:false};` });
     if (url.pathname === "/wails/runtime.js") return route.fulfill({ contentType: "text/javascript", body: "export const Window = {};" });
     if (url.pathname === "/api/state") return json({ agents: [], profiles: [], settings: settings() });

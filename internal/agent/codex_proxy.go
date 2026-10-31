@@ -10,12 +10,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
-// Codex sends its requests to magpie's gateway, http://127.0.0.1:3425, the
+// Codex sends its requests to magpie-friday's gateway, http://127.0.0.1:3425, the
 // way it sends every other: through a proxy when one is set (Muma102kMichael
 // on X: every project and every new chat 502, "a local gateway config and a
 // proxy switch, two pitfalls stacked"). Its HTTP client is reqwest with its
@@ -29,7 +29,7 @@ import (
 // "localhost" there don't keep 127.0.0.1 off it, and macOS' exceptions
 // aren't read at all. A proxy that sends 127.0.0.1 on to a server of its own
 // (Clash in global mode, a rule set with no LAN-direct rule) answers 502,
-// and Codex is down on every model, its own included once magpie carries
+// and Codex is down on every model, its own included once magpie-friday carries
 // them. With [features] respect_system_proxy (codex-rs outbound_proxy),
 // Codex asks the system alone: Windows' bypass list is matched with its
 // wildcards and <local>, macOS' exceptions likewise, and with no proxy set
@@ -40,12 +40,12 @@ import (
 //
 // The environment is the one Codex runs with: a terminal's, or, for the
 // ChatGPT app's Codex, the login shell's, which the app takes as it opens.
-// magpie opened from the Dock has neither, so the login shell's are asked
-// (proc.LoginEnv), over magpie's own.
+// magpie-friday opened from the Dock has neither, so the login shell's are asked
+// (proc.LoginEnv), over magpie-friday's own.
 //
-// So before magpie hands Codex's requests to the gateway uninvited (account
+// So before magpie-friday hands Codex's requests to the gateway uninvited (account
 // failover), and while it has them, it asks the way Codex would go: through
-// which proxy, and whether a request sent through it reaches magpie (Drift
+// which proxy, and whether a request sent through it reaches magpie-friday (Drift
 // kind "proxied").
 
 // codexProxyEnv, codexSystemProxy and codexProxyOS are what codexProxyFor
@@ -57,7 +57,7 @@ var (
 	loginEnv         = proc.LoginEnv
 )
 
-// codexEnv is k as Codex has it: the login shell's, else magpie's own.
+// codexEnv is k as Codex has it: the login shell's, else magpie-friday's own.
 func codexEnv(k string) string {
 	if v := loginEnv(k); v != "" {
 		return v
@@ -210,8 +210,8 @@ func systemBypassed(host string, bypass []string) bool {
 }
 
 // proxyProbe says whether a request for base sent through proxy is answered
-// by magpie: its gateway's GET / names it. A proxy's own 502, or anything
-// else that isn't magpie, is not. A socks proxy is asked as Codex asks it:
+// by magpie-friday: its gateway's GET / names it. A proxy's own 502, or anything
+// else that isn't magpie-friday, is not. A socks proxy is asked as Codex asks it:
 // as an HTTP one at the same address, since its reqwest has no SOCKS. A var
 // for tests.
 var proxyProbe = realProxyProbe
@@ -252,11 +252,11 @@ func codexProxyOK(cfg, base string) bool {
 	return proxy == "" || probedNow("proxy "+proxy+" "+base, func() bool { return proxyProbe(base, proxy) })
 }
 
-// codexProxiedDetail says what keeps Codex off magpie through proxy, and
+// codexProxiedDetail says what keeps Codex off magpie-friday through proxy, and
 // how to get it there.
 func codexProxiedDetail(base, proxy, from string) string {
 	host := strings.TrimPrefix(base, "http://")
-	d := "Codex sends its requests for magpie (" + host + ") through the proxy at " + netproxy.Redact(proxy) + ", set in " + from + ", and that proxy doesn't pass them on to magpie: every turn fails, with 502 Bad Gateway, whichever model it is on. " +
+	d := "Codex sends its requests for magpie-friday (" + host + ") through the proxy at " + netproxy.Redact(proxy) + ", set in " + from + ", and that proxy doesn't pass them on to magpie-friday: every turn fails, with 502 Bad Gateway, whichever model it is on. " +
 		"Have the proxy send 127.0.0.1 direct (a DIRECT rule for 127.0.0.0/8, or rule mode rather than global), "
 	switch {
 	case strings.Contains(strings.ToUpper(from), "_PROXY"):
@@ -266,5 +266,5 @@ func codexProxiedDetail(base, proxy, from string) string {
 	default:
 		d += "or add export NO_PROXY=127.0.0.1 to your shell profile (~/.zshrc): Codex in a terminal and the ChatGPT app's Codex both read it, "
 	}
-	return d + "then quit and reopen Codex. Until then, Disconnect from magpie puts Codex's config back as it was."
+	return d + "then quit and reopen Codex. Until then, Disconnect from magpie-friday puts Codex's config back as it was."
 }

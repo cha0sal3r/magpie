@@ -2,7 +2,7 @@
 // A plugin's install on a machine whose Windows or processor can't start
 // Bun at all (zgcwkj on Discord: bun add … exit status 0xc0000139 on an
 // older Windows) says in the reader's language why, and what to do,
-// instead of bun's exit status: in the desktop window and in magpie web.
+// instead of bun's exit status: in the desktop window and in magpie-friday web.
 // No backend: the API is faked here, and nothing is ever installed.
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
@@ -17,13 +17,13 @@ const listings = [{ package: PKG, name: "Raccoon", icon: "raccoon", providers: [
 
 // what the server answers, its English message as plugin.BunUnstartableError says it
 const ANSWER = {
-  windows: { error: "bun add " + PKG + "@latest: Bun can't start on this version of Windows: … (C:\\magpie\\cache\\bun\\1.4.2\\magpie-bun.exe exited with 0xc0000139, entry point not found) …", code: "bun_unstartable", bun: "C:\\magpie\\cache\\bun\\1.4.2\\magpie-bun.exe", bunWhy: "windows", said: "" },
-  cpu: { error: "bun add " + PKG + "@latest: Bun can't start on this computer's processor: …", code: "bun_unstartable", bun: "/root/.cache/magpie/bun/1.4.2/magpie-bun", bunWhy: "cpu", said: "" },
+  windows: { error: "bun add " + PKG + "@latest: Bun can't start on this version of Windows: … (C:\\magpie-friday\\cache\\bun\\1.4.2\\magpie-friday-bun.exe exited with 0xc0000139, entry point not found) …", code: "bun_unstartable", bun: "C:\\magpie-friday\\cache\\bun\\1.4.2\\magpie-friday-bun.exe", bunWhy: "windows", said: "" },
+  cpu: { error: "bun add " + PKG + "@latest: Bun can't start on this computer's processor: …", code: "bun_unstartable", bun: "/root/.cache/magpie-friday/bun/1.4.2/magpie-friday-bun", bunWhy: "cpu", said: "" },
 };
 
 // said is the i18n.js key the server chose (bunSaid in api.go)
 ANSWER.windows.said = "Bun, which runs plugins, can't start on this version of Windows: it needs Windows 10 version 1809 or later, or Windows Server 2019 or later. Update Windows to use plugins, or set MAGPIE_BUN to a bun that runs here.";
-ANSWER.cpu.said = "Bun, which runs plugins, can't start on this computer's processor: it needs an x64 processor with SSE4.2 (Intel or AMD from 2008 on; in a virtual machine, a CPU type that passes it through). Run magpie on such a processor to use plugins, or set MAGPIE_BUN to a bun that runs here.";
+ANSWER.cpu.said = "Bun, which runs plugins, can't start on this computer's processor: it needs an x64 processor with SSE4.2 (Intel or AMD from 2008 on; in a virtual machine, a CPU type that passes it through). Run magpie-friday on such a processor to use plugins, or set MAGPIE_BUN to a bun that runs here.";
 
 function server(lang, web, why, asked) {
   const state = { bun: true, bunVersion: "1.4.2", plugins: [] };
@@ -54,7 +54,7 @@ const SAID = {
   en: {
     install: "Install",
     windows: "Bun, which runs plugins, can't start on this version of Windows: it needs Windows 10 version 1809 or later, or Windows Server 2019 or later. Update Windows to use plugins, or set MAGPIE_BUN to a bun that runs here.",
-    cpu: "Bun, which runs plugins, can't start on this computer's processor: it needs an x64 processor with SSE4.2 (Intel or AMD from 2008 on; in a virtual machine, a CPU type that passes it through). Run magpie on such a processor to use plugins, or set MAGPIE_BUN to a bun that runs here.",
+    cpu: "Bun, which runs plugins, can't start on this computer's processor: it needs an x64 processor with SSE4.2 (Intel or AMD from 2008 on; in a virtual machine, a CPU type that passes it through). Run magpie-friday on such a processor to use plugins, or set MAGPIE_BUN to a bun that runs here.",
   },
   zh: { install: "安装", windows: /^运行插件的 Bun 无法在这个版本的 Windows 上启动：它需要 Windows 10 1809 或更新版本/, cpu: /^运行插件的 Bun 无法在这台电脑的处理器上启动：它需要支持 SSE4\.2 的 x64 处理器/ },
   "zh-TW": { install: "安裝", windows: /^執行外掛的 Bun 無法在這個版本的 Windows 上啟動/, cpu: /^執行外掛的 Bun 無法在這台電腦的處理器上啟動/ },

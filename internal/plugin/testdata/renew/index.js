@@ -1,4 +1,4 @@
-// A plugin that leaves renewing its sign-ins to magpie (auth.refresh),
+// A plugin that leaves renewing its sign-ins to magpie-friday (auth.refresh),
 // its requests going to $FAKE_BASE. Each renewal is written to
 // $RENEW_LOG as a line naming the refresh token it spent. The refresh
 // token says how the vendor takes it: "r-ok…" renews (slowly, as a

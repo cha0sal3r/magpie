@@ -106,6 +106,6 @@ func TestSwitchGroup(t *testing.T) {
 		t.Fatalf("classifier: %v", err)
 	}
 	if err := SwitchGroup("nope", false); err == nil {
-		t.Fatal("a group magpie hasn't")
+		t.Fatal("a group magpie-friday hasn't")
 	}
 }

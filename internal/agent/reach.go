@@ -12,12 +12,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/wslrun"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/wslrun"
 )
 
-// An agent pointed at magpie by an address other than this machine's
+// An agent pointed at magpie-friday by an address other than this machine's
 // loopback — this machine's Codex at Windows as WSL sees it or a forward of
 // the user's (#816), an agent in a WSL distro under NAT — is connected by
 // its config alone; whether anything answers there is another matter
@@ -45,8 +45,8 @@ func realReachProbe(base string) bool {
 	return true
 }
 
-// magpieProbe says whether base answers as a magpie gateway: GET base/ is
-// 200 with {"name":"magpie"} (the gateway's info), as it is through a
+// magpieProbe says whether base answers as a magpie-friday gateway: GET base/ is
+// 200 with {"name":"magpie-friday"} (the gateway's info), as it is through a
 // reverse proxy that forwards base to it. A var for tests.
 var magpieProbe = realMagpieProbe
 
@@ -65,25 +65,25 @@ func answersAsMagpie(res *http.Response) bool {
 	var info struct {
 		Name string `json:"name"`
 	}
-	return res.StatusCode == http.StatusOK && json.NewDecoder(res.Body).Decode(&info) == nil && info.Name == "magpie"
+	return res.StatusCode == http.StatusOK && json.NewDecoder(res.Body).Decode(&info) == nil && info.Name == "magpie-friday"
 }
 
-// magpieAt is whether base answers as magpie (magpieProbe), and whether
+// magpieAt is whether base answers as magpie-friday (magpieProbe), and whether
 // that is known yet: the last probe's answer, a new one started in the
 // background as reachable does, never waited for. A var for tests, which
 // are told no without a probe.
 var magpieAt = func(base string) (ok, known bool) {
-	return probed("magpie "+base, func() bool { return magpieProbe(base) })
+	return probed("magpie-friday "+base, func() bool { return magpieProbe(base) })
 }
 
-// proxyBase is v, the address an agent's config names where magpie wrote
+// proxyBase is v, the address an agent's config names where magpie-friday wrote
 // want, with want's path (/v1 where want has it) cut off its end, when
-// that can be another way to magpie: a URL on another machine or a name,
+// that can be another way to magpie-friday: a URL on another machine or a name,
 // such as a company's reverse proxy in front of the gateway (davisjiahao,
-// #1985: https://ai.corp.example/magpie forwarding to 127.0.0.1:3425), or
-// one on this machine's loopback with a path of its own before magpie's (a
+// #1985: https://ai.corp.example/magpie-friday forwarding to 127.0.0.1:3425), or
+// one on this machine's loopback with a path of its own before magpie-friday's (a
 // compliance proxy's http://127.0.0.1:8788/claude-code-anthropic/<route>).
-// One on loopback with none is magpie's own on an older port, never
+// One on loopback with none is magpie-friday's own on an older port, never
 // another way to it.
 func proxyBase(v, want string) (string, bool) {
 	w, err := url.Parse(want)
@@ -111,9 +111,9 @@ func loopbackWithPath(base string) bool {
 	return strings.Trim(u.Path, "/") != ""
 }
 
-// reachesMagpie says v reaches magpie another way (proxyBase) whose root
-// answers as magpie. Until it has been tried it is taken as reaching
-// magpie, as an address not yet tried isn't unreachable either: telling
+// reachesMagpie says v reaches magpie-friday another way (proxyBase) whose root
+// answers as magpie-friday. Until it has been tried it is taken as reaching
+// magpie-friday, as an address not yet tried isn't unreachable either: telling
 // drift first would offer Reconnect, which writes the proxy away.
 func reachesMagpie(v, want string) bool {
 	base, ok := proxyBase(v, want)
@@ -124,9 +124,9 @@ func reachesMagpie(v, want string) bool {
 	return ok || !known
 }
 
-// surelyMagpie is reachesMagpie once magpie has answered there: what a
+// surelyMagpie is reachesMagpie once magpie-friday has answered there: what a
 // write that keeps the address waits for, so a relay not yet tried never
-// gets magpie's model or key.
+// gets magpie-friday's model or key.
 func surelyMagpie(v, want string) bool {
 	base, ok := proxyBase(v, want)
 	if !ok {
@@ -248,21 +248,21 @@ func (a *Agent) unreachable(on Field, now string) *Drift {
 	d := &Drift{Kind: "unreachable", Field: on.Key, Now: now, Want: now, Addr: addr}
 	host := strings.TrimPrefix(strings.TrimPrefix(addr, "http://"), "https://")
 	if inside {
-		// magpie listens there itself (gateway/wsl.go): what keeps WSL out
+		// magpie-friday listens there itself (gateway/wsl.go): what keeps WSL out
 		// is Windows' firewall
-		d.Detail = a.Name + " is pointed at magpie at " + addr + ", where magpie listens for WSL, but nothing answers there from WSL " + a.WSL + ": Windows' firewall keeps WSL out. " +
-			"Allow magpie in when Windows asks, or, in PowerShell as administrator: " + wslFirewallCommand() + ". " +
-			"On Windows 11, networkingMode=mirrored under [wsl2] in %UserProfile%\\.wslconfig lets WSL reach magpie at 127.0.0.1 instead."
+		d.Detail = a.Name + " is pointed at magpie-friday at " + addr + ", where magpie-friday listens for WSL, but nothing answers there from WSL " + a.WSL + ": Windows' firewall keeps WSL out. " +
+			"Allow magpie-friday in when Windows asks, or, in PowerShell as administrator: " + wslFirewallCommand() + ". " +
+			"On Windows 11, networkingMode=mirrored under [wsl2] in %UserProfile%\\.wslconfig lets WSL reach magpie-friday at 127.0.0.1 instead."
 		return d
 	}
-	d.Detail = a.Name + " is pointed at magpie at " + addr + ", where nothing answers from this computer, though magpie answers at " + gateway.URL() + ". "
+	d.Detail = a.Name + " is pointed at magpie-friday at " + addr + ", where nothing answers from this computer, though magpie-friday answers at " + gateway.URL() + ". "
 	if a.WSL != "" || runtime.GOOS == "windows" {
-		d.Detail += "Under WSL's NAT networking, Windows as WSL sees it reaches magpie only while something listens on " + host +
-			": magpie itself with Settings › Network and sharing › Share on local network on (it then listens on every address, and asks other computers for a gateway key), or a forward of your own (netsh interface portproxy, which may need setting up again after Windows restarts). " +
+		d.Detail += "Under WSL's NAT networking, Windows as WSL sees it reaches magpie-friday only while something listens on " + host +
+			": magpie-friday itself with Settings › Network and sharing › Share on local network on (it then listens on every address, and asks other computers for a gateway key), or a forward of your own (netsh interface portproxy, which may need setting up again after Windows restarts). " +
 			"Once it answers here and WSL still can't connect, Windows' firewall may be keeping WSL out: allow the port " + gateway.Port() + " for the WSL network. " +
-			"On Windows 11, networkingMode=mirrored under [wsl2] in %UserProfile%\\.wslconfig lets WSL reach magpie at 127.0.0.1 instead."
+			"On Windows 11, networkingMode=mirrored under [wsl2] in %UserProfile%\\.wslconfig lets WSL reach magpie-friday at 127.0.0.1 instead."
 	} else {
-		d.Detail += "Whatever forwarded " + host + " to magpie isn't listening now; start it again, or point " + a.Name + " at " + gateway.URL() + "."
+		d.Detail += "Whatever forwarded " + host + " to magpie-friday isn't listening now; start it again, or point " + a.Name + " at " + gateway.URL() + "."
 	}
 	if to, distro := wslMovedFrom(addr); to != "" {
 		d.Move = to
@@ -271,16 +271,16 @@ func (a *Agent) unreachable(on Field, now string) *Drift {
 	return d
 }
 
-// wslFirewallCommand lets magpie in from WSL's networks through Windows'
+// wslFirewallCommand lets magpie-friday in from WSL's networks through Windows'
 // firewall, for an administrator's PowerShell. WSL's network is a Public
 // one, so a rule for Private networks only (what Windows' own prompt
 // offers ticked) doesn't do.
 func wslFirewallCommand() string {
 	exe, err := os.Executable()
 	if err != nil || exe == "" {
-		exe = "magpie.exe"
+		exe = "magpie-friday.exe"
 	}
-	return "New-NetFirewallRule -DisplayName 'magpie (WSL)' -Direction Inbound -Action Allow -Profile Any -InterfaceAlias 'vEthernet (WSL*)' -Program '" + strings.ReplaceAll(exe, "'", "''") + "'"
+	return "New-NetFirewallRule -DisplayName 'magpie-friday (WSL)' -Direction Inbound -Action Allow -Profile Any -InterfaceAlias 'vEthernet (WSL*)' -Program '" + strings.ReplaceAll(exe, "'", "''") + "'"
 }
 
 // wslMovedFrom is the address a WSL distro reaches Windows at now, when

@@ -3,7 +3,7 @@
 // in" and "needs sign-in" at once. A server no agent has, checked by a
 // click before its sign-in, kept that check's "needs sign-in" after it; it
 // is checked again once its sign-in changed. And a check that found
-// magpie's sign-in run out (the server refused even a renewed token) turns
+// magpie-friday's sign-in run out (the server refused even a renewed token) turns
 // the row's tag to "Sign-in ran out". Every language, Chromium and WebKit,
 // 1100 and 390 wide; nothing scrolls sideways. No backend: the API is
 // faked here.
@@ -21,7 +21,7 @@ const agent = (id, name) => ({ id, name, icon: "", skills: `${HOME}/.${id}/skill
 
 function server(lang, calls) {
   const lib = {
-    dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+    dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
     agents: [agent("claude", "Claude Code")],
     instructions: { agents: [], sets: [] }, foundServers: [], projects: [], foundSkills: [], skills: [],
     servers: [
@@ -100,7 +100,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
           const status = (name) => page.locator(`#view-library .lib-health[data-server="${name}"]`);
           const tags = (name) => row(name).locator(".name .lib-tag").allInnerTexts();
 
-          // the check found magpie's sign-in to linear run out: the tag says so
+          // the check found magpie-friday's sign-in to linear run out: the tag says so
           await status("linear").locator("span", { hasText: w("needs sign-in") }).waitFor();
           await row("linear").locator(".name .lib-tag", { hasText: w("Sign-in ran out") }).waitFor();
           assert.deepEqual(await tags("linear"), [w("Sign-in ran out")]);

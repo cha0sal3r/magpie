@@ -31,7 +31,7 @@ type ExternalSession struct {
 // MergeExternal adds external sessions to a file-backed listing. Native
 // sessions win on the exact Agent+ID identity and external entries are kept
 // read-only (no file of the agent's to resume or open) with a gateway transcript
-// reader; magpie's own record of one is deleted by DeleteGateway.
+// reader; magpie-friday's own record of one is deleted by DeleteGateway.
 func MergeExternal(native []Session, external []ExternalSession) []Session {
 	names := desktopExternalTitles(external)
 	seen := map[string]bool{}

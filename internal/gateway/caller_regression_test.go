@@ -14,10 +14,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 func TestLoopbackRemainsPermissive(t *testing.T) {
@@ -28,7 +28,7 @@ func TestLoopbackRemainsPermissive(t *testing.T) {
 		if err := settings.Save(settings.Settings{LAN: shared}); err != nil {
 			t.Fatal(err)
 		}
-		for _, token := range []string{"", "anything", Token, TokenFor("alma"), "sk-magpie-stale", secrets[0]} {
+		for _, token := range []string{"", "anything", Token, TokenFor("alma"), "sk-magpie-friday-stale", secrets[0]} {
 			for _, addr := range []string{"127.0.0.1:5000", "[::1]:5000"} {
 				r := httptest.NewRequest("GET", "/v1/models", nil)
 				r.RemoteAddr = addr
@@ -54,7 +54,7 @@ func TestNetworkGatewayNeedsAKey(t *testing.T) {
 	}
 	keys, _ := access.List()
 	secret, _ := access.Update("copy-key", access.Change{Key: keys[0].ID})
-	for _, token := range []string{"", "anything", "magpie", "sk-magpie-stale", secret} {
+	for _, token := range []string{"", "anything", "magpie-friday", "sk-magpie-friday-stale", secret} {
 		for _, header := range []string{"Authorization", "x-api-key", "query"} {
 			r := httptest.NewRequest("GET", "/v1/models", nil)
 			r.RemoteAddr = "192.168.1.9:5000"
@@ -77,7 +77,7 @@ func TestNetworkGatewayNeedsAKey(t *testing.T) {
 func TestMigrationFailureDoesNotStopGateway(t *testing.T) {
 	fresh(t)
 	t.Setenv("MAGPIE_ADDR", "127.0.0.1:0")
-	if err := settings.Save(settings.Settings{LAN: true, LANKey: "sk-magpie-old"}); err != nil {
+	if err := settings.Save(settings.Settings{LAN: true, LANKey: "sk-magpie-friday-old"}); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.Chmod(settings.Path(), 0o400); err != nil {
@@ -126,7 +126,7 @@ func TestMigrationFailureDoesNotStopGateway(t *testing.T) {
 func TestLegacyCallerWithReadOnlyConfiguration(t *testing.T) {
 	fresh(t)
 	up := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Header.Get("Authorization") != "Bearer upstream" || r.URL.Query().Get("key") == "sk-magpie-readonly" {
+		if r.Header.Get("Authorization") != "Bearer upstream" || r.URL.Query().Get("key") == "sk-magpie-friday-readonly" {
 			t.Error("legacy caller credential leaked upstream")
 		}
 		w.Header().Set("Content-Type", "application/json")
@@ -136,7 +136,7 @@ func TestLegacyCallerWithReadOnlyConfiguration(t *testing.T) {
 	if err := provider.Save(provider.Provider{ID: "plan", Name: "Plan", Key: "upstream", Chat: up.URL + "/v1", Models: []string{"m1"}}); err != nil {
 		t.Fatal(err)
 	}
-	s := settings.Settings{LAN: true, LANKey: "sk-magpie-readonly"}
+	s := settings.Settings{LAN: true, LANKey: "sk-magpie-friday-readonly"}
 	if err := settings.Save(s); err != nil {
 		t.Fatal(err)
 	}
@@ -184,7 +184,7 @@ func TestLegacyCallerWithReadOnlyConfiguration(t *testing.T) {
 		t.Fatal("fallback attribution missing", recs)
 	}
 	for _, rec := range recs {
-		if rec.CallerKeyID != recs[0].CallerKeyID || rec.CallerKeyName != "Magpie" || rec.ProviderKeyID != provider.KeyID("upstream") {
+		if rec.CallerKeyID != recs[0].CallerKeyID || rec.CallerKeyName != "magpie-friday" || rec.ProviderKeyID != provider.KeyID("upstream") {
 			t.Fatal("fallback attribution changed", rec)
 		}
 	}

@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 func countsLine(cs []PartnerCount) string {
@@ -65,7 +65,7 @@ func TestCountPartner(t *testing.T) {
 		t.Fatalf("sent days kept: %v", got)
 	}
 
-	// what magpie is used with turned off, or all stats: nothing counted
+	// what magpie-friday is used with turned off, or all stats: nothing counted
 	settings.Save(settings.Settings{NoUsageStats: true})
 	CountPartner(PartnerShown, "acme")
 	settings.Save(settings.Settings{NoStats: true})

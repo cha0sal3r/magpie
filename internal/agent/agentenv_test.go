@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
 )
 
 // readsEnv matches the two ways these packages name a variable they read to
@@ -24,17 +24,17 @@ var notAnAgent = map[string]string{
 	"LOCALAPPDATA":          "the same",
 	"PATH":                  "the process' own",
 	"USER":                  "the process' own",
-	"XDG_CONFIG_HOME":       "magpie's own folder's, which appdir decides",
+	"XDG_CONFIG_HOME":       "magpie-friday's own folder's, which appdir decides",
 	"XDG_DATA_HOME":         "the same",
 	"XDG_DATA_DIRS":         "the system's own data folders, where a .deb puts Lody's desktop entry; a test that reaches agent.OpenLody sets it to its own",
 	"XDG_CACHE_HOME":        "Go's build cache's too, which a sandbox keeps shared; Air's ACP OpenCode under it is found by path in a test's own home (#2423)",
-	"MAGPIE_ADDR":           "magpie's own",
-	"MAGPIE_DEBUG":          "magpie's own debug flag",
-	"MAGPIE_PUBLIC_URL":     "magpie's own public URL",
-	"MAGPIE_TRUST_PROXY":    "magpie's own: a proxy here signs its clients in (#1022)",
-	"MAGPIE_EFFORT_UPDATES": "magpie's own switch for effort updates (#617)",
-	"MAGPIE_SITE_ORIGIN":    "a site origin magpie's Omarchy theme answers, to try the site locally",
-	"MAGPIE_PARTNERS":       "where magpie's own partner list is read from (a URL, or off), not a folder",
+	"MAGPIE_ADDR":           "magpie-friday's own",
+	"MAGPIE_DEBUG":          "magpie-friday's own debug flag",
+	"MAGPIE_PUBLIC_URL":     "magpie-friday's own public URL",
+	"MAGPIE_TRUST_PROXY":    "magpie-friday's own: a proxy here signs its clients in (#1022)",
+	"MAGPIE_EFFORT_UPDATES": "magpie-friday's own switch for effort updates (#617)",
+	"MAGPIE_SITE_ORIGIN":    "a site origin magpie-friday's Omarchy theme answers, to try the site locally",
+	"MAGPIE_PARTNERS":       "where magpie-friday's own partner list is read from (a URL, or off), not a folder",
 	"CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "Claude Code's behaviour flag, not an agent's folder",
 	"GIT_SSH":         "the user's own SSH program for git, which a skill fetched with their git keeps",
 	"GIT_SSH_COMMAND": "the same, as a command",
@@ -49,8 +49,8 @@ var notAnAgent = map[string]string{
 //
 // The five packages are this one, sessions, provider, library and gateway,
 // with appdir's codex.go, where CODEX_HOME is read for all of them:
-// every agent's folder variable magpie reads is read in one of them, and the
-// rest of the repository reads only magpie's own variables, the process' and
+// every agent's folder variable magpie-friday reads is read in one of them, and the
+// rest of the repository reads only magpie-friday's own variables, the process' and
 // the desktop's. Their sources are read as files rather than imported, since a
 // test in sessions or provider cannot import this package, which imports
 // them; what the walk looks at is what they say, not what they do.

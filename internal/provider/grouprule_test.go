@@ -248,7 +248,7 @@ func TestSaveGroupRules(t *testing.T) {
 	}
 }
 
-// A group with an intent needs a classifier: a model magpie knows, or
+// A group with an intent needs a classifier: a model magpie-friday knows, or
 // another group, never itself. Without intents it keeps none.
 func TestSaveGroupClassifier(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
@@ -273,7 +273,7 @@ func TestSaveGroupClassifier(t *testing.T) {
 			t.Errorf("%q: %v, want …%s", tc.classifier, err, tc.err)
 		}
 	}
-	if err := SaveGroup(Group{Name: "R", Members: []string{"a/m", "b/big"}, Rules: intent, Classifier: " magpie/a/m "}); err != nil {
+	if err := SaveGroup(Group{Name: "R", Members: []string{"a/m", "b/big"}, Rules: intent, Classifier: " magpie-friday/a/m "}); err != nil {
 		t.Fatal(err)
 	}
 	g, _, _ := FindGroup(GroupPrefix + "r")

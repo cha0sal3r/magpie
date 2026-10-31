@@ -16,7 +16,7 @@ const { test } = require("node:test");
 const { chromium, webkit } = require("playwright");
 
 const assets = path.resolve(__dirname, "../assets");
-const SA = "magpie@my-project-123.iam.gserviceaccount.com";
+const SA = "magpie-friday@my-project-123.iam.gserviceaccount.com";
 const presets = (added) => [
   { id: "google", name: "Google Gemini", icon: "gemini-color", kind: "vendor", chat: "https://generativelanguage.googleapis.com/v1beta/openai", note: "Gemini Developer API", added: false },
   {

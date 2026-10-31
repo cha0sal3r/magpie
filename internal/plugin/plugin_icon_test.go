@@ -10,7 +10,7 @@ import (
 
 // Lemon on Discord: can a plugin give its provider its own icon, and say
 // what its API key is asked as? The auth hook's icon, else package.json's
-// magpie.icon, is passed on when it is an https URL or a data:image URI;
+// magpie-friday.icon, is passed on when it is an https URL or a data:image URI;
 // an "api" method's placeholder is its key's hint, and its label the
 // key's title unless that only says "API key".
 func TestPluginOwnIconAndKeyHint(t *testing.T) {
@@ -56,7 +56,7 @@ func TestPluginOwnIconAndKeyHint(t *testing.T) {
 	if got := (Method{Type: "api"}).KeyTitle("Lime"); got != "Lime API key" {
 		t.Errorf("no label's key title = %q", got)
 	}
-	// kept for when magpie has only just started
+	// kept for when magpie-friday has only just started
 	for _, p := range Cached() {
 		if p.ID == "lemon" && p.Icon != lemon.Icon {
 			t.Errorf("cached icon = %.60q", p.Icon)

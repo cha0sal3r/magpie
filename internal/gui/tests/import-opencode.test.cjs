@@ -16,7 +16,7 @@ const sources = () => [{
   items: [
     { ref: "opencode-go", from: "auth.json", fingerprint: "go", status: "new",
       provider: { id: "opencode-go", name: "OpenCode Go", icon: "opencode", preset: "opencode-go", chat: "https://opencode.ai/zen/go/v1", key: "sk-g…7c" } },
-    { ref: "anthropic", from: "auth.json", fingerprint: "ant", skip: "it is a sign-in, not a key; add the subscription in magpie",
+    { ref: "anthropic", from: "auth.json", fingerprint: "ant", skip: "it is a sign-in, not a key; add the subscription in magpie-friday",
       provider: { name: "anthropic" } },
   ],
 }];
@@ -70,9 +70,9 @@ for (const engine of engines) {
         const ant = picker.locator(".approw", { hasText: "anthropic" });
         assert.equal(await go.locator('input[type="checkbox"]').isChecked(), true);
         assert.equal(await ant.locator('input[type="checkbox"]').isDisabled(), true);
-        assert.equal(await ant.locator(".sub", { hasText: await T("it is a sign-in, not a key; add the subscription in magpie") }).count(), 1);
+        assert.equal(await ant.locator(".sub", { hasText: await T("it is a sign-in, not a key; add the subscription in magpie-friday") }).count(), 1);
         assert.equal(await ant.locator(".apptag").textContent(), await T("Can't import"));
-        if (lang !== "en") assert.notEqual(await T("it is a sign-in, not a key; add the subscription in magpie"), "it is a sign-in, not a key; add the subscription in magpie");
+        if (lang !== "en") assert.notEqual(await T("it is a sign-in, not a key; add the subscription in magpie-friday"), "it is a sign-in, not a key; add the subscription in magpie-friday");
 
         const fits = await picker.evaluate((ed) => [...ed.querySelectorAll(".approw")].every((r) => r.scrollWidth <= r.clientWidth + 1) && ed.getBoundingClientRect().right <= innerWidth);
         assert(fits, "rows fit the window");

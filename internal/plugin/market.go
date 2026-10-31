@@ -16,13 +16,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/ghtoken"
-	"github.com/yetone/magpie/internal/source"
-	"github.com/yetone/magpie/internal/update"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/ghtoken"
+	"github.com/cha0sal3r/magpie-friday/internal/source"
+	"github.com/cha0sal3r/magpie-friday/internal/update"
 )
 
-// The plugin market: the plugins magpie suggests, from the community
+// The plugin market: the plugins magpie-friday suggests, from the community
 // repo's registry.json (a copy is built in, for when GitHub can't be
 // reached), each with what npm says of it now; and npm's search for the
 // rest.
@@ -40,7 +40,7 @@ type Listing struct {
 	Name      string            `json:"name"`
 	Icon      string            `json:"icon,omitempty"`
 	Providers []string          `json:"providers,omitempty"` // OpenCode's ids of those it signs in to
-	Community bool              `json:"community,omitempty"` // written by magpie's community
+	Community bool              `json:"community,omitempty"` // written by magpie-friday's community
 	Replaces  string            `json:"replaces,omitempty"`  // the built-in subscription it does the work of
 	Kind      string            `json:"kind,omitempty"`      // "middleware" for gateway middleware, "agent" for an agent, "tools" for tools alone, "page" for a page alone; none for a provider
 	Summary   map[string]string `json:"summary,omitempty"`   // by language: en, zh
@@ -60,12 +60,12 @@ type NPM struct {
 	Repository  string `json:"repository,omitempty"`
 	Weekly      int    `json:"weekly"` // downloads last week
 	// Icon is the picture the package gives in package.json's
-	// magpie.icon, as npm has it: magpie checks and keeps it before the
+	// magpie-friday.icon, as npm has it: magpie-friday checks and keeps it before the
 	// page shows it, as a GitHub-tagged plugin's (the GUI's listings)
 	Icon string `json:"icon,omitempty"`
 }
 
-// ownIcon is a picture a package.json's magpie.icon gives, as host.js's
+// ownIcon is a picture a package.json's magpie-friday.icon gives, as host.js's
 // iconOf takes one: an https URL or a data:image URI, not too big; ""
 // for anything else.
 func ownIcon(said string) string {
@@ -89,7 +89,7 @@ var (
 )
 
 // npmEntry is what npm said of a package, and when; kept on disk beside
-// the market's copy, so a magpie just started shows it before npm answers.
+// the market's copy, so a magpie-friday just started shows it before npm answers.
 type npmEntry struct {
 	Info NPM       `json:"info"`
 	At   time.Time `json:"at"`
@@ -119,7 +119,7 @@ func npmCached() map[string]npmEntry {
 }
 
 // ReloadInfo forgets what npm said, as kept in memory: the next ask reads
-// it from disk again, as a magpie just started does.
+// it from disk again, as a magpie-friday just started does.
 func ReloadInfo() {
 	npmMu.Lock()
 	npmCache = nil
@@ -163,8 +163,8 @@ func parseMarket(b []byte) ([]Listing, error) {
 	}
 	out := r.Plugins[:0]
 	for _, l := range r.Plugins {
-		// magpie's community's alone: others' OpenCode plugins weren't
-		// written against magpie's sign-ins, and are found by a search
+		// magpie-friday's community's alone: others' OpenCode plugins weren't
+		// written against magpie-friday's sign-ins, and are found by a search
 		if l.Package != "" && pkgName.MatchString(l.Package) && l.Community {
 			if l.Name == "" {
 				l.Name = l.Package
@@ -178,7 +178,7 @@ func parseMarket(b []byte) ([]Listing, error) {
 	return out, nil
 }
 
-// Market is the list of plugins magpie suggests: fetched at most every six
+// Market is the list of plugins magpie-friday suggests: fetched at most every six
 // hours, else the copy fetched last, else the one built in.
 func Market(ctx context.Context) []Listing {
 	l, _ := market(ctx)
@@ -251,7 +251,7 @@ func fetchJSONFrom(ctx context.Context, u string, limit int64, do func(*http.Cli
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("User-Agent", "magpie")
+	req.Header.Set("User-Agent", "magpie-friday")
 	req.Header.Set("Accept", "application/json")
 	// GitHub's API is asked with the user's GitHub token, as the
 	// library's skills are: without one it answers an address 60
@@ -469,7 +469,7 @@ func npmAsk(ctx context.Context, name string) (NPM, error) {
 	wg.Wait()
 	// a @magpie-community package npm doesn't have yet, or has an older
 	// version of, is as the community repo's dist branch has it, which
-	// magpie installs it from (dist.go)
+	// magpie-friday installs it from (dist.go)
 	if d, ok := distInfo(ctx, name); ok && (latestErr != nil || update.Newer(d.Version, info.Version)) {
 		info, latestErr = d, nil
 	}
@@ -526,7 +526,7 @@ func Search(ctx context.Context, q string) ([]Hit, error) {
 	go func() {
 		defer wg.Done()
 		// a pi package that signs in to a provider or brings one; one
-		// that only adds pi a command or a tool has nothing for magpie
+		// that only adds pi a command or a tool has nothing for magpie-friday
 		pi, piE = searchNPM(ctx, "keywords:pi-package "+q, func(text string, kw []string) bool {
 			return slices.Contains(kw, "pi-package") && (strings.Contains(text, "auth") || strings.Contains(text, "provider"))
 		})
@@ -693,7 +693,7 @@ func Installed(spec string) string {
 }
 
 // InstalledIcon is the picture the installed plugin spec's package.json
-// gives in magpie.icon, as ownIcon takes one: the plugin's own, for its
+// gives in magpie-friday.icon, as ownIcon takes one: the plugin's own, for its
 // row, apart from those its providers give themselves in the auth hook
 // (#1775). "" for none, or a plugin that is one file.
 func InstalledIcon(spec string) string {

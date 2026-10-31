@@ -5,17 +5,17 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // #1301: Codex compacts remotely (compaction v2: a compaction_trigger on
 // /responses, exactly one compaction item back) for any provider table
-// named "OpenAI", as CC Switch names its relay tables. magpie points those
-// tables at /v1 while a magpie model is on, so the trigger reached /v1, went
+// named "OpenAI", as CC Switch names its relay tables. magpie-friday points those
+// tables at /v1 while a magpie-friday model is on, so the trigger reached /v1, went
 // on to the relay as it came, and the relay's message came back: "remote
 // compaction v2 expected exactly one compaction output item, got 0 from 1
-// output items". On /v1 the summary is magpie's to make, as on Codex's
-// backend path, and magpie's summary goes back to the model as text.
+// output items". On /v1 the summary is magpie-friday's to make, as on Codex's
+// backend path, and magpie-friday's summary goes back to the model as text.
 func TestCodexCompactionTriggerOnV1(t *testing.T) {
 	f := &fake{t: t, reply: sse(
 		`data: {"type":"response.created","response":{"id":"resp_r1","status":"in_progress","output":[]}}`,

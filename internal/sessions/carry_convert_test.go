@@ -17,7 +17,7 @@ import (
 // files Claude Code attached) is taken out; their lines stay, as the chain
 // of parents runs through them.
 const (
-	carryCwd    = "/Users/yetone/workspace/projects/magpie-wt/carry-sb/proj"
+	carryCwd    = "/Users/yetone/workspace/projects/magpie-friday-wt/carry-sb/proj"
 	carryClaude = "5b0c7a1e-3f2d-4c8b-9a6e-1d2c3b4a5f60"
 	carryCodex  = "01a1712c-4d18-79a3-8dad-145c6b40351e"
 )
@@ -40,7 +40,7 @@ func carrySetup(t *testing.T) (claudeSrc, codexSrc string) {
 			t.Fatal(err)
 		}
 	}
-	os.WriteFile(filepath.Join(codex, "config.toml"), []byte("model_provider = \"magpie\"\n"), 0o644)
+	os.WriteFile(filepath.Join(codex, "config.toml"), []byte("model_provider = \"magpie-friday\"\n"), 0o644)
 	old := agentThere
 	agentThere = func(string) bool { return true }
 	t.Cleanup(func() {
@@ -80,7 +80,7 @@ func sum(t *testing.T, path string) string {
 
 // A Claude Code session is carried on in Codex: a new rollout in Codex's
 // own folder, which Codex's own reader takes as a rollout (its provider the
-// one Codex uses now, no base_instructions of magpie's), the Bash call as
+// one Codex uses now, no base_instructions of magpie-friday's), the Bash call as
 // Codex's exec_command with its output, the other tools as what the agent
 // said, the thinking left behind, and the Claude Code file as it was.
 func TestCarryClaudeToCodex(t *testing.T) {
@@ -107,7 +107,7 @@ func TestCarryClaudeToCodex(t *testing.T) {
 	raw := sum(t, r.Path)
 	lines := readLines(t, r.Path)
 	meta := lines[0]["payload"].(map[string]any)
-	if lines[0]["type"] != "session_meta" || meta["id"] != r.ID || meta["cwd"] != carryCwd || meta["model_provider"] != "magpie" || meta["base_instructions"] != nil {
+	if lines[0]["type"] != "session_meta" || meta["id"] != r.ID || meta["cwd"] != carryCwd || meta["model_provider"] != "magpie-friday" || meta["base_instructions"] != nil {
 		t.Fatalf("session_meta %v", lines[0])
 	}
 	if !strings.HasPrefix(raw, `{"timestamp":`) {
@@ -147,7 +147,7 @@ func TestCarryClaudeToCodex(t *testing.T) {
 			t.Fatalf("%q not said in %q", want, joined)
 		}
 	}
-	// magpie lists it as Codex's, and reads it as Codex's
+	// magpie-friday lists it as Codex's, and reads it as Codex's
 	Reset()
 	c, ok := Find("codex", r.ID)
 	if !ok || c.Cwd != carryCwd || !strings.HasPrefix(c.Title, "My dog is called Biscuit") || len(c.Models) != 0 {
@@ -239,7 +239,7 @@ func TestCarryCodexToClaude(t *testing.T) {
 			t.Fatalf("result of %s: %q", id, results[id])
 		}
 	}
-	// magpie lists it as Claude Code's, with nothing spent
+	// magpie-friday lists it as Claude Code's, with nothing spent
 	Reset()
 	c, ok := Find("claude", r.ID)
 	if !ok || c.Cwd != carryCwd || !strings.HasPrefix(c.Title, "My favourite colour is teal") || len(c.Models) != 0 || c.Cost != 0 {

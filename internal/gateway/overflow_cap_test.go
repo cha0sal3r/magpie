@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A relay's own cap on one request's input is a refusal over the input's
@@ -18,7 +18,7 @@ import (
 // taken for one.
 func TestRelayInputCapGoesToTheNextMember(t *testing.T) {
 	// the vendor's words as the reporter's routing log has them, after
-	// magpie's "B.ai: "; the JSON around them is not the reporter's
+	// magpie-friday's "B.ai: "; the JSON around them is not the reporter's
 	const capped = "Input token exceed the limit (request id: 2026…)"
 	if !tooLong(400, "B.ai: "+capped) {
 		t.Errorf("%q isn't taken for a request too long", capped)

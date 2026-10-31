@@ -12,9 +12,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agentenv"
-	"github.com/yetone/magpie/internal/davsync"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/davsync"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // webdavHome is a machine of its own: no agent on it, no gateway at the
@@ -89,7 +89,7 @@ func (d *davServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (d *davServer) file() []byte {
 	d.mu.Lock()
 	defer d.mu.Unlock()
-	return d.files["/dav/magpie/magpie.magpie-backup"]
+	return d.files["/dav/magpie-friday/magpie-friday.magpie-friday-backup"]
 }
 
 func (d *davServer) passwords() []string {

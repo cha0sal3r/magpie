@@ -7,24 +7,24 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// The web search APIs, from the terminal: magpie search (#419).
+// The web search APIs, from the terminal: magpie-friday search (#419).
 
 const searchUsage = `usage:
-  magpie search                              the search APIs a model's web search goes to
-  magpie search add <api> <key> [url=<address>] [pick=turns|order]
+  magpie-friday search                              the search APIs a model's web search goes to
+  magpie-friday search add <api> <key> [url=<address>] [pick=turns|order]
                                              add one, or give one a new key
                                              (several keys as k1,k2: searches take them in turn,
                                              or with pick=order the first until it is refused)
-  magpie search add searxng url=<address> [<key>]
-  magpie search add you [<key>]              You.com: free with no key (100 searches a day)
-  magpie search off <api>                    keep one, key and all, but never ask it
-  magpie search on <api>                     ask it again
-  magpie search move <api> <n>               put one at place n in the order they are asked
-  magpie search rm <api>                     take one away
+  magpie-friday search add searxng url=<address> [<key>]
+  magpie-friday search add you [<key>]              You.com: free with no key (100 searches a day)
+  magpie-friday search off <api>                    keep one, key and all, but never ask it
+  magpie-friday search on <api>                     ask it again
+  magpie-friday search move <api> <n>               put one at place n in the order they are asked
+  magpie-friday search rm <api>                     take one away
 
   apis: tavily, brave, exa, firecrawl, you, deepseek, searxng
 
@@ -36,7 +36,7 @@ const searchUsage = `usage:
   With several keys, a key the API refused lately (turned away, out of credit, rate
   limited) rests and is asked only after the others: a rate limit for as long as the API
   says (30s to 10m), a key turned away for 10 minutes, one out of credit for an hour.
-  For Tavily, magpie search shows what each key has used of its limit (GET /usage).
+  For Tavily, magpie-friday search shows what each key has used of its limit (GET /usage).
 
   A client's web search (Claude Code's WebSearch, Codex's web_search) is done by the
   model's provider when it can search, then by a provider that can (a Claude or ChatGPT
@@ -45,15 +45,15 @@ const searchUsage = `usage:
   to the model as it is, and no model is asked to read it.
   Without any of them, the client's search is left out.
 
-  e.g. magpie search add tavily tvly-…
-       magpie search add searxng url=https://searx.example.com
-       magpie search add you`
+  e.g. magpie-friday search add tavily tvly-…
+       magpie-friday search add searxng url=https://searx.example.com
+       magpie-friday search add you`
 
 func searchCmd(args []string) error {
 	if len(args) == 0 {
 		as := provider.StoredSearchAPIs()
 		if len(as) == 0 {
-			fmt.Println(muted.Render("  no search API · magpie search add <tavily|brave|exa|firecrawl|you|deepseek|searxng> <key>"))
+			fmt.Println(muted.Render("  no search API · magpie-friday search add <tavily|brave|exa|firecrawl|you|deepseek|searxng> <key>"))
 			return nil
 		}
 		for i, a := range as {
@@ -91,7 +91,7 @@ func searchCmd(args []string) error {
 		return nil
 	case "add", "set":
 		if len(args) < 2 {
-			return fmt.Errorf("magpie search add <api> <key> [url=<address>]")
+			return fmt.Errorf("magpie-friday search add <api> <key> [url=<address>]")
 		}
 		a := provider.SearchAPI{Vendor: strings.ToLower(args[1])}
 		// a new key alone keeps the address set before (#1580); url= with
@@ -107,7 +107,7 @@ func searchCmd(args []string) error {
 			} else if a.Key == "" {
 				a.Key = v
 			} else {
-				return fmt.Errorf("magpie search add <api> <key> [url=<address>] [pick=turns|order]")
+				return fmt.Errorf("magpie-friday search add <api> <key> [url=<address>] [pick=turns|order]")
 			}
 		}
 		if i := slices.IndexFunc(provider.StoredSearchAPIs(), func(x provider.SearchAPI) bool { return x.Vendor == a.Vendor }); i >= 0 && !urlGiven {
@@ -122,7 +122,7 @@ func searchCmd(args []string) error {
 		return nil
 	case "on", "off":
 		if len(args) != 2 {
-			return fmt.Errorf("magpie search %s <api>", args[0])
+			return fmt.Errorf("magpie-friday search %s <api>", args[0])
 		}
 		if err := provider.SwitchSearchAPI(strings.ToLower(args[1]), args[0] == "on"); err != nil {
 			return err
@@ -137,7 +137,7 @@ func searchCmd(args []string) error {
 		as := provider.StoredSearchAPIs()
 		i := slices.IndexFunc(as, func(x provider.SearchAPI) bool { return len(args) > 1 && x.Vendor == strings.ToLower(args[1]) })
 		if len(args) != 3 || n < 1 || n > len(as) {
-			return fmt.Errorf("magpie search move <api> <n>, n from 1 to %d", len(as))
+			return fmt.Errorf("magpie-friday search move <api> <n>, n from 1 to %d", len(as))
 		}
 		if i < 0 {
 			return fmt.Errorf("no %s search API is set up", strings.ToLower(args[1]))
@@ -155,7 +155,7 @@ func searchCmd(args []string) error {
 		return nil
 	case "rm", "remove":
 		if len(args) != 2 {
-			return fmt.Errorf("magpie search rm <api>")
+			return fmt.Errorf("magpie-friday search rm <api>")
 		}
 		if err := provider.RemoveSearchAPI(strings.ToLower(args[1])); err != nil {
 			return err
@@ -163,10 +163,10 @@ func searchCmd(args []string) error {
 		fmt.Println(green.Render("✓"), "removed")
 		return nil
 	}
-	return fmt.Errorf("magpie search [add|on|off|move|rm] (magpie search help)")
+	return fmt.Errorf("magpie-friday search [add|on|off|move|rm] (magpie-friday search help)")
 }
 
-// quotaLine is what one key has used of its limit, as magpie search lists
+// quotaLine is what one key has used of its limit, as magpie-friday search lists
 // it: unknown, with why, when it couldn't be read, and never 0.
 func quotaLine(q gateway.SearchKeyQuota) string {
 	var line string

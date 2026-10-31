@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // mistralRefuseMessages answers as Mistral's chat completions do a message
@@ -99,13 +99,13 @@ func TestMistralReasoningAsThinking(t *testing.T) {
 	code, body = postTo(t, srv, "/v1/chat/completions", `{"model":"m1","stream":false,"store":false,"messages":[
         {"role":"user","content":"Read note.txt."},
         {"role":"assistant","content":null,"tool_calls":`+calls+`,"reasoning_content":"Let me use the read tool."},
-        {"role":"tool","tool_call_id":"call_1","content":"secret: magpie"}]}`)
+        {"role":"tool","tool_call_id":"call_1","content":"secret: magpie-friday"}]}`)
 	if code != 200 {
 		t.Fatalf("tool turn: %d after %d calls: %s", code, f.calls, body)
 	}
 	ms = sentMessages(t, f.got)
 	sameJSON(t, ms[1], `{"role":"assistant","content":[{"type":"thinking","thinking":[{"type":"text","text":"Let me use the read tool."}]}],"tool_calls":`+calls+`}`)
-	sameJSON(t, ms[2], `{"role":"tool","tool_call_id":"call_1","content":"secret: magpie"}`)
+	sameJSON(t, ms[2], `{"role":"tool","tool_call_id":"call_1","content":"secret: magpie-friday"}`)
 }
 
 // Another vendor that turns an earlier turn's thinking away the way
@@ -117,7 +117,7 @@ func TestMessageReasoningRefused(t *testing.T) {
 	srv := New()
 	req := `{"model":"m1","stream":false,"messages":[{"role":"user","content":"Read note.txt."},` +
 		`{"role":"assistant","content":null,"tool_calls":[{"id":"call_1","type":"function","function":{"name":"read","arguments":"{}"}}],"reasoning_content":"Let me read it."},` +
-		`{"role":"tool","tool_call_id":"call_1","content":"secret: magpie"}]}`
+		`{"role":"tool","tool_call_id":"call_1","content":"secret: magpie-friday"}]}`
 	// taken: goes as it came
 	if code, body := postTo(t, srv, "/v1/chat/completions", req); code != 200 || f.calls != 1 ||
 		!bytes.Contains(f.got, []byte(`"reasoning_content":"Let me read it."`)) {

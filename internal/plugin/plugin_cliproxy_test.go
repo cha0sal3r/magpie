@@ -10,7 +10,7 @@ import (
 )
 
 // 𝕏 on Discord: the Grok plugin's sign-in said "grok login gave no link
-// to open". The plugin runs `grok login`, and the host has magpie's proxy
+// to open". The plugin runs `grok login`, and the host has magpie-friday's proxy
 // only as MAGPIE_*_PROXY, so the CLI went out with none where x.ai is
 // reached only through one. A program a plugin starts has it, as the
 // built-in's `grok login` had it.
@@ -41,7 +41,7 @@ func TestPluginCLIHasTheProxy(t *testing.T) {
 }
 
 // larchsis on 𝕏: a plugin's sign-in on Windows 11 said its download
-// failed, with a proxy set in magpie and none in the system. The plugin
+// failed, with a proxy set in magpie-friday and none in the system. The plugin
 // downloads in a Node program it starts, and Node's fetch goes past
 // HTTPS_PROXY unless NODE_USE_ENV_PROXY=1 says to take it, so the proxy
 // the host handed on was never used. It is said with the proxy, and a
@@ -80,11 +80,11 @@ func TestPluginNodeTakesTheProxy(t *testing.T) {
 
 // #1363 (iamyhzhao): Grok, moved onto its plugin, read as signed out
 // after nearly every restart of the computer, until moved back to the
-// built-in and on again. magpie, started at login, started the plugin
+// built-in and on again. magpie-friday, started at login, started the plugin
 // host before the proxy app had set the system's proxy, and the host
 // keeps the proxy it was started with: `grok models`, which renews the
 // sign-in, went out with none from then on. A host whose proxy is no
-// longer magpie's is replaced at the next call.
+// longer magpie-friday's is replaced at the next call.
 func TestPluginHostTakesANewProxy(t *testing.T) {
 	sandbox(t)
 	prev := proxyLookEvery

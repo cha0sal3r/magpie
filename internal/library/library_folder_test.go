@@ -66,7 +66,7 @@ func TestFoundInLibraryFolder(t *testing.T) {
 	ext := filepath.Join(h, "elsewhere/linky")
 	skill(t, ext, "linky", "Linked")
 	symlink(t, ext, skillDir("linky"))
-	// magpie's link to it, left in Codex
+	// magpie-friday's link to it, left in Codex
 	symlink(t, hand, filepath.Join(h, ".codex/skills/hand"))
 	// not a skill
 	write(t, filepath.Join(skillsDir(), "notes/README.md"), "")

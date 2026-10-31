@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 func TestTokenFloor(t *testing.T) {
@@ -81,7 +81,7 @@ func TestTooFewTokensAskedAgain(t *testing.T) {
 
 // A floor said with >= or > (Command Code's "Expected a value >= 16") is
 // read as well, whichever way the error reaches the classifier: an
-// Anthropic client's error is magpie's own re-encoding of the vendor's,
+// Anthropic client's error is magpie-friday's own re-encoding of the vendor's,
 // and a vendor may send the sign escaped itself (#260).
 func TestTooFewTokensSaidWithSigns(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())

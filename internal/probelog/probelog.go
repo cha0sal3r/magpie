@@ -1,8 +1,8 @@
-// Package probelog writes down the requests magpie sends a provider on its
+// Package probelog writes down the requests magpie-friday sends a provider on its
 // own behalf, outside any agent's turn: the provider editor's Test, its
 // Detect APIs and per-model detection, and a model list's refresh (neiko
 // and gys619 on Discord: a test left no trace in the request log). Each
-// such request is one row of the request log, marked as magpie's own test
+// such request is one row of the request log, marked as magpie-friday's own test
 // (usage.SourceProbe) and never counted in a usage or cost total.
 //
 // The provider package marks a context with the kind of test (With); every
@@ -123,13 +123,13 @@ func Note(ctx context.Context, u, method string, start time.Time, status int, er
 		r.Provider = host // a provider being added has no id yet
 	}
 	if r.Provider == "" {
-		r.Provider = "magpie" // never "": the log reads that as turned away
+		r.Provider = "magpie-friday" // never "": the log reads that as turned away
 	}
 	Sink(r)
 }
 
 // NoteResult writes down one request that isn't sent through an HTTP
-// client of magpie's (Claude Code run for a test, the gateway's translated
+// client of magpie-friday's (Claude Code run for a test, the gateway's translated
 // test), from what came of it.
 func NoteResult(ctx context.Context, endpoint string, start time.Time, status int, errText string) {
 	m, ok := from(ctx)
@@ -139,7 +139,7 @@ func NoteResult(ctx context.Context, endpoint string, start time.Time, status in
 	r := Row{Time: start, Kind: m.kind, Provider: m.provider, Account: m.account, Model: m.model,
 		Endpoint: endpoint, Status: status, Millis: time.Since(start).Milliseconds(), Error: errText}
 	if r.Provider == "" {
-		r.Provider = "magpie"
+		r.Provider = "magpie-friday"
 	}
 	Sink(r)
 }

@@ -1,14 +1,14 @@
 package usage
 
 import (
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 	"math"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 func resetUsageTest(t *testing.T) {
@@ -64,7 +64,7 @@ func TestGatewaySessionsCacheRefreshAndOwnership(t *testing.T) {
 	}
 }
 
-// magpie makes up no session ids, so one starting "request-" is the
+// magpie-friday makes up no session ids, so one starting "request-" is the
 // client's own and is counted like any other (#1355).
 func TestClientRequestPrefixedSessionsCount(t *testing.T) {
 	resetUsageTest(t)

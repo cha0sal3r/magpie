@@ -93,7 +93,7 @@ func TestCompatible(t *testing.T) {
 // them; a test may too.
 func TestPluginsImportOnlyCore(t *testing.T) {
 	root := filepath.Join("..", "..")
-	const mod = "github.com/yetone/magpie/plugins/"
+	const mod = "github.com/cha0sal3r/magpie-friday/plugins/"
 	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err

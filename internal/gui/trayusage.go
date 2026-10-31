@@ -11,15 +11,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/fx"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/fx"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // Settings → Allowances in the menu bar: the windows of the subscriptions and
 // plans ticked there, beside the tray icon, for keeping an eye on them
-// without opening magpie. The Mac's menu bar draws each as its logo with
+// without opening magpie-friday. The Mac's menu bar draws each as its logo with
 // its two windows stacked, "42%" over "18%", side by side (trayimage), or
 // as the windows alone, a thin line between cards, when Settings turns the
 // logos off; a tray elsewhere gets them as text ("42% · 18% | 10% · 5%"), Windows' in
@@ -173,7 +173,7 @@ func until(d time.Duration) string {
 }
 
 // trayUsageCards are the cards settings.TrayUsages names, in its order,
-// among the Usage page's (cached as there), and magpie's own totals it
+// among the Usage page's (cached as there), and magpie-friday's own totals it
 // names (trayTotal); one gone is left out. The vendors aren't asked when
 // only totals are named.
 func trayUsageCards(ctx context.Context, ids []string) []provider.SubscriptionQuota {
@@ -201,7 +201,7 @@ func trayUsageCards(ctx context.Context, ids []string) []provider.SubscriptionQu
 	return trayPick(cards, ids, time.Now())
 }
 
-// trayTotal starts the id of a card of magpie's own count instead of a
+// trayTotal starts the id of a card of magpie-friday's own count instead of a
 // subscription's (#1984): "usage:today", "usage:7d", the tokens every
 // agent's requests came to over the Usage page's period, over what they
 // cost. A provider's id has no ":", so no subscription's card is taken for
@@ -238,7 +238,7 @@ func trayTotalCard(id string, t usage.Totals, currency string, rate float64) pro
 		when = "Last 7 days"
 	}
 	rows := []string{"Σ" + trayCount(t.Tokens()+t.CacheRead+t.CacheWrite)}
-	tip := when + " in magpie\n" + trayTokens(t)
+	tip := when + " in magpie-friday\n" + trayTokens(t)
 	if t.Cost > 0 {
 		c := usage.FormatCost(t.Cost, currency, rate)
 		if t.Unpriced > 0 {
@@ -284,14 +284,14 @@ func trayTokens(t usage.Totals) string {
 	return s + ")"
 }
 
-// trayIdleTip is the tooltip while the menu bar shows no cards: magpie's
+// trayIdleTip is the tooltip while the menu bar shows no cards: magpie-friday's
 // name over what went through it today, as the panel's Usage tab counts it
-// (ylorn on Discord: a Linux bar's tooltip said only "magpie"): every
+// (ylorn on Discord: a Linux bar's tooltip said only "magpie-friday"): every
 // token, split into input, output and cache as the usage:today card's
 // tooltip does (NextCommit on Discord), then the cost and the requests.
 func trayIdleTip(t usage.Totals, currency string, rate float64) string {
 	if t.Calls == 0 {
-		return "magpie\nToday: no requests yet"
+		return "magpie-friday\nToday: no requests yet"
 	}
 	line := "Today: " + trayTokens(t) + "\n"
 	if t.Cost > 0 {
@@ -305,7 +305,7 @@ func trayIdleTip(t usage.Totals, currency string, rate float64) string {
 	if t.Calls == 1 {
 		n = "request"
 	}
-	return fmt.Sprintf("magpie\n%s%d %s", line, t.Calls, n)
+	return fmt.Sprintf("magpie-friday\n%s%d %s", line, t.Calls, n)
 }
 
 // trayCount is a count as the Usage page says it in English: 133M, 1.2M,
@@ -364,7 +364,7 @@ var trayServedFresh = time.Hour
 // X: A used up, B answering, the menu bar still on A) — else the one
 // InUseLogin reckons the gateway goes to first; else the one that answered
 // last at all (a plugin's accounts, which InUseLogin doesn't know); the
-// provider's first card when magpie can't tell (the account in use first
+// provider's first card when magpie-friday can't tell (the account in use first
 // among them).
 func trayInUseCard(cards []provider.SubscriptionQuota, pid string, now time.Time) (provider.SubscriptionQuota, bool) {
 	var mine []provider.SubscriptionQuota
@@ -455,7 +455,7 @@ func trayUsageView(cards []provider.SubscriptionQuota, now time.Time, left, pace
 			c.Rows[i] = trayRow(r)
 		}
 		if strings.HasPrefix(q.Provider, trayTotal) {
-			// magpie's own: the bird beside it says whose, no logo of a vendor's
+			// magpie-friday's own: the bird beside it says whose, no logo of a vendor's
 			c.Plain = true
 			cells = append(cells, c)
 			continue

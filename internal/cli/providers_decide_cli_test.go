@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Bailian's decision model is added with its workspace or plan, and a
@@ -67,7 +67,7 @@ func TestRemoteMagpieAddReportsModels(t *testing.T) {
 				up.Close()
 			}
 			out, err := stdoutOf(t, func() error {
-				return providerCmd([]string{"provider", "add", "remote-magpie", "remote-key", "url=" + up.URL, "id=office"})
+				return providerCmd([]string{"provider", "add", "remote-magpie-friday", "remote-key", "url=" + up.URL, "id=office"})
 			})
 			if err != nil {
 				t.Fatal(err)

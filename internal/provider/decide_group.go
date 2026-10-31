@@ -48,7 +48,7 @@ func DecisionGroup(ms []Member) bool {
 
 // cleanDecisionGroup checks a decision group as SaveGroup is to keep it,
 // and a chat group for decision models or decision groups in it; all is
-// every group magpie has.
+// every group magpie-friday has.
 func cleanDecisionGroup(g *Group, all []Group) error {
 	var deciders, others []string
 	for _, m := range g.Members {

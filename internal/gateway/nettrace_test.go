@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // heldHeaders holds each request for hold before its headers, as a vendor
@@ -26,7 +26,7 @@ func (h heldHeaders) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // A try says where its time went up to the reply's first byte (TryNet):
 // a new connection's DNS, connect and TLS, writing the request, and the
 // vendor's wait before its headers, which is where a vendor's slow start
-// shows and not as magpie's (Discord, Magic_zero). The next request on
+// shows and not as magpie-friday's (Discord, Magic_zero). The next request on
 // the open connection spends none of the three. The route has the
 // usage record's split of the time before the request went out.
 func TestTryTellsWhereItsTimeWent(t *testing.T) {

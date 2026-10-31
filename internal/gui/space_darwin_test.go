@@ -17,7 +17,7 @@ import (
 // A click on the Dock icon with the window open on another Space goes to
 // that Space; one closed or minimised opens on the user's (#1252). A test
 // can't make or switch Spaces, so it checks what decides them: an open
-// window doesn't move to the active Space when magpie is activated, and one
+// window doesn't move to the active Space when magpie-friday is activated, and one
 // shown from closed or minimised does, while it is shown.
 func TestDockReopenKeepsTheWindowsSpace(t *testing.T) {
 	out, err := runAppKit(t, 30*time.Second, []string{"MAGPIE_TEST_DOCK_REOPEN=1"})
@@ -31,11 +31,11 @@ func init() {
 		return
 	}
 	app := application.New(application.Options{
-		Name: "magpie dock reopen regression",
+		Name: "magpie-friday dock reopen regression",
 		Mac:  application.MacOptions{ActivationPolicy: application.ActivationPolicyAccessory},
 		Assets: application.AssetOptions{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "text/html")
-			fmt.Fprint(w, `<p>magpie</p>`)
+			fmt.Fprint(w, `<p>magpie-friday</p>`)
 		})},
 	})
 	h := &host{app: app}

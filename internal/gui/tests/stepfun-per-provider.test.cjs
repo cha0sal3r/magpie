@@ -59,12 +59,12 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       // the one not signed in takes a paste, for its own id
       await page.locator(".row.provider", { hasText: "StepFun Work" }).click();
       const paste = page.locator(".editor .stepplan input[type=password]");
-      await paste.fill("magpie-stepfun:{}");
+      await paste.fill("magpie-friday-stepfun:{}");
       await paste.press("Enter");
       await wait(0);
       assert.equal(posts.length, 1);
       assert.equal(posts[0].path, "/api/stepfun/stepfun-2/session");
-      assert.equal(posts[0].body.text, "magpie-stepfun:{}");
+      assert.equal(posts[0].body.text, "magpie-friday-stepfun:{}");
 
       // the one signed in signs out, for its own id
       await page.locator(".editor .bar").getByRole("button", { name: words[lang].cancel, exact: true }).click();

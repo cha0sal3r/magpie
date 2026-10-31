@@ -10,14 +10,14 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // WuSix on Discord, codex/gpt-6-astra: "compaction: codex/gpt-6-astra
 // failed to summarise this conversation 3 times in a row (last: the model
 // wrote no summary)". codex/gpt-6-astra's catalog entry is Codex's own
 // (codexcat.ownEntry), which puts gpt-6 on Responses Lite, so Codex sends
-// its tools as an additional_tools input item and none in tools. magpie's
+// its tools as an additional_tools input item and none in tools. magpie-friday's
 // summary request emptied tools and left that item in, so the model was
 // still offered every tool Codex has, and an agentic model in the middle
 // of its work called one rather than writing the summary: a function_call

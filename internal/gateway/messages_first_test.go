@@ -8,7 +8,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // relayOfEvery is a relay that answers on Chat, Responses and Anthropic's
@@ -147,7 +147,7 @@ func TestAutoRelaysOnTheClientsOwnAPI(t *testing.T) {
 	}
 }
 
-// OpenCode speaks Chat to magpie for every model, Claude's too. A Claude
+// OpenCode speaks Chat to magpie-friday for every model, Claude's too. A Claude
 // model at a relay with an Anthropic URL is asked on Messages whatever the
 // agent spoke, so the cache breakpoints the translation adds reach the
 // relay: ReturnTrue's three setups of SuperGPT (Discord, after #997) were

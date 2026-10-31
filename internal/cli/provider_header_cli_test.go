@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 func TestShowProviderMasksSecretHeaders(t *testing.T) {
@@ -14,7 +14,7 @@ func TestShowProviderMasksSecretHeaders(t *testing.T) {
 		Chat: "http://127.0.0.1:8080/v1",
 		Headers: map[string]string{
 			"Authorization": "private-test-token",
-			"X-Client-Name": "magpie-test",
+			"X-Client-Name": "magpie-friday-test",
 		},
 	}
 	out, err := said(t, func() error { return showProvider(p) })
@@ -24,7 +24,7 @@ func TestShowProviderMasksSecretHeaders(t *testing.T) {
 	if strings.Contains(out, "private-test-token") || !strings.Contains(out, provider.Mask("private-test-token")) {
 		t.Fatalf("secret header was not masked:\n%s", out)
 	}
-	if !strings.Contains(out, "X-Client-Name: magpie-test") {
+	if !strings.Contains(out, "X-Client-Name: magpie-friday-test") {
 		t.Fatalf("ordinary header was unexpectedly masked:\n%s", out)
 	}
 }

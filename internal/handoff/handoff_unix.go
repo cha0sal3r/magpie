@@ -18,7 +18,7 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-// Offer is a socket waiting to be handed to the new magpie.
+// Offer is a socket waiting to be handed to the new magpie-friday.
 type Offer struct {
 	dir     string // the folder of the unix sockets, only this user's
 	pointer string
@@ -38,7 +38,7 @@ func sockDir() (string, error) {
 	var tmp string
 	var err error
 	for _, root := range []string{"", "/tmp"} {
-		if tmp, err = os.MkdirTemp(root, "magpie-ho-"); err != nil {
+		if tmp, err = os.MkdirTemp(root, "magpie-friday-ho-"); err != nil {
 			continue
 		}
 		if len(filepath.Join(tmp, "cb")) <= sockRoom {
@@ -57,7 +57,7 @@ func sockDir() (string, error) {
 	return tmp, nil
 }
 
-// Open offers the gateway's socket to the next magpie to run exe on the
+// Open offers the gateway's socket to the next magpie-friday to run exe on the
 // config folder dir.
 func Open(dir, exe string) (*Offer, error) {
 	tmp, err := sockDir()
@@ -105,7 +105,7 @@ func (o *Offer) Close() {
 	os.RemoveAll(o.dir)
 }
 
-// Withdraw removes the pointer, so no later magpie takes the Offer, and
+// Withdraw removes the pointer, so no later magpie-friday takes the Offer, and
 // stops taking connections; the folder stays for sockets still in use.
 func (o *Offer) Withdraw() {
 	if b, err := os.ReadFile(o.pointer); err == nil {
@@ -117,14 +117,14 @@ func (o *Offer) Withdraw() {
 	o.ln.Close()
 }
 
-// Conn is the new magpie, connected to an Offer.
+// Conn is the new magpie-friday, connected to an Offer.
 type Conn struct {
 	c     *net.UnixConn
 	r     *bufio.Reader
 	Hello Hello
 }
 
-// Accept waits for the new magpie to connect and say hello, until ctx
+// Accept waits for the new magpie-friday to connect and say hello, until ctx
 // ends.
 func (o *Offer) Accept(ctx context.Context) (*Conn, error) {
 	stop := context.AfterFunc(ctx, func() { o.ln.SetDeadline(time.Now()) })
@@ -168,22 +168,22 @@ func (c *Conn) Give(f *os.File, m Meta) error {
 	return nil
 }
 
-// AwaitAck waits, timeout at most, for the new magpie to say its gateway
+// AwaitAck waits, timeout at most, for the new magpie-friday to say its gateway
 // serves on the socket given. An error is the new one gone or not ready
 // in time: the socket is then still this one's to serve.
 func (c *Conn) AwaitAck(timeout time.Duration) error {
 	c.c.SetReadDeadline(time.Now().Add(timeout))
 	line, err := c.r.ReadString('\n')
 	if err != nil {
-		return fmt.Errorf("the new magpie didn't say it serves: %w", err)
+		return fmt.Errorf("the new magpie-friday didn't say it serves: %w", err)
 	}
 	if line != ackLine {
-		return fmt.Errorf("the new magpie said %q", strings.TrimSpace(line))
+		return fmt.Errorf("the new magpie-friday said %q", strings.TrimSpace(line))
 	}
 	return nil
 }
 
-// Close ends the connection; the new magpie reads it as the one before
+// Close ends the connection; the new magpie-friday reads it as the one before
 // gone.
 func (c *Conn) Close() { c.c.Close() }
 
@@ -194,7 +194,7 @@ type Taken struct {
 	c        *net.UnixConn
 }
 
-// Take takes the socket the magpie before this one offers, when it runs
+// Take takes the socket the magpie-friday before this one offers, when it runs
 // exe on dir: nil, nil when none does. It waits timeout at most.
 func Take(dir, exe string, hello Hello, timeout time.Duration) (*Taken, error) {
 	p, ok := readPointer(dir, exe)
@@ -249,7 +249,7 @@ func Take(dir, exe string, hello Hello, timeout time.Duration) (*Taken, error) {
 	return &Taken{Listener: ln, Meta: m, c: uc}, nil
 }
 
-// Ack tells the magpie before that this one serves on the socket.
+// Ack tells the magpie-friday before that this one serves on the socket.
 func (t *Taken) Ack() error {
 	t.c.SetWriteDeadline(time.Now().Add(5 * time.Second))
 	_, err := t.c.Write([]byte(ackLine))
@@ -257,7 +257,7 @@ func (t *Taken) Ack() error {
 	return err
 }
 
-// Close drops the connection without an ack: the magpie before keeps
+// Close drops the connection without an ack: the magpie-friday before keeps
 // serving.
 func (t *Taken) Close() { t.c.Close() }
 

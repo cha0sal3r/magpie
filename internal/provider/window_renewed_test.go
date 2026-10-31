@@ -138,7 +138,7 @@ func TestNextLoginTakesAPassedResetAsRenewed(t *testing.T) {
 	}
 }
 
-// What stops an account, for magpie quota wait and the Codex resets, is a
+// What stops an account, for magpie-friday quota wait and the Codex resets, is a
 // full window still to reset: one whose reset has passed doesn't stop it,
 // nor say when it is back.
 func TestUsedUpLeavesOutARenewedWindow(t *testing.T) {

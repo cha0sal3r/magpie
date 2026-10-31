@@ -88,7 +88,7 @@ func TestCostSplit(t *testing.T) {
 	}
 }
 
-// A price magpie saved before tiers and the 1-hour write reads as it did,
+// A price magpie-friday saved before tiers and the 1-hour write reads as it did,
 // and one with them reads back the same.
 func TestPriceJSON(t *testing.T) {
 	var old Price

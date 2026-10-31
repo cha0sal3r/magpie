@@ -15,16 +15,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/netproxy"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // agentCLI is a CLI a subscription runs through: how to find it, and the
 // vendor's install one-liners for a POSIX shell and for PowerShell. native,
 // when there is one, does what the shell one does without a shell, for a
-// magpie with none (its Docker image had no bash, curl or wget until #2834). setup: the
+// magpie-friday with none (its Docker image had no bash, curl or wget until #2834). setup: the
 // installer ends by running the CLI's own setup, which asks how to sign in;
-// magpie signs in itself once the CLI is there.
+// magpie-friday signs in itself once the CLI is there.
 type agentCLI struct {
 	Name   string
 	find   func() string
@@ -101,7 +101,7 @@ var installerTail = 5 * time.Second
 // Windows, and ends it, with what it started, installerTail after the CLI
 // is in place. Devin's runs `devin setup`, whose menu asking how to sign in
 // waits for a key on the console, and no one can answer the console an
-// installer gets from magpie (it has no window, and magpie keeps its
+// installer gets from magpie-friday (it has no window, and magpie-friday keeps its
 // output): the sign-in waited out installTimeout, then went on with
 // `devin setup` still running.
 func runUntilInstalled(ctx context.Context, cmd *exec.Cmd, c agentCLI) ([]byte, error) {
@@ -146,7 +146,7 @@ func runUntilInstalled(ctx context.Context, cmd *exec.Cmd, c agentCLI) ([]byte, 
 
 // shellInstallerRuns is whether a vendor's `curl … | bash` can run here:
 // bash, and curl, which every one-liner (and the scripts behind them)
-// downloads with. magpie's Docker image had none of them, and the install
+// downloads with. magpie-friday's Docker image had none of them, and the install
 // failed there with "exec: bash: not found". Since 7bfe3137 it has bash and
 // busybox's wget but still no curl, and the one-liner failed there too.
 // Since #2834 it is Debian with bash and curl, and the CLIs the one-liners
@@ -161,7 +161,7 @@ var shellInstallerRuns = func() bool {
 	return true
 }
 
-// installCLI installs c with its vendor's installer and makes sure magpie
+// installCLI installs c with its vendor's installer and makes sure magpie-friday
 // finds it afterwards.
 func installCLI(ctx context.Context, c agentCLI) error {
 	ctx, cancel := context.WithTimeout(ctx, installTimeout)
@@ -190,7 +190,7 @@ func installCLI(ctx context.Context, c agentCLI) error {
 		}
 		return errorf("installing %s failed (%s); install it yourself with `%s`, then sign in again", c.Name, msg, manual)
 	}
-	return errorf("the %s installer finished, but magpie can't find it; install it yourself with `%s`, then sign in again", c.Name, manual)
+	return errorf("the %s installer finished, but magpie-friday can't find it; install it yourself with `%s`, then sign in again", c.Name, manual)
 }
 
 // lastLine is the last line of a command's output with something on it,

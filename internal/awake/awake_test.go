@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/filememo"
+	"github.com/cha0sal3r/magpie-friday/internal/filememo"
 )
 
 func TestWant(t *testing.T) {

@@ -16,13 +16,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/filelock"
+	"github.com/cha0sal3r/magpie-friday/internal/filelock"
 )
 
 // savedTokenMu keeps two requests from refreshing one saved account at
 // once: the second would spend a refresh token the first just rotated. It
 // holds across magpies too (#1674): the gateway's refresh and one by a
-// magpie run from a terminal would each spend the same refresh token.
+// magpie-friday run from a terminal would each spend the same refresh token.
 var savedTokenMu = filelock.Mutex{Path: func() string { return loginsPath() + ".renew.lock" }}
 
 // SetLoginOn puts a saved account in use beside the agent's own, or takes
@@ -248,7 +248,7 @@ func renewSaved(ctx context.Context, agent, user string, force bool, stale strin
 	if home := codexHeldIn(*l); home != "" {
 		// the same for an account Codex is signed in to in another of
 		// its folders (CODEX_HOME=~/.codex-work): Codex there refreshes
-		// it too, so magpie renews it in that folder, never in a copy
+		// it too, so magpie-friday renews it in that folder, never in a copy
 		// whose refresh token would sign that Codex out
 		tok, accountID, err := codexTokenRenewing(ctx, home, stale)
 		if err != nil {
@@ -314,7 +314,7 @@ func heldByCodex(l savedLogin) bool {
 
 // savedRefreshFailed words a saved account's failed refresh. One the vendor
 // refused is marked lapsed on the account: that sign-in is gone and has to be
-// made again, in magpie; the agent's own login command would sign the agent
+// made again, in magpie-friday; the agent's own login command would sign the agent
 // in, not this account. A refresh that never got an answer marks nothing.
 func savedRefreshFailed(agent, user string, err error) error {
 	var refused refreshRefused

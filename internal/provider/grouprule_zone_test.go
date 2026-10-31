@@ -9,7 +9,7 @@ import (
 )
 
 // farZone is a zone whose clock is hours off this computer's at the week
-// the tests use: Asia/Shanghai (gaubeebangeel on X: magpie on a server in
+// the tests use: Asia/Shanghai (gaubeebangeel on X: magpie-friday on a server in
 // UTC, its user in Beijing), or America/New_York on a computer that keeps
 // Beijing's time, so a window read on the computer's clock is visibly wrong.
 func farZone(t *testing.T) (string, *time.Location) {
@@ -31,7 +31,7 @@ func farZone(t *testing.T) (string, *time.Location) {
 }
 
 // A window set in a zone holds at its hours there, whatever the clock of
-// the computer magpie runs on: the instant is given in UTC, as a server in
+// the computer magpie-friday runs on: the instant is given in UTC, as a server in
 // UTC reads it.
 func TestRuleTimeWindowInItsZone(t *testing.T) {
 	name, loc := farZone(t)
@@ -85,7 +85,7 @@ func TestRuleTimeWindowWithoutZoneIsLocal(t *testing.T) {
 	}
 }
 
-// A zone magpie doesn't know (a file edited by hand) is an unknown clock:
+// A zone magpie-friday doesn't know (a file edited by hand) is an unknown clock:
 // the window never holds — neither always nor at hours a day's half off —
 // and saving one is refused.
 func TestRuleTimeWindowUnknownZone(t *testing.T) {
@@ -109,7 +109,7 @@ func TestRuleTimeWindowUnknownZone(t *testing.T) {
 	}
 }
 
-// Typed: tz=, or time=…@zone; read back as tz=. A zone magpie doesn't know
+// Typed: tz=, or time=…@zone; read back as tz=. A zone magpie-friday doesn't know
 // is refused with what one looks like, and tz= alone names no hours.
 func TestParseRuleTimeZone(t *testing.T) {
 	g := Group{ID: "g", Members: []string{"a/x", "b/y"}}
@@ -187,6 +187,6 @@ func TestRuleInZoneHere(t *testing.T) {
 	}
 	os.Unsetenv("TZ") // t.Setenv puts it back
 	if z := LocalZone(); z != "" && !ValidZone(z) {
-		t.Errorf("the system's zone %q is not one magpie knows", z)
+		t.Errorf("the system's zone %q is not one magpie-friday knows", z)
 	}
 }

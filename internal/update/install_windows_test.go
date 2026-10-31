@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// What the last update moved aside can still be running (a `magpie serve`
+// What the last update moved aside can still be running (a `magpie-friday serve`
 // started before it), and then can't be removed or replaced: the running
 // exe goes beside it and the new version still goes in.
 func TestInstallBinaryBesideARunningOld(t *testing.T) {
@@ -20,7 +20,7 @@ func TestInstallBinaryBesideARunningOld(t *testing.T) {
 		t.Skip("no PING.EXE:", err)
 	}
 	dir := t.TempDir()
-	exe := filepath.Join(dir, "magpie.exe")
+	exe := filepath.Join(dir, "magpie-friday.exe")
 	for _, f := range []string{exe, exe + ".old"} {
 		if err := os.WriteFile(f, b, 0o755); err != nil {
 			t.Fatal(err)
@@ -62,7 +62,7 @@ func holdOpen(t *testing.T, path string) syscall.Handle {
 // held for good, the update says what holds it up and keeps the download.
 func TestInstallBinaryHeldOpen(t *testing.T) {
 	dir := t.TempDir()
-	exe := filepath.Join(dir, "magpie-windows-amd64.exe")
+	exe := filepath.Join(dir, "magpie-friday-windows-amd64.exe")
 	staged := exe + ".new"
 	os.WriteFile(exe, []byte("old version"), 0o755)
 	os.WriteFile(staged, []byte("new version"), 0o755)

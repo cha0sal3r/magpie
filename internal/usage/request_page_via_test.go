@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
 )
 
 // viaAll builds a ledger with two gateway rows and three session-file calls,
@@ -46,7 +46,7 @@ func viaAll(t *testing.T) (Ledgered, *rowChunk, []*rowChunk) {
 	return Ledgered{rows, sum, agents, providers}, gateway, []*rowChunk{local}
 }
 
-// The requests page's two source cells and their total: the calls magpie's
+// The requests page's two source cells and their total: the calls magpie-friday's
 // gateway served, the ones read from the agents' own session files, and both
 // together. Picking one narrows the page to it, and every cell keeps its own
 // number while another is picked — counted with the pick cleared — or the
@@ -102,7 +102,7 @@ func TestRequestPageViaSplit(t *testing.T) {
 }
 
 // The rows themselves are the picked source's, not just the totals: a reader
-// who picks "not through magpie" must not be shown a gateway call.
+// who picks "not through magpie-friday" must not be shown a gateway call.
 func TestRequestPageViaPicksTheRows(t *testing.T) {
 	all, _, _ := viaAll(t)
 	for _, tc := range []struct {

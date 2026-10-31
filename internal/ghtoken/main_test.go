@@ -3,7 +3,7 @@ package ghtoken
 import (
 	"testing"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // The tests run in a home of their own, so Settings is theirs.

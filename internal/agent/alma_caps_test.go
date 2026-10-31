@@ -5,13 +5,13 @@ import (
 	"os"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// Alma is told which of magpie's models reason, in each model's
+// Alma is told which of magpie-friday's models reason, in each model's
 // capabilityOverrides: it works a model's capabilities out from models.dev
-// by its id, and finds nothing for magpie's (codex/gpt-5.5), so Alma
+// by its id, and finds nothing for magpie-friday's (codex/gpt-5.5), so Alma
 // offered no thinking for every Codex model (#730). The levels it is given
 // are those of the model's that Alma knows, in its order; a model that
 // doesn't reason says nothing of it; an override the user set in Alma is
@@ -33,17 +33,17 @@ func TestAlmaToldReasoning(t *testing.T) {
 	if err := os.MkdirAll(a.Dir, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	if err := a.Apply("model", "magpie/think/gpt-5.5"); err != nil {
+	if err := a.Apply("model", "magpie-friday/think/gpt-5.5"); err != nil {
 		t.Fatal(err)
 	}
 	var mine map[string]any
 	for _, p := range f.providers {
-		if p["name"] == "magpie" {
+		if p["name"] == "magpie-friday" {
 			mine = p
 		}
 	}
 	if mine == nil {
-		t.Fatalf("no magpie provider: %v", f.providers)
+		t.Fatalf("no magpie-friday provider: %v", f.providers)
 	}
 	caps := func(id string) map[string]any {
 		t.Helper()
@@ -77,7 +77,7 @@ func TestAlmaToldReasoning(t *testing.T) {
 		t.Fatalf("sync wrote %v", w)
 	}
 
-	// as an older magpie left it, with an override of the user's: told
+	// as an older magpie-friday left it, with an override of the user's: told
 	// again, the user's kept
 	for _, m := range mine["availableModels"].([]any) {
 		o := m.(map[string]any)
@@ -107,10 +107,10 @@ func TestAlmaToldReasoning(t *testing.T) {
 	}
 }
 
-// Alma is told what each of magpie's models costs, at the price magpie's
+// Alma is told what each of magpie-friday's models costs, at the price magpie-friday's
 // own usage pages count it at: Alma looks a model's price up by its id on
-// models.dev and found none for magpie's, so its usage page counted every
-// call through magpie at $0, "unpriced" (#919). A model magpie has no price
+// models.dev and found none for magpie-friday's, so its usage page counted every
+// call through magpie-friday at $0, "unpriced" (#919). A model magpie-friday has no price
 // for says nothing of it.
 func TestAlmaToldPricing(t *testing.T) {
 	syncHome(t)
@@ -126,12 +126,12 @@ func TestAlmaToldPricing(t *testing.T) {
 	if err := os.MkdirAll(a.Dir, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	if err := a.Apply("model", "magpie/think/priced"); err != nil {
+	if err := a.Apply("model", "magpie-friday/think/priced"); err != nil {
 		t.Fatal(err)
 	}
 	var mine map[string]any
 	for _, p := range f.providers {
-		if p["name"] == "magpie" {
+		if p["name"] == "magpie-friday" {
 			mine = p
 		}
 	}

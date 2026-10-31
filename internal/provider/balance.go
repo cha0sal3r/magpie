@@ -138,7 +138,7 @@ const (
 )
 
 // tokenQueries are the account queries that only a balance token can
-// ask, each with the same panel's query for a key and the field magpie
+// ask, each with the same panel's query for a key and the field magpie-friday
 // reads from the account's reply when none is given.
 var tokenQueries = []struct{ account, key, field string }{
 	{sub2APIProfile, sub2APIKeyUsage, "$data.balance"},
@@ -343,7 +343,7 @@ func deepSeekAmounts(b []byte) ([]deepSeekAmount, error) {
 	}
 	// DeepSeek lists an account's currencies (CNY, USD) in an order that
 	// changes from one read to the next (gakki on Discord), so they are
-	// put in one of magpie's own: a currency with money left first, then
+	// put in one of magpie-friday's own: a currency with money left first, then
 	// by its code. The first is the one the trend follows and an alert
 	// reads (balanceSeries, BalanceNumber), so it mustn't swap places
 	// between reads either.
@@ -521,7 +521,7 @@ func readAiHubMix(b []byte) (string, error) {
 		return "", errors.New("no balance in the reply")
 	}
 	if v < 0 {
-		return "", errors.New("this key has no limit, and AiHubMix tells a key only what is left on it: give magpie the account's access token (AiHubMix → Settings → Generate System Access Token) in this provider's settings to see the account's balance, or give the key a limit in AiHubMix's console")
+		return "", errors.New("this key has no limit, and AiHubMix tells a key only what is left on it: give magpie-friday the account's access token (AiHubMix → Settings → Generate System Access Token) in this provider's settings to see the account's balance, or give the key a limit in AiHubMix's console")
 	}
 	return money("$", v), nil
 }
@@ -1203,7 +1203,7 @@ func Balance(ctx context.Context, p Provider) (amount string, ok bool, err error
 }
 
 // balanceRead is what Balance reads, with the amounts of a balance field
-// the user wrote each apart (nil for a vendor magpie reads itself), what a
+// the user wrote each apart (nil for a vendor magpie-friday reads itself), what a
 // vendor's balance is made of when it tells that (split), and the
 // key's own usage windows when its reply tells them (a sub2api key's
 // limits, readSub2APIKeyLimits).
@@ -1229,7 +1229,7 @@ func balanceRead(ctx context.Context, p Provider) (amount string, parts, split [
 	method := http.MethodGet
 	if p.BalanceURL != "" {
 		// the method the user named goes with their own Balance URL only;
-		// a vendor magpie knows is asked as it answers
+		// a vendor magpie-friday knows is asked as it answers
 		if method, err = balanceMethodOf(p.BalanceMethod); err != nil {
 			return "", nil, nil, nil, true, err
 		}
@@ -1415,7 +1415,7 @@ func ForgetBalances() {
 	forgetKeyAllowances()
 }
 
-// KeyBalances is the balance of every provider magpie can ask one of, the
+// KeyBalances is the balance of every provider magpie-friday can ask one of, the
 // key in use and each other key it has on — or its account's, once, when
 // it has a token for that — as cards beside the subscriptions' allowances.
 // What was asked less than a minute ago is not asked again, unless the

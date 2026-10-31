@@ -3,7 +3,7 @@ package provider
 // Trae CN's daily check-in (每日签到, #694: 100 credits a day): Trae CN is
 // served only by its community plugin, @magpie-community/opencode-trae-auth
 // (provider "trae-cn"; no built-in, no mover). While the setting is on,
-// whichever magpie runs the gateway presses it for each of the plugin's
+// whichever magpie-friday runs the gateway presses it for each of the plugin's
 // accounts once a Beijing day, as Trae's IDE does: it asks the check-in's
 // status on api.trae.cn, and claims when it is on and today's isn't in.
 // Both go through the plugin's fetch (0.1.4 and later), which sends them
@@ -14,7 +14,7 @@ package provider
 // WorkBuddy's is (checkin.go): an answer holds for the day, a request that
 // got none is tried again later. Trae counts a check-in by device as well
 // as by account (9095: this device is in for today); that is an answer
-// for the day, and magpie doesn't send another device id to get round it.
+// for the day, and magpie-friday doesn't send another device id to get round it.
 // Nor does a claim answered 9074 (当前参与用户太多，请稍后再试) get another
 // try that day: no retry ever got past it (#808, ~5 days), and claim
 // after claim may read as abuse. Why Trae refuses isn't known for certain.
@@ -24,7 +24,7 @@ package provider
 // on a device id the plugin had made up, didn't. So since plugin 0.2.14
 // the account this machine's Trae CN client is signed in as checks in on
 // the client's own device id (read, never written); every other account
-// keeps its own, and magpie never makes up or rotates one (#1705). An
+// keeps its own, and magpie-friday never makes up or rotates one (#1705). An
 // account refused 9074 is told that Trae CN refused it, and to check in
 // in the Trae CN app.
 
@@ -42,8 +42,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // TraeRefusedWords is what an account Trae CN refused a claim 9074 is

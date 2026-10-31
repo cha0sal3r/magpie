@@ -4,8 +4,8 @@ import (
 	"maps"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // A provider's editor sets where Codex and Claude Code compact on its
@@ -43,7 +43,7 @@ func TestModelCompactsSetFromTheEditor(t *testing.T) {
 	}
 	for id, n := range map[string]int{
 		"deepseek/deepseek-v4-flash":      272000,
-		"magpie/deepseek/deepseek-v4-pro": 500000,
+		"magpie-friday/deepseek/deepseek-v4-pro": 500000,
 		"deepseek/deepseek-v4-pro[1m]":    500000,
 		"other/deepseek-v4-flash":         0,
 		"other/deepseek-v4-pro":           300000,

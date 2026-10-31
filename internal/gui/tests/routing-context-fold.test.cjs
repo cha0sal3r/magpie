@@ -3,7 +3,7 @@
 // tests the fold itself) is one line of a fixed height with a thin bar of
 // what fills the window, a part each, beside how full it is (PILIPALA on
 // X: on a wide window the card took the screen, and the requests and the
-// magpies flying were out of sight under it; Jeremy.Zhou on Discord: the
+// magpie-fridays flying were out of sight under it; Jeremy.Zhou on Discord: the
 // page is too crowded). Folded, the stage and the request list are in view
 // without scrolling at 1440x900 and 1920x1080; at a narrow 440px the head
 // is all the card takes (the stage and the story stacked above it are what
@@ -76,7 +76,7 @@ async function open(browser, lang, width, height) {
   const page = await context.newPage();
   // the block grid, the look these cells are drawn in (the map is the default)
   await page.addInitScript(() => { try { localStorage.setItem("magpie.ctxLook", "grid"); } catch {} });
-  // folded is the reader's own choice, kept in magpie.ctxShut; set once, so a reload keeps what the page stores
+  // folded is the reader's own choice, kept in magpie-friday.ctxShut; set once, so a reload keeps what the page stores
   await page.addInitScript(() => { try { if (!sessionStorage.getItem("seeded")) { sessionStorage.setItem("seeded", "1"); localStorage.setItem("magpie.ctxShut", "1"); } } catch {} });
   page.setDefaultTimeout(5000);
   const errors = [];
@@ -134,7 +134,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
               bar: bar.width, barIn: bar.right <= head.right + 0.5, over: c.scrollWidth - c.clientWidth, wide: document.documentElement.scrollWidth <= innerWidth };
           });
           assert.equal(await scrollTop(page), 0);
-          assert(at.stage <= at.vh, `the magpies' stage is in view: ${JSON.stringify(at)}`);
+          assert(at.stage <= at.vh, `the magpie-fridays' stage is in view: ${JSON.stringify(at)}`);
           if (width >= 1440) {
             assert(at.head <= at.vh, `the request list's heading is in view: ${JSON.stringify(at)}`);
             assert(at.row <= at.vh, `the first request is in view: ${JSON.stringify(at)}`);

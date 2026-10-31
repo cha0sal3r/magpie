@@ -23,8 +23,8 @@ const routeDoc = `// Routing strategy for this provider. JSON with comments: lin
 //                         provider's own list (id contains the name, newest
 //                         version first), and exclude drops models whose id
 //                         contains the name but are not members. A model
-//                         falls through its family, then the families listed
-//                         below it, never climbing to a newer one.
+//                         falls through its own family only, never climbing
+//                         to a newer one and never on to another family.
 // family.toolExcluded     models not sent a request that carries tools.
 //
 // cooldown.seconds        how long a failed model sits out (default 60).

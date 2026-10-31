@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/yetone/magpie/internal/redact"
+	"github.com/cha0sal3r/magpie-friday/internal/redact"
 )
 
 // Find is redact's Model: what the model finds in each of texts. A

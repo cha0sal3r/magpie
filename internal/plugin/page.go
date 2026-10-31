@@ -10,27 +10,27 @@ import (
 	"strings"
 )
 
-// WindowSpec is what a plugin adds to magpie's window: its page
-// (package.json's magpie.page), its panels in magpie's own pages
-// (magpie.panels), the items it adds to magpie's menus (magpie.actions),
-// and the reads magpie.permissions asks for, which its page and its
+// WindowSpec is what a plugin adds to magpie-friday's window: its page
+// (package.json's magpie-friday.page), its panels in magpie-friday's own pages
+// (magpie-friday.panels), the items it adds to magpie-friday's menus (magpie-friday.actions),
+// and the reads magpie-friday.permissions asks for, which its page and its
 // panels share.
 type WindowSpec struct {
 	Page   *PageSpec // nil when it adds no page of its own
 	Panels []PanelSpec
-	// Actions are its items in magpie's menus, each opening its page;
+	// Actions are its items in magpie-friday's menus, each opening its page;
 	// none without a page
 	Actions []ActionSpec
-	// Reads are the reads it asked for that magpie has (PageReads), in
+	// Reads are the reads it asked for that magpie-friday has (PageReads), in
 	// the order asked.
 	Reads []string
 }
 
-// PageSpec is a plugin's own page in magpie's window.
+// PageSpec is a plugin's own page in magpie-friday's window.
 type PageSpec struct {
 	Title string // "" when it names none
 	// Titles are its title in other languages, by the window's language
-	// ("zh", "zh-TW", "ja", "de"): magpie.page.titles
+	// ("zh", "zh-TW", "ja", "de"): magpie-friday.page.titles
 	Titles map[string]string
 	Icon   string // a file in the page's folder, relative to it, or ""
 	File   string // the page's HTML, inside the plugin's folder
@@ -40,7 +40,7 @@ type PageSpec struct {
 	Replaces string
 }
 
-// PanelSpec is a panel a plugin adds to one of magpie's own pages: a
+// PanelSpec is a panel a plugin adds to one of magpie-friday's own pages: a
 // part of that page, drawn by the plugin's HTML in a frame of its own.
 type PanelSpec struct {
 	Slot   string // one of PanelSlots
@@ -50,9 +50,9 @@ type PanelSpec struct {
 	Dir    string // the folder the panel's files are served from: File's
 }
 
-// ActionSpec is an item a plugin adds to one of magpie's menus
+// ActionSpec is an item a plugin adds to one of magpie-friday's menus
 // (ActionMenus). Picking it opens the plugin's page, which is told the
-// action's id and the row it was picked on (magpie.onAction).
+// action's id and the row it was picked on (magpie-friday.onAction).
 type ActionSpec struct {
 	ID     string // its id among the plugin's actions: actionID
 	Menu   string // one of ActionMenus
@@ -73,10 +73,10 @@ var actionID = regexp.MustCompile(`^[a-z0-9][a-z0-9-]{0,39}$`)
 const maxActions = 8
 
 // PageReads are the reads a plugin's page can be granted, each in
-// magpie.permissions. None of them carries a secret.
+// magpie-friday.permissions. None of them carries a secret.
 var PageReads = []string{"usage:summary", "providers:list"}
 
-// PanelSlots are the places in magpie's own pages a plugin's panel can
+// PanelSlots are the places in magpie-friday's own pages a plugin's panel can
 // go: under the Agents page's list, at the end of the Usage page, on
 // Settings' Plugins tab, and in a provider's editor (which tells the
 // panel the provider's id and name).
@@ -87,8 +87,8 @@ var PanelSlots = []string{"agents", "usage", "settings", "provider"}
 var Replaceable = []string{"sessions", "library", "routing", "usage"}
 
 // titles are a page's or a panel's titles by language, without the empty
-// ones, or nil: magpie.page.titles {"zh": "…"}. title stays a string
-// beside them, so a magpie that knows no titles still reads the package,
+// ones, or nil: magpie-friday.page.titles {"zh": "…"}. title stays a string
+// beside them, so a magpie-friday that knows no titles still reads the package,
 // and titles that aren't an object of strings leave the page as it was.
 func titles(raw json.RawMessage) map[string]string {
 	var m map[string]any
@@ -113,12 +113,12 @@ func titles(raw json.RawMessage) map[string]string {
 // maxPanels is how many panels one plugin adds, at most.
 const maxPanels = 8
 
-// Window is what a plugin at target adds to magpie's window, or nil when
-// it adds nothing: package.json's magpie.page {title, file, icon,
-// replaces}, magpie.panels [{slot, file, title}] and magpie.actions [{id,
+// Window is what a plugin at target adds to magpie-friday's window, or nil when
+// it adds nothing: package.json's magpie-friday.page {title, file, icon,
+// replaces}, magpie-friday.panels [{slot, file, title}] and magpie-friday.actions [{id,
 // menu, title}]. A file outside the
 // plugin's folder, or not .html, is no page or panel; a panel in a slot
-// magpie doesn't have is left out, and so is a replaces of a page that
+// magpie-friday doesn't have is left out, and so is a replaces of a page that
 // can't be replaced. only is whether it is nothing else: no OpenCode
 // plugin for the host to load (no main, no exports).
 func Window(target string) (w *WindowSpec, only bool) {

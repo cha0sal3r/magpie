@@ -10,23 +10,23 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
-// A request one magpie passes on to another computer's (a Remote magpie
+// A request one magpie-friday passes on to another computer's (a Remote magpie-friday
 // provider) is recorded there as the agent's that made it, by the computer
-// it came through, not as "magpie"'s (Jorben on Discord). The names go in
-// headers of magpie's own, which a vendor never sees, and which a request
-// that isn't magpie's can't use to pass itself off as another agent.
+// it came through, not as "magpie-friday"'s (Jorben on Discord). The names go in
+// headers of magpie-friday's own, which a vendor never sees, and which a request
+// that isn't magpie-friday's can't use to pass itself off as another agent.
 func TestRemoteMagpieAgent(t *testing.T) {
 	var mu sync.Mutex
-	var leaked []string // magpie's own headers as the vendor saw them
+	var leaked []string // magpie-friday's own headers as the vendor saw them
 	up := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		io.Copy(io.Discard, r.Body)
 		mu.Lock()
 		for k := range r.Header {
-			if strings.HasPrefix(strings.ToLower(k), "x-magpie-") {
+			if strings.HasPrefix(strings.ToLower(k), "x-magpie-friday-") {
 				leaked = append(leaked, k)
 			}
 		}
@@ -57,7 +57,7 @@ func TestRemoteMagpieAgent(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// the record the remote magpie (the one that asked the vendor) kept of
+	// the record the remote magpie-friday (the one that asked the vendor) kept of
 	// the request this one passed on
 	there := func(n int) usage.Record {
 		t.Helper()
@@ -90,7 +90,7 @@ func TestRemoteMagpieAgent(t *testing.T) {
 	}
 
 	// an agent known by its token, on Chat; one known by its User-Agent,
-	// on Messages; each a request this magpie passes on
+	// on Messages; each a request this magpie-friday passes on
 	send("/v1/chat/completions", `{"model":"office/fake/m1","messages":[{"role":"user","content":"hi"}]}`,
 		map[string]string{"Authorization": "Bearer " + TokenFor("alma")})
 	if r := there(1); r.Agent != "alma" || r.Via == "" {
@@ -108,7 +108,7 @@ func TestRemoteMagpieAgent(t *testing.T) {
 		}
 	}
 
-	// a request that isn't a magpie's names no one but itself
+	// a request that isn't a magpie-friday's names no one but itself
 	send("/v1/chat/completions", `{"model":"fake/m1","messages":[{"role":"user","content":"hi"}]}`,
 		map[string]string{"User-Agent": "curl/8.0", AgentHeader: "codex", ViaHeader: "elsewhere"})
 	if r := there(3); r.Agent != "curl" || r.Via != "" {
@@ -117,12 +117,12 @@ func TestRemoteMagpieAgent(t *testing.T) {
 	mu.Lock()
 	defer mu.Unlock()
 	if len(leaked) > 0 {
-		t.Errorf("the vendor was sent magpie's headers: %v", leaked)
+		t.Errorf("the vendor was sent magpie-friday's headers: %v", leaked)
 	}
 }
 
-// A record kept for an agent on another computer, passed on by its magpie,
-// says nothing of whether this computer's agent of the name reached magpie.
+// A record kept for an agent on another computer, passed on by its magpie-friday,
+// says nothing of whether this computer's agent of the name reached magpie-friday.
 func TestLastSeenNotVia(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
 	usage.Append(usage.Record{Agent: "remote-only-agent", Provider: "fake", Via: "office", Status: 200})

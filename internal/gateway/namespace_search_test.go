@@ -8,12 +8,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Codex's spawn_agent is in a namespace, and Codex offers web_search beside
 // it. On a Responses provider that doesn't search by itself the request is
-// translated rather than relayed (magpie's search goes in its place), and
+// translated rather than relayed (magpie-friday's search goes in its place), and
 // the call the upstream made came to Codex with arguments {} (#613): the
 // upstream's argument deltas left out what its finished call held.
 func TestNamespacedCallKeepsArgsWhenSearchTakesOver(t *testing.T) {

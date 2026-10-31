@@ -82,11 +82,11 @@ func mainSettled() { C.mpMainSettled() }
 
 // trayBroughtBackKey marks, in the Mac's defaults (this computer's, never
 // in a backup), that the hidden icon a handover left was brought back.
-const trayBroughtBackKey = "magpie tray brought back after a handover"
+const trayBroughtBackKey = "magpie-friday tray brought back after a handover"
 
 // bringTrayBack, once per computer, brings back the menu bar icon a restart
-// to update hid: from v0.1.1354 the magpie before hid its own item with
-// setVisible:NO, which AppKit keeps for the app, so every later magpie
+// to update hid: from v0.1.1354 the magpie-friday before hid its own item with
+// setVisible:NO, which AppKit keeps for the app, so every later magpie-friday
 // started with no icon. A hide kept after that is the user's. Whether one
 // stays hidden, to be left alone.
 func bringTrayBack() (stillHidden bool) {

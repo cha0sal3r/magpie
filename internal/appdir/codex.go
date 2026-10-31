@@ -7,11 +7,11 @@ import (
 )
 
 // CodexHome is the folder Codex CLI keeps its files in: config.toml,
-// auth.json, the model catalog magpie writes, sessions, AGENTS.md and
+// auth.json, the model catalog magpie-friday writes, sessions, AGENTS.md and
 // skills. It is $CODEX_HOME when that is set, as codex-rs's find_codex_home
-// reads it, else ~/.codex. Every place magpie reads or writes Codex's files
+// reads it, else ~/.codex. Every place magpie-friday reads or writes Codex's files
 // goes through here (Wakkana on Discord: with CODEX_HOME set, a model picked
-// in magpie went to ~/.codex/config.toml, which Codex never read).
+// in magpie-friday went to ~/.codex/config.toml, which Codex never read).
 // CODEX_HOME is read through LookupEnv, so the value a login shell lends the
 // desktop app (proc.UserPath) counts, and a relative one, which Codex would
 // take from whatever folder it runs in, reads as unset.
@@ -36,7 +36,7 @@ func CodexHomeIn(home string) string {
 // `--profile <name>` only lays $CODEX_HOME/<name>.config.toml over
 // config.toml (config/src/loader/mod.rs), the sign-in shared. So more than
 // one account is Codex run with CODEX_HOME set to a folder of each's,
-// ~/.codex-work beside ~/.codex, and magpie read only the one it runs
+// ~/.codex-work beside ~/.codex, and magpie-friday read only the one it runs
 // with (phantom3792 on X: only the default profile's sessions counted,
 // and the others' accounts read no quota).
 //

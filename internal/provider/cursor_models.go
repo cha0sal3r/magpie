@@ -11,7 +11,7 @@ package provider
 
 // Cursor lists a model once for each effort and speed it serves it at
 // ("grok-4.7-low", "grok-4.7-low-fast", … "grok-4.7-xhigh-fast"), and a
-// Claude with thinking apart from one without. magpie offers one model a
+// Claude with thinking apart from one without. magpie-friday offers one model a
 // family, with the efforts there are, and the gateway asks for the id the
 // effort picks (CursorVariants). Fast stays a model of its own: its context
 // isn't always the same ("GPT-5.5 1M", "GPT-5.5 Fast"), and only Codex has a
@@ -22,10 +22,10 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
-// cursorEfforts are the effort words of Cursor's ids, the levels magpie
+// cursorEfforts are the effort words of Cursor's ids, the levels magpie-friday
 // names them and the words Cursor's names say them in; extra-high before
 // high.
 var cursorEfforts = []struct{ word, level, label string }{
@@ -209,7 +209,7 @@ func withoutCursorCapacity(ms []catalog.Model) []catalog.Model {
 	return out
 }
 
-// CursorVariants are Cursor's ids a model magpie offers stands for, by
+// CursorVariants are Cursor's ids a model magpie-friday offers stands for, by
 // effort, "" the default; ok is false for a model that stands for none,
 // which goes to Cursor as it is.
 func CursorVariants(model string) (map[string]string, bool) {
@@ -229,10 +229,10 @@ func cursorVariantsIn(raw []catalog.Model, model string) (map[string]string, boo
 	return nil, false
 }
 
-// CursorBase is the model magpie offers for one of Cursor's ids at an
+// CursorBase is the model magpie-friday offers for one of Cursor's ids at an
 // effort ("grok-4.7-low" is grok-4.7 at low, "grok-4.7-low-fast"
 // grok-4.7-fast at low), and that effort; ok is false for an id that is
-// itself a model magpie offers, or that no family has. Picks and agents'
+// itself a model magpie-friday offers, or that no family has. Picks and agents'
 // models saved before the families were one model still name these ids.
 func CursorBase(id string) (base, effort string, ok bool) {
 	raw, _, live := catalog.Live("cursor")
@@ -256,7 +256,7 @@ func cursorBaseIn(raw []catalog.Model, id string) (string, string, bool) {
 }
 
 // cursorPicks are the user's picks of Cursor's models with each of
-// Cursor's own ids the model magpie offers for it, in the order picked,
+// Cursor's own ids the model magpie-friday offers for it, in the order picked,
 // each once.
 func cursorPicks(ids []string) []string {
 	raw, _, live := catalog.Live("cursor")

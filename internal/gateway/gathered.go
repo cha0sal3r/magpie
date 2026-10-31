@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // gathers is whether a request to p on proto that asked for one body is
@@ -15,7 +15,7 @@ import (
 // a plugin's account, which only streams, on Responses (plugins#112:
 // translating it dropped the tools the vendor runs itself, Grok's x_search,
 // so Grok answered without searching, and the response's tools and usage
-// details). A subscription magpie signs in to itself (Codex's ChatGPT
+// details). A subscription magpie-friday signs in to itself (Codex's ChatGPT
 // backend, Qoder) is translated as before: its own code fits its requests,
 // and no report asks for more. Messages isn't gathered, as its stream has
 // no event that holds the whole reply.

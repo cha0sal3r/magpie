@@ -13,7 +13,7 @@ package provider
 // — never a 5xx or a network error; and an editor's token refused while
 // the Copilot CLI's sign-in of the same account stands in for it is no
 // lapse (#1238). The mark is kept with a digest of the token refused, so
-// a new sign-in (magpie's, the editor's or the CLI's) is never called
+// a new sign-in (magpie-friday's, the editor's or the CLI's) is never called
 // signed out for the old one, and a request served on the account clears it.
 
 import (

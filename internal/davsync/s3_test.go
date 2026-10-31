@@ -17,8 +17,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/backup"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/backup"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // fakeS3 is an S3 server with one bucket and one access key, keeping
@@ -181,7 +181,7 @@ func TestS3Put(t *testing.T) {
 	if _, err := s.put(ctx, []byte("one"), ""); err != nil {
 		t.Fatal(err)
 	}
-	if got := string(f.objects["team x+y/magpie/magpie.magpie-backup"]); got != "one" {
+	if got := string(f.objects["team x+y/magpie-friday/magpie-friday.magpie-friday-backup"]); got != "one" {
 		t.Fatalf("stored %q", got)
 	}
 	if _, err := s.put(ctx, []byte("another first"), ""); !errors.Is(err, errChanged) {
@@ -198,7 +198,7 @@ func TestS3Put(t *testing.T) {
 	if _, err := s.put(ctx, []byte("three"), etag); !errors.Is(err, errChanged) {
 		t.Fatalf("a write over a version since changed: %v", err)
 	}
-	if got := string(f.objects["team x+y/magpie/magpie.magpie-backup"]); got != "two" {
+	if got := string(f.objects["team x+y/magpie-friday/magpie-friday.magpie-friday-backup"]); got != "two" {
 		t.Fatalf("stored %q", got)
 	}
 	want := []string{"GET", "PUT none:*", "PUT none:*", "GET", "PUT " + etag, "PUT " + etag}
@@ -244,7 +244,7 @@ func TestS3NoConditions(t *testing.T) {
 	_, v, _ := s.get(ctx, version{})
 	etag := v.ETag
 	f.mu.Lock()
-	f.store("team x+y/magpie/magpie.magpie-backup", []byte("theirs"))
+	f.store("team x+y/magpie-friday/magpie-friday.magpie-friday-backup", []byte("theirs"))
 	f.mu.Unlock()
 	if _, err := s.put(ctx, []byte("two"), etag); !errors.Is(err, errChanged) {
 		t.Fatalf("a write over another computer's: %v", err)
@@ -254,7 +254,7 @@ func TestS3NoConditions(t *testing.T) {
 	if _, err := s.put(ctx, []byte("two"), etag); err != nil {
 		t.Fatal(err)
 	}
-	if got := string(f.objects["team x+y/magpie/magpie.magpie-backup"]); got != "two" {
+	if got := string(f.objects["team x+y/magpie-friday/magpie-friday.magpie-friday-backup"]); got != "two" {
 		t.Fatalf("stored %q", got)
 	}
 	want := []string{"PUT none:*", "HEAD", "PUT", "HEAD", "GET", "HEAD", "GET", "HEAD", "PUT"}
@@ -279,12 +279,12 @@ func TestS3Address(t *testing.T) {
 		cfg         Config
 		url, region string
 	}{
-		{Config{URL: "s3://bkt/a b/"}, "https://bkt.s3.us-east-1.amazonaws.com/a%20b/magpie/magpie.magpie-backup", "us-east-1"},
-		{Config{URL: "s3://bkt", Region: "eu-west-2"}, "https://bkt.s3.eu-west-2.amazonaws.com/magpie/magpie.magpie-backup", "eu-west-2"},
-		{Config{URL: "s3://bkt/p", Endpoint: "0123abc.r2.cloudflarestorage.com"}, "https://bkt.0123abc.r2.cloudflarestorage.com/p/magpie/magpie.magpie-backup", "auto"},
-		{Config{URL: "s3://bkt/p", Endpoint: "https://s3.example.com/", PathStyle: true}, "https://s3.example.com/bkt/p/magpie/magpie.magpie-backup", "us-east-1"},
-		{Config{URL: "s3://bkt", Endpoint: "http://192.168.1.5:9000"}, "http://192.168.1.5:9000/bkt/magpie/magpie.magpie-backup", "us-east-1"},
-		{Config{URL: "s3://my.bkt", Endpoint: "https://s3.example.com"}, "https://s3.example.com/my.bkt/magpie/magpie.magpie-backup", "us-east-1"},
+		{Config{URL: "s3://bkt/a b/"}, "https://bkt.s3.us-east-1.amazonaws.com/a%20b/magpie-friday/magpie-friday.magpie-friday-backup", "us-east-1"},
+		{Config{URL: "s3://bkt", Region: "eu-west-2"}, "https://bkt.s3.eu-west-2.amazonaws.com/magpie-friday/magpie-friday.magpie-friday-backup", "eu-west-2"},
+		{Config{URL: "s3://bkt/p", Endpoint: "0123abc.r2.cloudflarestorage.com"}, "https://bkt.0123abc.r2.cloudflarestorage.com/p/magpie-friday/magpie-friday.magpie-friday-backup", "auto"},
+		{Config{URL: "s3://bkt/p", Endpoint: "https://s3.example.com/", PathStyle: true}, "https://s3.example.com/bkt/p/magpie-friday/magpie-friday.magpie-friday-backup", "us-east-1"},
+		{Config{URL: "s3://bkt", Endpoint: "http://192.168.1.5:9000"}, "http://192.168.1.5:9000/bkt/magpie-friday/magpie-friday.magpie-friday-backup", "us-east-1"},
+		{Config{URL: "s3://my.bkt", Endpoint: "https://s3.example.com"}, "https://s3.example.com/my.bkt/magpie-friday/magpie-friday.magpie-friday-backup", "us-east-1"},
 	} {
 		s, err := newS3(c.cfg)
 		if err != nil {
@@ -312,7 +312,7 @@ func TestS3Sync(t *testing.T) {
 			f.noCond = noCond
 			ctx := context.Background()
 			cfg := f.config(srv)
-			const key = "team x+y/magpie/magpie.magpie-backup"
+			const key = "team x+y/magpie-friday/magpie-friday.magpie-friday-backup"
 
 			a, b := newComputer(t), newComputer(t)
 			a.use(t)
@@ -516,7 +516,7 @@ func TestS3Live(t *testing.T) {
 	if len(p) < 4 {
 		t.Fatal("MAGPIE_S3_TEST=endpoint,bucket,key id,secret[,region]")
 	}
-	cfg := Config{URL: fmt.Sprintf("s3://%s/magpie-test-%d x+y", p[1], time.Now().UnixNano()), Endpoint: p[0], User: p[2], Password: p[3], Passphrase: "correct horse", PathStyle: true, Keys: true}
+	cfg := Config{URL: fmt.Sprintf("s3://%s/magpie-friday-test-%d x+y", p[1], time.Now().UnixNano()), Endpoint: p[0], User: p[2], Password: p[3], Passphrase: "correct horse", PathStyle: true, Keys: true}
 	if len(p) > 4 {
 		cfg.Region = p[4]
 	}
@@ -627,7 +627,7 @@ func TestS3ConditionsOutsideTheSignature(t *testing.T) {
 	if !get || !put {
 		t.Fatalf("the conditions didn't reach the server: %q", f.log)
 	}
-	remote, err := backup.Open(f.objects["team x+y/magpie/magpie.magpie-backup"], "correct horse")
+	remote, err := backup.Open(f.objects["team x+y/magpie-friday/magpie-friday.magpie-friday-backup"], "correct horse")
 	if err != nil || len(remote.Providers) != 2 {
 		t.Fatalf("in the bucket: %v %+v", err, remote.Providers)
 	}

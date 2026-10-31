@@ -44,7 +44,7 @@
   const agentIcon = (id) => icon(agentMeta(id)?.icon || "generic");
 
   // what an item of the prompt is called: a file's path or a tool's name
-  // as it is; magpie's own names for the rest in the reader's language
+  // as it is; magpie-friday's own names for the rest in the reader's language
   const ITEM_NAMES = {
     prompt: "Agent prompt", harness: "Harness messages", billing: "Billing header",
     environment: "Environment notes", context: "Context", skills: "Skills",
@@ -933,7 +933,7 @@
 
   // A part of the card clicked opens what the request sent there, read
   // from the request's body: an item alone (a tool, a file, a turn), or
-  // the part's items, each opened to its text. magpie keeps the last few
+  // the part's items, each opened to its text. magpie-friday keeps the last few
   // requests' bodies, masked, in memory only, so an older one's text is
   // gone. A long text comes a stretch at a time, so a prompt of megabytes
   // doesn't hold the window up.
@@ -979,7 +979,7 @@
     img.alt = t("Image");
     img.decoding = "async";
     img.onload = () => fig.classList.add("in");
-    img.onerror = () => fig.replaceWith(el("div", "ctx-piece-note", t("An image: magpie doesn't show it here")));
+    img.onerror = () => fig.replaceWith(el("div", "ctx-piece-note", t("An image: magpie-friday doesn't show it here")));
     img.src = src;
     fig.append(img);
     fig.onclick = (e) => {
@@ -1004,7 +1004,7 @@
     if (pc.text) head.append(copyBtn(pc.text, pc.name || t(ROLE_NAMES[pc.role] || "Text")));
     box.append(head);
     if (pc.role === "image" && pc.src) box.append(picture(pc.src));
-    else if (pc.role === "image") box.append(el("div", "ctx-piece-note", t("An image: magpie doesn't show it here")));
+    else if (pc.role === "image") box.append(el("div", "ctx-piece-note", t("An image: magpie-friday doesn't show it here")));
     else if (pc.role === "sealed") box.append(el("div", "ctx-piece-note", t("Sealed by the vendor, {n} bytes: only the vendor can read it", { n: (pc.size || 0).toLocaleString(intlLang()) })));
     else {
       if (pc.size) box.append(el("div", "ctx-piece-note", t("Sealed by the vendor, {n} bytes: only the vendor can read it", { n: pc.size.toLocaleString(intlLang()) })));
@@ -1030,14 +1030,14 @@
     confirmAsk = ed;
     openModal(ed);
     $("#modal").classList.add("lib");
-    const gone = (n) => el("p", "ctx-view-gone", t("This request's text is no longer kept: magpie keeps the text of the last {n} requests, in memory only, while it runs.", { n }));
+    const gone = (n) => el("p", "ctx-view-gone", t("This request's text is no longer kept: magpie-friday keeps the text of the last {n} requests, in memory only, while it runs.", { n }));
     let list;
     try { list = await readText(id, kind); } catch (err) { body.replaceChildren(el("p", "ctx-view-gone", err.message)); return; }
     if (confirmAsk !== ed) return;
     if (!list) return body.replaceChildren(gone(10));
     const items = list.items || [];
     total.textContent = fmtK(items.reduce((s, it) => s + it.tokens, 0)) + " " + t("tokens");
-    const note = el("p", "ctx-view-note", t("As magpie sent it, masked where masking is on. Kept in memory for the last {n} requests only.", { n: list.kept }));
+    const note = el("p", "ctx-view-note", t("As magpie-friday sent it, masked where masking is on. Kept in memory for the last {n} requests only.", { n: list.kept }));
     // an item: its text alone; "N more" or the earlier turns: the part's list
     const at = pick && pick.tag !== "more" && pick.tag !== "turns"
       ? items.findIndex((it) => it.name === pick.name && (it.tag || "") === (pick.tag || "")) : -1;
@@ -1484,7 +1484,7 @@
     const note = el("div", "ctx-tune-src");
     title.after(note);
     if (set.locked) note.textContent = t("{name} is set and comes first", { name: set.locked });
-    else if (set.ours) note.textContent = t("Set by magpie");
+    else if (set.ours) note.textContent = t("Set by magpie-friday");
     else if (set.value && a.compact && +set.value > a.compact.window && a.compact.window) note.textContent = t("You set {value}; the model's {window} comes first", { value: show(set.value), window: fmtK(a.compact.window) });
     else if (set.value) note.textContent = t("You set {value}", { value: show(set.value) });
     else note.textContent = t("The agent's default");
@@ -1632,12 +1632,12 @@
       return;
     }
     const seen = el("div", "row-head ctx-sess-head");
-    seen.append(el("span", "label", t("Through magpie")), el("span", "grow"));
+    seen.append(el("span", "label", t("Through magpie-friday")), el("span", "grow"));
     pane.append(seen);
-    pane.append(el("p", "usage-note", t("What each agent's prompts hold, as magpie's gateway read them: the score and tags are worked out from the requests of the range.")));
+    pane.append(el("p", "usage-note", t("What each agent's prompts hold, as magpie-friday's gateway read them: the score and tags are worked out from the requests of the range.")));
     if (!ctxData.agents.length) {
       const empty = el("div", "ctx-none");
-      empty.append(el("b", "", t("No prompts read yet")), el("span", "", t("Requests your agents send through magpie show here.")));
+      empty.append(el("b", "", t("No prompts read yet")), el("span", "", t("Requests your agents send through magpie-friday show here.")));
       pane.append(empty);
       return;
     }

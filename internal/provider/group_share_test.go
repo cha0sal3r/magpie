@@ -29,7 +29,7 @@ func sharedAt(t *testing.T, id string) Group {
 }
 
 // laincatx on X: a routing group is shared as text and pasted into
-// another magpie. What goes is the group's routing, rules and members,
+// another magpie-friday. What goes is the group's routing, rules and members,
 // never a key; pasted back, it is the same group under a name of its own.
 func TestSharedGroupRoundTrip(t *testing.T) {
 	const secret = "sk-shared-secret-0123456789"
@@ -134,10 +134,10 @@ func TestSharedGroupMissingMembers(t *testing.T) {
 func TestSharedGroupBadText(t *testing.T) {
 	shareHome(t, Provider{ID: "a", Name: "A", Key: "k", Chat: "http://127.0.0.1:1/v1", Models: []string{"x"}})
 	for _, c := range []struct{ text, says string }{
-		{"", "not a routing group shared from magpie"},
-		{"hello {not json}", "not a routing group shared from magpie"},
-		{`{"magpie":"something-else","version":1,"group":{"members":["a/x"]}}`, "not a routing group shared from magpie"},
-		{`{"magpie":"routing-group","version":2,"group":{"members":["a/x"]}}`, "newer magpie (format 2)"},
+		{"", "not a routing group shared from magpie-friday"},
+		{"hello {not json}", "not a routing group shared from magpie-friday"},
+		{`{"magpie":"something-else","version":1,"group":{"members":["a/x"]}}`, "not a routing group shared from magpie-friday"},
+		{`{"magpie":"routing-group","version":2,"group":{"members":["a/x"]}}`, "newer magpie-friday (format 2)"},
 		{`{"magpie":"routing-group","group":{"members":["a/x"]}}`, "no format"},
 		{`{"magpie":"routing-group","version":1,"group":{"members":"a/x"}}`, "can't be read"},
 	} {

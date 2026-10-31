@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Claude Desktop's session titles (and Claude Code's small tasks in its
@@ -63,7 +63,7 @@ func TestClaudeDesktopAuxiliaryModel(t *testing.T) {
 	if got := modelOf(f.got); got != "claude-sonnet-5-thinking" {
 		t.Fatalf("tool-less chat turn: sent %q", got)
 	}
-	// a Claude model magpie doesn't serve, tools or not, goes there too
+	// a Claude model magpie-friday doesn't serve, tools or not, goes there too
 	for _, tools := range []bool{false, true} {
 		if got := send(desktop, "claude-haiku-4-5-20251001", tools); got != "m1" {
 			t.Fatalf("unserved haiku (tools %v): sent %q", tools, got)
@@ -147,7 +147,7 @@ func TestClaudeDesktopDefault(t *testing.T) {
 	if got := desktopTurn("claude-haiku-4-5", title, false, false); got != "fake/claude-opus-4-8" {
 		t.Fatalf("title with a stand-in = %q", got)
 	}
-	// a session on a real Claude model magpie serves keeps it
+	// a session on a real Claude model magpie-friday serves keeps it
 	if got := desktopTurn("fake/claude-opus-4-8", turn, false, false); got != "fake/claude-opus-4-8" {
 		t.Fatalf("turn = %q", got)
 	}
@@ -211,7 +211,7 @@ func TestClaudeDesktopClassifierKeepsItsModel(t *testing.T) {
 	if got := send(cli, cliTitle); got != "claude-opus-5-5" {
 		t.Fatalf("Claude Code's title for Desktop: sent %q, want claude-opus-5-5", got)
 	}
-	// a model magpie doesn't serve still goes to the session's
+	// a model magpie-friday doesn't serve still goes to the session's
 	if got := send(cli, `{"model":"claude-haiku-4-5-20251001","max_tokens":64,"stream":true,"messages":[{"role":"user","content":"hi"}]}`); got != "claude-opus-5-5" {
 		t.Fatalf("unserved haiku: sent %q", got)
 	}

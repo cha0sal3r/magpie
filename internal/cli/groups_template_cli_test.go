@@ -5,10 +5,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// magpie group template lists the templates as the user's models make them,
+// magpie-friday group template lists the templates as the user's models make them,
 // and adds one in one go: added twice, the second is numbered beside the
 // first rather than written over it (yetone, 10-10).
 func TestGroupTemplateCLI(t *testing.T) {

@@ -14,7 +14,7 @@ const { chromium, webkit } = require("playwright");
 const { reach } = require("./reader.cjs");
 
 const assets = path.resolve(__dirname, "../assets");
-const model = (id, label) => ({ key: "model", label: "model", value: id, options: [{ value: id, label, ref: "relay/" + id, note: "Relay · via magpie" }] });
+const model = (id, label) => ({ key: "model", label: "model", value: id, options: [{ value: id, label, ref: "relay/" + id, note: "Relay · via magpie-friday" }] });
 const state = {
   agents: [
     { id: "codex", name: "Codex", icon: "generic", path: "/fixture/codex", wired: true, fields: [model("m1", "m1"), { key: "effort", label: "effort", value: "high", options: [{ value: "high", label: "High" }] }] },

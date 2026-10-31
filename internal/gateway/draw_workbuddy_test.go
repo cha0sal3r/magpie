@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // wbStudio is WorkBuddy's API as far as drawing goes: its product config,
@@ -75,7 +75,7 @@ const wbGPTImageModels = `[{"id":"gpt-5.5","name":"GPT-5.5"},
 	{"id":"seedance-2.5","name":"Seedance-2.5","tags":["text-to-video","image-to-video"]}]`
 
 // wbSignedIn installs the fake plugin as WorkBuddy's (id), signed in, its
-// API at the studio, and gives magpie's provider for it: the retired
+// API at the studio, and gives magpie-friday's provider for it: the retired
 // built-in's id is the plugin's.
 func wbSignedIn(t *testing.T, id string, st http.Handler) provider.Provider {
 	t.Helper()
@@ -94,7 +94,7 @@ func wbSignedIn(t *testing.T, id string, st http.Handler) provider.Provider {
 }
 
 // A WorkBuddy plan's image models are those its config tags as drawing, not
-// a list of magpie's; an edit goes to the model that edits beside the one
+// a list of magpie-friday's; an edit goes to the model that edits beside the one
 // named; the image comes back as WorkBuddy gave it (a URL) out of its
 // envelope; AutoDrawer never picks one, as each image costs credits.
 func TestWorkBuddyDrawsWithItsConfigsModels(t *testing.T) {
@@ -138,12 +138,12 @@ func TestWorkBuddyDrawsWithItsConfigsModels(t *testing.T) {
 	}
 
 	s := New()
-	code, _, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"workbuddy/hunyuan-image-v3.0-art","prompt":"a magpie","size":"1024x1024","n":1,"quality":"high"}`)
+	code, _, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"workbuddy/hunyuan-image-v3.0-art","prompt":"a magpie-friday","size":"1024x1024","n":1,"quality":"high"}`)
 	if code != 200 || !strings.Contains(raw, `"url":"`+kept+`"`) {
 		t.Fatalf("%d %s", code, raw)
 	}
 	body, _ := st.got("/v1/images/generations")
-	if body["model"] != "hunyuan-image-v3.0-art" || body["size"] != "1024x1024" || body["n"] != 1.0 || body["prompt"] != "a magpie" {
+	if body["model"] != "hunyuan-image-v3.0-art" || body["size"] != "1024x1024" || body["n"] != 1.0 || body["prompt"] != "a magpie-friday" {
 		t.Fatalf("sent %v", body)
 	}
 	if _, ok := body["response_format"]; ok {
@@ -179,7 +179,7 @@ func TestWorkBuddyAIDrawsGPTImage(t *testing.T) {
 		if refuse.Load() {
 			return `{"code":14018,"msg":"credits used up","data":null}`
 		}
-		return `{"code":0,"msg":"OK","data":{"created":1,"data":[{"b64_json":"` + base64.StdEncoding.EncodeToString(pngBytes) + `","revised_prompt":"a magpie, painted"}]}}`
+		return `{"code":0,"msg":"OK","data":{"created":1,"data":[{"b64_json":"` + base64.StdEncoding.EncodeToString(pngBytes) + `","revised_prompt":"a magpie-friday, painted"}]}}`
 	}}
 	p := wbSignedIn(t, provider.WorkBuddyAIID, st)
 	if _, err := wbImageModelsOf(context.Background(), wbConfigClient, p, true); err != nil {
@@ -190,8 +190,8 @@ func TestWorkBuddyAIDrawsGPTImage(t *testing.T) {
 		t.Fatalf("drawers %+v", ds)
 	}
 	s := New()
-	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"workbuddy-ai/gpt-image-2.5-sunburst","prompt":"a magpie","size":"1024x1024","quality":"low"}`)
-	if code != 200 || len(a.Data) != 1 || a.Data[0].B64 == "" || !strings.Contains(raw, "a magpie, painted") {
+	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json", `{"model":"workbuddy-ai/gpt-image-2.5-sunburst","prompt":"a magpie-friday","size":"1024x1024","quality":"low"}`)
+	if code != 200 || len(a.Data) != 1 || a.Data[0].B64 == "" || !strings.Contains(raw, "a magpie-friday, painted") {
 		t.Fatalf("%d %s", code, raw)
 	}
 	body, _ := st.got("/v1/images/generations")
@@ -207,7 +207,7 @@ func TestWorkBuddyAIDrawsGPTImage(t *testing.T) {
 		t.Fatalf("edit sent %v", body)
 	}
 	refuse.Store(true)
-	code, _, raw = postImages(t, s, "/v1/images/generations", "application/json", `{"model":"workbuddy-ai/gpt-image-2.5-sunburst","prompt":"a magpie"}`)
+	code, _, raw = postImages(t, s, "/v1/images/generations", "application/json", `{"model":"workbuddy-ai/gpt-image-2.5-sunburst","prompt":"a magpie-friday"}`)
 	if code != 502 || !strings.Contains(raw, "credits used up (14018)") {
 		t.Fatalf("%d %s", code, raw)
 	}
@@ -237,7 +237,7 @@ func TestWorkBuddyPluginDraws(t *testing.T) {
 	if ds := Drawers(*p); len(ds) != 2 || ds[0].ID != "hunyuan-image-alpha" || ds[0].Provider != pid {
 		t.Fatalf("drawers %+v", ds)
 	}
-	code, a, raw := postImages(t, New(), "/v1/images/generations", "application/json", `{"model":"`+pid+`/hunyuan-image-alpha","prompt":"a magpie"}`)
+	code, a, raw := postImages(t, New(), "/v1/images/generations", "application/json", `{"model":"`+pid+`/hunyuan-image-alpha","prompt":"a magpie-friday"}`)
 	if code != 200 || len(a.Data) != 1 {
 		t.Fatalf("%d %s", code, raw)
 	}

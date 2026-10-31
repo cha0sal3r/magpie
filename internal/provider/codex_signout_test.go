@@ -86,7 +86,7 @@ func TestForgetAccountSignsCodexOut(t *testing.T) {
 }
 
 // Claude Code's account in use is never signed out by a removal, even its
-// only one: its sign-in may be in the keychain, and magpie serves its
+// only one: its sign-in may be in the keychain, and magpie-friday serves its
 // saved accounts while it is signed out (claudeStandIn).
 func TestClaudeInUseStillRefused(t *testing.T) {
 	home := claudeHome(t)

@@ -7,11 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // groupHeldFixture is a dozen providers serving the same models, so
-// magpie finds a group of each, and a group of the user's of four.
+// magpie-friday finds a group of each, and a group of the user's of four.
 func groupHeldFixture(t *testing.T) {
 	t.Helper()
 	isolate(t)
@@ -110,7 +110,7 @@ func TestGroupLooksParseNoSettingsPerGroupWhileHeld(t *testing.T) {
 }
 
 // BenchmarkGroupEntries is the groups' entries of a catalog of 30
-// providers serving the same 60 models (60 groups magpie finds, of 30
+// providers serving the same 60 models (60 groups magpie-friday finds, of 30
 // members each), built afresh: what each request built several times.
 func BenchmarkGroupEntries(b *testing.B) {
 	isolate(b)

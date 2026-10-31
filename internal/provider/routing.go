@@ -16,7 +16,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
 // The routings besides the default, smart, in order.
@@ -67,7 +67,7 @@ func SetSink(id string, sink bool) error {
 }
 
 // SetKeepLogin keeps Codex or Claude Code signed in to the account the
-// user made first (Provider.KeepLogin), or lets magpie move it on again.
+// user made first (Provider.KeepLogin), or lets magpie-friday move it on again.
 // Either way it is no longer kept on one of the user's choosing
 // (KeepLoginAs): it is signed in to the first again.
 func SetKeepLogin(id string, keep bool) error {
@@ -76,7 +76,7 @@ func SetKeepLogin(id string, keep bool) error {
 		return err
 	}
 	if p.Account == nil || p.Account.Agent != p.ID || !slices.Contains(switchedAgents, p.ID) {
-		return fmt.Errorf("magpie doesn't sign %s in to another of its accounts", p.Name)
+		return fmt.Errorf("magpie-friday doesn't sign %s in to another of its accounts", p.Name)
 	}
 	chosen := p.KeepLogin && p.KeepLoginAs != ""
 	p.KeepLogin, p.KeepLoginAs = keep, ""
@@ -89,7 +89,7 @@ func SetKeepLogin(id string, keep bool) error {
 	return nil
 }
 
-// SetSwitchOnly has magpie only move Codex's own sign-in between its
+// SetSwitchOnly has magpie-friday only move Codex's own sign-in between its
 // accounts (Provider.SwitchOnly), its requests never sent through the
 // gateway for account failover, or lets failover go through it again.
 func SetSwitchOnly(id string, on bool) error {
@@ -98,16 +98,16 @@ func SetSwitchOnly(id string, on bool) error {
 		return err
 	}
 	if p.Account == nil || p.Account.Agent != p.ID || p.ID != "codex" {
-		return fmt.Errorf("magpie doesn't route %s's own requests for account failover", p.Name)
+		return fmt.Errorf("magpie-friday doesn't route %s's own requests for account failover", p.Name)
 	}
 	p.SwitchOnly = on
 	return Save(*p)
 }
 
-// SwitchOnly reports whether magpie only moves agent's own sign-in between
+// SwitchOnly reports whether magpie-friday only moves agent's own sign-in between
 // its accounts, sending none of its requests through the gateway for
 // account failover (Provider.SwitchOnly). While providers.json can't be
-// read the user's choice is unknown, and failover, magpie's own idea, is
+// read the user's choice is unknown, and failover, magpie-friday's own idea, is
 // not taken up on it.
 func SwitchOnly(agent string) bool {
 	f, err := read()
@@ -154,7 +154,7 @@ var usedCache struct {
 }
 
 // firstWait is how long a request waits for an agent's allowances the
-// first time they are asked for, so the first requests after magpie
+// first time they are asked for, so the first requests after magpie-friday
 // starts are routed by them too; later ones never wait.
 var firstWait = 3 * time.Second
 

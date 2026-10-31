@@ -6,7 +6,7 @@ import (
 )
 
 // Each value masked is told to Seen with the finder that found it: the
-// user's word, the user's rule, magpie's rules, the model (with the
+// user's word, the user's rule, magpie-friday's rules, the model (with the
 // Chinese names it brings), and, in a later request, a value masked
 // before. The hit holds the placeholder, never the value.
 func TestSeenSaysWhoFoundIt(t *testing.T) {

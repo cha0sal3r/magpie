@@ -10,7 +10,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // dshTransport is how dsh's pi-ai adapter tells a failure it retries as a
@@ -71,7 +71,7 @@ func TestStreamCutSaysConnection(t *testing.T) {
 	}
 }
 
-// One cut before anything was said is magpie's to try again: the session
+// One cut before anything was said is magpie-friday's to try again: the session
 // gets the reply of the try after, never the dropped connection.
 func TestStreamCutBeforeContentTriedAgain(t *testing.T) {
 	fresh(t)

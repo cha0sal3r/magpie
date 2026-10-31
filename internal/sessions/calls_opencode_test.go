@@ -23,12 +23,12 @@ func ocCalls(t *testing.T) map[string]Call {
 }
 
 // checkOCCalls checks the fixtures' replies as calls: the one through
-// magpie's gateway (msg_0003, provider "magpie") left to the gateway's log,
+// magpie-friday's gateway (msg_0003, provider "magpie-friday") left to the gateway's log,
 // the subagent's in the session it ran under, the reasoning in the output.
 func checkOCCalls(t *testing.T, cs map[string]Call) {
 	t.Helper()
 	if _, ok := cs["msg_0003"]; ok {
-		t.Fatalf("a reply through magpie's gateway counted again: %+v", cs["msg_0003"])
+		t.Fatalf("a reply through magpie-friday's gateway counted again: %+v", cs["msg_0003"])
 	}
 	a, ok := cs["msg_0002"]
 	if !ok {
@@ -104,7 +104,7 @@ func TestOpenCodeCallsV2(t *testing.T) {
 	db := ocMakeV2(t, filepath.Join(data, "opencode", "opencode.db"))
 	checkOCCalls(t, ocCalls(t))
 
-	// a compaction after a reply through magpie went through magpie too
+	// a compaction after a reply through magpie-friday went through magpie-friday too
 	if _, err := db.Exec(`INSERT INTO session_message VALUES ('msg_0005', ?, 'compaction', 9, 1790417000000, 1790417010000, ?)`, ocMain,
 		`{"status":"completed","reason":"auto","cost":0,"tokens":{"input":5,"output":1,"reasoning":0,"cache":{"read":0,"write":0}},"time":{"created":1790417000000}}`); err != nil {
 		t.Fatal(err)
@@ -117,7 +117,7 @@ func TestOpenCodeCallsV2(t *testing.T) {
 	}
 	cs := ocCalls(t)
 	if _, ok := cs["msg_0005"]; ok {
-		t.Fatalf("a compaction through magpie counted: %+v", cs["msg_0005"])
+		t.Fatalf("a compaction through magpie-friday counted: %+v", cs["msg_0005"])
 	}
 	if c := cs["msg_0007"]; c.Model != "big-pickle" || c.Upstream != "opencode" || c.Tokens != (Tokens{7, 3, 0, 0, 0}) || c.Effort != "xhigh" {
 		t.Fatalf("an OpenCode Zen reply: %+v", c)

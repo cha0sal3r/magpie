@@ -5,14 +5,14 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 func TestAsideStageWritesSelectionObjectAndConfirmsPending(t *testing.T) {
 	settings, _ := asideHome(t)
 	a := mustFindAside(t)
-	if err := a.Native.Stage("model", "magpie/relay/glm-4.6"); err != nil {
+	if err := a.Native.Stage("model", "magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	var saved struct {
@@ -21,7 +21,7 @@ func TestAsideStageWritesSelectionObjectAndConfirmsPending(t *testing.T) {
 	if err := json.Unmarshal([]byte(readFile(settings)), &saved); err != nil {
 		t.Fatal(err)
 	}
-	if asideSelection(saved.Default) != "magpie/relay/glm-4.6" {
+	if asideSelection(saved.Default) != "magpie-friday/relay/glm-4.6" {
 		t.Fatalf("stage wrote an unusable selection: %s", saved.Default)
 	}
 	a = mustFindAside(t)
@@ -45,7 +45,7 @@ func TestAsideStageNativeThenMagpieRestoresNativeChoice(t *testing.T) {
 	if err := a.Native.Stage("model", "native/other"); err != nil {
 		t.Fatal(err)
 	}
-	if err := a.Native.Stage("model", "magpie/relay/glm-4.6"); err != nil {
+	if err := a.Native.Stage("model", "magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	if err := a.Disconnect(); err != nil {
@@ -92,7 +92,7 @@ func TestAsideRewireWithoutDaemonOnlyMovesProvider(t *testing.T) {
 	if len(moved) != 1 || moved[0] != "Aside" {
 		t.Fatalf("moved %v", moved)
 	}
-	if url, _ := edit.GetJSON(models, "providers.magpie.baseUrl"); url != gateway.URL()+"/v1" {
+	if url, _ := edit.GetJSON(models, "providers.magpie-friday.baseUrl"); url != gateway.URL()+"/v1" {
 		t.Fatalf("provider stayed at %s", url)
 	}
 	if readFile(settings) != before {

@@ -12,10 +12,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// parkedForTheDump waits on ch, as a goroutine stuck in magpie would: the
+// parkedForTheDump waits on ch, as a goroutine stuck in magpie-friday would: the
 // dump must name it and what it waits on.
 func parkedForTheDump(ch <-chan struct{}, parked chan<- struct{}) {
 	close(parked)
@@ -25,7 +25,7 @@ func parkedForTheDump(ch <-chan struct{}, parked chan<- struct{}) {
 // The goroutine dump goes to the same callers as the heap profile (a
 // program on this computer over loopback, nothing a browser sends, no
 // other Host) and is refused to the rest. What it answers is every
-// goroutine's stack, a goroutine parked in magpie's code among them,
+// goroutine's stack, a goroutine parked in magpie-friday's code among them,
 // named with what it waits on, and which process it is of (#3362: an app
 // stuck for days could only be read by killing it).
 func TestGoroutineDumpOnlyToThisComputer(t *testing.T) {
@@ -73,7 +73,7 @@ func TestGoroutineDumpOnlyToThisComputer(t *testing.T) {
 	for _, host := range []string{"127.0.0.1:3425", "localhost:3425", "[::1]:3425"} {
 		w := call(true, "127.0.0.1:50123", host, "User-Agent", "Go-http-client/1.1")
 		if w.Code != http.StatusOK {
-			t.Fatalf("magpie goroutines at %s: %d %q", host, w.Code, w.Body.String())
+			t.Fatalf("magpie-friday goroutines at %s: %d %q", host, w.Code, w.Body.String())
 		}
 		body := w.Body.String()
 		if !strings.HasPrefix(body, "goroutine ") {
@@ -118,7 +118,7 @@ func stuckSave(t *testing.T, held, release chan struct{}) {
 	}
 }
 
-// The dump is asked for while magpie hangs, so it answers ahead of what
+// The dump is asked for while magpie-friday hangs, so it answers ahead of what
 // the gateway's requests pass through first (dumpFirst): here a save
 // holds settings.json's lock, which lanGuard's allow list reads under, so
 // /v1/models on the gateway's own listener (Front) waits on it, and the

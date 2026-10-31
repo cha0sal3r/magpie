@@ -7,7 +7,7 @@ import (
 	"unsafe"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 	"golang.org/x/sys/windows"
 )
 
@@ -21,11 +21,11 @@ func webView2Check(app *application.App) bool {
 	if !webView2Missing(app.Env.Info().PlatformInfo) {
 		return true
 	}
-	log.Printf("magpie: no Microsoft Edge WebView2 Runtime, which magpie's windows need; install it from %s, or use magpie web / magpie tui", webView2Page)
+	log.Printf("magpie-friday: no Microsoft Edge WebView2 Runtime, which magpie-friday's windows need; install it from %s, or use magpie-friday web / magpie-friday tui", webView2Page)
 	title, body := webView2Notice(trayLang(settings.Load().Lang, systemLang))
 	if webView2Box(title, body) == idYes {
 		if err := windows.ShellExecute(0, windows.StringToUTF16Ptr("open"), windows.StringToUTF16Ptr(webView2Page), nil, nil, windows.SW_SHOWNORMAL); err != nil {
-			log.Println("magpie: opening the WebView2 page:", err)
+			log.Println("magpie-friday: opening the WebView2 page:", err)
 		}
 	}
 	return false

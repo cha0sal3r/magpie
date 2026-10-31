@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-// fakeStepFun is a StepFun platform: it takes the session magpie keeps as
+// fakeStepFun is a StepFun platform: it takes the session magpie-friday keeps as
 // its one cookie, renews it, and tells a plan's windows.
 type fakeStepFun struct {
 	srv      *httptest.Server

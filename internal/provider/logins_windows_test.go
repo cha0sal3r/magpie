@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/steady"
+	"github.com/cha0sal3r/magpie-friday/internal/steady"
 )
 
-// Another magpie writing logins.json (a temp file renamed over it: the one
+// Another magpie-friday writing logins.json (a temp file renamed over it: the one
 // an update is replacing, a second one started) has Windows say, for a
 // moment, that it isn't there: read so, it was no accounts, and the write
 // that followed left every account out (Packing1 on Discord, Windows 11:
@@ -65,6 +65,6 @@ func TestLoginsKeptWhileAnotherMagpieWrites(t *testing.T) {
 		t.Fatalf("the Antigravity account is gone from logins.json (read as none %d times)", misses)
 	}
 	if misses > 0 {
-		t.Fatalf("logins.json read as no accounts %d times while another magpie wrote it", misses)
+		t.Fatalf("logins.json read as no accounts %d times while another magpie-friday wrote it", misses)
 	}
 }

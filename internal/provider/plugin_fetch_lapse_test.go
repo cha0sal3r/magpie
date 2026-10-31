@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // A plugin's fetch hook that throws on its sign-in (the vendor turned the
@@ -63,7 +63,7 @@ func TestPluginFetchSignInExpiredLapses(t *testing.T) {
 }
 
 // Signing in again takes the mark off by the account alone, when the
-// providers' list is empty too: it is, while another magpie's change to
+// providers' list is empty too: it is, while another magpie-friday's change to
 // plugins.json is read again, and a sign-in finished then left the
 // account saying "sign in again" (#2748).
 func TestPluginSignInClearsLapseWithoutTheList(t *testing.T) {

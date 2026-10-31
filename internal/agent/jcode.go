@@ -9,11 +9,11 @@ package agent
 // reasoning). jcode starts on [provider] default_provider and default_model,
 // a profile's name and one of its models.
 //
-// magpie adds itself as the profile "magpie": the gateway, with one model
+// magpie-friday adds itself as the profile "magpie-friday": the gateway, with one model
 // entry per catalog model, so the catalog is in jcode's /model picker, and
 // jcode is started on the model picked. What [provider] named before is
-// stashed and put back when magpie steps out. Every other key of the file is
-// the user's and stays as written, the user's own keys in magpie's profile
+// stashed and put back when magpie-friday steps out. Every other key of the file is
+// the user's and stays as written, the user's own keys in magpie-friday's profile
 // too (headers, extra_body, a model's reasoning_effort).
 
 import (
@@ -27,10 +27,10 @@ import (
 
 	toml "github.com/pelletier/go-toml/v2"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
-// jcodeProfile is magpie's profile's table in jcode's config.toml, and
+// jcodeProfile is magpie-friday's profile's table in jcode's config.toml, and
 // jcodeModels its models' array.
 const (
 	jcodeProfile = "providers." + magpieID
@@ -40,7 +40,7 @@ const (
 // what jcode says after a change (notice.go)
 var noticeJcode = newNotice("jcode reads its settings at start-up — restart open jcode sessions to use this.")
 
-// jcodeContext is what jcode is told of a model whose context magpie
+// jcodeContext is what jcode is told of a model whose context magpie-friday
 // doesn't know; without one it takes 200k.
 const jcodeContext = 128000
 
@@ -63,7 +63,7 @@ type jcodeModel struct {
 	Input           []string `toml:"input,omitempty"`
 }
 
-// jcodeConf is what magpie reads of jcode's config.toml.
+// jcodeConf is what magpie-friday reads of jcode's config.toml.
 type jcodeConf struct {
 	Provider struct {
 		DefaultProvider string `toml:"default_provider"`
@@ -88,15 +88,15 @@ func jcodeRead(path string) (jcodeConf, error) {
 		return c, err
 	}
 	if err := toml.Unmarshal(b, &c); err != nil {
-		return c, fmt.Errorf("jcode's %s isn't TOML magpie can read; it was left as it is: %w", path, err)
+		return c, fmt.Errorf("jcode's %s isn't TOML magpie-friday can read; it was left as it is: %w", path, err)
 	}
 	return c, nil
 }
 
-// jcodeWant is magpie's models as jcode is told them: the context window
-// (one magpie doesn't know is jcodeContext), whether it takes images, and
+// jcodeWant is magpie-friday's models as jcode is told them: the context window
+// (one magpie-friday doesn't know is jcodeContext), whether it takes images, and
 // reasoning on for a model with effort levels, so jcode's /effort offers
-// them. A reasoning_effort the user set on one of magpie's models stays
+// them. A reasoning_effort the user set on one of magpie-friday's models stays
 // while the model has that level.
 func jcodeWant(was []jcodeModel) []jcodeModel {
 	kept := map[string]string{}
@@ -169,7 +169,7 @@ func jcodeSame(a, b []jcodeModel) bool {
 	})
 }
 
-// jcodePick is what [provider] named before magpie: a profile (or one of
+// jcodePick is what [provider] named before magpie-friday: a profile (or one of
 // jcode's providers) and a model, "" each for none.
 type jcodePick struct {
 	Provider string `json:"provider,omitempty"`
@@ -208,7 +208,7 @@ func jcodeAt(at place) *Agent {
 		}
 		return nil
 	}
-	// wire writes magpie's profile, its own keys set and the user's others
+	// wire writes magpie-friday's profile, its own keys set and the user's others
 	// left as they are, with model, if given, the profile's default; it
 	// writes nothing when the file has it all already
 	wire := func(model string) error {
@@ -243,7 +243,7 @@ func jcodeAt(at place) *Agent {
 		if same {
 			return nil
 		}
-		// jcode writes the models as [[providers.magpie.models]] when it
+		// jcode writes the models as [[providers.magpie-friday.models]] when it
 		// saves its settings itself: those go, for the one array below
 		if err := edit.SetTOMLTablesMatching(path, []string{jcodeModels}, nil, nil); err != nil {
 			return err
@@ -255,8 +255,8 @@ func jcodeAt(at place) *Agent {
 		}
 		return edit.SetTOMLKey(path, jcodeProfile, "models", jcodeArray(want))
 	}
-	// unwire takes magpie's profile out, and jcode back to what it started
-	// on before — when it still starts on magpie: a pick the user made in
+	// unwire takes magpie-friday's profile out, and jcode back to what it started
+	// on before — when it still starts on magpie-friday: a pick the user made in
 	// jcode since is theirs and stands
 	unwire := func(own string) error {
 		c, err := jcodeRead(path)
@@ -281,7 +281,7 @@ func jcodeAt(at place) *Agent {
 			}
 		}
 		// the profile whole: its models' tables and the user's own in it
-		// (headers, extra_body) are magpie's profile's, and go with it
+		// (headers, extra_body) are magpie-friday's profile's, and go with it
 		return edit.SetTOMLTablesMatching(path, []string{jcodeProfile}, []string{jcodeProfile + "."}, nil)
 	}
 	return atomic(&Agent{
@@ -313,7 +313,7 @@ func jcodeAt(at place) *Agent {
 			}
 			p, on := c.Providers[magpieID]
 			if !on {
-				return "jcode's [" + jcodeProfile + "] (config.toml) is gone, so it no longer reaches magpie"
+				return "jcode's [" + jcodeProfile + "] (config.toml) is gone, so it no longer reaches magpie-friday"
 			}
 			return wiringOff("jcode", path, func(k string) (string, bool) {
 				switch k {
@@ -326,8 +326,8 @@ func jcodeAt(at place) *Agent {
 			}, "base_url", at.v1(), "api_key", key())
 		},
 		Fields: []Field{{
-			// the model jcode starts on: one of magpie's is
-			// magpie/<provider>/<model>, magpie's profile with the model's
+			// the model jcode starts on: one of magpie-friday's is
+			// magpie-friday/<provider>/<model>, magpie-friday's profile with the model's
 			// id in it
 			Key: "model", Label: "model",
 			Get: get,
@@ -358,8 +358,8 @@ func jcodeAt(at place) *Agent {
 	}, path)
 }
 
-// jcodeOwn is the model jcode started on before magpie, or starts on now,
-// for the picker: jcode's own providers are its sign-ins, which magpie
+// jcodeOwn is the model jcode started on before magpie-friday, or starts on now,
+// for the picker: jcode's own providers are its sign-ins, which magpie-friday
 // can't list.
 func jcodeOwn(path, keyPick, cur string) []Option {
 	var was jcodePick

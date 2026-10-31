@@ -11,10 +11,10 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // openAIVideos is an upstream serving OpenAI's Videos API under /v1, as a
@@ -43,7 +43,7 @@ func newOpenAIVideos(t *testing.T) *openAIVideos {
 		u.asked = append(u.asked, r.Method+" "+r.URL.Path+" "+key)
 		u.heads = append(u.heads, r.Header.Clone())
 		w.Header().Set("Content-Type", "application/json")
-		// the vendor's id has a dot, which magpie's own ids can't carry bare
+		// the vendor's id has a dot, which magpie-friday's own ids can't carry bare
 		const vid = "video_68d7.abc"
 		switch {
 		case r.Method == "GET" && r.URL.Path == "/v1/models":
@@ -163,7 +163,7 @@ func TestCustomProviderMakesVideos(t *testing.T) {
 	if code, obj, raw = asKey(t, h, "", "POST", "/v1/videos", `{"prompt":"a dog"}`); code != 200 || obj["model"] != "studio/vid-1" {
 		t.Fatalf("no model named: %d %s", code, raw)
 	}
-	// another magpie asking this one for its video models is told of it
+	// another magpie-friday asking this one for its video models is told of it
 	if objs := videomakerObjects(httptest.NewRequest("GET", "/v1/models", nil)); len(objs) != 1 || objs[0]["id"] != "studio/vid-1" {
 		t.Fatalf("videomakerObjects %v", objs)
 	}
@@ -380,7 +380,7 @@ func TestCustomProviderVideoTheUserMarks(t *testing.T) {
 		t.Fatal("a model studio doesn't have was marked")
 	}
 	if err := provider.SetModelKind("studio/sora-like-2", "audio"); err == nil {
-		t.Fatal("a kind magpie doesn't know was taken")
+		t.Fatal("a kind magpie-friday doesn't know was taken")
 	}
 	for _, ref := range []string{"studio/sora-like-2", "studio/typed-video-1", "studio/vid-1", "studio/gpt-5.5"} {
 		if err := provider.SetModelKind(ref, ""); err != nil {
@@ -396,7 +396,7 @@ func TestCustomProviderVideoTheUserMarks(t *testing.T) {
 }
 
 // #1399 (shen-joe): Agnes's videos API answers 400 "mode 不能为空" to a
-// body without mode, and magpie passed on only model, prompt, seconds and
+// body without mode, and magpie-friday passed on only model, prompt, seconds and
 // size. The reporter's own request now reaches the vendor with mode and
 // aspect_ratio as sent; a text field passed on so is masked as the prompt
 // is.

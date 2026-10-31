@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/backup"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/backup"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A file unchanged on the server costs a request, not a download (Crispin
@@ -101,7 +101,7 @@ func TestSyncUnchangedIsNotRead(t *testing.T) {
 			if fake.full != full || fake.puts != puts+1 {
 				t.Fatalf("changed here: %d full reads, %d writes", fake.full-full, fake.puts-puts)
 			}
-			remote, err := backup.Open(fake.files["/dav/magpie/magpie.magpie-backup"], "correct horse")
+			remote, err := backup.Open(fake.files["/dav/magpie-friday/magpie-friday.magpie-friday-backup"], "correct horse")
 			if err != nil || len(remote.Providers) != 3 {
 				t.Fatalf("on the server: %v %+v", err, remote.Providers)
 			}
@@ -121,7 +121,7 @@ func TestSyncUnchangedIsNotRead(t *testing.T) {
 			if fake.full != full+1 {
 				t.Fatalf("no copy: %d full reads", fake.full-full)
 			}
-			if remote, _ := backup.Open(fake.files["/dav/magpie/magpie.magpie-backup"], "correct horse"); len(remote.Providers) != 2 {
+			if remote, _ := backup.Open(fake.files["/dav/magpie-friday/magpie-friday.magpie-friday-backup"], "correct horse"); len(remote.Providers) != 2 {
 				t.Fatalf("on the server: %+v", remote.Providers)
 			}
 		})
@@ -214,7 +214,7 @@ func TestS3Unchanged(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	etag := f.etags["team x+y/magpie/magpie.magpie-backup"]
+	etag := f.etags["team x+y/magpie-friday/magpie-friday.magpie-friday-backup"]
 	if want := []string{"GET", "PUT none:*", "GET none:" + etag, "GET none:" + etag}; !slices.Equal(f.log, want) || f.sent != 0 {
 		t.Fatalf("requests %q (%d bytes read), want %q", f.log, f.sent, want)
 	}

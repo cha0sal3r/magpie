@@ -2,9 +2,9 @@ package library
 
 // RTK installed for every user of a Windows computer (winget --scope
 // machine, under C:\Program Files\WinGet) is one only an administrator can
-// upgrade, and magpie runs as the user (新v学员 on Discord: "RTK and
-// other actions that need elevation all fail"). magpie isn't run as
-// administrator for it: an elevated magpie would write the agents' files
+// upgrade, and magpie-friday runs as the user (新v学员 on Discord: "RTK and
+// other actions that need elevation all fail"). magpie-friday isn't run as
+// administrator for it: an elevated magpie-friday would write the agents' files
 // as the administrator, and couldn't start with Windows without asking each
 // time. Instead the one winget command that needs it goes through Windows'
 // administrator prompt (update.RunElevated), as an agent's npm update in
@@ -19,8 +19,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/update"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/update"
 )
 
 // wingetNeedsAdmin is winget saying the command needs an administrator

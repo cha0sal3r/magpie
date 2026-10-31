@@ -13,7 +13,7 @@ package provider
 // Grok Build installed without a shell, as its installer
 // (https://x.ai/cli/install.sh) installs it: the channel's version, that
 // version's binary for this platform from the same place, kept in
-// ~/.grok/downloads and linked from ~/.grok/bin as grok and agent. magpie
+// ~/.grok/downloads and linked from ~/.grok/bin as grok and agent. magpie-friday
 // runs this only where the installer can't run, its Docker image having no
 // bash, curl or wget; the binary is static, so it runs there.
 
@@ -31,8 +31,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
 )
 
 // grokCLIBases are where the installer looks, first to last: x.ai, then

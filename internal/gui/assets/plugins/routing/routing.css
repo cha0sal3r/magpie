@@ -14,7 +14,7 @@
 .rt-wires path.lit { stroke: var(--agent, var(--muted)); }
 .rt-wires path.rest { stroke-dasharray: 2 6; opacity: .45; }
 @keyframes rtflow { to { stroke-dashoffset: -8; } }
-/* the magpies, over the nodes: one carries each request out, another
+/* the magpie-fridays, over the nodes: one carries each request out, another
    brings its answer back — the dot at the tip of its beak */
 .rt-sky { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 /* each agent's requests and answers fly in its colour: a request filled
@@ -54,7 +54,7 @@
 .rt-accts li { position: relative; display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; align-items: center; column-gap: 10px; row-gap: 6px; padding: 9px 12px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; font-size: 13px; transition: opacity .3s, border-color .3s, transform .5s cubic-bezier(.2, .8, .2, 1); }
 .rt-accts li { margin-left: calc(var(--depth, 0) * 18px); }
 /* a key off screen is not laid out or painted (#3164): with hundreds of
-   keys open, WebKit painted every row again on each frame a magpie flew.
+   keys open, WebKit painted every row again on each frame a magpie-friday flew.
    One not drawn yet is as tall as a key drawn is (--rt-row, client.js's
    layout). A row a 429 hit keeps its tag up over its top edge, which this
    would cut, so it is drawn whole */
@@ -152,7 +152,7 @@
 .rt-steps li.ok::before { background: var(--green); }
 .rt-steps li.bad::before { background: var(--red); }
 .rt-steps li.wait::before { animation: rtlive 1.8s infinite; }
-/* where a try's time went: one stacked bar, magpie's, the network's and
+/* where a try's time went: one stacked bar, magpie-friday's, the network's and
    the vendor's told apart by a swatch, each part named with its time */
 .rt-time { display: grid; gap: 5px; max-width: 560px; }
 .rt-time-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; color: var(--fg-2); }
@@ -163,7 +163,7 @@
 .rt-time-parts { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 2px 14px; }
 .rt-time-parts li { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; }
 .rt-time-parts .v { color: var(--fg-2); font-variant-numeric: tabular-nums; }
-.rt-time .magpie { --rt-time: var(--accent); }
+.rt-time .magpie-friday { --rt-time: var(--accent); }
 .rt-time .net { --rt-time: var(--amber); }
 .rt-time .vendor { --rt-time: var(--fg-2); }
 .rt-off { padding: 18px 4px; text-align: center; color: var(--muted); font-size: 13px; }
@@ -183,7 +183,7 @@
 .rt-accts:where(.max460) li.rt-fold { grid-template-columns: 10px minmax(0, 1fr) auto; }
 .rt-accts:where(.max460) li.rt-fold em { grid-row: 2; text-align: left; }
 .rt-accts:where(.max460) li.rt-fold .chev { grid-column: 3; grid-row: 1; }
-/* narrow (the tray panel): magpie and the agent side by side, the
+/* narrow (the tray panel): magpie-friday and the agent side by side, the
    accounts under them, on a lane down their left */
 :where(.rt.max560) .rt-stage { grid-template-columns: 1fr 1fr; column-gap: 28px; row-gap: 26px; padding: 16px 0; }
 :where(.rt.max560) .rt-accts { grid-column: 1 / -1; padding-left: 22px; }

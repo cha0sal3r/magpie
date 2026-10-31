@@ -21,9 +21,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/source"
-	"github.com/yetone/magpie/internal/steady"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/source"
+	"github.com/cha0sal3r/magpie-friday/internal/steady"
 )
 
 // rtk's version is kept up to date the way it was installed: Homebrew's
@@ -279,7 +279,7 @@ func latestRTK() (string, error) {
 		CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse },
 	}
 	req, _ := http.NewRequest("HEAD", rtkReleases, nil)
-	req.Header.Set("User-Agent", "magpie")
+	req.Header.Set("User-Agent", "magpie-friday")
 	if resp, err := source.Do(c, req); err == nil {
 		resp.Body.Close()
 		if _, tag, ok := strings.Cut(resp.Header.Get("Location"), "/releases/tag/"); ok {
@@ -289,7 +289,7 @@ func latestRTK() (string, error) {
 		}
 	}
 	req, _ = http.NewRequest("GET", rtkReleasesAPI, nil)
-	req.Header.Set("User-Agent", "magpie")
+	req.Header.Set("User-Agent", "magpie-friday")
 	req.Header.Set("Accept", "application/vnd.github+json")
 	resp, _, err := doGitHub(req, func(r *http.Request) (*http.Response, error) { return source.Do(c, r) })
 	if err != nil {
@@ -329,7 +329,7 @@ func newer(a, b string) bool {
 }
 
 // rtkUpgrader is how the rtk at bin is brought up to date, by where it was
-// installed; nil when magpie can't tell.
+// installed; nil when magpie-friday can't tell.
 func rtkUpgrader(bin string) []string {
 	real, err := filepath.EvalSymlinks(bin)
 	if err != nil {
@@ -372,10 +372,10 @@ func rtkUpgrader(bin string) []string {
 		return wingetUp
 	// a standalone rtk.exe somewhere else on Windows, put there by hand
 	// from rtk's own Windows release (%USERPROFILE%\.local\bin, #2006): no
-	// package manager installed it, so magpie replaces it itself. winget's
+	// package manager installed it, so magpie-friday replaces it itself. winget's
 	// and cargo's folders were taken above, and an rtk winget's records or
 	// winget list say is winget's went to winget; when winget couldn't say
-	// (it timed out), magpie still can't tell rather than take it over.
+	// (it timed out), magpie-friday still can't tell rather than take it over.
 	// rtk's Windows release has no arm64 build, so on one it can't either
 	case rtkOnWindows && rtkArch == "amd64" &&
 		strings.EqualFold(filepath.Base(bin), "rtk.exe") &&
@@ -386,7 +386,7 @@ func rtkUpgrader(bin string) []string {
 }
 
 // rtkWindowsRelease is the upgrader rtkUpgrader gives a Windows rtk no
-// package manager installed (#2006): magpie replaces it with rtk.exe out of
+// package manager installed (#2006): magpie-friday replaces it with rtk.exe out of
 // rtk's own Windows release. The action names only the binary to replace:
 // the release is RTKLatest's when the upgrade runs, since naming it here
 // would have ReadRTK (a page draw) wait on RTKLatest's lock while it asks
@@ -397,11 +397,11 @@ const rtkWindowsRelease = "rtk-windows-release"
 // tests can point it at a fake release.
 var rtkDownloadBase = "https://github.com/rtk-ai/rtk/releases/download"
 
-// rtkDownloadMax is the largest file magpie reads from a release: rtk's
+// rtkDownloadMax is the largest file magpie-friday reads from a release: rtk's
 // Windows zip is a few MB.
 const rtkDownloadMax = 200 << 20
 
-// rtkArch is the architecture rtk's Windows release is chosen for: magpie's
+// rtkArch is the architecture rtk's Windows release is chosen for: magpie-friday's
 // own, which Windows on arm64 runs emulated when it is amd64. A var so a
 // test runs the amd64 branch on any machine.
 var rtkArch = runtime.GOARCH
@@ -442,7 +442,7 @@ func rtkFetch(url string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("User-Agent", "magpie")
+	req.Header.Set("User-Agent", "magpie-friday")
 	c := &http.Client{Timeout: 5 * time.Minute}
 	resp, err := source.DoOfficial(c, req)
 	if err != nil {
@@ -668,16 +668,16 @@ func UpgradeRTK() (*RTKView, error) {
 	}
 	c := upgraderOf(bin)
 	if c == nil {
-		return nil, fmt.Errorf("magpie can't tell how the rtk at %s was installed — update it the way you installed it", bin)
+		return nil, fmt.Errorf("magpie-friday can't tell how the rtk at %s was installed — update it the way you installed it", bin)
 	}
 	before := rtkVersion()
 	none := false
 	if c[0] == rtkWindowsRelease {
-		// no package manager and no installer to run: magpie downloads
+		// no package manager and no installer to run: magpie-friday downloads
 		// rtk's own Windows release and replaces the binary itself (#2006)
 		version := RTKLatest()
 		if version == "" {
-			return nil, fmt.Errorf("magpie can't tell which RTK release to install for %s — check the network and try again", bin)
+			return nil, fmt.Errorf("magpie-friday can't tell which RTK release to install for %s — check the network and try again", bin)
 		}
 		if err := installRTKWindowsRelease(version, bin); err != nil {
 			return nil, err

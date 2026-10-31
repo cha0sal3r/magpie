@@ -7,10 +7,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// #292: a magpie model's summary goes to a relay in front of the ChatGPT
+// #292: a magpie-friday model's summary goes to a relay in front of the ChatGPT
 // backend as Codex asks for its own — streamed, with its tool_choice and
 // include, under its thread's prompt_cache_key — or the relay answers
 // "invalid codex request". The summary comes back from the stream.

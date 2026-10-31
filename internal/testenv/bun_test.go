@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-// A bun on PATH older than the oldest magpie runs plugins on skips the
+// A bun on PATH older than the oldest magpie-friday runs plugins on skips the
 // test that asked for it, rather than failing it on Bun's own
 // differences (#1600: Bun 1.3 put :80 in a proxy's request line); MinBun
 // itself and newer ones, a canary among them, run it.

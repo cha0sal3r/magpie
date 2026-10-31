@@ -1,10 +1,10 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// How hard the models magpie asks on its own think (MOMO on Discord,
+// How hard the models magpie-friday asks on its own think (MOMO on Discord,
 // "外置模型能不能提供思考深度选项"): Settings › Models has, beside Image
 // recognition's model and the searcher's, a chip that opens the app's menu
 // (no native select) with Default and only the levels that model has. A
 // level picked is saved as visionEffort / searcherEffort and shown on the
-// chip; Default saves "" (nothing sent beyond magpie's own choice). Another
+// chip; Default saves "" (nothing sent beyond magpie-friday's own choice). Another
 // setting saved keeps both (prefsKeep). A model whose levels aren't known,
 // or a row turned off, has no chip. No click moves the page, and both chips
 // fit their row at 1100 and 420. Every language, Chromium and WebKit, with

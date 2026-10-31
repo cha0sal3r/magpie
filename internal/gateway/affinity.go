@@ -39,9 +39,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/steady"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/steady"
 )
 
 const (
@@ -133,7 +133,7 @@ var sticks = struct {
 	// conversations spreads rather than all going to the one holding the
 	// fewest a moment before (#1342)
 	opening map[string]stick
-	// the file as last read or written: another magpie's writes (the one
+	// the file as last read or written: another magpie-friday's writes (the one
 	// handing over to this one) are read again when a conversation is missed
 	from string
 	mod  time.Time
@@ -165,7 +165,7 @@ var sticksFlush struct {
 }
 
 // noteSticks has the file written within sticksFlushAfter: what this
-// magpie answered is in memory at once.
+// magpie-friday answered is in memory at once.
 func noteSticks() {
 	if sticksFlushAfter <= 0 {
 		saveSticks()
@@ -183,10 +183,10 @@ func noteSticks() {
 }
 
 // flushSticks writes what noteSticks has waiting: the gateway calls it as
-// it ends, so the magpie it hands over to, or the next start, reads it.
+// it ends, so the magpie-friday it hands over to, or the next start, reads it.
 func flushSticks() { flushSticksAt(sticksPath()) }
 
-// FlushSticks is flushSticks, for magpie ending on a signal before the
+// FlushSticks is flushSticks, for magpie-friday ending on a signal before the
 // gateway's own end.
 func FlushSticks() { flushSticks() }
 
@@ -227,7 +227,7 @@ func sticksPath() string { return filepath.Join(filepath.Dir(provider.Path()), "
 
 // stickOf is who answered key last, read from the file again when it isn't
 // known here and the file changed since: after a restart, or written by
-// the magpie that handed over. Called with sticks held.
+// the magpie-friday that handed over. Called with sticks held.
 func stickOf(key string) (stick, bool) {
 	if st, ok := sticks.m[key]; ok {
 		return st, true
@@ -301,7 +301,7 @@ func saveSticks() {
 	if err != nil {
 		return
 	}
-	tmp := path + ".magpie-tmp"
+	tmp := path + ".magpie-friday-tmp"
 	if os.WriteFile(tmp, b, 0o600) != nil {
 		return
 	}
@@ -311,7 +311,7 @@ func saveSticks() {
 	}
 	if fi, err := os.Stat(path); err == nil {
 		sticks.Lock()
-		// what this magpie wrote isn't read back as another's
+		// what this magpie-friday wrote isn't read back as another's
 		sticks.from, sticks.mod = sticksPath(), fi.ModTime()
 		sticks.Unlock()
 	}
@@ -753,7 +753,7 @@ type sealedItem struct {
 
 // sealedKinds are the input items a vendor seals for itself: its
 // reasoning, and the compaction a conversation's earlier turns were
-// folded into (OpenAI's, when Codex compacts on its own models; magpie's
+// folded into (OpenAI's, when Codex compacts on its own models; magpie-friday's
 // own is text by the time a request is sent).
 var sealedKinds = map[string]bool{"reasoning": true, "compaction": true, "compaction_summary": true}
 

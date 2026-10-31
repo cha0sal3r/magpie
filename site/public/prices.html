@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="pr.title">What $100 buys · magpie-friday</title>
+<meta name="description" data-i18n-attr="content:pr.desc" content="Every model's list price on one workload — cached input, new input and output — and what the same budget buys on each.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#fafafa">
+<script>
+(() => {
+  let mode = "system";
+  try { mode = localStorage.getItem("theme") || "system"; } catch {}
+  const q = matchMedia("(prefers-color-scheme: dark)");
+  const apply = () => {
+    const t = mode === "system" ? (q.matches ? "dark" : "light") : mode;
+    document.documentElement.dataset.theme = t;
+    document.querySelector('meta[name="theme-color"]').content = t === "dark" ? "#0b0b0c" : "#fafafa";
+    document.querySelectorAll("button.theme").forEach((b) => { b.dataset.mode = mode; b.title = "Theme: " + mode; });
+  };
+  q.addEventListener("change", () => mode === "system" && apply());
+  window.setTheme = (m) => { mode = m; try { m === "system" ? localStorage.removeItem("theme") : localStorage.setItem("theme", m); } catch {} apply(); };
+  window.themeMode = () => mode;
+  apply();
+})();
+</script>
+<script>try{if(/Linux/.test(navigator.userAgent)&&!/Android/.test(navigator.userAgent)||localStorage.getItem("omarchy")||/[?&]omarchy=/.test(location.search))document.write('<script src="/omarchy.js"><\/script>')}catch(e){}</script>
+<link rel="stylesheet" href="/docs.css">
+<meta property="og:title" content="What $100 buys · magpie-friday">
+<meta property="og:description" content="Every model's list price on one workload, and what the same budget buys on each.">
+<meta property="og:image" content="https://usemagpie.ai/img/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+/* The page is the site's black and white: a vendor is a shade of the ink, so
+   the charts read in either theme without a palette of their own. */
+.page { max-width: 1040px; padding-block: 44px 80px; }
+.page h1 { font-size: clamp(32px, 4.6vw, 46px); line-height: 1.06; letter-spacing: -.035em; margin: 0 0 14px; font-weight: 700; }
+.page h2 { font-size: 19px; letter-spacing: -.015em; line-height: 1.3; margin: 0 0 4px; font-weight: 650; }
+.page .sub { color: var(--ink3); font-size: 13.5px; margin: 0 0 16px; max-width: 62em; }
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; margin-top: 16px; box-shadow: var(--shadow); }
+.panel > h2 + .sub { margin-bottom: 14px; }
+
+/* controls */
+.controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px 26px; }
+.field label { display: block; font-size: 12px; letter-spacing: .02em; color: var(--ink3); margin-bottom: 5px; }
+.field .out { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 7px; }
+.field .hint { font-size: 12px; color: var(--ink3); margin-top: 6px; line-height: 1.45; }
+input[type=range] { width: 100%; accent-color: var(--ink); margin: 0; }
+select { width: 100%; font: inherit; font-size: 14px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; background: transparent; color: var(--ink2); font: inherit; font-size: 13px; padding: 8px 12px; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button:hover { color: var(--ink); }
+.seg button[aria-pressed=true] { background: var(--btn); color: var(--btn-ink); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--line); }
+.chips .lab { font-size: 12px; letter-spacing: .02em; color: var(--ink3); align-self: center; margin-right: 2px; }
+.chip { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); background: transparent; border-radius: 99px; padding: 5px 12px 5px 10px; font: inherit; font-size: 13px; color: var(--ink3); cursor: pointer; }
+.chip i { width: 9px; height: 9px; border-radius: 99px; background: currentColor; opacity: .9; }
+.chip[aria-pressed=true] { color: var(--ink); border-color: var(--ink3); }
+.chip[aria-pressed=false] { opacity: .45; text-decoration: line-through; }
+.chip:disabled { cursor: default; }
+.chip .n { font-size: 11.5px; color: var(--ink3); }
+
+/* the headline number */
+.stat { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; margin-top: 20px; }
+.stat .k { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink3); }
+.stat .v { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: clamp(30px, 5vw, 44px); font-weight: 600; letter-spacing: -.03em; line-height: 1; }
+.stat .n { font-size: 13.5px; color: var(--ink2); }
+
+/* vendor cards */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; }
+.vcard { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; background: var(--bg); }
+.vcard .vn { font-size: 12.5px; color: var(--ink2); display: flex; align-items: center; gap: 7px; }
+.vcard .vn i { width: 9px; height: 9px; border-radius: 99px; background: var(--ink); }
+.vcard .vv { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 19px; font-weight: 600; margin-top: 7px; letter-spacing: -.02em; }
+.vcard .vm { font-size: 12px; color: var(--ink3); margin-top: 3px; line-height: 1.45; }
+
+/* charts */
+.scroll { overflow-x: auto; }
+svg.chart { display: block; width: 100%; height: auto; min-width: 620px; color: var(--ink); }
+.ch-name { font-size: 12px; fill: var(--ink2); }
+.ch-name.focus { fill: var(--ink); font-weight: 600; }
+.ch-val { font-size: 11.5px; fill: var(--ink2); font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+.ch-val.sm { font-size: 9.5px; }
+.ch-grid { stroke: var(--line); }
+.ch-axis { font-size: 11.5px; fill: var(--ink3); }
+.ch-tick { font-size: 10px; fill: var(--ink3); font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+.ch-dot { stroke: var(--card); stroke-width: 1.5; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12.5px; color: var(--ink2); margin-top: 12px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 10px; height: 10px; border-radius: 3px; background: var(--ink); }
+
+/* table */
+.twrap { max-height: 540px; overflow: auto; border: 1px solid var(--line); border-radius: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { padding: 7px 10px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--line); }
+th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left; }
+thead th { position: sticky; top: 0; background: var(--card); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--ink3); font-weight: 600; z-index: 1; }
+tbody tr:hover { background: var(--bg2); }
+tbody tr:last-child td { border-bottom: 0; }
+td.num { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; }
+td.strong { font-weight: 650; }
+td.vend { color: var(--ink3); }
+.tag { font-size: 10.5px; padding: 1px 5px; border-radius: 4px; background: var(--code); color: var(--ink3); margin-left: 6px; }
+.notes { margin-top: 28px; display: grid; gap: 12px; font-size: 14px; color: var(--ink2); }
+.notes p { margin: 0; max-width: 78em; }
+.notes b { color: var(--ink); font-weight: 620; }
+.notes code { font-size: 12.5px; background: var(--code); padding: 1px 4px; border-radius: 4px; }
+.state { padding: 26px 0; color: var(--ink3); font-size: 14px; }
+.state .btn { margin-top: 12px; }
+footer { border-top: 1px solid var(--line); padding: 22px 0 48px; font-size: 13px; color: var(--ink3); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; }
+footer a { text-decoration: none; }
+footer a:hover { color: var(--ink); }
+footer .links { margin-left: auto; display: flex; gap: 18px; }
+@media (max-width: 640px) {
+  .page { padding-block: 28px 56px; }
+  .panel { padding: 15px 16px; }
+  .stat .v { font-size: 30px; }
+  footer .links { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="brand" href="/"><img class="bird" src="/img/magpie-friday-small.svg" alt="">magpie-friday <small data-i18n="pr.crumb">Prices</small></a>
+  <div class="links">
+    <a href="/" data-i18n="pr.nav.home">Home</a>
+    <a href="/docs/start" data-i18n="pr.nav.docs">Get started</a>
+    <a href="https://github.com/cha0sal3r/magpie-friday-releases/releases" data-i18n="pr.nav.releases">Releases</a>
+  </div>
+  <div class="langs">
+    <button class="icon-btn lang" type="button" aria-label="Language" title="Language" aria-haspopup="true" aria-expanded="false" aria-controls="langs"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="8" cy="8" r="6.25"/><path d="M1.75 8h12.5M8 1.75c1.7 1.75 2.55 3.83 2.55 6.25S9.7 12.5 8 14.25M8 1.75C6.3 3.5 5.45 5.58 5.45 8S6.3 12.5 8 14.25"/></svg></button>
+    <div class="lang-menu" id="langs" hidden>
+      <a href="/prices" hreflang="en" lang="en">English</a>
+      <a href="/zh/prices" hreflang="zh" lang="zh">中文</a>
+      <a href="/ja/prices" hreflang="ja" lang="ja">日本語</a>
+      <a href="/de/prices" hreflang="de" lang="de">Deutsch</a>
+    </div>
+  </div>
+  <button class="icon-btn theme" type="button" aria-label="Theme" title="Theme: system"><svg class="i-system" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.75" y="2.75" width="12.5" height="8.5" rx="1.5"/><path d="M5.5 14h5M8 11.25V14"/></svg><svg class="i-light" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3 3l1 1M12 12l1 1M3 13l1-1M12 4l1-1"/></svg><svg class="i-dark" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7Z"/></svg></button>
+  <a class="icon-btn" href="https://github.com/cha0sal3r/magpie-friday" aria-label="magpie-friday on GitHub" title="Source on GitHub"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg></a>
+</div></nav>
+
+<main class="wrap page">
+
+  <p class="eyebrow" data-i18n="pr.crumb">Prices</p>
+  <h1 data-i18n="pr.h1">What $100 buys</h1>
+  <p class="lede" data-i18n="pr.lede">One budget, one workload: a share of prompt tokens read from the cache, a share of new input, a share of output. Every model below is priced the same way, so the ranking is what the same money buys.</p>
+
+  <section class="panel" aria-labelledby="ctl-h">
+    <h2 id="ctl-h" data-i18n="pr.ctl.h">The workload</h2>
+    <p class="sub" data-i18n="pr.ctl.sub">Every number on the page follows these. The defaults are a long agent session: a large cached prefix, a small reply.</p>
+    <div class="controls">
+      <div class="field">
+        <label for="budget" data-i18n="pr.budget">Budget</label>
+        <div class="out" id="budget-v">$100</div>
+        <input type="range" id="budget" min="10" max="2000" step="10" value="100">
+      </div>
+      <div class="field">
+        <label for="hit" data-i18n="pr.hit">Cache hits</label>
+        <div class="out" id="hit-v">94.9%</div>
+        <input type="range" id="hit" min="0" max="100" step="0.1" value="94.9">
+        <p class="hint" data-i18n="pr.hit.note">Share of prompt tokens read from the cache</p>
+      </div>
+      <div class="field">
+        <label for="out" data-i18n="pr.out">Output</label>
+        <div class="out" id="out-v">1.0%</div>
+        <input type="range" id="out" min="0" max="40" step="0.5" value="1">
+        <p class="hint" data-i18n="pr.out.note">Share of all tokens written back</p>
+      </div>
+      <div class="field">
+        <label id="write-l" data-i18n="pr.write">Cache writes</label>
+        <div class="seg" id="write" role="group" aria-labelledby="write-l">
+          <button type="button" data-w="none" aria-pressed="true" data-i18n="pr.w.none">Not cached</button>
+          <button type="button" data-w="min" aria-pressed="false" data-i18n="pr.w.min">5 minutes</button>
+          <button type="button" data-w="hour" aria-pressed="false" data-i18n="pr.w.hour">1 hour</button>
+        </div>
+        <p class="hint" data-i18n="pr.write.note">A new prompt token is billed as input, or written to the cache first</p>
+      </div>
+      <div class="field">
+        <label id="tier-l" data-i18n="pr.tier">Service tier</label>
+        <div class="seg" id="tier" role="group" aria-labelledby="tier-l">
+          <button type="button" data-t="std" aria-pressed="true" data-i18n="pr.t.std">Standard</button>
+          <button type="button" data-t="batch" aria-pressed="false" data-i18n="pr.t.batch">Batch</button>
+        </div>
+        <p class="hint" data-i18n="pr.tier.note">Batch bills the same tokens at half the standard price, where a vendor runs one</p>
+      </div>
+      <div class="field">
+        <label for="prompt" data-i18n="pr.prompt">Prompt per request</label>
+        <select id="prompt">
+          <option value="8000">8K</option>
+          <option value="40000">40K</option>
+          <option value="128000">128K</option>
+          <option value="300000">300K</option>
+        </select>
+        <p class="hint" data-i18n="pr.prompt.note">Vendors bill the whole request at the tier its prompt reaches</p>
+      </div>
+    </div>
+    <div class="chips" id="chips"></div>
+  </section>
+
+  <div class="stat" aria-live="polite">
+    <span class="k" data-i18n="pr.best">Most tokens</span>
+    <span class="v" id="best">—</span>
+    <span class="n" id="best-n"></span>
+  </div>
+  <div class="cards" id="cards"></div>
+
+  <div id="loading" class="state" data-i18n="pr.loading">Reading prices…</div>
+  <div id="error" class="state" hidden>
+    <span data-i18n="pr.error">Prices could not be read.</span>
+    <button class="btn small ghost" type="button" id="retry" data-i18n="pr.retry">Try again</button>
+  </div>
+
+  <section class="panel" id="rank" aria-labelledby="rank-h">
+    <h2 id="rank-h" data-i18n="pr.rank">What the budget buys</h2>
+    <p class="sub" data-i18n="pr.rank.sub">Tokens the budget buys, log scale — a longer bar is a cheaper model. The twenty cheapest of the vendors left on.</p>
+    <div class="scroll"><svg class="chart" id="rank-chart" role="img" aria-labelledby="rank-h"></svg></div>
+  </section>
+
+  <section class="panel" id="map" aria-labelledby="map-h">
+    <h2 id="map-h" data-i18n="pr.map">The price map</h2>
+    <p class="sub" data-i18n="pr.map.sub">Input price across, output price up, both log scales. A bubble is one model; its size is what the budget buys there. Down and to the left is cheaper.</p>
+    <div class="scroll"><svg class="chart" id="map-chart" role="img" aria-labelledby="map-h"></svg></div>
+  </section>
+
+  <section class="panel" id="split" aria-labelledby="split-h">
+    <h2 id="split-h" data-i18n="pr.split">Where the money goes</h2>
+    <p class="sub" data-i18n="pr.split.sub">Every 10 million tokens, split into cache hits, new input and output.</p>
+    <div class="scroll"><svg class="chart" id="split-chart" role="img" aria-labelledby="split-h"></svg></div>
+    <div class="legend">
+      <span><i style="opacity:1"></i><span data-i18n="pr.seg.hit">Cache hits</span></span>
+      <span><i style="opacity:.55"></i><span data-i18n="pr.seg.miss">New input</span></span>
+      <span><i style="opacity:.25"></i><span data-i18n="pr.seg.out">Output</span></span>
+    </div>
+  </section>
+
+  <section class="panel" id="writecost" aria-labelledby="writecost-h">
+    <h2 id="writecost-h" data-i18n="pr.wc">What a cache write costs</h2>
+    <p class="sub" data-i18n="pr.wc.sub">Each vendor's priciest model at the three write settings. A bar is what the budget buys at that setting; a vendor that charges no write fee has three equal bars.</p>
+    <div class="scroll"><svg class="chart" id="write-chart" role="img" aria-labelledby="writecost-h"></svg></div>
+    <div class="legend">
+      <span><i style="opacity:.28"></i><span data-i18n="pr.w.none">Not cached</span></span>
+      <span><i style="opacity:.6"></i><span data-i18n="pr.w.min">5 minutes</span></span>
+      <span><i style="opacity:1"></i><span data-i18n="pr.w.hour">1 hour</span></span>
+    </div>
+  </section>
+
+  <section class="panel" id="all" aria-labelledby="all-h">
+    <h2 id="all-h" data-i18n="pr.all">Every model</h2>
+    <p class="sub" data-i18n="pr.all.sub">List prices in US dollars per million tokens, at the tier the prompt reaches. Sorted by what the budget buys.</p>
+    <div class="twrap">
+      <table>
+        <thead><tr>
+          <th data-i18n="pr.col.model">Model</th>
+          <th data-i18n="pr.col.vendor">Vendor</th>
+          <th data-i18n="pr.col.in">Input</th>
+          <th data-i18n="pr.col.read">Cache read</th>
+          <th data-i18n="pr.col.out">Output</th>
+          <th data-i18n="pr.col.ten">Per 10M</th>
+          <th data-i18n="pr.col.budget">For the budget</th>
+          <th data-i18n="pr.col.cached">Cached</th>
+          <th data-i18n="pr.col.fresh">New input</th>
+          <th data-i18n="pr.col.gen">Output</th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="notes">
+    <p data-i18n="pr.n1"><b>The mix.</b> Cache hits are the share of <i>prompt</i> tokens read from the cache; output is the share of <i>all</i> tokens written back. The rest of the prompt is new input. The three always add to 100%.</p>
+    <p data-i18n="pr.n2"><b>Cache writes.</b> OpenAI and Anthropic bill a write at 1.25× input; DeepSeek and GLM charge none, so a written token costs their input price. Anthropic is the only vendor with a published 1-hour write (2× input) — elsewhere “1 hour” is the 5-minute price.</p>
+    <p data-i18n="pr.n3"><b>Long prompts.</b> A vendor bills the whole request at the tier its prompt reaches: above 272K on OpenAI, 100K on Claude Haiku 5.5, 32K on GLM. Move “Prompt per request” to see it.</p>
+    <p data-i18n="pr.n4"><b>Service tiers.</b> Batch bills at half the standard price where a vendor runs one — OpenAI, Anthropic and GLM. DeepSeek's discount is off-peak hours (a schedule, not shown) and Moonshot lists none, so those stay at standard under Batch. Priority is a rate-limit tier, not a price, so it isn't here. Also not counted: subscription plans, tool, network and storage fees, and tokenizer differences — the same text is about 30% more tokens on Claude 4.7 and later.</p>
+    <p data-i18n="pr.n5"><b>Source.</b> List prices from models.dev, read on <span id="asof">—</span>. A negotiated price or a plan can differ; magpie-friday’s Usage page prices what you actually spent.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span data-i18n="pr.source">List prices from models.dev</span>
+  <div class="links">
+    <a href="/" data-i18n="pr.foot.home">magpie-friday — one gateway for every agent</a>
+    <a href="https://github.com/cha0sal3r/magpie-friday" data-i18n="pr.foot.gh">GitHub</a>
+  </div>
+</div></footer>
+
+<script>
+// One budget, one mix, every model's list price. The arithmetic is the
+// inverse of what the app's Usage page charges for: a blended price per
+// token, then the budget over it. Nothing here calls a model.
+(() => {
+  "use strict";
+
+  const LANG = (document.documentElement.lang || "en").slice(0, 2);
+  const T = (en, zh, ja, de) => ({ zh, ja, de })[LANG] ?? en;
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => [...document.querySelectorAll(s)];
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
+
+  // The scenario is in the URL, so one can be linked: only what differs
+  // from the defaults is written, and the path keeps the language.
+  const q = new URLSearchParams(location.search);
+  const num = (k, d, lo, hi) => { const v = parseFloat(q.get(k)); return Number.isFinite(v) ? clamp(v, lo, hi) : d; };
+  // the four prompt sizes the menu offers; a hand-edited URL snaps to one
+  const PROMPTS = [8000, 40000, 128000, 300000];
+  const prompt = num("prompt", 8000, 1000, 500000);
+  const state = {
+    budget: num("budget", 100, 10, 2000),
+    hit: num("hit", 94.9, 0, 100),
+    out: num("out", 1, 0, 40),
+    prompt: PROMPTS.reduce((a, b) => (Math.abs(b - prompt) < Math.abs(a - prompt) ? b : a)),
+    write: ["none", "min", "hour"].includes(q.get("write")) ? q.get("write") : "none",
+    tier: ["std", "batch"].includes(q.get("tier")) ? q.get("tier") : "std",
+    hidden: new Set((q.get("hide") || "").split(",").filter(Boolean)),
+  };
+  let data = null;
+
+  // ── the arithmetic ────────────────────────────────────────────────
+  // The whole request is billed at the tier its prompt reaches, as the
+  // vendors bill it (catalog.Price.At in the app does the same).
+  function tierAt(m, prompt) {
+    let p = m;
+    for (const t of m.tiers) if (prompt > t.above) p = { ...m, ...t };
+    return p;
+  }
+  // A model with no cache read price doesn't cache, so every prompt token is
+  // input; a write price of 0 is a vendor that charges none, so a written
+  // token is input too (DeepSeek, GLM).
+  const readPrice = (p) => (p.cacheRead > 0 ? p.cacheRead : p.input);
+  const writePrice = (p, w = state.write) => w === "none" ? p.input
+    : w === "hour" ? (p.cacheWrite1h || p.cacheWrite || p.input)
+    : (p.cacheWrite || p.input);
+
+  // blend is the price of a million tokens at the mix. The three shares add
+  // to one however the sliders are set — the unit never changes size — and
+  // the budget over it is the capacity. A batch tier halves every part of the
+  // price where the vendor runs a batch API (m.batch), so the shares still
+  // add up to the same unit.
+  function blend(m, write = state.write) {
+    const mul = state.tier === "batch" && m.batch > 0 ? m.batch : 1;
+    let p = tierAt(m, state.prompt);
+    if (mul !== 1) p = { ...p, input: p.input * mul, output: p.output * mul, cacheRead: p.cacheRead * mul, cacheWrite: p.cacheWrite * mul, cacheWrite1h: p.cacheWrite1h * mul };
+    const hp = state.hit / 100, op = state.out / 100;
+    const hit = hp * (1 - op), miss = (1 - hp) * (1 - op), out = op;
+    const w = writePrice(p, write);
+    const cHit = hit * readPrice(p), cMiss = miss * w, cOut = out * p.output;
+    const per = cHit + cMiss + cOut;
+    return { p, hit, miss, out, w, mul, cHit, cMiss, cOut, per, total: per > 0 ? state.budget / per : 0 };
+  }
+
+  // ── words and numbers ─────────────────────────────────────────────
+  const vendorName = (id) => (data?.vendors.find((v) => v.id === id) || {}).name || id;
+  const shade = (id) => Math.max(0.3, 1 - (data?.vendors.findIndex((v) => v.id === id) || 0) * 0.17);
+  const tok = (m) => m >= 1000 ? (m / 1000).toFixed(m >= 10000 ? 1 : 2) + "B" : m >= 100 ? m.toFixed(0) + "M" : m.toFixed(m < 10 ? 2 : 1) + "M";
+  const money = (v) => "$" + (v >= 1 ? v.toFixed(2) : v >= 0.01 ? v.toFixed(3) : v.toFixed(4));
+  const cut = (s, n) => (s.length > n ? s.slice(0, n - 1) + "…" : s);
+  const pct = (v) => (v * 100).toFixed(1) + "%";
+
+  function rows() {
+    if (!data) return [];
+    return data.models
+      .filter((m) => !state.hidden.has(m.v))
+      .map((m) => ({ m, r: blend(m) }))
+      .sort((a, b) => b.r.total - a.r.total);
+  }
+
+  // ── drawing ───────────────────────────────────────────────────────
+  // The chips are built once and then only turned on and off, so a keyboard
+  // reader doesn't lose the button it just pressed. The last vendor on can't
+  // be turned off: a chart of nothing says nothing.
+  function drawChips() {
+    const box = $("#chips");
+    if (!box.childElementCount) {
+      box.innerHTML =
+        `<span class="lab">${esc(T("Vendors", "厂商", "ベンダー", "Anbieter"))}</span>` +
+        data.vendors.map((v) => {
+          const count = data.models.filter((m) => m.v === v.id).length;
+          return `<button type="button" class="chip" data-v="${esc(v.id)}" title="${esc(v.name)}">
+            <i style="opacity:${shade(v.id)}"></i>${esc(v.name)}<span class="n">${count}</span></button>`;
+        }).join("");
+    }
+    for (const b of box.querySelectorAll("button[data-v]")) {
+      const on = !state.hidden.has(b.dataset.v);
+      b.setAttribute("aria-pressed", String(on));
+      b.disabled = on && state.hidden.size === data.vendors.length - 1;
+    }
+  }
+
+  function drawStat(list) {
+    const best = list[0];
+    $("#best").textContent = best ? tok(best.r.total) : "—";
+    $("#best-n").textContent = best
+      ? `${best.m.name} · ${vendorName(best.m.v)} · ${money(best.r.per)} ${T("per million tokens", "每百万 token", "100万トークンあたり", "je Million Tokens")}`
+      : "";
+  }
+
+  function drawCards(list) {
+    $("#cards").innerHTML = data.vendors.filter((v) => !state.hidden.has(v.id)).map((v) => {
+      const mine = list.filter((x) => x.m.v === v.id);
+      const best = mine[0];
+      if (!best) return "";
+      return `<div class="vcard">
+        <div class="vn"><i style="opacity:${shade(v.id)}"></i>${esc(v.name)}</div>
+        <div class="vv">${tok(best.r.total)}</div>
+        <div class="vm">${esc(cut(best.m.name, 26))}<br>${money(best.r.per)}/M · ${mine.length} ${T("models", "个模型", "モデル", "Modelle")}</div>
+      </div>`;
+    }).join("");
+  }
+
+  // A log-scale bar chart: the twenty cheapest, so one very cheap model
+  // doesn't leave the rest as stubs.
+  function drawRank(list) {
+    const top = list.slice(0, 20);
+    const svg = $("#rank-chart");
+    if (!top.length) { svg.innerHTML = ""; svg.setAttribute("viewBox", "0 0 10 10"); return; }
+    const W = 900, L = 236, R = 92, rowH = 26;
+    const logs = top.map((x) => Math.log10(Math.max(x.r.total, 1e-3)));
+    const lo = Math.min(...logs), hi = Math.max(...logs);
+    const X = (v) => L + ((Math.log10(Math.max(v, 1e-3)) - lo) / ((hi - lo) || 1)) * (W - L - R);
+    let s = "";
+    top.forEach((x, i) => {
+      const y = 6 + i * rowH, w = Math.max(3, X(x.r.total) - L);
+      s += `<g><title>${esc(x.m.name)} · ${esc(vendorName(x.m.v))} · ${tok(x.r.total)} · ${money(x.r.per)}/M</title>`;
+      s += `<text x="${L - 10}" y="${y + 13}" text-anchor="end" class="ch-name">${esc(cut(x.m.name, 30))}</text>`;
+      s += `<rect x="${L}" y="${y + 3}" width="${w.toFixed(1)}" height="16" rx="4" fill="currentColor" fill-opacity="${shade(x.m.v)}"/>`;
+      s += `<text x="${(L + w + 8).toFixed(1)}" y="${y + 13}" class="ch-val">${tok(x.r.total)}</text></g>`;
+    });
+    svg.setAttribute("viewBox", `0 0 ${W} ${top.length * rowH + 12}`);
+    svg.innerHTML = s;
+  }
+
+  // A 100% stack: the same ten million tokens, most expensive model first.
+  function drawSplit(list) {
+    const top = list.slice(0, 20).sort((a, b) => b.r.per - a.r.per);
+    const svg = $("#split-chart");
+    if (!top.length) { svg.innerHTML = ""; svg.setAttribute("viewBox", "0 0 10 10"); return; }
+    const W = 900, L = 236, BW = 520, rowH = 26;
+    let s = "";
+    top.forEach((x, i) => {
+      const y = 6 + i * rowH, per = x.r.per || 1;
+      const a = (x.r.cHit / per) * BW, b = (x.r.cMiss / per) * BW, c = (x.r.cOut / per) * BW;
+      s += `<g><title>${esc(x.m.name)}\n${T("cached", "缓存命中", "キャッシュ", "Cache")} ${money(x.r.cHit * 10)} · ${T("new input", "新输入", "新規入力", "neuer Input")} ${money(x.r.cMiss * 10)} · ${T("output", "输出", "出力", "Ausgabe")} ${money(x.r.cOut * 10)}\n${T("per 10M", "每千万", "1000万あたり", "je 10 Mio.")} ${money(per * 10)}</title>`;
+      s += `<text x="${L - 10}" y="${y + 13}" text-anchor="end" class="ch-name">${esc(cut(x.m.name, 30))}</text>`;
+      s += `<rect x="${L}" y="${y + 3}" width="${Math.max(0.8, a).toFixed(1)}" height="16" fill="currentColor" fill-opacity="1"/>`;
+      s += `<rect x="${(L + a).toFixed(1)}" y="${y + 3}" width="${Math.max(0.8, b).toFixed(1)}" height="16" fill="currentColor" fill-opacity=".55"/>`;
+      s += `<rect x="${(L + a + b).toFixed(1)}" y="${y + 3}" width="${Math.max(0.8, c).toFixed(1)}" height="16" fill="currentColor" fill-opacity=".25"/>`;
+      s += `<text x="${L + BW + 12}" y="${y + 13}" class="ch-val">${money(per * 10)}</text></g>`;
+    });
+    svg.setAttribute("viewBox", `0 0 ${W} ${top.length * rowH + 12}`);
+    svg.innerHTML = s;
+  }
+
+  // ── the price map ────────────────────────────────────────────────
+  // Input price across, output price up, both log scales; a bubble is a
+  // model, its radius the tokens the budget buys. Only the best model and
+  // each vendor's best get a name, and one that would sit on a name already
+  // drawn is left to its tooltip.
+  function drawMap(list) {
+    const svg = $("#map-chart");
+    if (!list.length) { svg.innerHTML = ""; svg.setAttribute("viewBox", "0 0 10 10"); return; }
+    const W = 900, H = 520, L = 64, R = 48, T = 24, B = 54;
+    const lg = (v) => Math.log10(Math.max(v, 0.001));
+    const xs = list.map((x) => lg(x.m.input)), ys = list.map((x) => lg(x.m.output));
+    const x0 = Math.min(...xs) - 0.1, x1 = Math.max(...xs) + 0.1;
+    const y0 = Math.min(...ys) - 0.1, y1 = Math.max(...ys) + 0.1;
+    const PX = (g) => L + ((g - x0) / (x1 - x0)) * (W - L - R);
+    const PY = (g) => H - B - ((g - y0) / (y1 - y0)) * (H - T - B);
+    const caps = list.map((x) => lg(x.r.total));
+    const cLo = Math.min(...caps), cHi = Math.max(...caps);
+    const rad = (v) => 4 + 12 * ((lg(v) - cLo) / ((cHi - cLo) || 1));
+    // 1-2-5 steps, so an axis reads the same at any price level
+    const steps = [];
+    for (let e = -3; e <= 3; e++) for (const s of [1, 2, 5]) {
+      const v = s * Math.pow(10, e), g = Math.log10(v);
+      if (g >= x0 && g <= x1) steps.push({ v, g, axis: "x" });
+      if (g >= y0 && g <= y1) steps.push({ v, g, axis: "y" });
+    }
+    const tick = (v) => "$" + (v >= 1 ? String(v) : v.toFixed(2));
+    let s = "";
+    for (const t of steps) {
+      if (t.axis === "x") {
+        const px = PX(t.g).toFixed(1);
+        s += `<line class="ch-grid" x1="${px}" y1="${T}" x2="${px}" y2="${H - B}"/>`;
+        s += `<text class="ch-tick" x="${px}" y="${H - B + 16}" text-anchor="middle">${tick(t.v)}</text>`;
+      } else {
+        const py = PY(t.g).toFixed(1);
+        s += `<line class="ch-grid" x1="${L}" y1="${py}" x2="${W - R}" y2="${py}"/>`;
+        s += `<text class="ch-tick" x="${L - 8}" y="${+py + 3.5}" text-anchor="end">${tick(t.v)}</text>`;
+      }
+    }
+    s += `<text class="ch-axis" x="${((L + W - R) / 2).toFixed(1)}" y="${H - 14}" text-anchor="middle">${esc(T("Input price, $ / 1M tokens (log)", "输入价，$ / 百万 token（对数）", "入力価格、$ / 100万トークン（対数）", "Eingabepreis, $ / 1 Mio. Tokens (log)"))}</text>`;
+    s += `<text class="ch-axis" transform="translate(16 ${((T + H - B) / 2).toFixed(1)}) rotate(-90)" text-anchor="middle">${esc(T("Output price, $ / 1M tokens (log)", "输出价，$ / 百万 token（对数）", "出力価格、$ / 100万トークン（対数）", "Ausgabepreis, $ / 1 Mio. Tokens (log)"))}</text>`;
+    // big bubbles first, so a small one stays on top of a large one
+    for (const x of list.slice().sort((a, b) => b.r.total - a.r.total)) {
+      const px = PX(lg(x.m.input)).toFixed(1), py = PY(lg(x.m.output)).toFixed(1);
+      s += `<circle class="ch-dot" cx="${px}" cy="${py}" r="${rad(x.r.total).toFixed(1)}" fill="currentColor" fill-opacity="${shade(x.m.v)}"><title>${esc(x.m.name)} · ${esc(vendorName(x.m.v))}\n${T("input", "输入", "入力", "Eingabe")} ${money(x.m.input)} · ${T("cache read", "缓存读取", "キャッシュ読み取り", "Cache lesen")} ${money(x.m.cacheRead || x.m.input)} · ${T("output", "输出", "出力", "Ausgabe")} ${money(x.m.output)}\n${tok(x.r.total)} ${T("for the budget", "预算可买", "予算で買える", "für das Budget")}</title></circle>`;
+    }
+    const named = new Set([list[0].m.id]);
+    for (const v of data.vendors) {
+      const b = list.find((x) => x.m.v === v.id);
+      if (b) named.add(b.m.id);
+    }
+    const placed = [];
+    for (const x of list) {
+      if (!named.has(x.m.id)) continue;
+      const px = PX(lg(x.m.input)), py = PY(lg(x.m.output));
+      const r = rad(x.r.total), text = cut(x.m.name, 22), w = text.length * 6.2;
+      const box = { x: px - w / 2, y: py - r - 17, w, h: 14 };
+      if (placed.some((b) => box.x < b.x + b.w && box.x + box.w > b.x && box.y < b.y + b.h && box.y + box.h > b.y)) continue;
+      placed.push(box);
+      s += `<text class="ch-name" x="${px.toFixed(1)}" y="${(py - r - 6).toFixed(1)}" text-anchor="middle">${esc(text)}</text>`;
+    }
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    svg.innerHTML = s;
+  }
+
+  // ── what a cache write costs ─────────────────────────────────────
+  // One group per vendor: its priciest model by input, output breaking a
+  // tie, at all three write settings whatever the control says. The bars
+  // share a log scale, so a vendor that charges no write fee shows three
+  // equal bars and none shrinks to nothing beside a cheap vendor.
+  function drawWriteCost(list) {
+    const svg = $("#write-chart");
+    const top = new Map();
+    for (const x of list) {
+      const cur = top.get(x.m.v);
+      if (!cur || x.m.input > cur.m.input || (x.m.input === cur.m.input && x.m.output > cur.m.output)) top.set(x.m.v, x.m);
+    }
+    const groups = [...top.values()].sort((a, b) => b.input - a.input);
+    if (!groups.length) { svg.innerHTML = ""; svg.setAttribute("viewBox", "0 0 10 10"); return; }
+    const modes = ["none", "min", "hour"], shades = [0.28, 0.6, 1];
+    const names = [
+      T("not cached", "不写缓存", "書き込みなし", "nicht zwischengespeichert"),
+      T("5 minutes", "5 分钟", "5分", "5 Minuten"),
+      T("1 hour", "1 小时", "1時間", "1 Stunde"),
+    ];
+    const vals = groups.map((m) => modes.map((w) => blend(m, w).total));
+    const all = vals.flat();
+    const lo = Math.log10(Math.max(Math.min(...all), 1e-3));
+    const hi = Math.log10(Math.max(...all));
+    const flat = hi - lo < 1e-9;
+    const W = 900, H = 340, base = 286, topY = 44, bw = 30, gap = 6;
+    const gw = (W - 48) / groups.length;
+    const hOf = (v) => flat ? (base - topY) * 0.7
+      : 16 + (base - topY - 16) * ((Math.log10(Math.max(v, 1e-3)) - lo) / (hi - lo));
+    let s = `<line class="ch-grid" x1="24" y1="${base}" x2="${W - 24}" y2="${base}"/>`;
+    groups.forEach((m, gi) => {
+      const cx = 24 + gw * (gi + 0.5);
+      modes.forEach((w, wi) => {
+        const v = vals[gi][wi], h = hOf(v), x = cx + (wi - 1) * (bw + gap) - bw / 2;
+        const p = blend(m, w);
+        s += `<g><title>${esc(m.name)} · ${esc(vendorName(m.v))}\n${names[wi]} · ${tok(v)} ${T("for the budget", "预算可买", "予算で買える", "für das Budget")}\n${money(p.per)}/M</title>`;
+        s += `<rect x="${x.toFixed(1)}" y="${(base - h).toFixed(1)}" width="${bw}" height="${h.toFixed(1)}" rx="3" fill="currentColor" fill-opacity="${shades[wi]}"/>`;
+        s += `<text class="ch-val sm" x="${(x + bw / 2).toFixed(1)}" y="${(base - h - 6).toFixed(1)}" text-anchor="middle">${tok(v)}</text></g>`;
+      });
+      s += `<text class="ch-name" x="${cx.toFixed(1)}" y="${base + 22}" text-anchor="middle">${esc(cut(m.name, 18))}</text>`;
+      s += `<text class="ch-tick" x="${cx.toFixed(1)}" y="${base + 38}" text-anchor="middle">${esc(vendorName(m.v))}</text>`;
+    });
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    svg.innerHTML = s;
+  }
+
+  function drawTable(list) {
+    $("#rows").innerHTML = list.map(({ m, r }) => {
+      const noCache = m.cacheRead > 0 ? "" : `<span class="tag">${esc(T("no cache", "无缓存", "キャッシュなし", "kein Cache"))}</span>`;
+      const noBatch = state.tier === "batch" && m.batch <= 0 ? `<span class="tag">${esc(T("no batch price", "无批量价", "バッチ価格なし", "kein Batch-Preis"))}</span>` : "";
+      return `<tr>
+        <td>${esc(m.name)}${noCache}${noBatch}</td>
+        <td class="vend">${esc(vendorName(m.v))}</td>
+        <td class="num">${money(r.p.input)}</td>
+        <td class="num">${m.cacheRead > 0 ? money(r.p.cacheRead) : "—"}</td>
+        <td class="num">${money(r.p.output)}</td>
+        <td class="num">${money(r.per * 10)}</td>
+        <td class="num strong">${tok(r.total)}</td>
+        <td class="num">${tok(r.total * r.hit)}</td>
+        <td class="num">${tok(r.total * r.miss)}</td>
+        <td class="num">${tok(r.total * r.out)}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  function render() {
+    if (!data) return;
+    const list = rows();
+    drawChips();
+    drawStat(list);
+    drawCards(list);
+    drawRank(list);
+    drawMap(list);
+    drawSplit(list);
+    drawWriteCost(list);
+    drawTable(list);
+    $("#budget-v").textContent = "$" + state.budget.toLocaleString();
+    $("#hit-v").textContent = state.hit.toFixed(1) + "%";
+    $("#out-v").textContent = state.out.toFixed(1) + "%";
+    $("#asof").textContent = data.asOf;
+    syncURL();
+  }
+
+  // ── the URL ───────────────────────────────────────────────────────
+  function syncURL() {
+    const p = new URLSearchParams();
+    if (state.budget !== 100) p.set("budget", state.budget);
+    if (state.hit !== 94.9) p.set("hit", state.hit);
+    if (state.out !== 1) p.set("out", state.out);
+    if (state.prompt !== 8000) p.set("prompt", state.prompt);
+    if (state.write !== "none") p.set("write", state.write);
+    if (state.tier !== "std") p.set("tier", state.tier);
+    if (state.hidden.size) p.set("hide", [...state.hidden].join(","));
+    const qs = p.toString();
+    history.replaceState(null, "", qs ? "?" + qs : location.pathname);
+  }
+
+  // ── the controls ──────────────────────────────────────────────────
+  function setWrite(w) {
+    state.write = w;
+    for (const b of $$("#write button")) b.setAttribute("aria-pressed", String(b.dataset.w === w));
+    render();
+  }
+
+  function setTier(t) {
+    state.tier = t;
+    for (const b of $$("#tier button")) b.setAttribute("aria-pressed", String(b.dataset.t === t));
+    render();
+  }
+
+  $("#budget").addEventListener("input", (e) => { state.budget = +e.target.value; render(); });
+  $("#hit").addEventListener("input", (e) => { state.hit = +e.target.value; render(); });
+  $("#out").addEventListener("input", (e) => { state.out = +e.target.value; render(); });
+  $("#prompt").addEventListener("change", (e) => { state.prompt = +e.target.value; render(); });
+  $("#write").addEventListener("click", (e) => { const b = e.target.closest("button[data-w]"); if (b) setWrite(b.dataset.w); });
+  $("#tier").addEventListener("click", (e) => { const b = e.target.closest("button[data-t]"); if (b) setTier(b.dataset.t); });
+  $("#chips").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-v]");
+    if (!b || b.disabled) return;
+    const v = b.dataset.v;
+    if (state.hidden.has(v)) state.hidden.delete(v);
+    else if (state.hidden.size < data.vendors.length - 1) state.hidden.add(v);
+    render();
+  });
+  $("#retry").addEventListener("click", () => load());
+
+  // the language menu, and the cookie that keeps a picked language
+  const langBtn = document.querySelector("nav button.lang"), langMenu = document.getElementById("langs");
+  const langOpen = (on) => { langMenu.hidden = !on; langBtn.setAttribute("aria-expanded", String(on)); };
+  langBtn.addEventListener("click", () => langOpen(langMenu.hidden));
+  langMenu.querySelectorAll("a").forEach((a) => {
+    a.addEventListener("click", () => { document.cookie = "lang=" + a.hreflang + "; path=/; max-age=31536000; samesite=lax"; });
+  });
+  document.addEventListener("click", (e) => { if (!langBtn.parentNode.contains(e.target)) langOpen(false); });
+
+  // the theme button cycles system, light and dark, as the docs' does
+  document.querySelector("button.theme").addEventListener("click", () => {
+    const next = { system: "light", light: "dark", dark: "system" };
+    window.setTheme(next[window.themeMode()]);
+  });
+
+  // ── reading the prices ────────────────────────────────────────────
+  async function load() {
+    $("#error").hidden = true;
+    $("#loading").hidden = false;
+    try {
+      const res = await fetch("/api/prices", { headers: { Accept: "application/json" } });
+      if (!res.ok) throw new Error(String(res.status));
+      const got = await res.json();
+      if (!got || !got.models || !got.models.length) throw new Error("no models");
+      data = got;
+      // a vendor the list no longer has, left hidden in a linked scenario
+      const known = new Set(data.vendors.map((v) => v.id));
+      for (const v of [...state.hidden]) if (!known.has(v)) state.hidden.delete(v);
+      $("#loading").hidden = true;
+      render();
+    } catch (e) {
+      $("#loading").hidden = true;
+      $("#error").hidden = false;
+    }
+  }
+
+  // the controls start where the URL put them
+  $("#budget").value = state.budget;
+  $("#hit").value = state.hit;
+  $("#out").value = state.out;
+  $("#prompt").value = String(state.prompt);
+  for (const b of $$("#write button")) b.setAttribute("aria-pressed", String(b.dataset.w === state.write));
+  for (const b of $$("#tier button")) b.setAttribute("aria-pressed", String(b.dataset.t === state.tier));
+  $("#budget-v").textContent = "$" + state.budget.toLocaleString();
+  $("#hit-v").textContent = state.hit.toFixed(1) + "%";
+  $("#out-v").textContent = state.out.toFixed(1) + "%";
+
+  load();
+})();
+</script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// #1907: under Codex's accounts, with more than one on, a tick has magpie
+// #1907: under Codex's accounts, with more than one on, a tick has magpie-friday
 // only switch Codex's own sign-in between them, its requests going straight
 // to OpenAI instead of through the gateway. Ticking it posts
 // provider/switchonly, and the redraw keeps it ticked; unticking posts it
@@ -59,9 +59,9 @@ const label = {
 };
 const strings = [
   "Only switch {agent}'s sign-in",
-  "magpie signs {agent} in to the next account with room when the one it is on is used up, and back once that has room again, by writing {agent}'s own sign-in; {agent}'s requests go straight to OpenAI, never through magpie. A {agent} app or session already open stays on its account until it is opened again. Connected to magpie, {agent}'s requests go through it as before.",
-  "magpie only switches {agent}'s sign-in; its requests go straight to OpenAI",
-  "{agent}'s requests go through magpie to fail over to your other accounts again",
+  "magpie-friday signs {agent} in to the next account with room when the one it is on is used up, and back once that has room again, by writing {agent}'s own sign-in; {agent}'s requests go straight to OpenAI, never through magpie-friday. A {agent} app or session already open stays on its account until it is opened again. Connected to magpie-friday, {agent}'s requests go through it as before.",
+  "magpie-friday only switches {agent}'s sign-in; its requests go straight to OpenAI",
+  "{agent}'s requests go through magpie-friday to fail over to your other accounts again",
 ];
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
@@ -81,7 +81,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         return { page, errors, posts };
       };
 
-      test(`${engine} ${width} ${lang}: a tick has magpie only switch Codex's sign-in`, async (t) => {
+      test(`${engine} ${width} ${lang}: a tick has magpie-friday only switch Codex's sign-in`, async (t) => {
         const { page, errors, posts } = await open(t, {});
         const only = page.locator(".editor .accts .switch-only label");
         assert.equal((await only.textContent()).trim(), label[lang]);

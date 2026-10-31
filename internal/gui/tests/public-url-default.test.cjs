@@ -4,18 +4,18 @@ const { chromium, webkit } = require("playwright");
 const { fixture } = require("./fixtures/caller-keys.cjs");
 const { openPart } = require("./reader.cjs");
 
-// #1551 (everpcpc): magpie web in Docker behind a reverse proxy, with
-// MAGPIE_PUBLIC_URL=https://magpie.example.com. The page is opened from
+// #1551 (everpcpc): magpie-friday web in Docker behind a reverse proxy, with
+// MAGPIE_PUBLIC_URL=https://magpie-friday.example.com. The page is opened from
 // other machines, yet Gateway's Connect started at http://127.0.0.1:3425,
 // and so did the copied snippets and the gateway's own address. With no
 // address picked, Connect now starts at the public URL, labelled as such,
 // the snippets with it, and About shows it beside the local address agents
 // here use. An address the user picked, this computer's included, still
-// wins after a reload. Served to other machines (magpie web), the
+// wins after a reload. Served to other machines (magpie-friday web), the
 // gateway's address and Settings' MCP server show the public URL too; in
 // the app they stay this computer's. Without MAGPIE_PUBLIC_URL nothing
 // changes: Connect starts at this computer's.
-const PUBLIC = "https://magpie.example.com";
+const PUBLIC = "https://magpie-friday.example.com";
 const LOCAL = "http://127.0.0.1:3999";
 const LANGS = ["en", "zh", "zh-TW", "ja", "de"];
 const words = {
@@ -83,20 +83,20 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         assert.match(await shown("#about"), /127\.0\.0\.1:3999/);
         await fits("About");
         await settingsTab("models");
-        assert.equal(await shown("#searchMcpRow code"), LOCAL + "/mcp/magpie/web-search");
+        assert.equal(await shown("#searchMcpRow code"), LOCAL + "/mcp/magpie-friday/web-search");
         assert.deepEqual(errors, []);
       });
     }
   }
   for (const width of [1100, 420]) {
-    test(`${engine} ${width}: magpie web shows MAGPIE_PUBLIC_URL as the gateway's address`, async (t) => {
+    test(`${engine} ${width}: magpie-friday web shows MAGPIE_PUBLIC_URL as the gateway's address`, async (t) => {
       const { page, errors, open, shown, settingsTab } = await setup(t, engine, "en", width, { lanURLs: [PUBLIC], publicURL: PUBLIC, web: true });
       await open();
       assert.equal(await shown("#connectAddress"), PUBLIC + "/v1");
       await keyed(page, PUBLIC + "/v1");
       assert.equal(await shown("#gateway .url code"), PUBLIC);
       await settingsTab("models");
-      assert.equal(await shown("#searchMcpRow code"), PUBLIC + "/mcp/magpie/web-search");
+      assert.equal(await shown("#searchMcpRow code"), PUBLIC + "/mcp/magpie-friday/web-search");
       assert.deepEqual(errors, []);
     });
   }

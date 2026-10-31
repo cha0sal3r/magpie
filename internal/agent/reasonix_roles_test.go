@@ -1,7 +1,7 @@
 package agent
 
 import (
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 	"os"
 	"testing"
 )
@@ -14,12 +14,12 @@ func TestReasonixIndependentRolesAndRestore(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	must(a.Field("planner").Set("magpie/a/pro"))
+	must(a.Field("planner").Set("magpie-friday/a/pro"))
 	if got := a.Field("model").Get(); got != "native/old" {
 		t.Fatalf("Plan changed Executor: %s", got)
 	}
-	must(a.Field("model").Set("magpie/a/flash"))
-	if got := a.Field("planner").Get(); got != "magpie/a/pro" {
+	must(a.Field("model").Set("magpie-friday/a/flash"))
+	if got := a.Field("planner").Get(); got != "magpie-friday/a/pro" {
 		t.Fatalf("Executor changed Plan: %s", got)
 	}
 	must(a.Field("model").Set("native/other"))
@@ -44,12 +44,12 @@ func editEnvForReasonixTest(path string) (string, bool) { return edit.GetEnvFile
 
 func TestReasonixPlanOffKeepsExecutorAndSyncDoesNotWrite(t *testing.T) {
 	a, _ := reasonixFixture(t, reasonixNativeConfig)
-	for _, pair := range [][2]string{{"model", "magpie/a/pro"}, {"planner", "magpie/a/flash"}, {"planner", "off"}} {
+	for _, pair := range [][2]string{{"model", "magpie-friday/a/pro"}, {"planner", "magpie-friday/a/flash"}, {"planner", "off"}} {
 		if err := a.Field(pair[0]).Set(pair[1]); err != nil {
 			t.Fatal(err)
 		}
 	}
-	if a.Field("planner").Get() != "" || a.Field("model").Get() != "magpie/a/pro" || a.Check() != "" {
+	if a.Field("planner").Get() != "" || a.Field("model").Get() != "magpie-friday/a/pro" || a.Check() != "" {
 		t.Fatal("Plan off changed Executor connection")
 	}
 	before, _ := os.ReadFile(a.Path)
@@ -74,14 +74,14 @@ func TestReasonixPlanOffKeepsExecutorAndSyncDoesNotWrite(t *testing.T) {
 
 func TestReasonixPlannerConflictRollsBack(t *testing.T) {
 	a, env := reasonixFixture(t, reasonixNativeConfig)
-	if err := a.Field("model").Set("magpie/a/pro"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/a/pro"); err != nil {
 		t.Fatal(err)
 	}
 	before, _ := os.ReadFile(a.Path)
 	if err := os.WriteFile(env, []byte(reasonixKey+"=user-change\n"+reasonixKey+"=duplicate\n"), 0600); err != nil {
 		t.Fatal(err)
 	}
-	if err := a.Field("planner").Set("magpie/a/flash"); err == nil {
+	if err := a.Field("planner").Set("magpie-friday/a/flash"); err == nil {
 		t.Fatal("credential conflict accepted")
 	}
 	after, _ := os.ReadFile(a.Path)
@@ -92,10 +92,10 @@ func TestReasonixPlannerConflictRollsBack(t *testing.T) {
 
 func BenchmarkReasonixRolesSyncUnchanged(b *testing.B) {
 	a, _ := reasonixFixture(b, reasonixNativeConfig)
-	if err := a.Field("model").Set("magpie/a/pro"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/a/pro"); err != nil {
 		b.Fatal(err)
 	}
-	if err := a.Field("planner").Set("magpie/a/flash"); err != nil {
+	if err := a.Field("planner").Set("magpie-friday/a/flash"); err != nil {
 		b.Fatal(err)
 	}
 	b.ReportAllocs()
@@ -109,13 +109,13 @@ func BenchmarkReasonixRolesSyncUnchanged(b *testing.B) {
 
 func TestReasonixPlanDoesNotResetExecutorEffort(t *testing.T) {
 	a, _ := reasonixFixture(t, reasonixNativeConfig)
-	if err := a.Field("model").Set("magpie/a/pro"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/a/pro"); err != nil {
 		t.Fatal(err)
 	}
 	if err := a.Field("effort").Set("high"); err != nil {
 		t.Fatal(err)
 	}
-	if err := a.Field("planner").Set("magpie/a/flash"); err != nil {
+	if err := a.Field("planner").Set("magpie-friday/a/flash"); err != nil {
 		t.Fatal(err)
 	}
 	if got := a.Field("effort").Get(); got != "high" {
@@ -128,7 +128,7 @@ func TestReasonixRestoreWithInitiallyAbsentEnv(t *testing.T) {
 	if err := os.Remove(env); err != nil {
 		t.Fatal(err)
 	}
-	if err := a.Field("planner").Set("magpie/a/pro"); err != nil {
+	if err := a.Field("planner").Set("magpie-friday/a/pro"); err != nil {
 		t.Fatal(err)
 	}
 	if err := a.Field("planner").Set(""); err != nil {

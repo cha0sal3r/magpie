@@ -1,7 +1,7 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // Claude Desktop names a Claude model it knows after its own catalog and
 // tells two providers' rows of it apart only by the ten digits in the id
-// magpie lists it by (#2578). The Providers page says that number on the
+// magpie-friday lists it by (#2578). The Providers page says that number on the
 // model's own chip, so a row of that menu can be matched to its provider.
 // A model the gateway gives no number (gui.desktopNumbers) has no badge.
 // In English and Chinese, Chromium and WebKit, wide and narrow.

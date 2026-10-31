@@ -438,7 +438,7 @@ func TestFlowCancelAfterHeadStopsTheVendor(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	<-hit     // the vendor is in the request, its head has reached magpie
+	<-hit     // the vendor is in the request, its head has reached magpie-friday
 	rcancel() // nothing reads or closes the body
 	select {
 	case <-gone:
@@ -533,7 +533,7 @@ func writeBig(w io.Writer, total int, sse bool, block []byte) (int64, [32]byte) 
 // and of an SSE stream, each read through the real host and hashed; an SSE
 // stream a reader pauses 12 s in the middle of and then finishes. It is behind
 // MAGPIE_FLOW_BIG because each case moves 100 MiB, and it should be run against
-// the Bun magpie itself picks (MAGPIE_BUN set to it).
+// the Bun magpie-friday itself picks (MAGPIE_BUN set to it).
 func TestFlowBigReplyProd(t *testing.T) {
 	if os.Getenv("MAGPIE_FLOW_BIG") == "" {
 		t.Skip("set MAGPIE_FLOW_BIG=1 to run the 100 MiB flow cases")
@@ -753,7 +753,7 @@ func TestFlowEarlyCancellationStressStaysHealthy(t *testing.T) {
 }
 
 // TestFlowHeadEnvelopeRejectsHugeHeaders: a vendor that answers with more
-// headers than magpie's head envelope allows fails the fetch cleanly rather
+// headers than magpie-friday's head envelope allows fails the fetch cleanly rather
 // than the host taking an unbounded zero-charge head line.
 func TestFlowHeadEnvelopeRejectsHugeHeaders(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

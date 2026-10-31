@@ -4,9 +4,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A Codex signed in to ChatGPT that reaches the gateway from another
@@ -15,8 +15,8 @@ import (
 // sign-in: it would send its ChatGPT token to /backend-api/codex, and from
 // there the gateway takes a named key alone, so every request was a 401
 // (#2145, lazydao). It is connected as a Codex with no ChatGPT sign-in is:
-// magpie as its provider, with the LAN sharing key. One of its own models
-// picked then goes straight to OpenAI on its sign-in, off magpie.
+// magpie-friday as its provider, with the LAN sharing key. One of its own models
+// picked then goes straight to OpenAI on its sign-in, off magpie-friday.
 func TestCodexBeyondLoopbackNotJoined(t *testing.T) {
 	home, read := codexHome(t, `{"auth_mode":"chatgpt","tokens":{"access_token":"at","refresh_token":"rt","id_token":"x.e30.x","account_id":"acc"}}`, "model = \"gpt-5.1\"\n")
 	t.Setenv("MAGPIE_ADDR", "172.23.80.1:3425")
@@ -38,7 +38,7 @@ func TestCodexBeyondLoopbackNotJoined(t *testing.T) {
 	}
 	cfg := read()
 	if p, _ := edit.GetTOMLTop(cx.Path, "model_provider"); p != magpieID {
-		t.Fatalf("model_provider %q, want magpie\n%s", p, cfg)
+		t.Fatalf("model_provider %q, want magpie-friday\n%s", p, cfg)
 	}
 	if k, _ := edit.GetTOMLTable(cx.Path, "model_providers."+magpieID); k["experimental_bearer_token"] != lan {
 		t.Fatalf("provider key %q, want the LAN sharing key\n%s", k["experimental_bearer_token"], cfg)
@@ -50,6 +50,6 @@ func TestCodexBeyondLoopbackNotJoined(t *testing.T) {
 		t.Fatal(err)
 	}
 	if cfg := read(); strings.Contains(cfg, "model_provider =") || strings.Contains(cfg, "openai_base_url") {
-		t.Fatalf("Codex's own model still through magpie:\n%s", cfg)
+		t.Fatalf("Codex's own model still through magpie-friday:\n%s", cfg)
 	}
 }

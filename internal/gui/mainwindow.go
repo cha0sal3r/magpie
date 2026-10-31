@@ -7,7 +7,7 @@ import (
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // mainMacWindow: the main window's Mac options. A window belongs to the
@@ -47,7 +47,7 @@ func closeStep(goos string, fullscreen bool) closeAction {
 	return closeHide
 }
 
-// hideMain hides the main window, and takes magpie out of the Dock if it is
+// hideMain hides the main window, and takes magpie-friday out of the Dock if it is
 // there only while the window is shown.
 func (h *host) hideMain() {
 	application.InvokeSync(func() {

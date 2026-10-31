@@ -4,7 +4,7 @@ import "testing"
 
 // TestCopyHeld: a copy counts as made only when the clipboard was read
 // back holding the text itself (#1881). GTK 3 under KDE Plasma without a
-// primary selection answered every paste with an empty pipe while magpie
+// primary selection answered every paste with an empty pipe while magpie-friday
 // said "copied".
 func TestCopyHeld(t *testing.T) {
 	const text = "claude --resume 1881"

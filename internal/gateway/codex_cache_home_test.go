@@ -8,21 +8,21 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/codexcat"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/codexcat"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // With the backend away, the list a ChatGPT sign-in is handed is made from
 // Codex's cache — the one under CODEX_HOME when it is set, as Codex keeps
 // it there. A cached entry restored to the account's own window keeps the
-// cache's max when magpie's live list has none (one saved before magpie
+// cache's max when magpie-friday's live list has none (one saved before magpie-friday
 // kept the max): 872000 stays, it doesn't fall to the window.
 func TestCodexCachedListUnderCodexHomeKeepsItsMax(t *testing.T) {
 	codexSignedIn(t)
 	codexHome := t.TempDir()
 	t.Setenv("CODEX_HOME", codexHome)
-	// magpie handed Codex 600000 earlier; the window is no longer set
+	// magpie-friday handed Codex 600000 earlier; the window is no longer set
 	os.WriteFile(filepath.Join(codexHome, "models_cache.json"), []byte(`{"etag":"\"v1\"","models":[
 		{"slug":"gpt-6.1-sol","priority":1,"context_window":600000,"max_context_window":872000,"base_instructions":"sol prompt"},
 		{"slug":"gpt-6-astra","priority":2,"context_window":272000,"max_context_window":272000}]}`), 0o644)
@@ -70,7 +70,7 @@ func TestCodexCachedListUnderCodexHomeKeepsItsMax(t *testing.T) {
 	}
 }
 
-// A ChatGPT account's model in a catalog magpie writes takes its entry from
+// A ChatGPT account's model in a catalog magpie-friday writes takes its entry from
 // the cache under CODEX_HOME when it is set.
 func TestCodexCatalogEntryFromCodexHome(t *testing.T) {
 	codexSignedIn(t)

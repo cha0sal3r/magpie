@@ -12,7 +12,7 @@ import (
 // The link's bytes, as AionUi is handed them.
 func TestAionUiLink(t *testing.T) {
 	got := AionUiLink("http://127.0.0.1:3425")
-	want := "aionui://add-provider?api_key=magpie-aionui&base_url=http%3A%2F%2F127.0.0.1%3A3425%2Fv1&name=magpie&platform=custom"
+	want := "aionui://add-provider?api_key=magpie-friday-aionui&base_url=http%3A%2F%2F127.0.0.1%3A3425%2Fv1&name=magpie-friday&platform=custom"
 	if got != want {
 		t.Fatalf("link\n got %s\nwant %s", got, want)
 	}
@@ -46,7 +46,7 @@ func TestAionUiLinkParsedAs2_2_2(t *testing.T) {
 	if r.Parsed == nil || r.Parsed.Action != "add-provider" || r.Route != "/settings/model" {
 		t.Fatalf("AionUi read the link as %s", out)
 	}
-	want := map[string]string{"api_key": "magpie-aionui", "base_url": "http://127.0.0.1:3425/v1", "name": "magpie", "platform": "custom"}
+	want := map[string]string{"api_key": "magpie-friday-aionui", "base_url": "http://127.0.0.1:3425/v1", "name": "magpie-friday", "platform": "custom"}
 	for k, v := range want {
 		if r.Pending[k] != v {
 			t.Errorf("pending %s = %q, want %q (%s)", k, r.Pending[k], v, out)
@@ -91,23 +91,23 @@ func TestAionUiHas(t *testing.T) {
 	gw := "http://127.0.0.1:3425"
 	path := filepath.Join(t.TempDir(), "aionui", "aionui-backend.db")
 	if has, known := aionuiHas(path, gw); has || !known {
-		t.Fatal("no database, yet has magpie or unknown")
+		t.Fatal("no database, yet has magpie-friday or unknown")
 	}
 	db := aionuiFixture(t, path)
 	if has, known := aionuiHas(path, gw); has || !known {
-		t.Fatal("no providers, yet has magpie or unknown")
+		t.Fatal("no providers, yet has magpie-friday or unknown")
 	}
 	aionuiRow(t, db, "openai", "https://api.openai.com/v1")
-	aionuiRow(t, db, "other-magpie", "http://127.0.0.1:3426/v1")
+	aionuiRow(t, db, "other-magpie-friday", "http://127.0.0.1:3426/v1")
 	if has, known := aionuiHas(path, gw); has || !known {
-		t.Fatal("another gateway's provider counted as magpie")
+		t.Fatal("another gateway's provider counted as magpie-friday")
 	}
 	// AionUi still running: the row is in its log only (no checkpoint),
 	// read from a copy, AionUi's folder left as it was
 	before := dirNames(t, filepath.Dir(path))
 	aionuiRow(t, db, "m1", gw+"/v1")
 	if has, known := aionuiHas(path, gw); !has || !known {
-		t.Fatal("magpie's provider, in the log of a running AionUi, not found")
+		t.Fatal("magpie-friday's provider, in the log of a running AionUi, not found")
 	}
 	if after := dirNames(t, filepath.Dir(path)); after != before {
 		t.Fatalf("AionUi's folder changed: %s -> %s", before, after)
@@ -121,7 +121,7 @@ func TestAionUiHas(t *testing.T) {
 	os.Remove(path + "-shm")
 	before = dirNames(t, filepath.Dir(path))
 	if has, known := aionuiHas(path, gw); !has || !known {
-		t.Fatal("magpie's provider in a closed AionUi's database not found")
+		t.Fatal("magpie-friday's provider in a closed AionUi's database not found")
 	}
 	if after := dirNames(t, filepath.Dir(path)); after != before {
 		t.Fatalf("AionUi's folder changed: %s -> %s", before, after)
@@ -172,7 +172,7 @@ func TestAionUiStatusRereadsOnChange(t *testing.T) {
 	aionuiRow(t, db, "m1", gw+"/v1")
 	// the log grew; on a coarse clock its time may not have moved, its size has
 	if has, known := st.read(path, gw); !has || !known {
-		t.Fatal("magpie added since the last read, not seen")
+		t.Fatal("magpie-friday added since the last read, not seen")
 	}
 }
 

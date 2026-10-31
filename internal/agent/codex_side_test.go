@@ -6,10 +6,10 @@ import (
 	"testing"
 )
 
-// SideModel is the model of magpie's Codex is on beside its ChatGPT
+// SideModel is the model of magpie-friday's Codex is on beside its ChatGPT
 // sign-in, which the gateway answers the Codex app's titles, descriptions
 // and summaries on (atom_Ray on X): none on one of Codex's own models, and
-// none with magpie Codex's provider, where those requests reach magpie's
+// none with magpie-friday Codex's provider, where those requests reach magpie-friday's
 // own API on the model Codex asks for.
 func TestCodexSideModel(t *testing.T) {
 	home, _ := codexHome(t, `{"tokens":{"access_token":"x","id_token":"x.e30.x"}}`, "model = \"gpt-a\"\n")
@@ -29,13 +29,13 @@ func TestCodexSideModel(t *testing.T) {
 		t.Fatal(err)
 	}
 	if got := cx.SideModel(); got != "fake/m1" {
-		t.Fatalf("a magpie model beside the sign-in: %q", got)
+		t.Fatalf("a magpie-friday model beside the sign-in: %q", got)
 	}
 	if err := cx.Field("login").Set("api"); err != nil {
 		t.Fatal(err)
 	}
 	if got := cx.SideModel(); got != "" {
-		t.Fatalf("magpie Codex's provider: %q", got)
+		t.Fatalf("magpie-friday Codex's provider: %q", got)
 	}
 }
 

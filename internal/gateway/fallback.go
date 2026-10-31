@@ -30,8 +30,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 const fallbackCooldown = time.Minute
@@ -97,7 +97,7 @@ func (c candidate) label() string {
 }
 
 // restKey is what a candidate rests by: an account by its user, whether
-// or not the agent is signed in to it — magpie can sign Codex in to the
+// or not the agent is signed in to it — magpie-friday can sign Codex in to the
 // next account when the one it is on is out, and the one out stays out.
 func (c candidate) restKey() string {
 	if a := c.p.Account; a != nil && a.User != "" {
@@ -669,11 +669,11 @@ func cappedError(model string, ws []Weighed, now time.Time) (string, time.Time) 
 	capped, noCredits := heldBy(ws)
 	switch {
 	case !noCredits:
-		return fmt.Sprintf("usage cap reached: every account that serves %q is held at the usage cap set on it in magpie — %s. magpie uses it again once that window renews; %s", model, strings.Join(held, "; "), heldAdvice(capped, noCredits)), soonest
+		return fmt.Sprintf("usage cap reached: every account that serves %q is held at the usage cap set on it in magpie-friday — %s. magpie-friday uses it again once that window renews; %s", model, strings.Join(held, "; "), heldAdvice(capped, noCredits)), soonest
 	case !capped:
-		return fmt.Sprintf("usage limit reached: every account that serves %q has used up its allowance and is set in magpie not to spend its credits — %s. magpie uses it again once that window renews; %s", model, strings.Join(held, "; "), heldAdvice(capped, noCredits)), soonest
+		return fmt.Sprintf("usage limit reached: every account that serves %q has used up its allowance and is set in magpie-friday not to spend its credits — %s. magpie-friday uses it again once that window renews; %s", model, strings.Join(held, "; "), heldAdvice(capped, noCredits)), soonest
 	}
-	return fmt.Sprintf("usage limit reached: every account that serves %q is held by magpie — %s. magpie uses it again once that window renews; %s", model, strings.Join(held, "; "), heldAdvice(capped, noCredits)), soonest
+	return fmt.Sprintf("usage limit reached: every account that serves %q is held by magpie-friday — %s. magpie-friday uses it again once that window renews; %s", model, strings.Join(held, "; "), heldAdvice(capped, noCredits)), soonest
 }
 
 // checkpointCappedError is cappedError for a request whose native
@@ -683,7 +683,7 @@ func cappedError(model string, ws []Weighed, now time.Time) (string, time.Time) 
 func checkpointCappedError(model string, cp checkpointWriter, ws []Weighed, now time.Time) (string, time.Time) {
 	held, soonest := heldReasons(ws, now)
 	capped, noCredits := heldBy(ws)
-	return fmt.Sprintf("usage limit reached on the one account this conversation can go to — %s. The conversation was compacted natively by %s, and only that key or account can read the compaction it sealed, so magpie doesn't send it to another account that serves %q, which would refuse it; the routing mode and how conversations stay don't change that. magpie uses it again once that window renews; %s, or start a new conversation", strings.Join(held, "; "), cp.Who, model, heldAdvice(capped, noCredits)), soonest
+	return fmt.Sprintf("usage limit reached on the one account this conversation can go to — %s. The conversation was compacted natively by %s, and only that key or account can read the compaction it sealed, so magpie-friday doesn't send it to another account that serves %q, which would refuse it; the routing mode and how conversations stay don't change that. magpie-friday uses it again once that window renews; %s, or start a new conversation", strings.Join(held, "; "), cp.Who, model, heldAdvice(capped, noCredits)), soonest
 }
 
 // heldReasons is what holds each account of ws held at a share, and the
@@ -714,11 +714,11 @@ func heldReasons(ws []Weighed, now time.Time) ([]string, time.Time) {
 func heldAdvice(capped, noCredits bool) string {
 	switch {
 	case !noCredits:
-		return "raise or lift the cap in magpie (Providers → the account's cap, or magpie provider account-cap)"
+		return "raise or lift the cap in magpie-friday (Providers → the account's cap, or magpie-friday provider account-cap)"
 	case !capped:
-		return "to go on now, if an account holds credits, let it spend them (Usage → the account's Use credits, or magpie quota credits <account> on)"
+		return "to go on now, if an account holds credits, let it spend them (Usage → the account's Use credits, or magpie-friday quota credits <account> on)"
 	}
-	return "to go on now, raise or lift a cap (Providers → the account's cap, or magpie provider account-cap) or, if an account holds credits, let it spend them (Usage → the account's Use credits, or magpie quota credits <account> on)"
+	return "to go on now, raise or lift a cap (Providers → the account's cap, or magpie-friday provider account-cap) or, if an account holds credits, let it spend them (Usage → the account's Use credits, or magpie-friday quota credits <account> on)"
 }
 
 // heldBy says what holds the accounts of ws held at a share: a usage cap
@@ -812,7 +812,7 @@ func barredError(model string, ws []Weighed) string {
 			names = append(names, w.Name)
 		}
 	}
-	return fmt.Sprintf("model %q is set not to be served by any account or key of %s: each one's own list of models leaves it out. Add it to an account's models in magpie (Providers → the account's Models), or pick another model", model, strings.Join(names, ", "))
+	return fmt.Sprintf("model %q is set not to be served by any account or key of %s: each one's own list of models leaves it out. Add it to an account's models in magpie-friday (Providers → the account's Models), or pick another model", model, strings.Join(names, ", "))
 }
 
 // asideOf is how the trace tells the keys made for another protocol than
@@ -915,7 +915,7 @@ func restingOf(c candidate) (Rest, bool) {
 // allowance or its credit — refused with a 429 or a 402 for it, the
 // vendor's words kept — the rest of the first, and when the first of them
 // is asked again: asked before then, each would be refused the same
-// (#1772). A key whose rest magpie guessed the length of, the vendor and
+// (#1772). A key whose rest magpie-friday guessed the length of, the vendor and
 // the user naming no time, is asked again all the same after its first
 // refusal, and a minute on after the next (Rest.asksAt): zoecats on Discord, a local aggregator said "quota
 // exhausted" for the moment it switched upstreams, and every request,
@@ -987,7 +987,7 @@ func spentAfter(cs []candidate) bool {
 // resting after the vendor said it is out of quota or credit (the
 // account's, or its model's own pool), or with a window that counts the
 // model used up. back is when the first of them is, zero when none says.
-// A model magpie picks for a call of its own (AutoVision, autoSearcher)
+// A model magpie-friday picks for a call of its own (AutoVision, autoSearcher)
 // is one routing would still try: a turn's own model goes to the one
 // candidate it has all the same, but the describer or searcher picked in
 // its place can be another (#1801). Unknown allowance, or a rest for a
@@ -1164,7 +1164,7 @@ func modelRetired(status int, body []byte) bool {
 // as it answered glm-5-free and kimi-k2.5-free on 2026-10-10 once they
 // left its free list: {"type":"error","error":{"type":"ModelError",
 // "message":"Model glm-5-free is not supported"}}. Read in the vendor's
-// body, or in the message magpie put it into ("OpenCode Zen Free: Model
+// body, or in the message magpie-friday put it into ("OpenCode Zen Free: Model
 // glm-5-free is not supported"). Not its "is not supported for format
 // anthropic", a model served on another API (wrongEndpoint), and not its
 // AuthError "Invalid API key." for a key it doesn't take.
@@ -1214,7 +1214,7 @@ var shapeWords = regexp.MustCompile(`(?i)failed to deserialize|unknown (item |co
 // once, as for shapeWords, and Command Code doesn't rest. Its overflow
 // that says so names the model's context length before the trace id, and
 // isn't one. The message may come after a provider's name ("Command Code:
-// "), as magpie tells it on.
+// "), as magpie-friday tells it on.
 var unsaidWords = regexp.MustCompile(`(?i)(^|"|\\"|: )invalid request error trace_id: [0-9a-f]{16,}(\\?"|\s*$)`)
 
 // shapeRefused says a request failed over its shape alone: the next
@@ -1685,7 +1685,7 @@ type holdWriter struct {
 	// reasoning keeps the agent from its idle timeout with SSE comments
 	// meanwhile (#751)
 	alive *keptAlive
-	// notes are the headers magpie says of the try (noteMember), set
+	// notes are the headers magpie-friday says of the try (noteMember), set
 	// under mu: all keepAlive sends of the try's before it has its status,
 	// as until then the try is still writing header, with no lock
 	notes http.Header
@@ -1768,7 +1768,7 @@ func newHoldWriter(w http.ResponseWriter, hold bool) *holdWriter {
 
 func (h *holdWriter) Header() http.Header { return h.header }
 
-// note sets a header magpie says of the try, which keepAlive may send
+// note sets a header magpie-friday says of the try, which keepAlive may send
 // from watch's goroutine before the try has its status.
 func (h *holdWriter) note(k, v string) {
 	h.mu.Lock()
@@ -1821,7 +1821,7 @@ func (h *holdWriter) pass() {
 	}
 	dst := h.w.Header()
 	for k, v := range h.header {
-		if k != resetsHeader && k != refusedHeader && k != zdrHeader && k != answeredThereHeader { // magpie's own notes, for restAfter and settle
+		if k != resetsHeader && k != refusedHeader && k != zdrHeader && k != answeredThereHeader { // magpie-friday's own notes, for restAfter and settle
 			dst[k] = v
 		}
 	}
@@ -2244,7 +2244,7 @@ func (h *holdWriter) keepAlive() {
 		}
 		// the try's header is whole once it has its status (WriteHeader,
 		// under mu); before, the vendor's are still being copied into it
-		// from the try's goroutine, and only magpie's notes are read
+		// from the try's goroutine, and only magpie-friday's notes are read
 		src := h.header
 		if h.status == 0 {
 			src = h.notes
@@ -2618,7 +2618,7 @@ func (h *holdWriter) watch() func() {
 // vendor says nothing, every keepaliveEvery for up to keepaliveLongest
 // since it last did: a vendor that sent its 200 and response.created, then
 // nothing while it reasoned, had the stream held with none of it sent,
-// and Cloudflare in front of a remote magpie ended the request at 125s
+// and Cloudflare in front of a remote magpie-friday ended the request at 125s
 // (524) with the agent sent nothing at all; one quiet mid-reply was reset
 // by it as well (#947). Held, the agent is sent the stream's headers and
 // comments only (keepAlive), none of the try, which another account may

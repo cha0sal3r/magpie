@@ -12,18 +12,18 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/agentenv"
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Before an agent is disconnected the user is shown what changes in its
 // files, line by line (the owner's 断开 design: 删除、改回、保留), not a
 // sentence about it. What Disconnect does depends on the stash, the record
 // and each agent's own unwiring, so rather than a second account of it that
-// could say otherwise, magpie runs Disconnect itself on a copy: the agent's
-// config folder and magpie's own files under a temporary home, in a process
+// could say otherwise, magpie-friday runs Disconnect itself on a copy: the agent's
+// config folder and magpie-friday's own files under a temporary home, in a process
 // of its own (DryRunArg), and compares the copy with the files as they are.
 
 // DryRunArg is the command line's first word for the process that
@@ -32,11 +32,11 @@ const DryRunArg = "agent-disconnect-dry-run"
 
 const (
 	dryProvidersVar  = "MAGPIE_DRY_PROVIDERS"
-	dryProvidersFile = ".magpie-dry-providers"
+	dryProvidersFile = ".magpie-friday-dry-providers"
 )
 
 // dryProviders is, in the process DryRun runs, the ids of the providers the
-// magpie that asked for the preview has on.
+// magpie-friday that asked for the preview has on.
 var dryProviders map[string]bool
 
 // disconnectDryRun is confined to the preview subprocess. Its temporary
@@ -99,7 +99,7 @@ func DisconnectPreview(a *Agent, exe string) ([]FileChange, error) {
 		return nil, errors.New("no preview for this agent")
 	}
 	if appdir.Portable() != "" {
-		return nil, errors.New("no preview for a portable magpie")
+		return nil, errors.New("no preview for a portable magpie-friday")
 	}
 	home, err := os.UserHomeDir()
 	if err != nil {
@@ -116,7 +116,7 @@ func DisconnectPreview(a *Agent, exe string) ([]FileChange, error) {
 	if !ok || !ok2 {
 		return nil, errors.New("the agent's files are outside home")
 	}
-	tmp, err := os.MkdirTemp("", "magpie-preview-")
+	tmp, err := os.MkdirTemp("", "magpie-friday-preview-")
 	if err != nil {
 		return nil, err
 	}
@@ -127,14 +127,14 @@ func DisconnectPreview(a *Agent, exe string) ([]FileChange, error) {
 	if err := copyTop(dir, filepath.Join(tmp, dirRel), before, false); err != nil {
 		return nil, err
 	}
-	// magpie's: its files copied (the stash, the record, the providers),
+	// magpie-friday's: its files copied (the stash, the record, the providers),
 	// its folders (plugins) only read, so linked
 	if err := copyTop(cfg, filepath.Join(tmp, cfgRel), nil, true); err != nil {
 		return nil, err
 	}
-	// magpie's providers as this magpie has them: some come from another
+	// magpie-friday's providers as this magpie-friday has them: some come from another
 	// agent's sign-in (Codex's auth.json) the copy doesn't hold, and a
-	// model of theirs is magpie's all the same (dryProviders)
+	// model of theirs is magpie-friday's all the same (dryProviders)
 	var ids []string
 	for _, p := range provider.All() {
 		if p.On() {
@@ -296,7 +296,7 @@ func previewEnv(home, tmp string) []string {
 // value changed (model = "x" → model = "y") as one going back. Values that
 // read as secrets are masked. Between the lines both start and end with,
 // texts too far apart to compare line by line (OpenCode's table of
-// thousands of magpie models taken out) keep the lines of the new one
+// thousands of magpie-friday models taken out) keep the lines of the new one
 // found in order in the old.
 func diffLines(a, b string) []LineDiff {
 	x, y := splitLines(a), splitLines(b)
@@ -393,7 +393,7 @@ func diffLines(a, b string) []LineDiff {
 
 // sameLines is which lines of x and of y a shortest edit keeps (Myers'
 // diff: time and memory grow with the edits, not the files — an agent's
-// config can be 30,000 lines, and magpie changes a few). Not ok past most
+// config can be 30,000 lines, and magpie-friday changes a few). Not ok past most
 // edits.
 func sameLines(x, y []string, most int) (keepX, keepY []bool, ok bool) {
 	n, m := len(x), len(y)
@@ -474,7 +474,7 @@ func indent(l string) string { return l[:len(l)-len(strings.TrimLeft(l, " \t"))]
 
 var secretKey = regexp.MustCompile(`(?i)(key|token|secret|password|auth)`)
 
-// mask hides the value of a line whose key reads as a secret's; magpie's
+// mask hides the value of a line whose key reads as a secret's; magpie-friday's
 // own token, which is no secret, stays.
 func mask(l string) string {
 	k := lineKey(l)
@@ -488,7 +488,7 @@ func mask(l string) string {
 	}
 	val := strings.TrimSpace(l[m[1]:])
 	bare := strings.Trim(val, `"', `)
-	if bare == "" || bare == "magpie" || strings.HasPrefix(bare, "{") || strings.HasPrefix(bare, "$") {
+	if bare == "" || bare == "magpie-friday" || strings.HasPrefix(bare, "{") || strings.HasPrefix(bare, "$") {
 		return l
 	}
 	return l[:m[1]] + " ••••"

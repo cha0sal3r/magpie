@@ -18,7 +18,7 @@ import (
 // auth.json, and back once the first has room again. Claude Code's
 // subscription has no such setting. A providers.json that can't be read
 // says switch-only: the user's choice is unknown, and failover through the
-// gateway, magpie's own idea, isn't taken up on it.
+// gateway, magpie-friday's own idea, isn't taken up on it.
 func TestCodexSwitchOnlyStillSwitchesTheSignIn(t *testing.T) {
 	home := signIn(t) // me@example.com, acct-1
 	rememberLogins(true)

@@ -45,27 +45,27 @@ const W = {
   en: {
     reserved: "Windows keeps port 1455, where the sign-in comes back, for Hyper-V, WSL or Docker, so the page the browser ends on won't load. Copy its whole address and paste it here.",
     busy: "Another program has port 1455, where the sign-in comes back, so the page the browser ends on won't finish the sign-in. Copy its whole address and paste it here.",
-    docker: "(magpie runs on a server or in Docker)", field: "Callback URL", finish: "Finish sign-in",
+    docker: "(magpie-friday runs on a server or in Docker)", field: "Callback URL", finish: "Finish sign-in",
   },
   zh: {
     reserved: "Windows 为 Hyper-V、WSL 或 Docker 保留了登录回调的端口 1455，浏览器最终停在的页面将无法打开。请复制其完整地址粘贴到这里。",
     busy: "登录回调的端口 1455 被其他程序占用，浏览器最终停在的页面无法完成登录。请复制其完整地址粘贴到这里。",
-    docker: "magpie 运行在服务器或 Docker 中", field: "回调 URL", finish: "完成登录",
+    docker: "magpie-friday 运行在服务器或 Docker 中", field: "回调 URL", finish: "完成登录",
   },
   "zh-TW": {
     reserved: "Windows 為 Hyper-V、WSL 或 Docker 保留了登入回呼的連接埠 1455，瀏覽器最終停在的頁面將無法開啟。請複製其完整位址貼上到這裡。",
     busy: "登入回呼的連接埠 1455 被其他程式佔用，瀏覽器最終停在的頁面無法完成登入。請複製其完整位址貼上到這裡。",
-    docker: "magpie 執行在伺服器或 Docker 中",
+    docker: "magpie-friday 執行在伺服器或 Docker 中",
   },
   ja: {
     reserved: "サインインの戻り先であるポート 1455 は Windows が Hyper-V、WSL または Docker 用に予約しているため、ブラウザの最後のページは読み込めません。そのアドレス全体をコピーしてここに貼り付けてください。",
     busy: "サインインの戻り先であるポート 1455 を別のプログラムが使っているため、ブラウザの最後のページではサインインが完了しません。そのアドレス全体をコピーしてここに貼り付けてください。",
-    docker: "magpie がサーバーや Docker で動いているとき",
+    docker: "magpie-friday がサーバーや Docker で動いているとき",
   },
   de: {
     reserved: "Windows hält Port 1455, auf den die Anmeldung zurückkehrt, für Hyper-V, WSL oder Docker frei, daher lädt die Seite, auf der der Browser landet, nicht. Kopieren Sie ihre vollständige Adresse und fügen Sie sie hier ein.",
     busy: "Ein anderes Programm belegt Port 1455, auf den die Anmeldung zurückkehrt, daher schließt die Seite, auf der der Browser landet, die Anmeldung nicht ab. Kopieren Sie ihre vollständige Adresse und fügen Sie sie hier ein.",
-    docker: "magpie läuft auf einem Server oder in Docker",
+    docker: "magpie-friday läuft auf einem Server oder in Docker",
   },
 };
 

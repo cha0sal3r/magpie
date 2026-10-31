@@ -20,11 +20,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
 )
 
 // The session files' chunks are kept on disk between runs (requests-v1.bin).
-// A started magpie opened every session file's call shard (~15.6k of them)
+// A started magpie-friday opened every session file's call shard (~15.6k of them)
 // and turned each call into a row again before its first Requests page
 // could show, and so did a page asked for once two idle minutes had trimmed
 // the chunks (#3493). An entry stands for its session file while the file's
@@ -36,7 +36,7 @@ import (
 // its CRC-32 and its bytes; a bad entry ends the read, and the entries
 // before it stand.
 
-const requestDiskMagic = "magpie-requests-v1\n"
+const requestDiskMagic = "magpie-friday-requests-v1\n"
 
 func requestDiskPath() string {
 	return filepath.Join(filepath.Dir(sessions.CachePath()), "requests-v1.bin")
@@ -226,7 +226,7 @@ func readDiskEntry(b []byte) (*rowChunk, error) {
 
 // diskMapping is the file mapped into memory, where the system can map
 // it: the chunks read from it are of its pages, not of the heap. Their
-// 41MB of a 421k-call history were a fifth of a warm magpie's heap, and
+// 41MB of a 421k-call history were a fifth of a warm magpie-friday's heap, and
 // the collector let the heap grow by as much again before collecting
 // (#3493). It is unmapped once no chunk read from it is left.
 type diskMapping struct {
@@ -240,7 +240,7 @@ var diskUnmapped atomic.Pointer[func()]
 
 // readMapped runs fn, which reads m's pages (none, with m nil). A fault
 // reading them, the file cut short under the mapping by another program,
-// is false and not a crash: magpie only ever renames a new file over it.
+// is false and not a crash: magpie-friday only ever renames a new file over it.
 func readMapped(m *diskMapping, fn func()) (ok bool) {
 	if m == nil {
 		fn()

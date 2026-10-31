@@ -6,19 +6,19 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// legacyID is what agents knew the gateway by before magpie was called magpie.
+// legacyID is what agents knew the gateway by before magpie-friday was called magpie-friday.
 const legacyID = "dial"
 
 // RenameLegacy rewrites what an older dial left in the agents' files so it
-// says magpie: a model spelled dial/… becomes magpie/… (which also writes
-// the magpie provider entry the agent needs), and then the dial entry,
+// says magpie-friday: a model spelled dial/… becomes magpie-friday/… (which also writes
+// the magpie-friday provider entry the agent needs), and then the dial entry,
 // Codex's table and catalog file, and Claude Code's token go. It runs at
 // start-up; once nothing says dial any more it changes nothing. Errors are
-// swallowed on purpose — a file magpie cannot rewrite is one the user can
+// swallowed on purpose — a file magpie-friday cannot rewrite is one the user can
 // still fix from the picker.
 func RenameLegacy() {
 	for _, a := range All() {
@@ -27,7 +27,7 @@ func RenameLegacy() {
 		}
 		if a.ID == "codex" {
 			// Set() would stash "dial" as the provider to go back to; say
-			// magpie first so it sees a config that is already routed.
+			// magpie-friday first so it sees a config that is already routed.
 			if v, _ := edit.GetTOMLTop(a.Path, "model_provider"); v == legacyID {
 				_ = edit.SetTOMLTop(a.Path, edit.KV{Path: "model_provider", Value: magpieID})
 				if f := a.Field("model"); f != nil {
@@ -62,7 +62,7 @@ func RenameLegacy() {
 }
 
 // MoveCursorEfforts moves an agent set to one of Cursor's ids at an effort
-// (cursor/grok-4.7-low), from before magpie offered each family as one
+// (cursor/grok-4.7-low), from before magpie-friday offered each family as one
 // model, to that model (cursor/grok-4.7) spelled the same way, and — when
 // the agent's effort is unset and it has that one — to the effort the id
 // was at. A model the picker doesn't offer is left: the gateway still takes

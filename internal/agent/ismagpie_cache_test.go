@@ -3,7 +3,7 @@ package agent
 import (
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // isMagpie answers again from what it kept while nothing the catalog is
@@ -17,10 +17,10 @@ func TestIsMagpieKeptWhileCatalogStays(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !isMagpie("oa/gpt-5.5") {
-		t.Fatal("oa/gpt-5.5 not magpie's")
+		t.Fatal("oa/gpt-5.5 not magpie-friday's")
 	}
 	if isMagpie("nb/x") {
-		t.Fatal("nb/x magpie's before it is added")
+		t.Fatal("nb/x magpie-friday's before it is added")
 	}
 	allocs := testing.AllocsPerRun(20, func() {
 		isMagpie("oa/gpt-5.5")

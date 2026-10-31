@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // The Ollama API's model routes, for a client that takes a custom endpoint
@@ -18,11 +18,11 @@ import (
 // refuses a server older than 0.6.4, lists /api/tags and takes each
 // model's "model", asks /api/show of each (a model whose show fails or
 // has no capabilities is left out), and chats on the server's
-// OpenAI-compatible /v1/chat/completions, which magpie serves already.
+// OpenAI-compatible /v1/chat/completions, which magpie-friday serves already.
 // These routes sit on Handler's mux, so lanGuard, corsGuard and the key
 // limits judge them as every route.
 
-// ollamaVersion is the Ollama release magpie answers /api/version as: one
+// ollamaVersion is the Ollama release magpie-friday answers /api/version as: one
 // past every client's minimum (VS Code's Copilot asks 0.6.4).
 const ollamaVersion = "0.12.6"
 
@@ -31,7 +31,7 @@ func (s *Server) ollamaVersion(w http.ResponseWriter, r *http.Request) {
 }
 
 // ollamaTags lists the models the agent asking is shown, as Ollama's
-// /api/tags lists the pulled ones: name and model are magpie's id, which
+// /api/tags lists the pulled ones: name and model are magpie-friday's id, which
 // the client sends back as the model to chat with.
 func (s *Server) ollamaTags(w http.ResponseWriter, r *http.Request) {
 	models := []map[string]any{}
@@ -111,7 +111,7 @@ func (s *Server) ollamaShow(w http.ResponseWriter, r *http.Request) {
 }
 
 // ollamaCapabilities are what the model does, in Ollama's words: it
-// completes and calls tools (every model magpie serves is asked with
+// completes and calls tools (every model magpie-friday serves is asked with
 // tools), sees when it takes images, and thinks when it reasons.
 func ollamaCapabilities(e provider.Entry) []string {
 	caps := []string{"completion", "tools"}
@@ -126,9 +126,9 @@ func ollamaCapabilities(e provider.Entry) []string {
 
 // ollamaArch is the architecture every model is told as: model_info's
 // keys are named after it.
-const ollamaArch = "magpie"
+const ollamaArch = "magpie-friday"
 
-// ollamaDefaultContext is the window told for a model whose own magpie
+// ollamaDefaultContext is the window told for a model whose own magpie-friday
 // doesn't know: the one VS Code's Copilot takes when none is told.
 const ollamaDefaultContext = 32768
 

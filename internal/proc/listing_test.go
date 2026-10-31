@@ -36,7 +36,7 @@ func TestMissingCommandsReadEachFolderOnce(t *testing.T) {
 	looks := countLooks(t)
 	read := listingRead
 	for i := 0; i < 100; i++ {
-		name := fmt.Sprintf("magpie-missing-%d", i)
+		name := fmt.Sprintf("magpie-friday-missing-%d", i)
 		if p, err := Look(name); err == nil {
 			t.Fatalf("%s found at %s", name, p)
 		} else if !isNotFound(err) {
@@ -60,18 +60,18 @@ func TestCommandListedIsLookedFor(t *testing.T) {
 	d := t.TempDir()
 	t.Setenv("PATH", d)
 	lookWindowFor(t, 0)
-	want := installTool(t, d, "magpie-fake-agent")
+	want := installTool(t, d, "magpie-friday-fake-agent")
 	looks := countLooks(t)
-	if p, err := Look("magpie-fake-agent"); err != nil || p != want {
+	if p, err := Look("magpie-friday-fake-agent"); err != nil || p != want {
 		t.Fatalf("Look = %q, %v; want %q", p, err, want)
 	}
 	if *looks != 1 {
 		t.Fatalf("looked %d times, want 1", *looks)
 	}
-	for _, n := range []string{"magpie-fake-agent.cmd", "Magpie-Fake-Agent.EXE"} {
+	for _, n := range []string{"magpie-friday-fake-agent.cmd", "Magpie-Fake-Agent.EXE"} {
 		os.WriteFile(filepath.Join(d, n), nil, 0o755)
-		if !mayBeIn("magpie-fake-agent", []string{d}) {
-			t.Errorf("with %s there, magpie-fake-agent isn't thought to be", n)
+		if !mayBeIn("magpie-friday-fake-agent", []string{d}) {
+			t.Errorf("with %s there, magpie-friday-fake-agent isn't thought to be", n)
 		}
 	}
 }
@@ -82,14 +82,14 @@ func TestUnreadableFolderMayHoldIt(t *testing.T) {
 		t.Skip("needs a folder this user can't list")
 	}
 	d := t.TempDir()
-	installTool(t, d, "magpie-fake-agent")
+	installTool(t, d, "magpie-friday-fake-agent")
 	if err := os.Chmod(d, 0o311); err != nil { // searchable, not listable
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { os.Chmod(d, 0o755) })
 	t.Setenv("PATH", d)
 	lookWindowFor(t, 0)
-	if _, err := Look("magpie-fake-agent"); err != nil {
+	if _, err := Look("magpie-friday-fake-agent"); err != nil {
 		t.Fatalf("a command in a folder that can't be listed wasn't found: %v", err)
 	}
 }

@@ -8,7 +8,7 @@ import (
 // probeGroup kills the probe and what it started, as CommandContext does:
 // a job, as StartTree gives a command, is joined only once it has started,
 // and Output starts it out of reach, so they are found by their parent at
-// the kill. EndProbes ends it the same way when magpie exits.
+// the kill. EndProbes ends it the same way when magpie-friday exits.
 func probeGroup(cmd *exec.Cmd, p *probe) {
 	cmd.Cancel = func() error {
 		p.kill()

@@ -9,16 +9,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
-// A remote magpie asked for one of its routing groups answers with the
+// A remote magpie-friday asked for one of its routing groups answers with the
 // member the group routed to: that is the group picking, not the vendor
 // serving another model, so neither the route nor the usage row is marked
 // swapped, and both say the group routed it (莫 on Discord: group/auto-…
 // answered by deepseek/deepseek-v4.1-flash, shown amber). A vendor that
-// does serve another model is still marked, through the remote magpie or
+// does serve another model is still marked, through the remote magpie-friday or
 // through a group of the computer's own. Here the gateway is both
 // computers', as in TestRemoteMagpieNativeAPI.
 func TestRemoteMagpieGroupNotSwapped(t *testing.T) {
@@ -128,7 +128,7 @@ func TestRemoteMagpieGroupLedgerRow(t *testing.T) {
 }
 
 // A route kept in the Routing page's history before Routed was, marked
-// swapped for the member a remote magpie's group answered with, reads as
+// swapped for the member a remote magpie-friday's group answered with, reads as
 // routed; a real swap kept beside it is still one.
 func TestRemoteMagpieGroupHistory(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())

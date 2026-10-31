@@ -38,7 +38,7 @@ func TestWebView2Notice(t *testing.T) {
 		if !strings.Contains(body, "winget install Microsoft.EdgeWebView2Runtime") {
 			t.Errorf("%s: no winget command in %q", lang, body)
 		}
-		if !strings.Contains(body, "magpie web") || !strings.Contains(body, "magpie tui") {
+		if !strings.Contains(body, "magpie-friday web") || !strings.Contains(body, "magpie-friday tui") {
 			t.Errorf("%s: doesn't say what works without it: %q", lang, body)
 		}
 		if strings.Contains(body, "%!") {
@@ -51,7 +51,7 @@ func TestWebView2Notice(t *testing.T) {
 	if _, body := webView2Notice("zh"); !strings.Contains(body, "运行时") {
 		t.Errorf("zh isn't Chinese: %q", body)
 	}
-	if title, _ := webView2Notice("pt"); title != "magpie needs WebView2" {
+	if title, _ := webView2Notice("pt"); title != "magpie-friday needs WebView2" {
 		t.Errorf("pt: %q, want English", title)
 	}
 }

@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// magpie provider set balance.method= takes GET or POST, in any case, and
+// magpie-friday provider set balance.method= takes GET or POST, in any case, and
 // keeps GET as the unset default; any other method is refused and leaves
 // the saved one alone (#2368).
 func TestProviderSetBalanceMethod(t *testing.T) {

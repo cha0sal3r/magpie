@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/steady"
+	"github.com/cha0sal3r/magpie-friday/internal/steady"
 )
 
-// Another magpie replacing the file (a write is a temp file renamed over
+// Another magpie-friday replacing the file (a write is a temp file renamed over
 // it) has Windows say, for a moment, that the file isn't there at all: read
 // so, a file of accounts was no accounts, and the next write left them out
 // (Packing1 on Discord, Windows 11: Antigravity's provider and its account

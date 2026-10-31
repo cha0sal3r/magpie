@@ -1,17 +1,17 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// Repositories their authors tagged magpie-plugin on GitHub (yetone: 在插件页
-//能否自动识别打了 magpie-plugin 的 github repo 来显示为非官方插件): Discover
+// Repositories their authors tagged magpie-friday-plugin on GitHub (yetone: 在插件页
+//能否自动识别打了 magpie-friday-plugin 的 github repo 来显示为非官方插件): Discover
 // shows them in a section of their own after the community's, each card
 // saying Unofficial, its owner and its stars. One whose package the market
-// already lists is the market's card alone. Install sends the spec magpie
+// already lists is the market's card alone. Install sends the spec magpie-friday
 // gave: the npm name of one its author published there from the
 // repository, else github:owner/repo; one installed by any spec naming the
 // repository reads Installed. Its page warns that nobody reviewed it and
 // says which of the two is installed, links GitHub (and npm when it is
 // npm's), shows the README and when the repository was last pushed. A
 // search finds them too. The repositories are /api/plugins/github's real
-// answer for four repositories (asked of a magpie built to search topic:opencode-plugin, as
-// none is tagged magpie-plugin yet); the API is faked here. English,
+// answer for four repositories (asked of a magpie-friday built to search topic:opencode-plugin, as
+// none is tagged magpie-friday-plugin yet); the API is faked here. English,
 // Chinese, Japanese and German, wide and 440px, nothing scrolls on a click.
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
@@ -50,7 +50,7 @@ function server(lang, asked) {
     if (url.pathname === "/api/plugins") return json(state());
     if (url.pathname === "/api/plugins/listings") return json({ listings: LISTINGS.map((l) => ({ ...l, npm: undefined })) });
     if (url.pathname === "/api/plugins/npm") return json({ npm: { "@rama_nigg/open-cursor": LISTINGS[0].npm } });
-    if (url.pathname === "/api/plugins/github") { asked.push(["github"]); return json({ repos: REPOS, topic: "magpie-plugin" }); }
+    if (url.pathname === "/api/plugins/github") { asked.push(["github"]); return json({ repos: REPOS, topic: "magpie-friday-plugin" }); }
     if (url.pathname === "/api/plugins/search") return json({ hits: [] });
     if (url.pathname === "/api/plugins/updates") return json({ waiting: [], updated: [] });
     if (url.pathname === "/api/plugins/page") {
@@ -75,10 +75,10 @@ function server(lang, asked) {
 }
 
 const L = {
-  en: { section: "Unofficial, on GitHub", chip: "Unofficial", install: "Install", installed: "Installed", updated: "Updated", warn: /Unofficial: griffinmartin tagged it magpie-plugin on GitHub/, fromNPM: /installed from npm/, fromGit: /installed from the repository as it stands/ },
-  zh: { section: "非官方插件 · GitHub", chip: "非官方", install: "安装", installed: "已安装", updated: "更新于", warn: /非官方插件：griffinmartin 在 GitHub 上给它打了 magpie-plugin 标签/, fromNPM: /从这个仓库发布到 npm/, fromGit: /仓库当前的代码/ },
-  ja: { section: "非公式 · GitHub", chip: "非公式", install: "インストール", installed: "インストール済み", updated: "更新日", warn: /非公式：griffinmartin が GitHub で magpie-plugin タグを付けた/, fromNPM: /npm に公開したもの/, fromGit: /リポジトリの現在のコード/ },
-  de: { section: "Inoffiziell, auf GitHub", chip: "Inoffiziell", install: "Installieren", installed: "Installiert", updated: "Aktualisiert", warn: /Inoffiziell: griffinmartin hat es auf GitHub mit magpie-plugin getaggt/, fromNPM: /auf npm veröffentlicht/, fromGit: /das Repository, wie es gerade ist/ },
+  en: { section: "Unofficial, on GitHub", chip: "Unofficial", install: "Install", installed: "Installed", updated: "Updated", warn: /Unofficial: griffinmartin tagged it magpie-friday-plugin on GitHub/, fromNPM: /installed from npm/, fromGit: /installed from the repository as it stands/ },
+  zh: { section: "非官方插件 · GitHub", chip: "非官方", install: "安装", installed: "已安装", updated: "更新于", warn: /非官方插件：griffinmartin 在 GitHub 上给它打了 magpie-friday-plugin 标签/, fromNPM: /从这个仓库发布到 npm/, fromGit: /仓库当前的代码/ },
+  ja: { section: "非公式 · GitHub", chip: "非公式", install: "インストール", installed: "インストール済み", updated: "更新日", warn: /非公式：griffinmartin が GitHub で magpie-friday-plugin タグを付けた/, fromNPM: /npm に公開したもの/, fromGit: /リポジトリの現在のコード/ },
+  de: { section: "Inoffiziell, auf GitHub", chip: "Inoffiziell", install: "Installieren", installed: "Installiert", updated: "Aktualisiert", warn: /Inoffiziell: griffinmartin hat es auf GitHub mit magpie-friday-plugin getaggt/, fromNPM: /auf npm veröffentlicht/, fromGit: /das Repository, wie es gerade ist/ },
 };
 
 const shot = async (loc, name) => {
@@ -90,7 +90,7 @@ const shot = async (loc, name) => {
 const scrolls = (page) => page.evaluate(() => [window.scrollY, ...[...document.querySelectorAll("*")].filter((e) => e.scrollTop > 0).map((e) => (e.id || e.className) + ":" + e.scrollTop)].join(","));
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
-  test(engine + ": repositories tagged magpie-plugin, as unofficial plugins", async (t) => {
+  test(engine + ": repositories tagged magpie-friday-plugin, as unofficial plugins", async (t) => {
     const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: process.env.PLAYWRIGHT_CHANNEL || "chromium" }));
     t.after(() => browser.close());
     for (const lang of Object.keys(L)) {
@@ -114,14 +114,14 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
           await sec.waitFor();
           const order = await view.locator(".pm-body > *").evaluateAll((es) => es.map((e) => e.className.split(" ")[0]));
           assert.ok(order.indexOf("pm-manual") > order.lastIndexOf("pm-sec"), "the field stays last: " + order);
-          assert.match(await sec.locator(".pm-sechead span").innerText(), /magpie-plugin/);
+          assert.match(await sec.locator(".pm-sechead span").innerText(), /magpie-friday-plugin/);
           const cards = sec.locator(".pm-card");
           assert.deepEqual(await cards.locator(".pm-name b").allInnerTexts(), ["opencode-claude-auth", "opencode-quota", "agy-staff"], "the market's own package is its card alone");
           assert.equal(await view.locator(".pm-card", { hasText: "Open Cursor" }).count(), 1);
 
           const c = cards.first();
           assert.equal((await c.locator(".pm-by").innerText()).trim(), "griffinmartin");
-          // the picture its package.json gives (magpie.icon), as magpie keeps it; one that gives none, the puzzle
+          // the picture its package.json gives (magpie.icon), as magpie-friday keeps it; one that gives none, the puzzle
           assert.equal(await c.locator(".pm-logo img").getAttribute("src"), "/api/icons/claude-auth.svg");
           assert.equal(await cards.nth(2).locator(".pm-logo img").count(), 0);
           // a provider and a middleware part by hue (yetone: 中间件和供应商稍微有点区分吧)
@@ -144,7 +144,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
 
           // its page: the warning, npm's and GitHub's links and the README,
           // when it was pushed
-          // a reader scrolls to a card (narrow, below the fold); magpie
+          // a reader scrolls to a card (narrow, below the fold); magpie-friday
           // undoes a scroll nobody asked for, so Playwright's own wouldn't do
           const reach = async (card) => {
             const box = await view.boundingBox();

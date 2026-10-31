@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 func traceLine(t *testing.T, c *traceCursor, at time.Time, typ string, payload any, bodies bool) []TraceSpan {
@@ -147,7 +147,7 @@ func TestPiTracePairsToolsAndUsesFinalTiming(t *testing.T) {
 	}
 	feed(base, map[string]any{"type": "session", "id": "session"})
 	root := feed(base, map[string]any{"type": "message", "id": "user", "message": map[string]any{"role": "user", "content": []any{map[string]string{"type": "text", "text": "question"}}}})[0]
-	model := feed(base.Add(4*time.Second), map[string]any{"type": "message", "id": "assistant", "parentId": "user", "message": map[string]any{"role": "assistant", "timestamp": base.Add(time.Second).UnixMilli(), "responseId": "response", "model": "model", "provider": "magpie", "stopReason": "toolUse", "usage": map[string]int{"input": 100, "output": 10, "cacheRead": 20}, "content": []any{map[string]any{"type": "toolCall", "id": "tool", "name": "bash", "arguments": map[string]string{"command": "hello"}}}}})[0]
+	model := feed(base.Add(4*time.Second), map[string]any{"type": "message", "id": "assistant", "parentId": "user", "message": map[string]any{"role": "assistant", "timestamp": base.Add(time.Second).UnixMilli(), "responseId": "response", "model": "model", "provider": "magpie-friday", "stopReason": "toolUse", "usage": map[string]int{"input": 100, "output": 10, "cacheRead": 20}, "content": []any{map[string]any{"type": "toolCall", "id": "tool", "name": "bash", "arguments": map[string]string{"command": "hello"}}}}})[0]
 	tool := feed(base.Add(5*time.Second), map[string]any{"type": "message", "id": "result", "parentId": "assistant", "message": map[string]any{"role": "toolResult", "toolCallId": "tool", "toolName": "bash", "isError": false, "content": []any{map[string]string{"type": "text", "text": "result"}}}})[0]
 	if model.Parent != root.ID || model.Start != base.Add(time.Second) || model.Tokens.Input != 100 || tool.Parent != root.ID || !tool.Inferred || tool.End.Sub(tool.Start) != time.Second || tool.Input == "" || tool.Output == "" {
 		t.Fatalf("model %+v tool %+v", model, tool)

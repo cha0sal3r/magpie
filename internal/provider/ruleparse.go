@@ -4,7 +4,7 @@ package provider
 // agents=a,b intent="…" compact time=09:00-18:00 days=mon-fri tz=Asia/Shanghai
 // folders=~/work,"~/My Project" except-folders=~/work/old, or
 // pause=<model> time=… days=… agents=… folders=… except-folders=… — by
-// magpie group rule and the
+// magpie-friday group rule and the
 // TUI's routing page.
 
 import (
@@ -83,7 +83,7 @@ func ParseTimeWindow(v string) (*TimeWindow, error) {
 }
 
 // InZoneHere puts a rule's window typed with no time zone in this
-// computer's (LocalZone), as magpie group rule and the TUI read it: the
+// computer's (LocalZone), as magpie-friday group rule and the TUI read it: the
 // hours are the ones the person typing them means. It stays without one
 // when this computer's zone has no IANA name.
 func (r *Rule) InZoneHere() {
@@ -92,9 +92,9 @@ func (r *Rule) InZoneHere() {
 	}
 }
 
-// zoneErr is what a time zone magpie doesn't know is answered with.
+// zoneErr is what a time zone magpie-friday doesn't know is answered with.
 func zoneErr(v string) error {
-	return fmt.Errorf("tz: %q is not a time zone magpie knows: an IANA name such as Asia/Shanghai, Europe/Berlin or America/New_York", v)
+	return fmt.Errorf("tz: %q is not a time zone magpie-friday knows: an IANA name such as Asia/Shanghai, Europe/Berlin or America/New_York", v)
 }
 
 // UnknownRuleWord starts the error for a word ParseRule doesn't know.
@@ -263,7 +263,7 @@ func ParseRule(g Group, words []string) (r Rule, at int, classifier string, err 
 // effort fixed on the member ("m:high") or, when only one member is of
 // that model, without it.
 func GroupMember(g Group, in string) (string, error) {
-	in = strings.TrimPrefix(strings.TrimSpace(in), "magpie/")
+	in = strings.TrimPrefix(strings.TrimSpace(in), "magpie-friday/")
 	plain := func(m string) string { model, _ := MemberEffort(m); return model }
 	for _, match := range []func(string) bool{
 		func(m string) bool { return m == in },

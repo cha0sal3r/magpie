@@ -64,7 +64,7 @@ func TestRestingGatewayHandsMemoryBack(t *testing.T) {
 		time.Sleep(time.Millisecond)
 	}
 	waitReleased(2)
-	// a GET (the model list another magpie asks for) is not work to rest from
+	// a GET (the model list another magpie-friday asks for) is not work to rest from
 	h.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/v1/models", nil))
 	s.idle.mu.Lock()
 	armed := s.idle.due != nil

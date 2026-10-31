@@ -18,18 +18,18 @@ import (
 	"github.com/coder/websocket"
 	"github.com/tidwall/gjson"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A streamed turn to the ChatGPT backend (CodexBase/responses) goes over
 // the backend's WebSocket, as Codex's own client sends it, and comes back
-// to magpie's caller as the server-sent events the HTTP route answers with.
+// to magpie-friday's caller as the server-sent events the HTTP route answers with.
 // On some networks a streamed HTTP reply from chatgpt.com is cut at about
 // 120 s, before response.completed, while the same turn over the WebSocket
-// runs to its end (brickhao on Discord: 120.7 s through magpie, 121.5 s
+// runs to its end (brickhao on Discord: 120.7 s through magpie-friday, 121.5 s
 // over HTTP without it, both cut; 124.5 s and 131.4 s over the WebSocket,
-// both whole). Codex itself still speaks HTTP to magpie, over loopback:
-// it is the leg from magpie to the vendor that was cut.
+// both whole). Codex itself still speaks HTTP to magpie-friday, over loopback:
+// it is the leg from magpie-friday to the vendor that was cut.
 //
 // What goes on the socket is what Codex 0.16x sends there (codex-rs
 // ResponseCreateWsRequest, build_websocket_headers): the handshake carries
@@ -48,7 +48,7 @@ import (
 // socket 1009 (message too big) on a long conversation's turn, and the
 // turn was a 502. Codex's own client sends a turn on a kept socket as a
 // delta after previous_response_id, so its messages stay small, and falls
-// back to HTTP for the session when the socket keeps failing; magpie
+// back to HTTP for the session when the socket keeps failing; magpie-friday
 // opens a socket per turn and sends the whole body. A message as big as
 // one refused 1009 goes straight over HTTP to that host for
 // codexSocketShun (codexTooBig).

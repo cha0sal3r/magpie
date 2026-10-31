@@ -27,7 +27,7 @@ function server(lang, posts) {
     dock: false, dockWindow: false, proxy: "", redact: false, redactPersonal: false, redactWords: [],
     codexWarmup: "", claudeWarmup: "", codexWarmAt: "", claudeWarmAt: "", workbuddyCheckin: false, noStats: false,
     trayUsage: "", trayUsages: [], trayUsageEvery: 3, vision: "", imageGen: "",
-    version: "0.1.400", dir: "~/.config/magpie", gateway: "http://127.0.0.1:3425",
+    version: "0.1.400", dir: "~/.config/magpie-friday", gateway: "http://127.0.0.1:3425",
     proxyNow: "none", proxySource: "none", login: false,
     visionModels: [], imageGenModels: [], workbuddyCheckins: [], lanURLs: [],
     fx: { rate: 7.2, at: new Date().toISOString(), stale: false },
@@ -87,7 +87,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       await pill.click();
       const items = page.locator(".proto-menu .pm-item");
       await items.first().waitFor();
-      // magpie's own two totals follow (#1984, tray-totals.test.cjs)
+      // magpie-friday's own two totals follow (#1984, tray-totals.test.cjs)
       const rows = (await items.evaluateAll((bs) => bs.map((b) => [b.querySelector(".pm-name").textContent.trim(), b.querySelector(".pm-note").textContent.trim()]))).slice(0, -2);
       assert.deepEqual(rows, [
         [w.off, ""], ["Claude Code", w.inUse], ["Claude Code", "Max · a@b.c"], ["Claude Code", "Pro · d@e.f"], ["Codex", "Plus · x@y.z"],

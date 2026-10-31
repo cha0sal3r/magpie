@@ -6,7 +6,7 @@ package provider
 // Those are never guessed: the same request is always routed the same way,
 // and the trace tells which rule did it. A rule may also hold only at some
 // hours of the day (a vendor's peak-price hours, say), in the time zone
-// they were set in (magpie's clock when they name none). The one exception is a rule with
+// they were set in (magpie-friday's clock when they name none). The one exception is a rule with
 // an intent (what the user asks for, in the user's words): as a turn
 // begins, a model the group names (its Classifier) is asked which of the
 // intents the user's message is, once, and the trace tells what it said.
@@ -49,7 +49,7 @@ type Rule struct {
 	// when the ones before it can't take the request (monkeyin_92 on X: one
 	// rule for several models, not a rule each). They go before the
 	// members the matching rules after it name, and the group's others.
-	// Use stays the first, so a magpie from before More still sends the
+	// Use stays the first, so a magpie-friday from before More still sends the
 	// rule's requests to it, and has the others behind it as group members.
 	// A pause names one model and has none.
 	More []string `json:"more,omitempty"`
@@ -167,7 +167,7 @@ type TimeWindow struct {
 	Days []string `json:"days,omitempty"`
 	// Zone: the IANA time zone the hours and days were set in
 	// ("Asia/Shanghai"): the browser's on the Routing page, the terminal's
-	// for magpie group rule. magpie on a server in UTC keeps a Beijing
+	// for magpie-friday group rule. magpie-friday on a server in UTC keeps a Beijing
 	// user's 09:00–18:00 at Beijing's 09:00 (gaubeebangeel on X). A window
 	// with none — every one set before zones were kept — is on this
 	// computer's clock, as it was.
@@ -179,7 +179,7 @@ type TimeWindow struct {
 var zones sync.Map // name → *time.Location
 
 // zoneOf is the window's zone: time.Local when it names none; false when
-// it names one this magpie doesn't know.
+// it names one this magpie-friday doesn't know.
 func zoneOf(name string) (*time.Location, bool) {
 	if name == "" {
 		return time.Local, true
@@ -196,7 +196,7 @@ func zoneOf(name string) (*time.Location, bool) {
 }
 
 // ValidZone reports whether name is a time zone a window can be in: an
-// IANA name this magpie knows, or "" for this computer's clock.
+// IANA name this magpie-friday knows, or "" for this computer's clock.
 func ValidZone(name string) bool {
 	_, ok := zoneOf(name)
 	return ok
@@ -291,13 +291,13 @@ func (w *TimeWindow) clean() error {
 	}
 	w.Zone = strings.TrimSpace(w.Zone)
 	if !ValidZone(w.Zone) {
-		return fmt.Errorf("the time zone %q is not one magpie knows: an IANA name such as Asia/Shanghai or America/New_York", w.Zone)
+		return fmt.Errorf("the time zone %q is not one magpie-friday knows: an IANA name such as Asia/Shanghai or America/New_York", w.Zone)
 	}
 	return nil
 }
 
 // Holds reports whether at is within the window, in its zone. A zone
-// this magpie doesn't know (a file edited by hand; saving refuses one)
+// this magpie-friday doesn't know (a file edited by hand; saving refuses one)
 // is an unknown clock, and the window doesn't hold: the rule is as if it
 // weren't there, rather than at hours that may be a day's half off.
 func (w TimeWindow) Holds(at time.Time) bool {

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/source"
+	"github.com/cha0sal3r/magpie-friday/internal/source"
 )
 
 // with 「国内镜像」, bun installs from npmmirror, unless the environment

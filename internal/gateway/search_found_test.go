@@ -12,11 +12,11 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
-// fakeDeepSeek answers as DeepSeek's APIs do when magpie's searcher asks
+// fakeDeepSeek answers as DeepSeek's APIs do when magpie-friday's searcher asks
 // them to search: Chat has no search tool, and deepseek-flash writes its
 // own tool-call markup as text; Responses runs web_search (found nothing
 // while blind is set); Anthropic runs web_search_20250305 and answers
@@ -219,7 +219,7 @@ func TestSearcherAskedWhereItSearches(t *testing.T) {
 }
 
 // A relay said to search is for Settings to name: when Automatic's searcher
-// finds nothing, the fallback goes on to another provider magpie picks by
+// finds nothing, the fallback goes on to another provider magpie-friday picks by
 // itself, never to the relay and its quota (#359).
 func TestSearchFallbackSkipsARelaySaidToSearch(t *testing.T) {
 	searchSandbox(t)
@@ -353,13 +353,13 @@ func TestSearcherFindingNothingGivesWay(t *testing.T) {
 		t.Fatalf("the model was told %q", r)
 	}
 
-	// another searcher, next in magpie's order, answers before the APIs
+	// another searcher, next in magpie-friday's order, answers before the APIs
 	apis.asked = nil
 	ds2 := newFakeDeepSeek(t)
 	searchesOn(t, provider.Responses, ds2.URL)
 	save(t, provider.Provider{ID: "ds2", Name: "DeepSeek 2", Key: "k", Responses: ds2.URL + "/v1", Models: []string{"deepseek-flash"}})
 	if p, _, _ := searcher(); p.ID != "ds" {
-		t.Fatalf("magpie's searcher is %s", p.ID)
+		t.Fatalf("magpie-friday's searcher is %s", p.ID)
 	}
 	blocks = searchAsClaudeCode(t)
 	if len(apis.asked) != 0 || len(ds2.searches()) != 1 {

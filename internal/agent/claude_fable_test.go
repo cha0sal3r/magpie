@@ -5,15 +5,15 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // On a Claude model that is no Fable, Claude Code's fable tier is left
 // unset rather than following the main model: Claude Code takes the model
 // ANTHROPIC_DEFAULT_FABLE_MODEL names for a Fable model, so Opus written
 // there was Fable to it, and a Claude Pro sign-in without Fable asked for
-// usage credits and fell back to Haiku (Zhenzhen on Discord, magpie claude
+// usage credits and fell back to Haiku (Zhenzhen on Discord, magpie-friday claude
 // claude/claude-opus-5-5). So it is on another vendor's model (#2090). On a
 // Fable it follows as before; a value of the user's own stays theirs.
 func TestClaudeFableTierOnClaude(t *testing.T) {
@@ -35,7 +35,7 @@ func TestClaudeFableTierOnClaude(t *testing.T) {
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	// the user's own fable model, from before magpie
+	// the user's own fable model, from before magpie-friday
 	if err := os.WriteFile(path, []byte(`{"env":{"ANTHROPIC_DEFAULT_FABLE_MODEL":"my-fable"}}`), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -148,7 +148,7 @@ func TestClaudeFableTierOnClaude(t *testing.T) {
 	}
 	noFable("fable effort taken away")
 
-	// one the user wrote themselves while routed, not a model of magpie's,
+	// one the user wrote themselves while routed, not a model of magpie-friday's,
 	// stays as written when the main model moves
 	if err := edit.SetJSON(path, edit.KV{Path: "env.ANTHROPIC_DEFAULT_FABLE_MODEL", Value: "claude-fable-5-1"}); err != nil {
 		t.Fatal(err)
@@ -163,7 +163,7 @@ func TestClaudeFableTierOnClaude(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// an older magpie wrote fable on the main model: Follow takes it out
+	// an older magpie-friday wrote fable on the main model: Follow takes it out
 	if err := edit.SetJSON(path, edit.KV{Path: "env.ANTHROPIC_DEFAULT_FABLE_MODEL", Value: "anth/claude-opus-5-5"}); err != nil {
 		t.Fatal(err)
 	}
@@ -172,7 +172,7 @@ func TestClaudeFableTierOnClaude(t *testing.T) {
 	}
 	noFable("older wiring after Follow")
 
-	// magpie steps out: the user's own fable model is back
+	// magpie-friday steps out: the user's own fable model is back
 	if err := a.Field("model").Set(""); err != nil {
 		t.Fatal(err)
 	}

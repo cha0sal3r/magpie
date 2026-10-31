@@ -7,15 +7,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// Every model magpie lists in ZCode has native web search (原生联网搜索) on,
+// Every model magpie-friday lists in ZCode has native web search (原生联网搜索) on,
 // so ZCode offers it its WebSearch tool (Gearclickist on Discord: each model
 // had to be ticked by hand). A model the user unticked in ZCode, which
-// takes the key out of magpie's rule, stays unticked through syncs; a value
+// takes the key out of magpie-friday's rule, stays unticked through syncs; a value
 // in the rule stays; a manual rule is the user's; and on a format other
-// than Anthropic Messages, where ZCode can't send the search, magpie's on
+// than Anthropic Messages, where ZCode can't send the search, magpie-friday's on
 // goes while the user's own value stays.
 func TestZCodeWebSearch(t *testing.T) {
 	home := syncHome(t)
@@ -26,14 +26,14 @@ func TestZCodeWebSearch(t *testing.T) {
 	dir := filepath.Join(home, ".zcode", "v2")
 	rules := filepath.Join(dir, "provider_config.json")
 	os.MkdirAll(dir, 0o755)
-	// a rule an older magpie wrote, without the key, and one the user set
+	// a rule an older magpie-friday wrote, without the key, and one the user set
 	// by hand in ZCode
 	os.WriteFile(rules, []byte(`{"schemaVersion":1,"config":{
-	  "providerConfigRules":{"providerRules":[{"providerId":"magpie","providerName":"magpie","enabled":true,"config":{"group":"standard-personal",
-	    "access":{"type":"api-key","apiKey":"magpie"},"api":{"type":"anthropic-messages","baseUrl":"http://127.0.0.1:3425"},
+	  "providerConfigRules":{"providerRules":[{"providerId":"magpie-friday","providerName":"magpie-friday","enabled":true,"config":{"group":"standard-personal",
+	    "access":{"type":"api-key","apiKey":"magpie-friday"},"api":{"type":"anthropic-messages","baseUrl":"http://127.0.0.1:3425"},
 	    "personalModelIds":["deepseek/pro"],"modelOrder":["deepseek/pro"]}}]},
-	  "modelConfigRules":{"providerModelRules":[{"providerId":"magpie","modelId":"deepseek/pro","config":{"properties":{"contextWindow":128000,"inputFormat":{"supportsImage":false}}}}],
-	    "manualProviderModelRules":[{"providerId":"magpie","modelId":"deepseek/mine","config":{"enabled":true,"properties":{"contextWindow":64000,"supportsNativeWebSearch":false,"inputFormat":{"supportsImage":false}}}}]}}}`), 0o600)
+	  "modelConfigRules":{"providerModelRules":[{"providerId":"magpie-friday","modelId":"deepseek/pro","config":{"properties":{"contextWindow":128000,"inputFormat":{"supportsImage":false}}}}],
+	    "manualProviderModelRules":[{"providerId":"magpie-friday","modelId":"deepseek/mine","config":{"enabled":true,"properties":{"contextWindow":64000,"supportsNativeWebSearch":false,"inputFormat":{"supportsImage":false}}}}]}}}`), 0o600)
 	os.WriteFile(filepath.Join(dir, "config.json"), []byte(`{"provider":{"magpie":{"name":"magpie","kind":"anthropic","enabled":true,"models":{}}}}`), 0o600)
 
 	doc := func() map[string]any {
@@ -49,7 +49,7 @@ func TestZCodeWebSearch(t *testing.T) {
 	}
 	props := func(d map[string]any, id string) map[string]any {
 		for _, r := range mcr(d)["providerModelRules"].([]any) {
-			if r := r.(map[string]any); r["providerId"] == "magpie" && r["modelId"] == "deepseek/"+id {
+			if r := r.(map[string]any); r["providerId"] == "magpie-friday" && r["modelId"] == "deepseek/"+id {
 				return r["config"].(map[string]any)["properties"].(map[string]any)
 			}
 		}
@@ -66,7 +66,7 @@ func TestZCodeWebSearch(t *testing.T) {
 		}
 		return out
 	}
-	// what ZCode's model settings write: the rule changed, after magpie's
+	// what ZCode's model settings write: the rule changed, after magpie-friday's
 	// write
 	edit := func(id string, change func(p map[string]any)) {
 		d := doc()
@@ -93,7 +93,7 @@ func TestZCodeWebSearch(t *testing.T) {
 		}
 	}
 
-	// an older magpie's rule and new models get it; the manual one is left
+	// an older magpie-friday's rule and new models get it; the manual one is left
 	sync()
 	want("first sync", map[string]any{"pro": true, "flash": true, "lite": true, "mine": "no rule"})
 	d := doc()
@@ -116,11 +116,11 @@ func TestZCodeWebSearch(t *testing.T) {
 	sync()
 	want("ticked again", map[string]any{"pro": true, "flash": true, "lite": false})
 
-	// on Chat Completions ZCode can't send the search: magpie's on goes,
+	// on Chat Completions ZCode can't send the search: magpie-friday's on goes,
 	// the user's off stays
 	d = doc()
 	for _, r := range d["config"].(map[string]any)["providerConfigRules"].(map[string]any)["providerRules"].([]any) {
-		if r := r.(map[string]any); r["providerId"] == "magpie" {
+		if r := r.(map[string]any); r["providerId"] == "magpie-friday" {
 			r["config"].(map[string]any)["api"].(map[string]any)["type"] = "openai-chat-completions"
 		}
 	}
@@ -134,7 +134,7 @@ func TestZCodeWebSearch(t *testing.T) {
 	// back on Anthropic Messages, it is on again
 	d = doc()
 	for _, r := range d["config"].(map[string]any)["providerConfigRules"].(map[string]any)["providerRules"].([]any) {
-		if r := r.(map[string]any); r["providerId"] == "magpie" {
+		if r := r.(map[string]any); r["providerId"] == "magpie-friday" {
 			r["config"].(map[string]any)["api"].(map[string]any)["type"] = "anthropic-messages"
 		}
 	}

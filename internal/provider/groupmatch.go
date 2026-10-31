@@ -7,7 +7,7 @@ package provider
 //
 // The patterns are kept beside the members (Group.Match), never written
 // into them: what they match is worked out each time the groups are read
-// (groupsIn), from the models magpie serves now, so a model the vendor adds
+// (groupsIn), from the models magpie-friday serves now, so a model the vendor adds
 // joins the group and one it drops leaves it without the group being saved
 // again. Every reader — the gateway's routing, /v1/models, rules, the
 // Routing view, the TUI and the CLI — gets the group from there, so all of
@@ -46,7 +46,7 @@ func compilePattern(p string) (*regexp.Regexp, error) {
 		}
 		x, err := regexp.Compile("(?i)^(?:" + re + ")$")
 		if err != nil {
-			return nil, fmt.Errorf("%q is not a regular expression magpie can read: %v", p, err)
+			return nil, fmt.Errorf("%q is not a regular expression magpie-friday can read: %v", p, err)
 		}
 		return x, nil
 	}
@@ -58,11 +58,11 @@ func compilePattern(p string) (*regexp.Regexp, error) {
 }
 
 // CleanPatterns are a group's patterns as they are kept: trimmed, each
-// once, every one one magpie can read.
+// once, every one one magpie-friday can read.
 func CleanPatterns(in []string) ([]string, error) {
 	var out []string
 	for _, p := range in {
-		p = strings.TrimPrefix(strings.TrimSpace(p), "magpie/")
+		p = strings.TrimPrefix(strings.TrimSpace(p), "magpie-friday/")
 		if p == "" || slices.Contains(out, p) {
 			continue
 		}

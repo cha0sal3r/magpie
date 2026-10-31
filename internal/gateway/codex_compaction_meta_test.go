@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // The reporter's compaction, from Codex Desktop 26.1007 (#2352, yhxwyzm):
@@ -35,7 +35,7 @@ func compaction2352(t *testing.T) (body, turn string) {
 	return string(b), turn
 }
 
-// A compaction magpie summarises itself says so: the request goes with no
+// A compaction magpie-friday summarises itself says so: the request goes with no
 // compaction_trigger, and Codex's metadata in the body and the header says
 // "responses", as Codex says it of a summary it asks a provider other than
 // OpenAI for. It said remote compaction ("responses_compaction_v2") with
@@ -73,7 +73,7 @@ func TestLocalCompactionSaysLocal(t *testing.T) {
 				t.Fatalf("%d %s\nupstream got %.300s", rec.Code, rec.Body.String(), f.got)
 			}
 			if bytes.Contains(f.got, []byte(`"compaction_trigger"`)) {
-				t.Fatalf("magpie's own compaction sent the trigger: %s", f.got)
+				t.Fatalf("magpie-friday's own compaction sent the trigger: %s", f.got)
 			}
 			var q struct {
 				ClientMetadata map[string]string `json:"client_metadata"`

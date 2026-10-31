@@ -1,6 +1,6 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // Settings › Network and sharing › Model ids without the provider (love1sbug
-// on X: apps moved from CLIProxyAPI ask for gpt-5.6-sol, and magpie's
+// on X: apps moved from CLIProxyAPI ask for gpt-5.6-sol, and magpie-friday's
 // /v1/models only gave codex/gpt-5.6-sol): off by default; On posts
 // settings/bare-ids on its own and lights On, Off posts it back, and neither
 // click scrolls the Settings page. The row is drawn in gateway mode too,
@@ -21,7 +21,7 @@ function settingsPayload(over) {
     dock: false, dockWindow: false, proxy: "", redact: false, redactPersonal: false, redactWords: [],
     codexWarmup: "", claudeWarmup: "", codexWarmAt: "", claudeWarmAt: "", workbuddyCheckin: false, noStats: false,
     trayUsage: "", trayUsageEvery: 3, vision: "", imageGen: "",
-    version: "0.1.1220", dir: "~/.config/magpie", gateway: "http://127.0.0.1:3425",
+    version: "0.1.1220", dir: "~/.config/magpie-friday", gateway: "http://127.0.0.1:3425",
     proxyNow: "none", proxySource: "none", login: false,
     visionModels: [], imageGenModels: [], workbuddyCheckins: [], lan: false, lanURLs: [],
     fx: { rate: 7.2, at: new Date().toISOString(), stale: false },
@@ -29,7 +29,7 @@ function settingsPayload(over) {
   };
 }
 
-// gateway: magpie as a gateway alone (magpie web with no agents here), as
+// gateway: magpie-friday as a gateway alone (magpie-friday web with no agents here), as
 // gateway-mode.test.cjs fakes it
 function server(lang, gateway, posted) {
   let cur = settingsPayload({ lang, ...(gateway ? { web: true, gatewayMode: "on", gatewayOn: true } : {}) });

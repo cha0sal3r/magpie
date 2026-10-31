@@ -6,13 +6,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Signed in with an API key — a relay's, with the relay's own provider
 // table — Codex never asks for the model list, so a base URL alone left its
-// picker with the models it was built with and the one set. magpie is its
-// provider instead, with every magpie model in the catalog, and stepping
+// picker with the models it was built with and the one set. magpie-friday is its
+// provider instead, with every magpie-friday model in the catalog, and stepping
 // back to Codex's own model brings the relay's table back (#322).
 func TestCodexAPIKeyUsesProvider(t *testing.T) {
 	home, read := codexHome(t, `{"OPENAI_API_KEY":"sk-relay"}`,
@@ -25,11 +25,11 @@ func TestCodexAPIKeyUsesProvider(t *testing.T) {
 		t.Fatal(err)
 	}
 	cfg := read()
-	if !strings.Contains(cfg, `model_provider = "magpie"`) || !strings.Contains(cfg, "model_catalog_json") ||
+	if !strings.Contains(cfg, `model_provider = "magpie-friday"`) || !strings.Contains(cfg, "model_catalog_json") ||
 		!strings.Contains(cfg, `openai_base_url = "`+codexGatewayURL()+`"`) || !strings.Contains(cfg, "[model_providers.relay]") {
 		t.Fatalf("\n%s", cfg)
 	}
-	b, err := os.ReadFile(filepath.Join(home, ".codex", "magpie-models.json"))
+	b, err := os.ReadFile(filepath.Join(home, ".codex", "magpie-friday-models.json"))
 	if err != nil || !strings.Contains(string(b), `"fake/m1"`) || !strings.Contains(string(b), `"fake/m2"`) {
 		t.Fatalf("catalog: %v %s", err, b)
 	}
@@ -45,8 +45,8 @@ func TestCodexAPIKeyUsesProvider(t *testing.T) {
 	}
 }
 
-// A Codex an older magpie routed by the base URL alone while it was signed
-// in with an API key moves to magpie as its provider on the next sync.
+// A Codex an older magpie-friday routed by the base URL alone while it was signed
+// in with an API key moves to magpie-friday as its provider on the next sync.
 func TestCodexAPIKeyBaseURLMoved(t *testing.T) {
 	home, read := codexHome(t, `{"OPENAI_API_KEY":"sk-relay"}`,
 		"model = \"fake/m1\"\nopenai_base_url = \""+codexGatewayURL()+"\"\n")
@@ -54,7 +54,7 @@ func TestCodexAPIKeyBaseURLMoved(t *testing.T) {
 	if err := cx.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	if cfg := read(); !strings.Contains(cfg, `model_provider = "magpie"`) || !strings.Contains(cfg, "model_catalog_json") ||
+	if cfg := read(); !strings.Contains(cfg, `model_provider = "magpie-friday"`) || !strings.Contains(cfg, "model_catalog_json") ||
 		!strings.Contains(cfg, `model = "fake/m1"`) {
 		t.Fatalf("\n%s", cfg)
 	}

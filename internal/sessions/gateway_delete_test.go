@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// A deleted gateway session's text waits in magpie's trash no longer than
+// A deleted gateway session's text waits in magpie-friday's trash no longer than
 // the recording keeps text: the hourly prune erases what has expired there,
 // and leaves the note, so Restore still lists the session again.
 func TestGatewayDeleteTrashExpires(t *testing.T) {
@@ -86,7 +86,7 @@ func TestGatewayPurgeKeepsItHidden(t *testing.T) {
 	}
 }
 
-// A session magpie recorded nothing of is trashed with an empty list of
+// A session magpie-friday recorded nothing of is trashed with an empty list of
 // items, not null: the Trash page reads the list (found in a real try, where
 // null broke the page).
 func TestGatewayDeleteNothingRecorded(t *testing.T) {

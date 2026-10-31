@@ -1,6 +1,6 @@
 // Package beat wakes the loops that look at something every so often at
 // one time: each waits for the next multiple of its interval on the clock,
-// so a 5s loop, a 15s one and a 30s one wake together. An idle magpie woke
+// so a 5s loop, a 15s one and a 30s one wake together. An idle magpie-friday woke
 // apart for each of them, a few threads every time (#3185). Timers due at
 // one instant are run by one wakeup, so the loops need no timer in common.
 package beat

@@ -21,9 +21,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/steady"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/steady"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 const (
@@ -32,7 +32,7 @@ const (
 	historyMax   = 2000 // the routes of one day served at most: its latest
 )
 
-// HistoryDir is where the days are kept: ~/.config/magpie/routing.
+// HistoryDir is where the days are kept: ~/.config/magpie-friday/routing.
 func HistoryDir() string { return filepath.Join(filepath.Dir(provider.Path()), "routing") }
 
 // keepRoutes is whether done routes are written to disk. Off in the
@@ -109,8 +109,8 @@ func saveRoute(r Route) {
 // file left beside the .gz (gzipFile) goes with it. A file that can't be
 // removed stays.
 func pruneHistory(dir string, now time.Time) {
-	// a .gz.tmp left by a magpie stopped before renaming it (gzipFile) goes
-	// once it is an hour old: a younger one may be another magpie's, still
+	// a .gz.tmp left by a magpie-friday stopped before renaming it (gzipFile) goes
+	// once it is an hour old: a younger one may be another magpie-friday's, still
 	// being written
 	es, _ := os.ReadDir(dir)
 	for _, e := range es {
@@ -149,9 +149,9 @@ func pruneHistory(dir string, now time.Time) {
 // .gz, the file's routes going after its own as a gzip member of their own
 // (read back as one stream): a route that began before midnight and was done
 // after the first prune past it is written to its day's file again. A route
-// in the .gz already, from a file added and left behind (magpie stopped
+// in the .gz already, from a file added and left behind (magpie-friday stopped
 // before removing it), isn't added again. A .gz cut short, or ending in a
-// route cut short (an older magpie stopped, or the disk filled, as it or its
+// route cut short (an older magpie-friday stopped, or the disk filled, as it or its
 // file was written), is written anew from its whole routes and the file's
 // when the file has a route to add: after the break the file's routes
 // couldn't be read, and after a route cut short the first of them would join
@@ -395,7 +395,7 @@ func tally(d dayFile, c counted) counted {
 }
 
 // routedAgain reads a route kept before Routed was: a try that asked
-// another magpie's routing group was marked swapped for the member it
+// another magpie-friday's routing group was marked swapped for the member it
 // routed to, and is routed (usage.GroupRouted). A try kept marked swapped
 // for its model spelled with other separators (deepseek-v4.1-flash
 // answered as deepseek-v4-1-flash) wasn't swapped (usage.SameSpelled), nor

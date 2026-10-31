@@ -10,7 +10,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // deepSeekCustomRefusal is DeepSeek's Responses API turning Codex's exec
@@ -63,7 +63,7 @@ func (u *customUpstream) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // A Responses API that takes no custom tool (DeepSeek's, #2656) turned
-// every Codex turn offering exec away, and magpie gave the 400 back. The
+// every Codex turn offering exec away, and magpie-friday gave the 400 back. The
 // turn is now translated on the same API: exec offered as a function
 // taking its input, the call back to Codex as the custom_tool_call it
 // runs, exec's name kept. The next turn goes translated at once, and an

@@ -10,10 +10,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // mothxDefault is the settings.json MothX 1.3.104 writes on its first run
@@ -135,10 +135,10 @@ func mothxOf(t *testing.T) *Agent {
 	return nil
 }
 
-// MothX (#2353) is wired in its one settings.json: magpie as the provider
-// "magpie" beside the user's own, and defaultProvider/defaultModel on it.
+// MothX (#2353) is wired in its one settings.json: magpie-friday as the provider
+// "magpie-friday" beside the user's own, and defaultProvider/defaultModel on it.
 // Everything else in the file — the settings MothX's first run spelled
-// out, the user's providers, what they added to magpie's block — stays.
+// out, the user's providers, what they added to magpie-friday's block — stays.
 // The provider's key names MothX; Disconnect puts the file back byte for
 // byte.
 func TestMothX(t *testing.T) {
@@ -174,14 +174,14 @@ func TestMothX(t *testing.T) {
 	for _, o := range a.Field("model").Options(a.Values()) {
 		vals = append(vals, o.Value)
 	}
-	if !slices.Contains(vals, "deepseek-openai/deepseek-v4-flash") || !slices.Contains(vals, "mine/m1") || !slices.Contains(vals, "magpie/relay/glm-4.6") {
+	if !slices.Contains(vals, "deepseek-openai/deepseek-v4-flash") || !slices.Contains(vals, "mine/m1") || !slices.Contains(vals, "magpie-friday/relay/glm-4.6") {
 		t.Fatalf("options %v", vals)
 	}
 
 	if err := a.Connect(); err != nil {
 		t.Fatal(err)
 	}
-	for k, want := range map[string]string{"defaultProvider": "magpie", "defaultModel": "relay/glm-4.6",
+	for k, want := range map[string]string{"defaultProvider": "magpie-friday", "defaultModel": "relay/glm-4.6",
 		"defaultThinkingLevel": "medium", "theme": "dark", "defaultMode": "yolo", "sandbox.passEnv.2": "USER",
 		"providers.mine.apiKey": "MINE_KEY", "worktree.branchPrefix": "mothx"} {
 		if v, _ := edit.GetJSON(path, k); v != want {
@@ -194,11 +194,11 @@ func TestMothX(t *testing.T) {
 	if err := json.Unmarshal([]byte(readFile(path)), &file); err != nil {
 		t.Fatal(err)
 	}
-	got := file.Providers["magpie"]
-	if got["baseUrl"] != gateway.URL()+"/v1" || got["api"] != "openai-chat" || got["apiKey"] != "magpie-mothx" || got["thinkingFormat"] != "openai" {
+	got := file.Providers["magpie-friday"]
+	if got["baseUrl"] != gateway.URL()+"/v1" || got["api"] != "openai-chat" || got["apiKey"] != "magpie-friday-mothx" || got["thinkingFormat"] != "openai" {
 		t.Fatalf("provider:\n%s", readFile(path))
 	}
-	// one entry per model of magpie's, in the fields MothX's ModelConfig has
+	// one entry per model of magpie-friday's, in the fields MothX's ModelConfig has
 	ms, _ := got["models"].([]any)
 	if len(ms) == 0 {
 		t.Fatalf("no models:\n%s", readFile(path))
@@ -219,20 +219,20 @@ func TestMothX(t *testing.T) {
 		t.Fatalf("usage: %q", got)
 	}
 
-	// a key magpie no longer gives it is off, and a sync mends it, keeping
-	// what the user put in magpie's block: a header, and a thinkingFormat
+	// a key magpie-friday no longer gives it is off, and a sync mends it, keeping
+	// what the user put in magpie-friday's block: a header, and a thinkingFormat
 	// of their own
-	edit.SetJSON(path, edit.KV{Path: "providers.magpie.apiKey", Value: gateway.Token},
-		edit.KV{Path: "providers.magpie.headers", Value: map[string]string{"X-Mine": "1"}},
-		edit.KV{Path: "providers.magpie.thinkingFormat", Value: "qwen"})
+	edit.SetJSON(path, edit.KV{Path: "providers.magpie-friday.apiKey", Value: gateway.Token},
+		edit.KV{Path: "providers.magpie-friday.headers", Value: map[string]string{"X-Mine": "1"}},
+		edit.KV{Path: "providers.magpie-friday.thinkingFormat", Value: "qwen"})
 	if a.Check() == "" {
 		t.Fatal("the shared key reads as MothX's")
 	}
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	for k, want := range map[string]string{"providers.magpie.apiKey": "magpie-mothx", "providers.magpie.headers.X-Mine": "1",
-		"providers.magpie.thinkingFormat": "qwen"} {
+	for k, want := range map[string]string{"providers.magpie-friday.apiKey": "magpie-friday-mothx", "providers.magpie-friday.headers.X-Mine": "1",
+		"providers.magpie-friday.thinkingFormat": "qwen"} {
 		if v, _ := edit.GetJSON(path, k); v != want {
 			t.Fatalf("%s = %q after sync:\n%s", k, v, readFile(path))
 		}
@@ -261,8 +261,8 @@ func TestMothX(t *testing.T) {
 	}
 	// back as it was but for what the user added, and Disconnect then
 	// gives back their file byte for byte
-	edit.DelJSON(path, "providers.magpie.headers")
-	edit.DelJSON(path, "providers.magpie.thinkingFormat")
+	edit.DelJSON(path, "providers.magpie-friday.headers")
+	edit.DelJSON(path, "providers.magpie-friday.thinkingFormat")
 	if err := a.Disconnect(); err != nil {
 		t.Fatal(err)
 	}
@@ -272,13 +272,13 @@ func TestMothX(t *testing.T) {
 	if b := readFile(path); b != user {
 		t.Fatalf("settings.json not as it was:\n%s", b)
 	}
-	if _, err := os.Stat(path + ".before-magpie"); !os.IsNotExist(err) {
+	if _, err := os.Stat(path + ".before-magpie-friday"); !os.IsNotExist(err) {
 		t.Fatalf("the copy from before is left: %v", err)
 	}
 }
 
 // With no settings.json at all (MothX installed, never run), Connect
-// writes one with magpie alone, and Disconnect takes it away again.
+// writes one with magpie-friday alone, and Disconnect takes it away again.
 func TestMothXRoundTripNoFile(t *testing.T) {
 	home := syncHome(t)
 	t.Setenv("MOTHX_DIR", filepath.Join(home, "mx"))
@@ -294,7 +294,7 @@ func TestMothXRoundTripNoFile(t *testing.T) {
 		if err := a.Disconnect(); err != nil {
 			t.Fatal(err)
 		}
-		for _, f := range []string{"settings.json", "settings.json.before-magpie"} {
+		for _, f := range []string{"settings.json", "settings.json.before-magpie-friday"} {
 			if _, err := os.Stat(filepath.Join(a.Dir, f)); !os.IsNotExist(err) {
 				t.Fatalf("round %d: %s left: %v", i, f, err)
 			}
@@ -303,7 +303,7 @@ func TestMothXRoundTripNoFile(t *testing.T) {
 }
 
 // What the user changes while it is connected stands — MothX's own /model
-// dialog rewrites the whole file — and Disconnect takes magpie out of it
+// dialog rewrites the whole file — and Disconnect takes magpie-friday out of it
 // rather than putting back the copy from before.
 func TestMothXKeepsWhatChangedWhileConnected(t *testing.T) {
 	home := syncHome(t)
@@ -326,7 +326,7 @@ func TestMothXKeepsWhatChangedWhileConnected(t *testing.T) {
 	}
 	// nor the providers object it opened in a file that had none
 	if _, has := edit.GetJSON(a.Path, "providers"); has {
-		t.Fatalf("magpie left:\n%s", readFile(a.Path))
+		t.Fatalf("magpie-friday left:\n%s", readFile(a.Path))
 	}
 }
 
@@ -358,7 +358,7 @@ func TestMothXDir(t *testing.T) {
 }
 
 // A model of the user's own is offered MothX's whole list of thinking
-// levels; a model of magpie's says it reasons when it has efforts, which is
+// levels; a model of magpie-friday's says it reasons when it has efforts, which is
 // what has MothX send a level at all.
 func TestMothXThinkingLevels(t *testing.T) {
 	home := syncHome(t)

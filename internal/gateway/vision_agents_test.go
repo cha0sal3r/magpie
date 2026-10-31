@@ -5,11 +5,11 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/codexcat"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/codexcat"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// A text-only model is offered to agents as taking images while magpie
+// A text-only model is offered to agents as taking images while magpie-friday
 // describes images to it (Discord, Fate: Codex turned an image away for a
 // text model although Settings › Vision was set), and as text-only again
 // with Vision off.

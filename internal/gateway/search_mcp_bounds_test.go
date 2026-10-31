@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/mcpauth/mcpauthtest"
+	"github.com/cha0sal3r/magpie-friday/internal/mcpauth/mcpauthtest"
 )
 
 // A body past an MCP route's limit is refused whole (#1766, ggbdpq): a
@@ -61,7 +61,7 @@ func TestOwnMCPRejectsOversizedBody(t *testing.T) {
 	}
 }
 
-// The same holds for a signed-in MCP server magpie proxies: a body cut at
+// The same holds for a signed-in MCP server magpie-friday proxies: a body cut at
 // 32 MiB went to the server, with the user's sign-in, as a shorter message.
 func TestMCPProxyRejectsOversizedBody(t *testing.T) {
 	fresh(t)

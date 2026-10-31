@@ -18,7 +18,7 @@ func holdApp(t *testing.T, h, name, id string) {
 
 // @jiahao_jayden on X: the library's rows listed agents that aren't
 // installed. One gone from here (uninstalled: its CLI gone, its folder
-// left, #2177) is listed only while it still has what magpie gave it, on
+// left, #2177) is listed only while it still has what magpie-friday gave it, on
 // the rows of what it has, so that can be unticked and taken out of its
 // folder; a sync gives it nothing new, and once it has nothing it isn't
 // listed at all.

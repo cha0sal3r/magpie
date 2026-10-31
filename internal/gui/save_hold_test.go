@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A save answers with the whole state it wrote — every group's members,
@@ -170,7 +170,7 @@ func TestAgentWriteAnsweredAsWritten(t *testing.T) {
 	// a read first, as the page makes before it writes
 	call("/api/state", "")
 	if codex(call("/api/state", "")).Wired {
-		t.Fatal("wired before magpie set anything")
+		t.Fatal("wired before magpie-friday set anything")
 	}
 	if !codex(call("/api/set", `{"agent":"codex","field":"model","value":"relay/m1"}`)).Wired {
 		t.Fatal("the answer to the write is stale: not wired")

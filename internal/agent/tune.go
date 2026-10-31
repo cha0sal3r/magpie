@@ -14,7 +14,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 // The settings tune knows.
@@ -79,7 +79,7 @@ func tuneWhere(home, agent, knob, model string) (tunePlace, error) {
 		case TuneCompact:
 			n := claudeName(model)
 			if n == "" {
-				return tunePlace{}, fmt.Errorf("%q is no Claude model: Claude Code's window for it is magpie's own, under Settings", model)
+				return tunePlace{}, fmt.Errorf("%q is no Claude model: Claude Code's window for it is magpie-friday's own, under Settings", model)
 			}
 			return tunePlace{path: path, key: "modelSettings." + n + ".autoCompactWindow", env: []string{claudeCompactEnv}, number: true}, nil
 		case TuneCache:
@@ -103,7 +103,7 @@ func (p tunePlace) get() (string, bool) {
 }
 
 // envOf is a variable Claude Code starts with: in settings.json's env, or
-// magpie's own, which a terminal it is run from most likely has too.
+// magpie-friday's own, which a terminal it is run from most likely has too.
 func (p tunePlace) envOf(k string) string {
 	if v, _ := edit.GetJSON(p.path, "env."+k); v != "" {
 		return v
@@ -211,7 +211,7 @@ func TuneUndo(home, agent, knob, model string) error {
 	}
 	st, ok := tuneStashed(agent, knob, model)
 	if !ok {
-		return fmt.Errorf("magpie didn't set %s", p.key)
+		return fmt.Errorf("magpie-friday didn't set %s", p.key)
 	}
 	defer forget(tuneKey(agent, knob, model))
 	if v, _ := p.get(); strings.Trim(v, `"'`) != st.Set {

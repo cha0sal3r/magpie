@@ -62,8 +62,8 @@ func (c *studentAuto) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // #256: a Student account's Auto picked gpt-5.6-luna, and Copilot refused
-// magpie the request ("The requested model is not supported.") while it
-// served VS Code the same pick on the same account: magpie sent Auto's
+// magpie-friday the request ("The requested model is not supported.") while it
+// served VS Code the same pick on the same account: magpie-friday sent Auto's
 // session token with no X-GitHub-Api-Version, which Copilot Chat sends on
 // every request, and Copilot reads the session only with one. The pick is
 // served now, with Copilot Chat 0.68's headers; a session Copilot no

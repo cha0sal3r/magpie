@@ -15,10 +15,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/sessions"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // ctxRoute is a done request of agent in session whose prompt holds base
@@ -244,7 +244,7 @@ func TestContextSessionTitles(t *testing.T) {
 
 // Kumo31 on Discord: dsh sends no session id on its chat-completions and
 // messages routes, so its requests reach the page keyed by the gateway's
-// hash of their first prompt, and its sessions were listed as "magpie-a…".
+// hash of their first prompt, and its sessions were listed as "magpie-friday-a…".
 // They go under the session that prompt was read from, by the title the
 // Sessions page shows; its title call, with no tools, is no turn of it.
 // The ids are the real requests' beside the fixture
@@ -280,22 +280,22 @@ func TestContextDshSessionTitles(t *testing.T) {
 		return r
 	}
 	out := contextOf([]gateway.Route{
-		conv(1, "magpie-950998433c3e70e50dc32994", true),  // chat-completions turn
-		conv(2, "magpie-3dc58631c53e0df2e657ee2c", false), // its title call
-		conv(3, "magpie-be31a0561e12cf603d3e79d9", true),  // messages turn
-		conv(4, "magpie-a2ca3891cf83d335f4a635fa", false), // its title call
-		conv(5, "magpie-000000000000000000000000", true),  // no file's
+		conv(1, "magpie-friday-950998433c3e70e50dc32994", true),  // chat-completions turn
+		conv(2, "magpie-friday-3dc58631c53e0df2e657ee2c", false), // its title call
+		conv(3, "magpie-friday-be31a0561e12cf603d3e79d9", true),  // messages turn
+		conv(4, "magpie-friday-a2ca3891cf83d335f4a635fa", false), // its title call
+		conv(5, "magpie-friday-000000000000000000000000", true),  // no file's
 	}, 7)
 	titles := map[string]string{}
 	for _, s := range out.Sessions {
 		titles[s.Key] = s.Title
 	}
-	want := map[string]string{chat: listed["dsh "+chat], msgs: listed["dsh "+msgs], "magpie-000000000000000000000000": ""}
+	want := map[string]string{chat: listed["dsh "+chat], msgs: listed["dsh "+msgs], "magpie-friday-000000000000000000000000": ""}
 	if !maps.Equal(titles, want) {
 		t.Fatalf("titles %v, want %v", titles, want)
 	}
 	for _, s := range out.Sessions {
-		if s.Key != "magpie-000000000000000000000000" && s.Requests != 1 {
+		if s.Key != "magpie-friday-000000000000000000000000" && s.Requests != 1 {
 			t.Fatalf("%s: %d requests, its title call counted as a turn", s.Key, s.Requests)
 		}
 	}

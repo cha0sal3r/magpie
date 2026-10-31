@@ -35,7 +35,7 @@ const errs = [
 const keys = [
   "No OpenCode Go on this key — use a key made by the member who subscribed, in that workspace",
   "OpenCode didn't take this key — paste a current one in the provider's settings",
-  "OpenCode Go answered in a form magpie doesn't read — hover for what it sent",
+  "OpenCode Go answered in a form magpie-friday doesn't read — hover for what it sent",
 ];
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {

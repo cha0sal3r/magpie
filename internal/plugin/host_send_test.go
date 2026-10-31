@@ -15,12 +15,12 @@ import (
 
 // This file is the wire contract of Fetch's request encoding: the body reaches
 // the child as the base64 string encoding/json writes for a []byte, and the
-// frame magpie writes is the very one the older EncodeToString params produced,
+// frame magpie-friday writes is the very one the older EncodeToString params produced,
 // byte for byte. Everything here goes through the production Fetch and its
 // send, against a host this test builds itself; no test here starts Bun, and
 // nothing here reaches into the host's stream bookkeeping.
 
-// wireIn is a host's stdin. It keeps what magpie wrote when asked to, and tells
+// wireIn is a host's stdin. It keeps what magpie-friday wrote when asked to, and tells
 // the answering goroutine that a frame came, so every fetch is answered (a
 // frame left unanswered would park the production Fetch).
 type wireIn struct {
@@ -38,7 +38,7 @@ func (c *wireIn) Write(p []byte) (int, error) {
 		c.lines = append(c.lines, append([]byte(nil), p...))
 		c.mu.Unlock()
 	}
-	// Only a fetch frame needs an answer. An abort magpie sends when the body
+	// Only a fetch frame needs an answer. An abort magpie-friday sends when the body
 	// is dropped is left alone: answering it would move the driver's ids on
 	// from the host's own, and the next fetch would be answered as another.
 	if bytes.HasPrefix(p, []byte(`{"id":`)) && bytes.Contains(p[:min(len(p), 64)], []byte(`"method":"fetch"`)) {
@@ -49,7 +49,7 @@ func (c *wireIn) Write(p []byte) (int, error) {
 
 func (c *wireIn) Close() error { return nil }
 
-// lastLine is the frame magpie wrote last, nil when none came.
+// lastLine is the frame magpie-friday wrote last, nil when none came.
 func (c *wireIn) lastLine() []byte {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -59,17 +59,17 @@ func (c *wireIn) lastLine() []byte {
 	return c.lines[len(c.lines)-1]
 }
 
-// last is the frame magpie wrote last.
+// last is the frame magpie-friday wrote last.
 func (c *wireIn) last(t *testing.T) []byte {
 	t.Helper()
 	line := c.lastLine()
 	if line == nil {
-		t.Fatal("magpie wrote nothing to the child")
+		t.Fatal("magpie-friday wrote nothing to the child")
 	}
 	return line
 }
 
-// fetchFrame is the fetch request magpie wrote, whatever else it wrote (an
+// fetchFrame is the fetch request magpie-friday wrote, whatever else it wrote (an
 // abort follows when a test ends a body by cancelling it).
 func (c *wireIn) fetchFrame(t *testing.T) []byte {
 	t.Helper()
@@ -80,7 +80,7 @@ func (c *wireIn) fetchFrame(t *testing.T) []byte {
 			return line
 		}
 	}
-	t.Fatal("magpie wrote no fetch request")
+	t.Fatal("magpie-friday wrote no fetch request")
 	return nil
 }
 
@@ -121,7 +121,7 @@ func fetchHost(tb testing.TB, h *host, pw *io.PipeWriter, in *wireIn, byFrame bo
 	// A plugin-list change another test made would have get() retire this host
 	// for a real one, so the change is absorbed here first. The flag that says
 	// a host is stale is taken rather than dropped, and put back when the
-	// helper is done: a restart another magpie asked for still happens after
+	// helper is done: a restart another magpie-friday asked for still happens after
 	// this test, and a newer signal is never overwritten with false.
 	checkList()
 	hostMu.Lock()
@@ -177,7 +177,7 @@ func fetchHost(tb testing.TB, h *host, pw *io.PipeWriter, in *wireIn, byFrame bo
 }
 
 // fetchOnce sends one request through the production Fetch and gives back the
-// frame magpie wrote for it.
+// frame magpie-friday wrote for it.
 func fetchOnce(t *testing.T, r FetchRequest) []byte {
 	t.Helper()
 	in := newWireIn(true)
@@ -253,14 +253,14 @@ func clip(b []byte) string {
 // TestFetchHostKeepsTheRestartSignal: installing the test's host takes the flag
 // that says the plugin list changed (get() would otherwise retire it for a real
 // host), so the helper has to put that flag back when it is done — a restart
-// another magpie asked for must not be dropped by a test.
+// another magpie-friday asked for must not be dropped by a test.
 func TestFetchHostKeepsTheRestartSignal(t *testing.T) {
 	prev := hostStale.Load()
 	t.Cleanup(func() { hostStale.Store(prev) }) // these tests run one at a time
 	hostMu.Lock()
 	before := current
 	hostMu.Unlock()
-	hostStale.Store(true) // what another magpie's change leaves behind
+	hostStale.Store(true) // what another magpie-friday's change leaves behind
 
 	t.Run("a helper used and cleaned up", func(t *testing.T) {
 		in := newWireIn(false)

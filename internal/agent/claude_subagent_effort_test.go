@@ -4,9 +4,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A subagent effort with no subagent model ("Claude Code picks") writes no
@@ -14,7 +14,7 @@ import (
 // every subagent, an Explore asking for haiku too, to the main model
 // (KorenKrita on Discord). The effort is kept, not applied, and goes with a
 // model the subagents are given later; a model and effort together are
-// written as before. One an older magpie wrote is taken out by Sync.
+// written as before. One an older magpie-friday wrote is taken out by Sync.
 func TestClaudeSubagentEffortNeedsAModel(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
@@ -78,7 +78,7 @@ func TestClaudeSubagentEffortNeedsAModel(t *testing.T) {
 	}
 	set("subagent", "")
 
-	// the main model at an effort, as an older magpie wrote it: Sync takes
+	// the main model at an effort, as an older magpie-friday wrote it: Sync takes
 	// it out and keeps the effort for a later model
 	set("subagent_effort", "")
 	if err := edit.SetJSON(path, edit.KV{Path: "env.CLAUDE_CODE_SUBAGENT_MODEL", Value: "v/flash:high"}); err != nil {
@@ -88,10 +88,10 @@ func TestClaudeSubagentEffortNeedsAModel(t *testing.T) {
 		t.Fatal(err)
 	}
 	if v, has := sub(); has {
-		t.Fatalf("Sync left an older magpie's CLAUDE_CODE_SUBAGENT_MODEL=%q", v)
+		t.Fatalf("Sync left an older magpie-friday's CLAUDE_CODE_SUBAGENT_MODEL=%q", v)
 	}
 	set("subagent", "v/glm")
 	if v, _ := sub(); v != "v/glm:high" {
-		t.Fatalf("the older magpie's effort wasn't kept: %q", v)
+		t.Fatalf("the older magpie-friday's effort wasn't kept: %q", v)
 	}
 }

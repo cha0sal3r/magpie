@@ -7,7 +7,7 @@ import (
 
 	"golang.org/x/sys/windows/registry"
 
-	"github.com/yetone/magpie/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
 )
 
 // UserPath has nothing to do on Windows: an app started from the Start menu
@@ -46,7 +46,7 @@ func UserBinDirs() []string {
 }
 
 // LoginPath is the PATH the registry has now, the machine's then the
-// user's: what a terminal opened now gets, and what a magpie started
+// user's: what a terminal opened now gets, and what a magpie-friday started
 // before a CLI was installed doesn't.
 func LoginPath() []string {
 	var dirs []string
@@ -79,7 +79,7 @@ func LoginPath() []string {
 }
 
 // LoginEnv is "" on Windows: an app started from the Start menu gets the
-// user's variables from the registry, as a terminal does, so magpie's own
+// user's variables from the registry, as a terminal does, so magpie-friday's own
 // environment has them.
 func LoginEnv(string) string { return "" }
 

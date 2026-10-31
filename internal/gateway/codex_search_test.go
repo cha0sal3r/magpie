@@ -9,8 +9,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // codexSearchBody is the SearchRequest Codex's web.run sends, as its own
@@ -19,14 +19,14 @@ func codexSearchBody(model string) string {
 	return `{"id":"search-session","model":"` + model + `","input":[{"type":"message","id":"msg_search","role":"user","content":[{"type":"input_text","text":"find this"},{"type":"input_image","image_url":"https://example.com/image.png"}]}],"commands":{"search_query":[{"q":"OpenAI news","recency":7,"domains":["openai.com"]}],"open":[{"ref_id":"https://openai.com","lineno":12}]},"settings":{"user_location":{"type":"approximate","country":"US","city":"San Francisco"},"search_context_size":"low","filters":{"allowed_domains":["openai.com"],"blocked_domains":["example.com"]},"image_settings":{"max_results":4,"caption":true},"allowed_callers":["direct"],"external_web_access":true},"max_output_tokens":2500}`
 }
 
-// codexSearchPost sends a search to path as Codex sends it to magpie's
+// codexSearchPost sends a search to path as Codex sends it to magpie-friday's
 // provider: its bearer token and actor header from the provider table,
 // its turn metadata and originator of its own.
 func codexSearchPost(h http.Handler, path, body string) *httptest.ResponseRecorder {
 	r := httptest.NewRequest(http.MethodPost, path, strings.NewReader(body))
 	r.Header.Set("Content-Type", "application/json")
-	r.Header.Set("Authorization", "Bearer magpie")
-	r.Header.Set("x-openai-actor-authorization", "magpie")
+	r.Header.Set("Authorization", "Bearer magpie-friday")
+	r.Header.Set("x-openai-actor-authorization", "magpie-friday")
 	r.Header.Set("x-codex-turn-metadata", `{"turn_id":"t1"}`)
 	r.Header.Set("originator", "codex_exec")
 	r.Header.Set("User-Agent", "codex_exec/0.162.1 (Linux 6.8; x86_64)")
@@ -50,7 +50,7 @@ func readSearchReply(t *testing.T, w *httptest.ResponseRecorder) searchReply {
 	return v
 }
 
-// Codex's web.run on a ChatGPT account's model in magpie posted to
+// Codex's web.run on a ChatGPT account's model in magpie-friday posted to
 // /v1/alpha/search and got 404, which ended the turn (anton on Discord).
 // It goes to the ChatGPT backend's search as Codex sends it there itself:
 // on the account's sign-in, the model as the backend knows it, the rest
@@ -101,8 +101,8 @@ func TestCodexWebRunSearchesOnChatGPTAccount(t *testing.T) {
 			if paths[i] != "/backend-api/codex/alpha/search" {
 				t.Fatalf("%s: went to %s", path, paths[i])
 			}
-			if a := hd.Get("Authorization"); a == "" || a == "Bearer magpie" || hd.Get("x-openai-actor-authorization") != "" {
-				t.Fatalf("%s: magpie's own token or actor header went on: %v", path, hd)
+			if a := hd.Get("Authorization"); a == "" || a == "Bearer magpie-friday" || hd.Get("x-openai-actor-authorization") != "" {
+				t.Fatalf("%s: magpie-friday's own token or actor header went on: %v", path, hd)
 			}
 			if hd.Get("x-codex-turn-metadata") != `{"turn_id":"t1"}` || hd.Get("originator") != "codex_cli_rs" || hd.Get("Accept") == "text/event-stream" {
 				t.Fatalf("%s: headers %v", path, hd)
@@ -116,7 +116,7 @@ func TestCodexWebRunSearchesOnChatGPTAccount(t *testing.T) {
 	}
 }
 
-// Every ChatGPT account failing ends no turn: magpie searches in its
+// Every ChatGPT account failing ends no turn: magpie-friday searches in its
 // place, and the model is told why.
 func TestCodexWebRunChatGPTFailsSearchedByMagpie(t *testing.T) {
 	codexSignedIn(t)
@@ -144,7 +144,7 @@ func TestCodexWebRunChatGPTFailsSearchedByMagpie(t *testing.T) {
 }
 
 // web.run on a model no ChatGPT account serves: its search_query is
-// searched as magpie searches for a model that can't, its domains kept;
+// searched as magpie-friday searches for a model that can't, its domains kept;
 // with nothing to search with, or nothing to search, the model is told
 // what to do, never a failure that ends the turn.
 func TestCodexWebRunOnOtherModelSearchedByMagpie(t *testing.T) {
@@ -174,7 +174,7 @@ func TestCodexWebRunOnOtherModelSearchedByMagpie(t *testing.T) {
 	if strings.Join(apis.asked, "|") != "tavily: OpenAI news site:openai.com" {
 		t.Fatalf("asked %q", apis.asked)
 	}
-	// a magpie model through Codex's ChatGPT path is searched the same
+	// a magpie-friday model through Codex's ChatGPT path is searched the same
 	got = readSearchReply(t, codexSearchPost(h, CodexPath+"/alpha/search", codexSearchBody("deepseek/deepseek-v4")))
 	if !strings.Contains(got.Output, "go1.27.1") {
 		t.Fatalf("on %s: %+v", CodexPath, got)

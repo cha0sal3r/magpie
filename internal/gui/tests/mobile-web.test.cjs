@@ -40,7 +40,7 @@ const agentRows = [
     modelField("model", "model", "gpt-6.1-sol"),
     { key: "effort", label: "effort", value: "high", options: [{ value: "high", label: "High" }] },
     modelField("subagent", "subagents"),
-    { key: "signin", label: "sign-in", value: "magpie", options: [{ value: "magpie", label: "magpie" }, { value: "chatgpt", label: "ChatGPT" }] },
+    { key: "signin", label: "sign-in", value: "magpie-friday", options: [{ value: "magpie-friday", label: "magpie-friday" }, { value: "chatgpt", label: "ChatGPT" }] },
   ] },
   { id: "omp", name: "omp", path: "/test/omp.json", icon: "omp", wired: true, fields: [
     modelField("model", "model", "gpt-6.1-sol"), modelField("subagent", "subagents"),
@@ -255,7 +255,7 @@ async function usageFits(page) {
 }
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
-  test(engine + ": magpie web on phones", async t => {
+  test(engine + ": magpie-friday web on phones", async t => {
     assert(["chromium", "webkit"].includes(engine), "BROWSER must be chromium or webkit");
     const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: "chromium" }));
     t.after(() => browser.close());

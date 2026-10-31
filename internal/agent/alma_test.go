@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // fakeAlma is Alma's API as its spec has it: providers and settings in
@@ -130,7 +130,7 @@ func (f *fakeAlma) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // startAlma serves a fake Alma, with a provider of the user's and settings
-// magpie doesn't know, and points magpie at it.
+// magpie-friday doesn't know, and points magpie-friday at it.
 func startAlma(t *testing.T) *fakeAlma {
 	t.Helper()
 	f := &fakeAlma{
@@ -188,12 +188,12 @@ func TestAlma(t *testing.T) {
 	if got := fl.Get(); got != "own:gpt-4o" {
 		t.Fatalf("get: %q", got)
 	}
-	// nothing of magpie's in Alma: Sync adds nothing
+	// nothing of magpie-friday's in Alma: Sync adds nothing
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
 	if w := f.takeWrites(); len(w) != 0 {
-		t.Fatalf("sync without magpie's provider wrote %v", w)
+		t.Fatalf("sync without magpie-friday's provider wrote %v", w)
 	}
 
 	var ref string
@@ -204,24 +204,24 @@ func TestAlma(t *testing.T) {
 		}
 	}
 	if ref == "" {
-		t.Fatal("no magpie model offered")
+		t.Fatal("no magpie-friday model offered")
 	}
-	if err := a.Apply("model", "magpie/"+ref); err != nil {
+	if err := a.Apply("model", "magpie-friday/"+ref); err != nil {
 		t.Fatal(err)
 	}
 	var mine []map[string]any
 	for _, p := range f.providers {
-		if p["name"] == "magpie" {
+		if p["name"] == "magpie-friday" {
 			mine = append(mine, p)
 		}
 	}
 	if len(mine) != 1 {
-		t.Fatalf("magpie providers: %v", f.providers)
+		t.Fatalf("magpie-friday providers: %v", f.providers)
 	}
 	p := mine[0]
 	ms, _ := p["models"].([]any)
-	if p["type"] != "openai" || p["baseURL"] != gatewayV1() || len(f.keys) != 1 || f.keys[0] != "magpie-alma" || p["enabled"] != true || len(ms) == 0 {
-		t.Fatalf("magpie provider: %v", p)
+	if p["type"] != "openai" || p["baseURL"] != gatewayV1() || len(f.keys) != 1 || f.keys[0] != "magpie-friday-alma" || p["enabled"] != true || len(ms) == 0 {
+		t.Fatalf("magpie-friday provider: %v", p)
 	}
 	av, _ := p["availableModels"].([]any)
 	if ms[0] != ref || len(av) != len(ms) || av[0].(map[string]any)["id"] != ref || av[0].(map[string]any)["name"] == "" {
@@ -232,10 +232,10 @@ func TestAlma(t *testing.T) {
 		f.settings["general"].(map[string]any)["theme"] != "dark" || f.settings["memory"] == nil {
 		t.Fatalf("settings: %v", f.settings)
 	}
-	if got := fl.Get(); got != "magpie/"+ref {
+	if got := fl.Get(); got != "magpie-friday/"+ref {
 		t.Fatalf("get: %q", got)
 	}
-	// magpie draws with nothing: Alma's image generation is left be
+	// magpie-friday draws with nothing: Alma's image generation is left be
 	if f.settings["imageGen"] != nil {
 		t.Fatalf("image generation set with nothing to draw: %v", f.settings["imageGen"])
 	}
@@ -252,7 +252,7 @@ func TestAlma(t *testing.T) {
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	if err := a.Apply("model", "magpie/"+ref); err != nil {
+	if err := a.Apply("model", "magpie-friday/"+ref); err != nil {
 		t.Fatal(err)
 	}
 	if w := f.takeWrites(); len(w) != 0 {
@@ -271,23 +271,23 @@ func TestAlma(t *testing.T) {
 		t.Fatalf("synced models: %v", ms)
 	}
 
-	// Alma's own model again: magpie's provider stays
+	// Alma's own model again: magpie-friday's provider stays
 	if err := a.Apply("model", "own:gpt-4o"); err != nil {
 		t.Fatal(err)
 	}
 	if chat := f.settings["chat"].(map[string]any); chat["defaultModel"] != "own:gpt-4o" || f.provider(p["id"].(string)) == nil {
 		t.Fatalf("settings: %v providers: %v", f.settings, f.providers)
 	}
-	// the gateway moved: choosing magpie's model points it back
+	// the gateway moved: choosing magpie-friday's model points it back
 	p["baseURL"] = "http://127.0.0.1:9/v1"
-	if err := a.Apply("model", "magpie/"+ref); err != nil {
+	if err := a.Apply("model", "magpie-friday/"+ref); err != nil {
 		t.Fatal(err)
 	}
 	if len(f.providers) != 2 || p["baseURL"] != gatewayV1() {
 		t.Fatalf("providers: %v", f.providers)
 	}
 
-	// back to Alma's default: magpie's provider comes out, the user's stays
+	// back to Alma's default: magpie-friday's provider comes out, the user's stays
 	if err := a.Apply("model", ""); err != nil {
 		t.Fatal(err)
 	}
@@ -319,18 +319,18 @@ func TestAlmaModelObjects(t *testing.T) {
 		}
 	}
 	if ref == "" {
-		t.Fatal("no magpie model offered")
+		t.Fatal("no magpie-friday model offered")
 	}
-	if err := a.Apply("model", "magpie/"+ref); err != nil {
+	if err := a.Apply("model", "magpie-friday/"+ref); err != nil {
 		t.Fatal(err)
 	}
-	if got := fl.Get(); got != "magpie/"+ref {
+	if got := fl.Get(); got != "magpie-friday/"+ref {
 		t.Fatalf("get: %q", got)
 	}
-	// magpie's own listed as objects too, the same ones: nothing to write
+	// magpie-friday's own listed as objects too, the same ones: nothing to write
 	var mine map[string]any
 	for _, p := range f.providers {
-		if p["name"] == "magpie" {
+		if p["name"] == "magpie-friday" {
 			mine = p
 		}
 	}
@@ -367,7 +367,7 @@ func TestAlmaDown(t *testing.T) {
 			break
 		}
 	}
-	if err := a.Apply("model", "magpie/"+ref); err != nil {
+	if err := a.Apply("model", "magpie-friday/"+ref); err != nil {
 		t.Fatal(err)
 	}
 	srv := almaAPI
@@ -376,17 +376,17 @@ func TestAlmaDown(t *testing.T) {
 	if err := a.Sync(); err != nil {
 		t.Fatalf("sync: %v", err)
 	}
-	if got := a.Field("model").Get(); got != "magpie/"+ref {
+	if got := a.Field("model").Get(); got != "magpie-friday/"+ref {
 		t.Fatalf("get while down: %q", got)
 	}
 	if d := a.Drift(); d != nil {
 		t.Fatalf("drift while down: %+v", d)
 	}
-	if err := a.Field("model").Set("magpie/" + ref); err == nil || !strings.Contains(err.Error(), "isn't running") {
+	if err := a.Field("model").Set("magpie-friday/" + ref); err == nil || !strings.Contains(err.Error(), "isn't running") {
 		t.Fatalf("set while down: %v", err)
 	}
 	if len(a.Field("model").Options(nil)) == 0 {
-		t.Fatal("magpie's models not offered while Alma is down")
+		t.Fatal("magpie-friday's models not offered while Alma is down")
 	}
 }
 
@@ -434,8 +434,8 @@ func TestAlmaLook(t *testing.T) {
 
 // alma-server, Alma without a desktop, keeps its data in
 // ~/.local/share/alma on Linux (its README; $XDG_DATA_HOME/alma, or
-// ALMA_DATA_DIR) and answers on Alma's port: magpie finds it there, and its
-// magpie provider gets Alma's key on the next Sync, so its requests read as
+// ALMA_DATA_DIR) and answers on Alma's port: magpie-friday finds it there, and its
+// magpie-friday provider gets Alma's key on the next Sync, so its requests read as
 // Alma's rather than the AI SDK's (Lutra.x on Discord). A Mac's Alma is
 // looked for where it was.
 func TestAlmaServerKeyed(t *testing.T) {
@@ -450,8 +450,8 @@ func TestAlmaServerKeyed(t *testing.T) {
 		t.Fatal(err)
 	}
 	f := startAlma(t)
-	f.providers = append(f.providers, map[string]any{"id": "mg", "name": "magpie", "type": "openai", "baseURL": gatewayV1(),
-		"enabled": true, "apiKey": "magpie", "models": []any{}, "availableModels": []any{}})
+	f.providers = append(f.providers, map[string]any{"id": "mg", "name": "magpie-friday", "type": "openai", "baseURL": gatewayV1(),
+		"enabled": true, "apiKey": "magpie-friday", "models": []any{}, "availableModels": []any{}})
 	a := alma()
 	if a.Dir != data {
 		t.Fatalf("Alma's folder: %q, want alma-server's %q", a.Dir, data)
@@ -459,8 +459,8 @@ func TestAlmaServerKeyed(t *testing.T) {
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	if p := f.provider("mg"); p["apiKey"] != "magpie-alma" {
-		t.Fatalf("alma-server's magpie provider after Sync: %v", p)
+	if p := f.provider("mg"); p["apiKey"] != "magpie-friday-alma" {
+		t.Fatalf("alma-server's magpie-friday provider after Sync: %v", p)
 	}
 
 	// $XDG_DATA_HOME and ALMA_DATA_DIR, as alma-server reads them
@@ -494,8 +494,8 @@ func TestAlmaServerKeyed(t *testing.T) {
 // Alma's requests say nothing of Alma (they go out as the AI SDK's), so its
 // provider carries a key of Alma's: one wired before there was one gets it
 // on the next Sync, with nothing else sent, and only once.
-// Wiring Alma makes the model magpie draws with Alma's image generation
-// model, listed on magpie's provider as one that makes images, when Alma
+// Wiring Alma makes the model magpie-friday draws with Alma's image generation
+// model, listed on magpie-friday's provider as one that makes images, when Alma
 // has none picked (Sorghum on Discord); one the user picked is theirs.
 func TestAlmaImageGen(t *testing.T) {
 	syncHome(t)
@@ -504,7 +504,7 @@ func TestAlmaImageGen(t *testing.T) {
 	}
 	const drawn = "img/gpt-image-1"
 	if d := gateway.Drawer(); d != drawn {
-		t.Fatalf("magpie draws with %q", d)
+		t.Fatalf("magpie-friday draws with %q", d)
 	}
 	f := startAlma(t)
 	a := alma()
@@ -523,12 +523,12 @@ func TestAlmaImageGen(t *testing.T) {
 	}
 	// Alma's defaults: Auto
 	setImage("")
-	if err := a.Apply("model", "magpie/relay/glm-4.6"); err != nil {
+	if err := a.Apply("model", "magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	var p map[string]any
 	for _, q := range f.providers {
-		if q["name"] == "magpie" {
+		if q["name"] == "magpie-friday" {
 			p = q
 		}
 	}
@@ -548,14 +548,14 @@ func TestAlmaImageGen(t *testing.T) {
 		}
 	}
 	if ms := p["models"].([]any); !listed || ms[len(ms)-1] != drawn {
-		t.Fatalf("magpie's models: %v %v", p["models"], p["availableModels"])
+		t.Fatalf("magpie-friday's models: %v %v", p["models"], p["availableModels"])
 	}
 
-	// the user's own pick, theirs or magpie's, stays: choosing a model
+	// the user's own pick, theirs or magpie-friday's, stays: choosing a model
 	// again or Sync leaves it
 	for _, v := range []string{"own:gpt-image-1", pid + ":relay/glm-4.6"} {
 		setImage(v)
-		if err := a.Apply("model", "magpie/relay/glm-4.6"); err != nil {
+		if err := a.Apply("model", "magpie-friday/relay/glm-4.6"); err != nil {
 			t.Fatal(err)
 		}
 		if err := a.Sync(); err != nil {
@@ -565,7 +565,7 @@ func TestAlmaImageGen(t *testing.T) {
 			t.Fatalf("the user's %q became %q", v, got)
 		}
 	}
-	// Auto, gone back to after magpie set it: Sync leaves it
+	// Auto, gone back to after magpie-friday set it: Sync leaves it
 	setImage("")
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
@@ -573,7 +573,7 @@ func TestAlmaImageGen(t *testing.T) {
 	if got := image(); got != "" {
 		t.Fatalf("Sync filled Auto with %q", got)
 	}
-	// a drawer magpie gave it before and offers no longer: Sync puts the
+	// a drawer magpie-friday gave it before and offers no longer: Sync puts the
 	// one it draws with now
 	setImage(pid + ":old/gpt-image-0")
 	if err := a.Sync(); err != nil {
@@ -598,15 +598,15 @@ func TestAlmaKey(t *testing.T) {
 	if err := os.MkdirAll(a.Dir, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	f.providers = append(f.providers, map[string]any{"id": "mg", "name": "magpie", "type": "openai", "baseURL": gatewayV1(),
-		"enabled": true, "apiKey": "magpie", "models": []any{}, "availableModels": []any{}})
+	f.providers = append(f.providers, map[string]any{"id": "mg", "name": "magpie-friday", "type": "openai", "baseURL": gatewayV1(),
+		"enabled": true, "apiKey": "magpie-friday", "models": []any{}, "availableModels": []any{}})
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	if p := f.provider("mg"); p["apiKey"] != "magpie-alma" || p["baseURL"] != gatewayV1() {
+	if p := f.provider("mg"); p["apiKey"] != "magpie-friday-alma" || p["baseURL"] != gatewayV1() {
 		t.Fatalf("provider after Sync: %v", p)
 	}
-	if len(f.keys) != 1 || f.keys[0] != "magpie-alma" {
+	if len(f.keys) != 1 || f.keys[0] != "magpie-friday-alma" {
 		t.Fatalf("keys sent: %v", f.keys)
 	}
 	f.takeWrites()

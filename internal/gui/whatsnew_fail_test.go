@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/yetone/magpie/internal/update"
+	"github.com/cha0sal3r/magpie-friday/internal/update"
 )
 
 // #661: the site failing to give the notes (a 503 while GitHub limits it,
@@ -37,7 +37,7 @@ func TestWhatsNewTellsFailureFromNone(t *testing.T) {
 	n := &whatsNew{}
 
 	j := n.get(context.Background(), true, "en")
-	if j.Error == "" || len(j.Releases) != 0 || j.URL != "https://github.com/yetone/magpie-releases/releases/tag/v0.1.737" {
+	if j.Error == "" || len(j.Releases) != 0 || j.URL != "https://github.com/cha0sal3r/magpie-friday-releases/releases/tag/v0.1.737" {
 		t.Fatalf("site failing: %+v", j)
 	}
 	// asked again once the site answers: no notes, and no error

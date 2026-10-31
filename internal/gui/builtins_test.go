@@ -9,10 +9,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/pluginrt"
-	"github.com/yetone/magpie/internal/settings"
-	_ "github.com/yetone/magpie/plugins/all"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/pluginrt"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	_ "github.com/cha0sal3r/magpie-friday/plugins/all"
 )
 
 func builtinHome(t *testing.T) http.Handler {
@@ -38,7 +38,7 @@ func TestBuiltinSwitch(t *testing.T) {
 	if _, err := pluginrt.Settle(); err != nil {
 		t.Fatal(err)
 	}
-	// a new install has every one on, so a new user sees all magpie does
+	// a new install has every one on, so a new user sees all magpie-friday does
 	for _, b := range builtinsState() {
 		if !b.On || b.State != pluginrt.Active {
 			t.Fatalf("a new install: %+v", b)
@@ -140,7 +140,7 @@ func TestBootSaysBuiltinsOff(t *testing.T) {
 
 // boot.js says where the gateway listens when this process serves it, so
 // the sidebar's line is drawn before the first paint (#3429), and nothing
-// when it doesn't: one served by another magpie is the providers' read to
+// when it doesn't: one served by another magpie-friday is the providers' read to
 // find, never this process's guess.
 func TestBootSaysWhereItsGatewayListens(t *testing.T) {
 	h := builtinHome(t)

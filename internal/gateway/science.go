@@ -10,19 +10,19 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // Claude Science (Anthropic's research app, 0.1.62, "operon" inside) is a
 // daemon that serves its UI on localhost and asks Anthropic's Messages API
 // at the base URL its environment's ANTHROPIC_BASE_URL names (ky() in its
 // bundle: https anywhere, http only on a loopback address), else at
-// api.anthropic.com. Magpie starts the daemon with that variable set to
+// api.anthropic.com. magpie-friday starts the daemon with that variable set to
 // the gateway (package agent, claudescience.go). It still needs its own
 // Claude sign-in: with none it asks nothing ("This build requires signing
 // in with your Claude account. API keys are not supported.", yz()), and
-// with one it sends Authorization: Bearer sk-ant-oat…, which magpie never
+// with one it sends Authorization: Bearer sk-ant-oat…, which magpie-friday never
 // passes on (claudeSignIn), beside its client's default headers
 // X-Anthropic-Surface: operon and anthropic-beta: oauth-2025-04-20. That
 // header is how its requests are known here: its User-Agent is the
@@ -31,11 +31,11 @@ import (
 // Its model picker (ops.system.models) lists from GET /v1/models only an
 // id that starts with "claude-" whose display_name isn't a lower-case
 // slug (H7 and kor in its bundle), so every model is listed to it by an
-// alias, claude-magpie-<number> (aliasNumber, as Claude Desktop's), named
+// alias, claude-magpie-friday-<number> (aliasNumber, as Claude Desktop's), named
 // as the agents' lists name it. And it asks for Claude models by their own
 // ids where no pick of the user's is in play — its default model before
 // one is picked (claude-opus-5), claude-haiku-… for its small tasks — so a
-// model magpie doesn't serve goes to the one its last turn was on
+// model magpie-friday doesn't serve goes to the one its last turn was on
 // (scienceTurn).
 
 // ScienceID is Claude Science's agent id.
@@ -46,8 +46,8 @@ const ScienceID = "claude-science"
 const scienceSurface = "operon"
 
 // scienceAlias is the prefix of the id a model is listed to Claude Science
-// by: claude-magpie-<number>, the number a hash of magpie's id.
-const scienceAlias = "claude-magpie-"
+// by: claude-magpie-friday-<number>, the number a hash of magpie-friday's id.
+const scienceAlias = "claude-magpie-friday-"
 
 // isClaudeScience is a request from Claude Science's own client.
 func isClaudeScience(r *http.Request) bool {
@@ -103,7 +103,7 @@ var sciencePicked struct {
 func sciencePickedPath() string { return filepath.Join(settings.Dir(), "claude-science.model") }
 
 // scienceTurn is the model a Claude Science request for asked is served
-// by: asked when magpie serves it, a turn's (it carries tools) noted as
+// by: asked when magpie-friday serves it, a turn's (it carries tools) noted as
 // the one picked; else the model picked last, else the first one listed
 // to it.
 func scienceTurn(asked string, body []byte) string {

@@ -3,7 +3,7 @@ package gateway
 import "testing"
 
 // codexFollowSetup is Codex signed in to ChatGPT, its conversation put on
-// a relay's model (third/gpt-6-astra) through magpie, and Codex's config
+// a relay's model (third/gpt-6-astra) through magpie-friday, and Codex's config
 // naming no model for its subagents or memories unless set says so.
 func codexFollowSetup(t *testing.T, set bool) (*chatgptSeen, *relayOfChatGPT, *Server) {
 	t.Helper()
@@ -27,7 +27,7 @@ func codexSide(t *testing.T, s *Server, kind, input string) {
 	}
 }
 
-// cybercaius on Discord: with Codex on a model routed through magpie, a
+// cybercaius on Discord: with Codex on a model routed through magpie-friday, a
 // subagent its lead put on one of Codex's own models, with no model set
 // for subagents, went to the ChatGPT account. It follows the session now,
 // and the trace says what it asked for.

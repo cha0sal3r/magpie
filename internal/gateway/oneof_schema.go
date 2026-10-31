@@ -4,7 +4,7 @@ import (
 	"bytes"
 
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // toolOneOfAsAnyOf is body with every oneOf in its tools' schemas named

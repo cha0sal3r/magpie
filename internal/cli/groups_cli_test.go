@@ -7,11 +7,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // groupsHome is a machine of its own with two providers: a serves m and
-// only-a, b serves vendor/m (so magpie finds group/auto-m).
+// only-a, b serves vendor/m (so magpie-friday finds group/auto-m).
 func groupsHome(t *testing.T) {
 	t.Helper()
 	t.Setenv("HOME", t.TempDir()) // no agent signed in
@@ -31,7 +31,7 @@ func groupsHome(t *testing.T) {
 
 // storedGroups: the groups as the file keeps them.
 // A group an agent is on carries Claude Code's [1m] mark in the agent's
-// own settings, as a model's does: `magpie group` lists "← agent" beside a
+// own settings, as a model's does: `magpie-friday group` lists "← agent" beside a
 // group by its id, so the mark has to come off the id before it is looked
 // up. Claude Code on group/auto-gpt-5[1m] was on no row at all.
 func TestGroupUsesTakesTheOneMMarkOff(t *testing.T) {
@@ -58,7 +58,7 @@ func TestGroupUsesTakesTheOneMMarkOff(t *testing.T) {
 
 // sameGroup compares two values of a field, one of them read back from the
 // agent's own settings where the [1m] mark rides on the group's id: the
-// marked one is the group magpie set, not another group. (internal/agent's
+// marked one is the group magpie-friday set, not another group. (internal/agent's
 // own, tested there.)
 func storedGroups(t *testing.T) []map[string]any {
 	t.Helper()
@@ -85,7 +85,7 @@ func TestParseRoutingStays(t *testing.T) {
 		t.Errorf("unknown routing: %v", err)
 	}
 	// a gateway plugin's routing is taken as it is written, and named so
-	for _, in := range []string{"latency/fastest", "magpie-fastest/byTTFT", "x.y/a_b-1"} {
+	for _, in := range []string{"latency/fastest", "magpie-friday-fastest/byTTFT", "x.y/a_b-1"} {
 		if got, err := parseRouting(" " + in + " "); err != nil || got != in || routingName(got) != in {
 			t.Errorf("plugin routing %q: %q %v %q", in, got, err, routingName(got))
 		}
@@ -230,7 +230,7 @@ func TestGroupAddSetRemove(t *testing.T) {
 		t.Fatalf("unknown group: %v", err)
 	}
 
-	// one magpie found: changing it makes it the user's; removing it hides it
+	// one magpie-friday found: changing it makes it the user's; removing it hides it
 	if _, err := setGroup("auto-m", []string{"routing=rotate"}); err != nil {
 		t.Fatal(err)
 	}
@@ -278,7 +278,7 @@ func TestCloseMatches(t *testing.T) {
 	}
 }
 
-// magpie group set <id> id=<new>: a found group loses its auto- prefix and
+// magpie-friday group set <id> id=<new>: a found group loses its auto- prefix and
 // stays removed under the old id.
 func TestGroupSetID(t *testing.T) {
 	groupsHome(t)
@@ -306,7 +306,7 @@ func TestGroupSetID(t *testing.T) {
 	}
 }
 
-// magpie group set <id> name=… says the id stays, and what agents ask for,
+// magpie-friday group set <id> name=… says the id stays, and what agents ask for,
 // so a renamed group isn't taken for one with a new id (MOMO on Discord).
 func TestGroupRenameSaysTheIDStays(t *testing.T) {
 	groupsHome(t)

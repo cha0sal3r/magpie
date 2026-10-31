@@ -11,11 +11,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
 )
 
 // PluginIcon is the icon a plugin's provider shows: the picture its plugin
-// gives it (the auth hook's icon, or package.json's magpie.icon), kept as
+// gives it (the auth hook's icon, or package.json's magpie-friday.icon), kept as
 // a picture given by hand is, else the one the plugin market gives it.
 func PluginIcon(pp plugin.Provider) string {
 	if ic := pluginOwnIcon(pp.Icon); ic != "" {

@@ -16,7 +16,7 @@ func SecretHeader(name string) bool { return secretHeader.MatchString(name) }
 // in came from a copy without keys: its keys and its secret headers are
 // here's then. An AccessKey ID and Secret, or a balance token, that in
 // hasn't at all are kept when it came without keys or with the key here
-// has, the same account: a magpie from before access keys were synced
+// has, the same account: a magpie-friday from before access keys were synced
 // (v0.1.1142), or one the key was never given on, sends a provider with
 // its key and nothing else, and taking that whole wiped the Volcengine
 // and Tencent plan cards' access keys on this computer. A key of its own

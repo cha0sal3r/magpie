@@ -52,7 +52,7 @@ func sideLapsed(t *testing.T, agent, user string) string {
 	return ""
 }
 
-// A side account (ZCode, Grok, ... signed in in magpie) whose sign-in its
+// A side account (ZCode, Grok, ... signed in in magpie-friday) whose sign-in its
 // vendor revoked is marked for that credential, kept across a restart,
 // shown on its row, and cleared by a request it serves or a sign-in anew.
 func TestRevokedSideLoginMarkedTillSignedInAgain(t *testing.T) {
@@ -95,7 +95,7 @@ func TestRevokedSideLoginMarkedTillSignedInAgain(t *testing.T) {
 		t.Fatalf("still said signed out: %q", got)
 	}
 
-	// marked again, then signed in anew in magpie: the row is clear
+	// marked again, then signed in anew in magpie-friday: the row is clear
 	NoteRevokedSignIn(context.Background(), a, revokedReq(t, "a"))
 	if err := addSideLogin(savedLogin{Agent: "zcode", User: "u@example.com", Auth: json.RawMessage(`{"token":"c"}`)}, "", func(savedLogin) {}); err != nil {
 		t.Fatal(err)

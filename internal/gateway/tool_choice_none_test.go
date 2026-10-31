@@ -11,11 +11,11 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // toolsOffNoTools is the same ask, tools off with none declared, in each
-// client protocol magpie translates to Responses.
+// client protocol magpie-friday translates to Responses.
 var toolsOffNoTools = []struct{ name, path, body string }{
 	{"chat", "/v1/chat/completions", `{"model":"fake/m1","stream":false,"tool_choice":"none","messages":[{"role":"user","content":"hi"}]}`},
 	{"anthropic", "/v1/messages", `{"model":"fake/m1","max_tokens":64,"tool_choice":{"type":"none"},"messages":[{"role":"user","content":"hi"}]}`},

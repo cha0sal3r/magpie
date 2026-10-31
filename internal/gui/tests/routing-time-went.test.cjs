@@ -1,10 +1,10 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // Where a try's time went (gateway.TryNet; Discord, Magic_zero: the gateway
-// looked slow): a request's story says, under each try, magpie's time, the
+// looked slow): a request's story says, under each try, magpie-friday's time, the
 // network's and the vendor's, and each part that took any, as one stacked
 // bar and named values, the queue for a slot among them. A part that took
 // none isn't named. A try sent through a plugin's own fetch, or traced
-// before magpie measured it, has no network timing and no breakdown. Both engines, a narrow window, every language; no
+// before magpie-friday measured it, has no network timing and no breakdown. Both engines, a narrow window, every language; no
 // part runs out of the story, no left-border accent. The API is faked.
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
@@ -52,7 +52,7 @@ function serve(lang) {
     if (url.pathname === "/api/usage/requests") return json({ period: url.searchParams.get("period"), rows: [], offset: 0, total: 0, calls: 0, errors: 0, input: 600, output: 80, cache_read: 0, cache_write: 0, reasoning: 0, cost: 0, unpriced: 2, agents: [{ id: "codex", name: "Codex", icon: "codex-color" }] });
     if (url.pathname === "/api/usage/requests/content") return json({ found: false, why: "read" });
     if (url.pathname === "/api/usage/quotas") return json([]);
-    if (url.pathname === "/api/usage") return json({ calls: 2, errors: 0, input: 600, output: 80, cache_read: 0, cache_write: 0, reasoning: 0, unpriced: 2, cost: 0, bucket: "day", series: [], agents: [], models: [], path: "~/.config/magpie/usage.jsonl" });
+    if (url.pathname === "/api/usage") return json({ calls: 2, errors: 0, input: 600, output: 80, cache_read: 0, cache_write: 0, reasoning: 0, unpriced: 2, cost: 0, bucket: "day", series: [], agents: [], models: [], path: "~/.config/magpie-friday/usage.jsonl" });
     if (url.pathname === "/api/sessions") return json({ sessions: [], dirs: [] });
     if (url.pathname === "/api/sessions/stats") return json({ from: "", to: "", days: [], agents: {} });
     if (url.pathname.startsWith("/api/")) return json({});
@@ -111,10 +111,10 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         };
       });
       assert.equal(seen.head, want[lang].head);
-      assert.deepEqual(seen.who, ["magpie", "net", "vendor"]);
+      assert.deepEqual(seen.who, ["magpie-friday", "net", "vendor"]);
       // queue, own, DNS, connect, TLS, send, the vendor's wait, first
       // token, streaming: no pool, no requests before it
-      assert.deepEqual(seen.parts.map((p) => p[0]), ["magpie", "magpie", "net", "net", "net", "net", "vendor", "vendor", "vendor"]);
+      assert.deepEqual(seen.parts.map((p) => p[0]), ["magpie-friday", "magpie-friday", "net", "net", "net", "net", "vendor", "vendor", "vendor"]);
       assert.equal(seen.parts[0][1], want[lang].slot);
       assert.equal(seen.parts[6][1], want[lang].vendor);
       assert.match(seen.parts[0][2], /40/);

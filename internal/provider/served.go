@@ -1,8 +1,8 @@
 package provider
 
 // When each subscription account, plan and key last answered a request
-// through the gateway (#570): magpie quota --json and the gateway's GET
-// /v1/magpie/quotas tell it as each Quota's lastServedAt, and mark the
+// through the gateway (#570): magpie-friday quota --json and the gateway's GET
+// /v1/magpie-friday/quotas tell it as each Quota's lastServedAt, and mark the
 // latest last, so a menu-bar widget can show the one in use — under
 // routing Smart nobody is first for good. It is kept on disk (served.json,
 // next to the providers), so the CLI, a process of its own, reads what the
@@ -290,7 +290,7 @@ func (s *servedBy) at(provider, kind, user string) time.Time {
 }
 
 // cardsServed sets LastServedAt on the Usage page's cards, this
-// computer's own (a remote magpie's answer there, not here), as
+// computer's own (a remote magpie-friday's answer there, not here), as
 // withServed does on the gateway's: what the Usage page and the tray
 // panel show in full, and what the menu bar's "account in use" follows,
 // is the account that answered last. Each is a copy; the caches the

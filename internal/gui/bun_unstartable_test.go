@@ -8,14 +8,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
 )
 
 // A plugin install on a bun this Windows or processor can't run answers
 // with a code and the reason, which the page says in the reader's
 // language (zgcwkj on Discord), wrapped however deep the install put it.
 func TestFailSaysBunUnstartable(t *testing.T) {
-	bun := `C:\magpie\cache\bun\1.4.2\magpie-bun.exe`
+	bun := `C:\magpie-friday\cache\bun\1.4.2\magpie-friday-bun.exe`
 	ue := &plugin.BunUnstartableError{Bun: bun, Why: "windows", Err: fmt.Errorf("exit status 0xc0000139")}
 	rw := httptest.NewRecorder()
 	fail(rw, fmt.Errorf("bun add @magpie-community/opencode-raccoon-auth@latest: %w", ue))

@@ -1,4 +1,4 @@
-// usemagpie.ai. Releases live on GitHub (yetone/magpie-releases); this
+// usemagpie.ai. Releases live on GitHub (cha0sal3r/magpie-friday-releases); this
 // worker turns the newest one into the update feed the app reads and into
 // download links that never go stale.
 //
@@ -15,6 +15,10 @@
 //   /go/<id>/home, /go/<id>/readme
 //                          a sponsor's link from the home page or the
 //                          READMEs (sponsors.js), counted
+//   /api/prices            the first-party APIs' list prices, reduced from
+//                          models.dev to what /prices compares: input,
+//                          output, cache read, cache write, and the tiers a
+//                          long prompt is billed at
 //   /api/icon?url=<https URL>
 //                          a picture a plugin, market or import link names,
 //                          fetched here so its host sees Cloudflare, not the
@@ -29,6 +33,10 @@
 //                          / sends a browser that prefers one of them there,
 //                          until a language is picked on the page (the lang
 //                          cookie). /de/ has no docs: its links go to English.
+//   /prices, /<lang>/prices  what a budget buys of each model, at a mix of
+//                          cached, new and output tokens: /prices sends a
+//                          browser that prefers another language to its own,
+//                          as / does.
 //
 // Everything else is the static site in public/.
 
@@ -36,25 +44,42 @@ import { LANGS } from "./i18n.js";
 import { PARTNERS } from "./partners.js";
 import { SPONSORS } from "./sponsors.js";
 
-const REPO = "yetone/magpie-releases";
+const REPO = "cha0sal3r/magpie-friday-releases";
 const TTL = 300; // seconds the newest release is remembered
 
 const SHORT = {
-  "mac-arm64": "magpie-darwin-arm64.dmg",
-  "mac-intel": "magpie-darwin-amd64.dmg",
-  "mac-amd64": "magpie-darwin-amd64.dmg",
-  windows: "magpie-windows-amd64.exe",
-  "windows-amd64": "magpie-windows-amd64.exe",
-  "windows-arm64": "magpie-windows-arm64.exe",
-  linux: "magpie-linux-amd64",
-  "linux-amd64": "magpie-linux-amd64",
-  "linux-arm64": "magpie-linux-arm64",
+  "mac-arm64": "magpie-friday-darwin-arm64.dmg",
+  "mac-intel": "magpie-friday-darwin-amd64.dmg",
+  "mac-amd64": "magpie-friday-darwin-amd64.dmg",
+  windows: "magpie-friday-windows-amd64.exe",
+  "windows-amd64": "magpie-friday-windows-amd64.exe",
+  "windows-arm64": "magpie-friday-windows-arm64.exe",
+  linux: "magpie-friday-linux-amd64",
+  "linux-amd64": "magpie-friday-linux-amd64",
+  "linux-arm64": "magpie-friday-linux-arm64",
 };
 
 // The bare docs paths open the getting-started guide.
 const DOCS = { "/docs": "/docs/start", "/docs/zh": "/docs/zh/start", "/docs/ja": "/docs/ja/start" };
 // the languages the docs are written in besides English
 const DOC_LANGS = ["zh", "ja"];
+
+// The first-party APIs /prices compares, by models.dev's provider id. A
+// reseller's price for the same model is another question — its own margin is
+// in it — so only the vendor's own list price is here.
+const PRICE_PROVIDERS = ["openai", "anthropic", "deepseek", "moonshotai", "zhipuai"];
+const PRICES_URL = "https://models.dev/api.json";
+const PRICES_TTL = 6 * 3600; // six hours: list prices change rarely
+
+// Batch is the flat multiplier a vendor's batch API prices a model at, where
+// the vendor runs one: OpenAI, Anthropic and GLM bill a batch request at half
+// its standard price, across every token kind. A vendor left out has no batch
+// price at a fixed discount — DeepSeek's is off-peak hours (a schedule, not a
+// multiplier), and Moonshot lists none — so its models keep their standard
+// price under Batch and the page marks them "no batch price". There is no
+// "priority" tier to record: priority is a rate-limit tier of an account, not
+// a price per token.
+const BATCH = { openai: 0.5, anthropic: 0.5, zhipuai: 0.5 };
 
 export default {
   async fetch(req, env, ctx) {
@@ -72,15 +97,15 @@ export default {
     if (url.pathname === "/api/partners") {
       const now = Date.now();
       if (PARTNERS.some((p) => live(p, now)) && Math.random() < 1 / FETCH_SAMPLE)
-        ctx.waitUntil(capture("magpie partners fetch", { weight: FETCH_SAMPLE, country: country(req) }));
+        ctx.waitUntil(capture("magpie-friday partners fetch", { weight: FETCH_SAMPLE, country: country(req) }));
       return json({ partners: served(PARTNERS, now) }, 200, { "Cache-Control": "public, max-age=600" });
     }
     if (url.pathname.startsWith("/go/")) {
       let id, what, region, to, counted;
       try {
         [, , id, what, region] = url.pathname.split("/").map(decodeURIComponent);
-        if ((to = goTarget(PARTNERS, id, what, region))) counted = ["magpie partner go", { id, what, region: region || "" }];
-        else if (region === undefined && (to = sponsorTarget(SPONSORS, id, what))) counted = ["magpie sponsor go", { id, where: what }];
+        if ((to = goTarget(PARTNERS, id, what, region))) counted = ["magpie-friday partner go", { id, what, region: region || "" }];
+        else if (region === undefined && (to = sponsorTarget(SPONSORS, id, what))) counted = ["magpie-friday sponsor go", { id, where: what }];
       } catch {}
       if (!to) return new Response("not found\n", { status: 404 });
       if (req.method === "GET") ctx.waitUntil(capture(counted[0], { ...counted[1], country: country(req) }));
@@ -99,6 +124,11 @@ export default {
         .slice(0, limit > 0 ? limit : undefined)
         .map((r) => ({ ...r, notes: inLang(r.notes, lang) }));
       return json({ releases: pick }, 200, cacheFor(got));
+    }
+    if (url.pathname === "/api/prices") {
+      const got = await prices(ctx);
+      if (!got) return json({ error: "prices unavailable" }, 503, NO_STORE);
+      return json(got, 200, { "Cache-Control": `public, max-age=${PRICES_TTL}` });
     }
     if (url.pathname === "/api/icon") return icon(url.searchParams.get("url"));
     if (url.pathname === "/download" || url.pathname.startsWith("/download/")) {
@@ -134,6 +164,26 @@ export default {
       const res = await env.ASSETS.fetch(new Request(new URL("/", url), { method: req.method }));
       return beacon(translate(res, home[1]));
     }
+    // the prices page: English at /prices, each language at /<lang>/prices
+    const priced = url.pathname.match(/^\/(?:([a-z]{2})\/)?prices(?:\.html)?$/);
+    if (priced && (req.method === "GET" || req.method === "HEAD")) {
+      const lang = priced[1];
+      const vary = { Vary: "Accept-Language, Cookie", "Cache-Control": "no-cache" };
+      if (!lang) {
+        const want = preferred(req);
+        if (want !== "en") return new Response(null, { status: 302, headers: { Location: `/${want}/prices`, ...vary } });
+        const res = await env.ASSETS.fetch(new Request(new URL("/prices.html", url), { method: req.method }));
+        if (!res.ok) return res;
+        const out = new Response(res.body, res);
+        out.headers.append("Vary", "Accept-Language, Cookie");
+        out.headers.set("Cache-Control", "no-cache");
+        return beacon(out);
+      }
+      if (!LANGS[lang]) return new Response("not found\n", { status: 404 });
+      const res = await env.ASSETS.fetch(new Request(new URL("/prices.html", url), { method: req.method }));
+      if (!res.ok) return res;
+      return beacon(translate(res, lang));
+    }
     if (url.pathname === "/" && (req.method === "GET" || req.method === "HEAD")) {
       const lang = preferred(req);
       const vary = { Vary: "Accept-Language, Cookie", "Cache-Control": "no-cache" };
@@ -151,9 +201,9 @@ export default {
 // own counts (provider.CountPartner) go only from users who let the stats
 // go, and these are what the server sees anyway. /api/partners hands out
 // each partner's website and key page as a /go link, which counts the
-// click (event "magpie partner go") and sends the browser on. Each app
+// click (event "magpie-friday partner go") and sends the browser on. Each app
 // fetches the list every six hours, so the fetches tell how many apps a
-// partner can be seen in: one in FETCH_SAMPLE is sent, as "magpie partners
+// partner can be seen in: one in FETCH_SAMPLE is sent, as "magpie-friday partners
 // fetch" with weight FETCH_SAMPLE (sum it), and only while someone is
 // listed. No id, address or account goes: a country, at most.
 const FETCH_SAMPLE = 10;
@@ -184,8 +234,8 @@ export function served(list, now) {
 
 // goTarget is where a /go link sends the browser: the partner's own key
 // page or website, the region's where it has one. Only partners.js's own
-// addresses, never one the link names. It says it came from magpie, as
-// ref=magpie, unless the address names a ref of its own (a referral code).
+// addresses, never one the link names. It says it came from magpie-friday, as
+// ref=magpie-friday, unless the address names a ref of its own (a referral code).
 export function goTarget(list, id, what, region) {
   const p = list.find((x) => x.id === id);
   const field = what === "keys" ? "keysUrl" : what === "site" ? "website" : "";
@@ -208,7 +258,7 @@ function fromMagpie(to) {
   if (!to) return "";
   try {
     const u = new URL(to);
-    if (!u.searchParams.has("ref")) u.searchParams.set("ref", "magpie");
+    if (!u.searchParams.has("ref")) u.searchParams.set("ref", "magpie-friday");
     return u.toString();
   } catch {
     return to;
@@ -328,6 +378,96 @@ async function cached(name) {
 
 function remember(ctx, name, v, ttl) {
   ctx.waitUntil(caches.default.put(new Request(CACHE + name), json(v, 200, { "Cache-Control": `max-age=${ttl}` })).catch((e) => console.log("cache put", name, e)));
+}
+
+// prices is the price list /prices draws: models.dev's catalog cut down, kept
+// at the edge for PRICES_TTL and null when neither it nor models.dev can say.
+// The catalog is a few megabytes, so a cold miss pays for it once every six
+// hours and every reader after that gets the reduced list.
+async function prices(ctx) {
+  const kept = await cached("prices");
+  if (kept && kept.models) return kept;
+  let res;
+  try {
+    res = await fetch(PRICES_URL, { cf: { cacheTtl: PRICES_TTL } });
+  } catch (e) {
+    console.log("models.dev", e);
+    return null;
+  }
+  if (!res.ok) {
+    console.log("models.dev", res.status);
+    return null;
+  }
+  const list = priceList(await res.json());
+  if (!list.models.length) return null;
+  remember(ctx, "prices", list, PRICES_TTL);
+  return list;
+}
+
+// priceList is models.dev's catalog as the page needs it: the first-party
+// vendors' text models that have a price, each with what catalog.Price holds
+// (internal/catalog) — input, output, cache read, a 5-minute cache write, a
+// 1-hour one, and the tiers a prompt over a size is billed at, whole. batch
+// is the vendor's batch-API multiplier (BATCH), 0 where the vendor has none.
+//
+// Left out: a model with no price or a free one (a budget divided by nothing
+// is no answer), one marked deprecated, one still experimental, and one that
+// doesn't answer in text.
+export function priceList(catalog) {
+  const vendors = [];
+  const models = [];
+  for (const id of PRICE_PROVIDERS) {
+    const p = catalog && catalog[id];
+    if (!p || !p.models) continue;
+    vendors.push({ id, name: p.name || id });
+    for (const m of Object.values(p.models)) {
+      const c = m.cost;
+      if (!c || !(c.input > 0) || !(c.output >= 0)) continue;
+      if (m.status === "deprecated" || m.experimental) continue;
+      // a chat model: not an image, audio or embedding one, whose price is
+      // for something other than the tokens this page counts
+      if (m.type && m.type !== "llm") continue;
+      if (!(m.modalities && m.modalities.output || []).includes("text")) continue;
+      const model = {
+        id: m.id, name: m.name || m.id, v: id,
+        input: c.input, output: c.output,
+        cacheRead: c.cache_read || 0, cacheWrite: c.cache_write || 0, cacheWrite1h: c.cache_write_1h || 0,
+        batch: BATCH[id] || 0,
+        context: (m.limit && m.limit.context) || 0,
+        tiers: tiersOf(c),
+      };
+      // Anthropic bills an hour's cache write at twice the input price and
+      // models.dev lists none, so a Claude model's is worked out here, as
+      // catalog.OneHourFor does in the app.
+      if (/claude/i.test(m.id) && model.cacheWrite > 0) {
+        model.cacheWrite1h = model.cacheWrite1h || 2 * model.input;
+        for (const t of model.tiers) t.cacheWrite1h = t.cacheWrite1h || 2 * t.input;
+      }
+      models.push(model);
+    }
+  }
+  return { asOf: new Date().toISOString().slice(0, 10), vendors, models };
+}
+
+// tiersOf is a price's context tiers, lowest first: what the whole request
+// costs once its prompt (cached and cache-written tokens included) is over
+// `above`. models.dev names the size as {tier: {type: "context", size}}, and
+// a part it leaves out is the base price's, as catalog.Price reads it.
+function tiersOf(c) {
+  const out = [];
+  for (const t of c.tiers || []) {
+    const above = t.above || (t.tier && t.tier.type === "context" ? t.tier.size : 0);
+    if (!(above > 0)) continue;
+    out.push({
+      above,
+      input: t.input != null ? t.input : c.input,
+      output: t.output != null ? t.output : c.output || 0,
+      cacheRead: t.cache_read != null ? t.cache_read : c.cache_read || 0,
+      cacheWrite: t.cache_write != null ? t.cache_write : c.cache_write || 0,
+      cacheWrite1h: t.cache_write_1h || 0,
+    });
+  }
+  return out.sort((a, b) => a.above - b.above);
 }
 
 // latest is the newest release, condensed, with each file's SHA-256 taken
@@ -625,7 +765,7 @@ export async function icon(raw) {
   let res;
   try {
     res = await fetch(u.toString(), {
-      headers: { Accept: "image/*", "User-Agent": "magpie-icon/1 (+https://usemagpie.ai)" },
+      headers: { Accept: "image/*", "User-Agent": "magpie-friday-icon/1 (+https://usemagpie.ai)" },
       redirect: "follow",
       signal: AbortSignal.timeout(10000),
       // a missing or failing picture is asked for again soon, not in a day

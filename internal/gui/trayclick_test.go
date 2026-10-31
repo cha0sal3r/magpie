@@ -16,7 +16,7 @@ import (
 func TestTrayMenuOpeningIsNoClick(t *testing.T) {
 	const app = "github.com/wailsapp/wails/v3/pkg/application."
 	opened := []string{
-		"magpie/internal/gui.Run.func12",
+		"magpie-friday/internal/gui.Run.func12",
 		app + "(*linuxSystemTray).Event",
 		"reflect.Value.call",
 		"github.com/godbus/dbus/v5.(*Conn).handleCall",
@@ -25,7 +25,7 @@ func TestTrayMenuOpeningIsNoClick(t *testing.T) {
 		t.Fatal("a click from the menu's opened event was counted a click")
 	}
 	activate := []string{
-		"magpie/internal/gui.Run.func12",
+		"magpie-friday/internal/gui.Run.func12",
 		app + "(*linuxSystemTray).Activate",
 		"reflect.Value.call",
 	}

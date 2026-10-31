@@ -6,10 +6,10 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
-// Claude Code installed off magpie's PATH, in ~/.local/bin as its
+// Claude Code installed off magpie-friday's PATH, in ~/.local/bin as its
 // installer puts it, is found for a sign-in (#839: on Windows, where it is
 // claude.exe, the sign-in said "install Claude Code first").
 func TestClaudeFoundInLocalBin(t *testing.T) {

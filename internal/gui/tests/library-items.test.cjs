@@ -33,7 +33,7 @@ const problems = [
   { agent: `${HOME}/code/app`, what: "project:", error: "the folder is gone" },
 ];
 const base = () => ({
-  dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
+  dir: `${HOME}/.magpie-friday/library`, backups: `${HOME}/.magpie-friday/backups`, home: HOME,
   agents: [agent("claude", "Claude Code", "claudecode-color"), agent("codex", "Codex", "codex-color"), agent("pi", "Pi", "pi"), agent("zcode", "ZCode", "zcode")],
   instructions: { agents: [], sets: [] }, servers: [], foundServers: [], projects: [], foundSkills: [], skills: structuredClone(skills),
 });

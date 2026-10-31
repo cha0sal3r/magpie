@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/budget"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/budget"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 func imagePost(h http.Handler, addr, body string, hdr ...string) *httptest.ResponseRecorder {
@@ -81,9 +81,9 @@ func urlsIn(text string) []string {
 	return out
 }
 
-// magpie's image generation is an MCP server on the gateway (JonahFu on
-// X), for an agent that has no Magpie Image, in a gateway in Docker or on
-// another computer: it lists Magpie Image's tools with their arguments but
+// magpie-friday's image generation is an MCP server on the gateway (JonahFu on
+// X), for an agent that has no magpie-friday Image, in a gateway in Docker or on
+// another computer: it lists magpie-friday Image's tools with their arguments but
 // where to save, draws with the model Settings picks, and answers with the
 // image itself and a URL it can be downloaded from.
 func TestImageMCPDrawsAndServesTheImage(t *testing.T) {
@@ -92,7 +92,7 @@ func TestImageMCPDrawsAndServesTheImage(t *testing.T) {
 	t.Cleanup(s.imageStore.running.Wait)
 	h := lanGuard(s.Handler())
 	init := readMCP(t, imagePost(h, "127.0.0.1:5000", `{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18"}}`))
-	if init.Result.ServerInfo.Name != "magpie-image" || init.Result.ProtocolVersion != "2025-06-18" {
+	if init.Result.ServerInfo.Name != "magpie-friday-image" || init.Result.ProtocolVersion != "2025-06-18" {
 		t.Fatalf("initialize: %+v", init)
 	}
 	var list struct {
@@ -118,7 +118,7 @@ func TestImageMCPDrawsAndServesTheImage(t *testing.T) {
 	if strings.Join(names, ",") != "generate_image,generate_video,generation_result" || len(list.Result.Tools[0].InputSchema.Properties) != len(ImageToolProps("")) {
 		t.Fatalf("tools: %s", w.Body.String())
 	}
-	m := readImageReply(t, imagePost(h, "127.0.0.1:5000", imageToolCall(GenerateImageTool, map[string]any{"prompt": "a magpie", "size": "1024x1024"})))
+	m := readImageReply(t, imagePost(h, "127.0.0.1:5000", imageToolCall(GenerateImageTool, map[string]any{"prompt": "a magpie-friday", "size": "1024x1024"})))
 	if m.Result.IsError || len(m.Result.Content) != 2 {
 		t.Fatalf("drawn: %+v", m)
 	}
@@ -127,7 +127,7 @@ func TestImageMCPDrawsAndServesTheImage(t *testing.T) {
 		t.Fatalf("image content %+v", img)
 	}
 	sent := e.got("/v1/images/generations")
-	if len(sent) != 1 || !strings.Contains(sent[0], `"prompt":"a magpie"`) || !strings.Contains(sent[0], `"size":"1024x1024"`) {
+	if len(sent) != 1 || !strings.Contains(sent[0], `"prompt":"a magpie-friday"`) || !strings.Contains(sent[0], `"size":"1024x1024"`) {
 		t.Fatalf("vendor was sent %v", sent)
 	}
 	urls := urlsIn(m.Result.Content[0].Text)
@@ -142,9 +142,9 @@ func TestImageMCPDrawsAndServesTheImage(t *testing.T) {
 		t.Fatalf("no such file: %d", w.Code)
 	}
 	// MAGPIE_PUBLIC_URL is the address the agent is given
-	t.Setenv("MAGPIE_PUBLIC_URL", "https://magpie.example.net/")
-	m = readImageReply(t, imagePost(h, "127.0.0.1:5000", imageToolCall(GenerateImageTool, map[string]any{"prompt": "a magpie"})))
-	if u := urlsIn(m.Result.Content[0].Text); len(u) != 1 || !strings.HasPrefix(u[0], "https://magpie.example.net"+ImageMCPFiles) {
+	t.Setenv("MAGPIE_PUBLIC_URL", "https://magpie-friday.example.net/")
+	m = readImageReply(t, imagePost(h, "127.0.0.1:5000", imageToolCall(GenerateImageTool, map[string]any{"prompt": "a magpie-friday"})))
+	if u := urlsIn(m.Result.Content[0].Text); len(u) != 1 || !strings.HasPrefix(u[0], "https://magpie-friday.example.net"+ImageMCPFiles) {
 		t.Fatalf("public URL: %q", m.Result.Content[0].Text)
 	}
 	// a reference image makes it an edit
@@ -164,8 +164,8 @@ func TestImageMCPSaysWhenOff(t *testing.T) {
 	}
 	h := lanGuard(s.Handler())
 	for _, tool := range []string{GenerateImageTool, GenerateVideoTool} {
-		m := readImageReply(t, imagePost(h, "127.0.0.1:5000", imageToolCall(tool, map[string]any{"prompt": "a magpie"})))
-		if !m.Result.IsError || !strings.Contains(m.Result.Content[0].Text, "Image generation is off in magpie") {
+		m := readImageReply(t, imagePost(h, "127.0.0.1:5000", imageToolCall(tool, map[string]any{"prompt": "a magpie-friday"})))
+		if !m.Result.IsError || !strings.Contains(m.Result.Content[0].Text, "Image generation is off in magpie-friday") {
 			t.Fatalf("%s: %+v", tool, m)
 		}
 	}
@@ -175,7 +175,7 @@ func TestImageMCPSaysWhenOff(t *testing.T) {
 }
 
 // The server is guarded as the vision server is: another computer only on
-// a shared magpie with a key, no web page, no file path from elsewhere;
+// a shared magpie-friday with a key, no web page, no file path from elsewhere;
 // and an image it made is served only to the key that had it made.
 func TestImageMCPGuarded(t *testing.T) {
 	s, e := easeled(t)
@@ -185,7 +185,7 @@ func TestImageMCPGuarded(t *testing.T) {
 	h := lanGuard(s.Handler())
 	file, _ := pngFile(t)
 	const there = "192.0.2.7:4000"
-	draw := imageToolCall(GenerateImageTool, map[string]any{"prompt": "a magpie"})
+	draw := imageToolCall(GenerateImageTool, map[string]any{"prompt": "a magpie-friday"})
 	if w := imagePost(h, there, draw); w.Code != http.StatusForbidden {
 		t.Fatalf("not shared: %d %s", w.Code, w.Body.String())
 	}
@@ -197,9 +197,9 @@ func TestImageMCPGuarded(t *testing.T) {
 		t.Fatalf("a page on this computer: %d %s", w.Code, w.Body.String())
 	}
 	for _, tool := range []string{GenerateImageTool, GenerateVideoTool} {
-		args := map[string]any{"prompt": "a magpie", "reference_images": []string{file}}
+		args := map[string]any{"prompt": "a magpie-friday", "reference_images": []string{file}}
 		m := readImageReply(t, imagePost(h, there, imageToolCall(tool, args), "Authorization", "Bearer "+secrets[0]))
-		if !m.Result.IsError || !strings.Contains(m.Result.Content[0].Text, tool+" reads a file only for an agent on the computer magpie runs on") {
+		if !m.Result.IsError || !strings.Contains(m.Result.Content[0].Text, tool+" reads a file only for an agent on the computer magpie-friday runs on") {
 			t.Fatalf("%s, another computer's file path: %+v", tool, m)
 		}
 	}
@@ -252,7 +252,7 @@ func TestImageMCPHeldToKeyLimit(t *testing.T) {
 		t.Fatal(calls.Load())
 	}
 	for _, tool := range []string{GenerateImageTool, GenerateVideoTool} {
-		m := readImageReply(t, imagePost(h, "127.0.0.1:5000", imageToolCall(tool, map[string]any{"prompt": "a magpie"}), "Authorization", "Bearer "+secrets[0]))
+		m := readImageReply(t, imagePost(h, "127.0.0.1:5000", imageToolCall(tool, map[string]any{"prompt": "a magpie-friday"}), "Authorization", "Bearer "+secrets[0]))
 		if !m.Result.IsError || !strings.Contains(m.Result.Content[0].Text, `"Capped"`) {
 			t.Fatalf("%s, a spent key: %+v", tool, m)
 		}
@@ -261,7 +261,7 @@ func TestImageMCPHeldToKeyLimit(t *testing.T) {
 		t.Fatalf("a spent key drew %d times", n)
 	}
 	// without a key, from this computer, it draws
-	if m := readImageReply(t, imagePost(h, "127.0.0.1:5000", imageToolCall(GenerateImageTool, map[string]any{"prompt": "a magpie"}))); m.Result.IsError {
+	if m := readImageReply(t, imagePost(h, "127.0.0.1:5000", imageToolCall(GenerateImageTool, map[string]any{"prompt": "a magpie-friday"}))); m.Result.IsError {
 		t.Fatalf("keyless: %+v", m)
 	}
 }
@@ -297,7 +297,7 @@ func TestImageMCPSlowDrawingIsWaitedOn(t *testing.T) {
 	was := imageMCPWithin
 	t.Cleanup(func() { imageMCPWithin = was })
 	imageMCPWithin = 10 * time.Millisecond
-	m := readImageReply(t, imagePost(h, "127.0.0.1:5000", imageToolCall(GenerateImageTool, map[string]any{"prompt": "a magpie"}), "Authorization", "Bearer "+secrets[0]))
+	m := readImageReply(t, imagePost(h, "127.0.0.1:5000", imageToolCall(GenerateImageTool, map[string]any{"prompt": "a magpie-friday"}), "Authorization", "Bearer "+secrets[0]))
 	text := m.Result.Content[0].Text
 	i := strings.Index(text, `"img_`)
 	if m.Result.IsError || i < 0 || !strings.Contains(text, GenerationResultTool) {
@@ -365,8 +365,8 @@ func TestImageMCPMakesVideos(t *testing.T) {
 	}
 }
 
-// The gateway serves the server (and its files) on the address `magpie
-// web` and a shared magpie forward.
+// The gateway serves the server (and its files) on the address `magpie-friday
+// web` and a shared magpie-friday forward.
 func TestImageMCPIsServed(t *testing.T) {
 	for _, p := range []string{ImageMCPPath, ImageMCPFiles + "x.png"} {
 		if !ClientPath(p) {

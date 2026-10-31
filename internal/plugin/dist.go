@@ -20,7 +20,7 @@ import (
 // (scripts/dist.mjs there) as soon as it is merged. npm can't take a new
 // package's first version without an owner's 2FA (trusted publishing sets
 // up only a package that exists), so a reviewed plugin used to wait,
-// unmerged, for someone to publish it by hand. magpie asks npm first, as
+// unmerged, for someone to publish it by hand. magpie-friday asks npm first, as
 // before, and turns here only for what npm doesn't give: a package or
 // version npm doesn't have, or npm not answering. A tarball is installed
 // only when its sha512 is the one index.json names.

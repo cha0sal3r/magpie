@@ -12,12 +12,12 @@ import (
 // TryNet is where a try's time went up to its reply's first byte, as Go's
 // HTTP client saw the request that went out to the vendor last (a
 // sign-in refreshed or a request asked again on the way are Before): what
-// was magpie's, the network's and the vendor's, so a slow turn says
+// was magpie-friday's, the network's and the vendor's, so a slow turn says
 // whose it was (Discord, Magic_zero: "网关连接提供商和回复到agent的速度
 // 有点慢"). Each is in ms, to a tenth; absent for a try whose request
 // went out some other way (a plugin's own fetch, an agent's app).
 type TryNet struct {
-	// Own: magpie's, from the try's Start to its request going out, the
+	// Own: magpie-friday's, from the try's Start to its request going out, the
 	// queue for a slot (Try.Queued) left out
 	Own float64 `json:"own,omitempty"`
 	// Before: requests made on the way before the last one, from the

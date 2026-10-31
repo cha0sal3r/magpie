@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // ARNO on Discord: routing group 在接入 harness 的时候，没有设置
@@ -44,7 +44,7 @@ func TestDshGroupHasItsMembersLevels(t *testing.T) {
 		t.Fatal(err)
 	}
 	a := dsh(home)
-	if err := a.Field("model").Set("magpie/group/flash"); err != nil {
+	if err := a.Field("model").Set("magpie-friday/group/flash"); err != nil {
 		t.Fatal(err)
 	}
 	b, _ := os.ReadFile(web)
@@ -61,7 +61,7 @@ func TestDshGroupHasItsMembersLevels(t *testing.T) {
 		t.Fatalf("the group's entry has no reasoningEfforts:\n%s", entry)
 	}
 	var offered []string
-	for _, o := range a.Field("effort").Options(map[string]string{"model": "magpie/group/flash"}) {
+	for _, o := range a.Field("effort").Options(map[string]string{"model": "magpie-friday/group/flash"}) {
 		offered = append(offered, o.Value)
 	}
 	if !reflect.DeepEqual(offered, []string{"off", "low", "high", "max"}) {

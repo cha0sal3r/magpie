@@ -15,7 +15,7 @@ import (
 )
 
 // finishInBrowser does what the browser does after the vendor's page:
-// come back to magpie's callback with a code.
+// come back to magpie-friday's callback with a code.
 func finishInBrowser(t *testing.T, st SignInState, code string) string {
 	t.Helper()
 	u, err := url.Parse(st.URL)
@@ -35,7 +35,7 @@ func finishInBrowser(t *testing.T, st SignInState, code string) string {
 
 // signInDeadline is how long waitDone waits for a sign-in to end. Most of
 // these sign-ins run fake CLIs (a `claude auth login`, `devin`, ...) that
-// fork a shell, its cat/echo/rm, and then magpie's own `auth status` probe:
+// fork a shell, its cat/echo/rm, and then magpie-friday's own `auth status` probe:
 // a few hundred ms alone, but seconds while `go test ./...` runs every
 // package's binaries at once (and macOS checks each new executable on its
 // first run). 2s was not enough (#1552). The deadline sits above every

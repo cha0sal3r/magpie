@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/sessions"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // usageDAV is fakeDAV with what sharing usage asks of a server besides:
@@ -58,7 +58,7 @@ func (d *usageDAV) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		delete(d.files, r.URL.Path)
 		w.WriteHeader(http.StatusNoContent)
 	default:
-		if r.Method == http.MethodPut && r.URL.Path == "/dav/magpie/magpie.magpie-backup" {
+		if r.Method == http.MethodPut && r.URL.Path == "/dav/magpie-friday/magpie-friday.magpie-friday-backup" {
 			d.mu.Lock()
 			d.backupPuts++
 			d.mu.Unlock()
@@ -73,7 +73,7 @@ func (d *usageDAV) usageFiles() []string {
 	defer d.mu.Unlock()
 	var out []string
 	for p := range d.files {
-		if name, ok := strings.CutPrefix(p, "/dav/magpie/usage/"); ok {
+		if name, ok := strings.CutPrefix(p, "/dav/magpie-friday/usage/"); ok {
 			out = append(out, name)
 		}
 	}
@@ -119,7 +119,7 @@ func TestUsageSharedBetweenComputers(t *testing.T) {
 	usage.Clock = func() time.Time { return now }
 	t.Cleanup(func() { usage.Clock = oldClock })
 
-	// a: two calls today, one two days ago, and one another magpie passed
+	// a: two calls today, one two days ago, and one another magpie-friday passed
 	// on to it, which that one counts itself
 	a, b := newComputer(t), newComputer(t)
 	a.use(t)
@@ -139,7 +139,7 @@ func TestUsageSharedBetweenComputers(t *testing.T) {
 		t.Fatalf("a's days on the server: %v", files)
 	}
 	for _, f := range files {
-		if body := string(fake.files["/dav/magpie/usage/"+f]); strings.Contains(body, "deepseek") || strings.Contains(body, `"calls"`) {
+		if body := string(fake.files["/dav/magpie-friday/usage/"+f]); strings.Contains(body, "deepseek") || strings.Contains(body, `"calls"`) {
 			t.Fatalf("%s isn't sealed: %.200s", f, body)
 		}
 	}
@@ -211,7 +211,7 @@ func TestUsageSharedBetweenComputers(t *testing.T) {
 	usage.Append(call(now, "deepseek-chat", 30))
 	sync(t)
 	// a day of a's past the window, as one long ago left it: a takes it away
-	gone := "/dav/magpie/usage/" + aID + "-2020-01-01" + usageExt
+	gone := "/dav/magpie-friday/usage/" + aID + "-2020-01-01" + usageExt
 	fake.mu.Lock()
 	fake.files[gone], fake.etags[gone] = []byte("old"), `"old"`
 	fake.mu.Unlock()
@@ -251,7 +251,7 @@ func TestUsageSharedBetweenComputers(t *testing.T) {
 }
 
 // Usage left off — as every setup made before it could be, and an older
-// magpie's — asks nothing of the usage folder, and the Usage page names no
+// magpie-friday's — asks nothing of the usage folder, and the Usage page names no
 // computer, though another computer shares its own there.
 func TestUsageOffAsksNothing(t *testing.T) {
 	old := usageEvery
@@ -289,7 +289,7 @@ func TestUsageOffAsksNothing(t *testing.T) {
 }
 
 // The same through an S3 bucket: the days listed (ListObjectsV2, signed
-// with its query), read, written and deleted under <prefix>/magpie/usage/.
+// with its query), read, written and deleted under <prefix>/magpie-friday/usage/.
 func TestUsageSharedThroughS3(t *testing.T) {
 	old := usageEvery
 	usageEvery = 0
@@ -343,7 +343,7 @@ func TestUsageSharedThroughS3(t *testing.T) {
 		t.Fatalf("a: %v %q", err, Status().UsageError)
 	}
 	aID, _ := usage.Computer()
-	old2 := "team x+y/magpie/usage/" + aID + "-2020-01-01" + usageExt
+	old2 := "team x+y/magpie-friday/usage/" + aID + "-2020-01-01" + usageExt
 	f.mu.Lock()
 	f.store(old2, []byte("old"))
 	f.mu.Unlock()

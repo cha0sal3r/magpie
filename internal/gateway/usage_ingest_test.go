@@ -15,11 +15,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/budget"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/usage"
-	"github.com/yetone/magpie/internal/usageapi"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/budget"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/usageapi"
 )
 
 type ingestReply struct {
@@ -44,7 +44,7 @@ func ingestServer(t *testing.T) func(from, body string, hdr ...string) (int, ing
 	t.Cleanup(catalog.Reset)
 	h := lanGuard(New().Handler())
 	return func(from, body string, hdr ...string) (int, ingestReply, string) {
-		r := httptest.NewRequest("POST", "/v1/magpie/usage/requests", strings.NewReader(body))
+		r := httptest.NewRequest("POST", "/v1/magpie-friday/usage/requests", strings.NewReader(body))
 		r.RemoteAddr = from
 		r.Host = "127.0.0.1:3425" // the address a client on this computer uses
 		r.Header.Set("Content-Type", "application/json")
@@ -74,8 +74,8 @@ func reportedLines(t *testing.T) int {
 	return bytes.Count(b, []byte(`"source":"reported"`))
 }
 
-// POST /v1/magpie/usage/requests (#1874): this computer reports a call
-// it made itself and it is counted, priced at magpie's prices, as
+// POST /v1/magpie-friday/usage/requests (#1874): this computer reports a call
+// it made itself and it is counted, priced at magpie-friday's prices, as
 // reported; the same rid again is skipped; a call's own cost is kept; and
 // the page and GET tell the reported ones apart and filter them.
 func TestUsageIngest(t *testing.T) {
@@ -94,7 +94,7 @@ func TestUsageIngest(t *testing.T) {
 
 	h := lanGuard(New().Handler())
 	get := func(q string) usageapi.Ledger {
-		r := httptest.NewRequest("GET", "/v1/magpie/usage/requests?period=all"+q, nil)
+		r := httptest.NewRequest("GET", "/v1/magpie-friday/usage/requests?period=all"+q, nil)
 		r.RemoteAddr = "127.0.0.1:5000"
 		w := httptest.NewRecorder()
 		h.ServeHTTP(w, r)
@@ -205,7 +205,7 @@ func TestUsageIngestAccess(t *testing.T) {
 	if c, _, b := do("192.168.1.9:5000", rec); c != http.StatusUnauthorized {
 		t.Fatal("another machine with no key:", c, b)
 	}
-	if c, _, b := do("192.168.1.9:5000", rec, "Authorization", "Bearer sk-magpie-wrong-wrong-wrong"); c != http.StatusUnauthorized {
+	if c, _, b := do("192.168.1.9:5000", rec, "Authorization", "Bearer sk-magpie-friday-wrong-wrong-wrong"); c != http.StatusUnauthorized {
 		t.Fatal("another machine with a wrong key:", c, b)
 	}
 	pages := [][]string{
@@ -368,7 +368,7 @@ func TestUsageIngestTellsSpeed(t *testing.T) {
 	}
 
 	h := lanGuard(New().Handler())
-	r := httptest.NewRequest("GET", "/v1/magpie/usage/requests?period=all&via=reported", nil)
+	r := httptest.NewRequest("GET", "/v1/magpie-friday/usage/requests?period=all&via=reported", nil)
 	r.RemoteAddr = "127.0.0.1:5000"
 	w := httptest.NewRecorder()
 	h.ServeHTTP(w, r)

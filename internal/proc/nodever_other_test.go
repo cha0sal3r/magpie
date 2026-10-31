@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // nvmHome lays out nvm as it is on disk: versions/node/vX.Y.Z/bin/node
@@ -65,7 +65,7 @@ func with(m map[string]string, k, v string) map[string]string {
 	return out
 }
 
-// magpie's PATH gets the nvm Node a terminal gets — the one nvm's default
+// magpie-friday's PATH gets the nvm Node a terminal gets — the one nvm's default
 // alias resolves to, as nvm.sh resolves it — not the folder whose name
 // sorts last: in string order v9.11.2 comes after v22.12.0, so a codex
 // under a Node the terminal doesn't use was found and run.

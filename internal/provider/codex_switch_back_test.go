@@ -10,9 +10,9 @@ import (
 )
 
 // The account the user made first is signed back in once it has room
-// again, after magpie signed Codex in to another while it was spent: the
+// again, after magpie-friday signed Codex in to another while it was spent: the
 // one made first stays first (#408). A switch the user makes in the
-// meantime is theirs, and magpie doesn't undo it.
+// meantime is theirs, and magpie-friday doesn't undo it.
 func TestCodexSwitchedBackWhenItHasRoom(t *testing.T) {
 	home := signIn(t) // me@example.com, acct-1
 	rememberLogins(true)

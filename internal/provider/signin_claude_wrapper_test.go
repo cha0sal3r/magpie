@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/claudecode"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/claudecode"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // miseWrapped puts deluxe's (Discord, Omarchy Linux) ~/.local/bin/claude
@@ -17,7 +17,7 @@ import (
 // beside a fake mise which, as mise does, runs the command it finds on
 // PATH, so the script runs itself until killed. answers says whether the
 // fake answers `mise which claude` with exe, Claude Code itself. The
-// Claude found is the one magpie looks up, not a stand-in.
+// Claude found is the one magpie-friday looks up, not a stand-in.
 func miseWrapped(t *testing.T, exe string, answers bool) string {
 	t.Helper()
 	d := t.TempDir()

@@ -11,9 +11,9 @@ import (
 // $HERMES_HOME when that is set, else the platform's default, as
 // hermes_constants.get_hermes_home reads them: %LOCALAPPDATA%\hermes on
 // Windows (AppData\Local\hermes under the home folder without
-// LOCALAPPDATA), ~/.hermes everywhere else. Every place magpie reads or
+// LOCALAPPDATA), ~/.hermes everywhere else. Every place magpie-friday reads or
 // writes Hermes's files goes through here (新v学员 on Discord: on native
-// Windows Hermes and rtk's hook were in %LOCALAPPDATA%\hermes, and magpie
+// Windows Hermes and rtk's hook were in %LOCALAPPDATA%\hermes, and magpie-friday
 // looked for them in ~/.hermes).
 func HermesHome() string {
 	home, _ := os.UserHomeDir()

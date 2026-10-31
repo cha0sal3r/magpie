@@ -10,12 +10,12 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/lastgood"
-	"github.com/yetone/magpie/internal/library"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/lastgood"
+	"github.com/cha0sal3r/magpie-friday/internal/library"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Profile is every agent's fields, and the library's setup.
@@ -27,7 +27,7 @@ type Profile struct {
 	// or before profiles kept it, which leaves the library as it is.
 	Library *library.Setup
 	// Models are the agents' model lists (#1368), by the id their lists are
-	// kept under (agent.ListsFor): which of magpie's models each shows and
+	// kept under (agent.ListsFor): which of magpie-friday's models each shows and
 	// in what order. An agent not named, every one in a profile saved
 	// before profiles kept them, keeps the list it has.
 	Models map[string]provider.ModelList

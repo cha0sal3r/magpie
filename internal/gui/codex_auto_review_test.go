@@ -7,13 +7,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agentenv"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // Settings' Codex auto-review model (#938) is set on its own: a model or
-// group magpie serves (one it doesn't, or a name that is no model's id, is
+// group magpie-friday serves (one it doesn't, or a name that is no model's id, is
 // refused and the value kept), or back to Codex's own pick; the Settings
 // page's other saves keep it; and Codex's list's tag changes with it, so
 // Codex asks for the list again.

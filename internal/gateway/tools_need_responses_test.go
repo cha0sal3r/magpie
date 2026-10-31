@@ -9,7 +9,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // toolsOnChatRefused is what a relay answers a Chat Completions request
@@ -61,7 +61,7 @@ func (f *toolsRelay) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // piChatTools is a turn as Pi's openai-completions API sends it (pi-ai's
-// openai-completions.js), the API magpie wires Pi on for a custom
+// openai-completions.js), the API magpie-friday wires Pi on for a custom
 // provider with a Chat URL: streamed, its tools, a thinking level.
 const piChatTools = `{"model":"relay/gpt-6.1-sol","stream":true,"stream_options":{"include_usage":true},"store":false,
   "max_completion_tokens":32000,"reasoning_effort":"high",

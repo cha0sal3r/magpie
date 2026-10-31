@@ -10,7 +10,7 @@ package gateway
 // once the tool has run, and the last reply asks for none. So a session's
 // turn is done when a reply that called no tool has ended, nothing of the
 // session is going, and nothing more came for turnQuiet after it. A
-// request magpie makes itself (System One, titles answered here), one an
+// request magpie-friday makes itself (System One, titles answered here), one an
 // agent makes on the side (Kind: titles, compaction …) and a Claude Code
 // subagent's (its x-claude-code-agent-id) aren't the turn's: a subagent's
 // last reply is not its parent's.
@@ -23,20 +23,20 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // TurnEnd is a turn that ran at least as long as Settings' TurnDoneAlert.
 type TurnEnd struct {
-	Agent   string // magpie's id for it: claude, codex, opencode …
+	Agent   string // magpie-friday's id for it: claude, codex, opencode …
 	Session string // the agent's session id, "" when it sends none
 	Folder  string // the folder it says it works in, "" when it doesn't
 	Took    time.Duration
 }
 
 // TurnDone is told of each such turn; set by the app, which notifies.
-// Nil (magpie serve, the CLI) has turns not followed at all.
+// Nil (magpie-friday serve, the CLI) has turns not followed at all.
 var TurnDone func(TurnEnd)
 
 // turnQuiet is how long after a reply that called no tool nothing more of

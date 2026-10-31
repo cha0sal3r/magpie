@@ -11,8 +11,8 @@ package provider
 // mover's min raised in internal/provider/migrate_side.go.
 
 // Several Grok subscriptions. The Grok CLI keeps one account, in its own
-// home (~/.grok), which magpie only ever reads. Each further account gets a
-// home of magpie's own, signed in there by the CLI's own `login`, so the
+// home (~/.grok), which magpie-friday only ever reads. Each further account gets a
+// home of magpie-friday's own, signed in there by the CLI's own `login`, so the
 // user's sign-in is never touched and each refresh token has one holder.
 // logins.json names those homes; the CLI's own account is remembered there
 // too, with no home, so it can stand behind another or be turned off.

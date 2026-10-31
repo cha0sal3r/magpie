@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 func record() string {
@@ -18,7 +18,7 @@ func record() string {
 		home, _ := os.UserHomeDir()
 		dir = filepath.Join(home, ".config")
 	}
-	return filepath.Join(dir, "autostart", "magpie.desktop")
+	return filepath.Join(dir, "autostart", "magpie-friday.desktop")
 }
 
 // the two keys a desktop entry needs before the desktop starts it at login:
@@ -44,7 +44,7 @@ func enable(exe string) error {
 	}
 	// the Exec key's quoting: in double quotes, \ " ` $ escaped
 	q := strings.NewReplacer(`\`, `\\`, `"`, `\"`, "`", "\\`", `$`, `\$`).Replace(exe)
-	body := "[Desktop Entry]\nType=Application\nName=magpie\nComment=one place to pick every agent's model\n" +
+	body := "[Desktop Entry]\nType=Application\nName=magpie-friday\nComment=one place to pick every agent's model\n" +
 		"Exec=\"" + q + "\" " + Arg + "\nTerminal=false\nX-GNOME-Autostart-enabled=true\n"
 	return edit.WriteAtomic(p, []byte(body))
 }
@@ -56,7 +56,7 @@ func disable() error {
 	return nil
 }
 
-// refresh: nothing an older magpie wrote here needs writing again
+// refresh: nothing an older magpie-friday wrote here needs writing again
 func refresh() error { return nil }
 
 // heldBack: nothing here is switched off apart from the record itself

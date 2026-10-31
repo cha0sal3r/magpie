@@ -14,20 +14,20 @@ const { test } = require("node:test");
 const { chromium, webkit } = require("playwright");
 
 const assets = path.resolve(__dirname, "../assets");
-const magpie = [{ value: "magpie", label: "magpie", icon: "magpie" }];
+const magpie = [{ value: "magpie-friday", label: "magpie-friday", icon: "magpie-friday" }];
 const LONG = "claude-opus-5-5 · Microsoft Foundry";
 const AGENTS = [
   // the reporter's row, as /api/state had it
   { id: "workbuddy", name: "WorkBuddy", icon: "workbuddy-color", path: "/fixture/models.json", wired: true, menu: true,
     models: { shown: 3, total: 3, names: ["gpt-6.1-sol · Microsoft Foundry", LONG] },
-    fields: [{ key: "provider", label: "provider", value: "magpie", options: magpie }] },
+    fields: [{ key: "provider", label: "provider", value: "magpie-friday", options: magpie }] },
   // another agent whose own menu lists the models, a longer name
   { id: "claude-desktop", name: "Claude Desktop", path: "/fixture/claude-desktop.json", wired: true, menu: true,
     models: { shown: 5, total: 9, names: [LONG, "gpt-6.1-sol · Microsoft Foundry"] },
-    fields: [{ key: "provider", label: "provider", value: "magpie", options: magpie }] },
+    fields: [{ key: "provider", label: "provider", value: "magpie-friday", options: magpie }] },
   // one model, said by a long label, with its logo and effort
   { id: "codex", name: "Codex", path: "~/.codex/config.toml",
-    fields: [{ key: "model", label: "model", value: "m", options: [{ value: "m", label: LONG, icon: "magpie" }] },
+    fields: [{ key: "model", label: "model", value: "m", options: [{ value: "m", label: LONG, icon: "magpie-friday" }] },
       { key: "effort", label: "effort", value: "high", options: ["low", "high"].map((value) => ({ value })) }] },
   // and a short one beside them
   { id: "crush", name: "Crush", path: "~/.crush/crush.json", fields: [{ key: "model", label: "model", value: "a", options: [{ value: "a", label: "a" }] }] },

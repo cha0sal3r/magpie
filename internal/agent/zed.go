@@ -10,12 +10,12 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
-const zedProvider = "language_models.openai_compatible.magpie"
+const zedProvider = "language_models.openai_compatible.magpie-friday"
 const zedModel = "agent.default_model"
 
 // Zed stores API keys in the OS credential store, keyed by the API URL.
@@ -94,7 +94,7 @@ func zedAtWith(dir, bin string, processes []string) *Agent {
 						edit.KV{Path: zedProvider, Value: zedProviderJSON(path)},
 						edit.KV{Path: zedModel, Value: map[string]string{"provider": magpieID, "model": ref}})
 				}
-				// Validate a native selection before removing magpie's wiring.
+				// Validate a native selection before removing magpie-friday's wiring.
 				p, m, ok := strings.Cut(v, "/")
 				if v != "" && (!ok || p == "" || m == "") {
 					return fmt.Errorf("expected provider/model, got %q", v)
@@ -152,7 +152,7 @@ func zedProcessNames() []string {
 	return out
 }
 
-// zedLevels are the reasoning_effort values magpie writes for Zed, weakest
+// zedLevels are the reasoning_effort values magpie-friday writes for Zed, weakest
 // first: those every Zed that reads the field takes. Its settings take
 // language_model_core's ReasoningEffort, lowercase; max and none came after
 // it (Zed 0.233 has minimal to xhigh), and a value a Zed doesn't know is
@@ -185,7 +185,7 @@ func zedEffort(m catalog.Model) string {
 	return zedLevels[best]
 }
 
-// zedProviderJSON is magpie's provider in Zed's settings at path. A
+// zedProviderJSON is magpie-friday's provider in Zed's settings at path. A
 // reasoning_effort already on a model there is kept: the user may have
 // picked another level, or "none" to keep it from thinking.
 func zedProviderJSON(path string) map[string]any {
@@ -243,5 +243,5 @@ func zedProviderJSON(path string) map[string]any {
 
 // what zed says after a change (notice.go)
 var (
-	noticeZed = newNotice("Restart Zed if it still asks for an API key: magpie has configured its gateway credential in the system credential store.")
+	noticeZed = newNotice("Restart Zed if it still asks for an API key: magpie-friday has configured its gateway credential in the system credential store.")
 )

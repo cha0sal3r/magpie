@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// #2333 (zhenghaowen0967): magpie quota --json and GET /v1/magpie/quotas
+// #2333 (zhenghaowen0967): magpie-friday quota --json and GET /v1/magpie-friday/quotas
 // tell each window's whole as the Usage page's card does, reckoned once
 // over every card, and say why where it isn't told.
 func TestQuotaReportTellsWindowHolds(t *testing.T) {

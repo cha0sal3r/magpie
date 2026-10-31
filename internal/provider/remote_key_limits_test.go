@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// A magpie from before #2227 answers with "limit" alone: its card is
+// A magpie-friday from before #2227 answers with "limit" alone: its card is
 // that one limit's windows, as before.
 func TestKeyLimitCardOneLimit(t *testing.T) {
 	var a remoteKeyAnswer

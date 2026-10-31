@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// manageSetup is setup with magpie's own folder in the temp dir too, and
+// manageSetup is setup with magpie-friday's own folder in the temp dir too, and
 // every session file a day old, so none counts as running.
 func manageSetup(t *testing.T) (claude, codex string) {
 	claude, codex = setup(t)
@@ -107,7 +107,7 @@ func TestDeleteRestoreClaude(t *testing.T) {
 	if _, ok := findManaged(ListAgent("claude"), mgCC); ok {
 		t.Fatal("still listed")
 	}
-	// it is in magpie's trash, not gone
+	// it is in magpie-friday's trash, not gone
 	trash := Trash()
 	if len(trash) != 1 || trash[0].Key != tr.Key || trash[0].ID != mgCC || trash[0].Size == 0 {
 		t.Fatalf("trash %+v", trash)
@@ -190,7 +190,7 @@ func TestDeleteActiveRefused(t *testing.T) {
 func TestDeleteOnlyKnownAgents(t *testing.T) {
 	manageSetup(t)
 	if _, err := Delete("opencode", "x"); err == nil {
-		t.Fatal("deleted from a database magpie doesn't write")
+		t.Fatal("deleted from a database magpie-friday doesn't write")
 	}
 	if _, err := Delete("claude", "../x"); err == nil {
 		t.Fatal("an id that isn't one")

@@ -1,5 +1,5 @@
 // Package tools serves the tools the user's plugins give (their OpenCode
-// tool hook) to every agent, over magpie's plugin tools MCP server
+// tool hook) to every agent, over magpie-friday's plugin tools MCP server
 // (internal/gateway/tools_mcp.go, docs/subsystems/plugin-tools.md). While
 // a plugin that is on gives a tool, it stays on.
 //
@@ -10,9 +10,9 @@
 package tools
 
 import (
-	"github.com/yetone/magpie/internal/gwtool"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/pluginrt"
+	"github.com/cha0sal3r/magpie-friday/internal/gwtool"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/pluginrt"
 )
 
 func init() {

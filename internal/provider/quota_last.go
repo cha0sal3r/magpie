@@ -185,7 +185,7 @@ func (c *lastQuotasT) reported(key string) (SubscriptionQuota, bool) {
 
 // lastAllowances is each of an agent's accounts' allowance as it last
 // read, kept on disk: what routing goes by while the first reading since
-// magpie started is still out, rather than by none — with none, every
+// magpie-friday started is still out, rather than by none — with none, every
 // account counts as unused and the first in order went first, until the
 // reading came back and put another first, taking conversations off the
 // account that had them cached (vincentzhang on Discord).

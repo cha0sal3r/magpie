@@ -1,4 +1,4 @@
-// Package proc makes the commands magpie runs: agents' CLIs, the probes
+// Package proc makes the commands magpie-friday runs: agents' CLIs, the probes
 // that ask them what they have, the system's own tools. Every one is made
 // here rather than with os/exec, so that on Windows none of them opens a
 // window.
@@ -6,11 +6,11 @@
 // The desktop app on Windows is linked as a GUI program and has no console.
 // A console program it starts (devin, claude, codex, cursor-agent, grok, the
 // probes behind them) is given a new console by Windows, and with it a
-// window, one for every run; so a child of a magpie with no console is
+// window, one for every run; so a child of a magpie-friday with no console is
 // started with CREATE_NO_WINDOW, which gives it a console without one. A
-// magpie run in a terminal, or the desktop app started from one with a
+// magpie-friday run in a terminal, or the desktop app started from one with a
 // command, lets its children share that console as before, so Ctrl+C there
-// reaches them too. Nothing magpie starts reads or writes the terminal
+// reaches them too. Nothing magpie-friday starts reads or writes the terminal
 // itself: its output is piped back, which a hidden console doesn't change.
 package proc
 

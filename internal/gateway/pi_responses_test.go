@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // piResponses is a turn as Pi's openai-responses API sends it (pi-ai's
@@ -135,7 +135,7 @@ func codexBackendRefuses(body []byte) (int, string) {
 	return 0, ""
 }
 
-// DeepSeek Harness on magpie's route switched to OpenAI Responses (its
+// DeepSeek Harness on magpie-friday's route switched to OpenAI Responses (its
 // llm-pi-ai plugin is pi-ai's openai-responses, so it asks as Pi does)
 // reaches a model served on Chat Completions alone, a DeepSeek one: the
 // gateway asks it in Chat, the effort as reasoning_effort, the image, tool
@@ -149,7 +149,7 @@ func TestDshResponsesReachChatVendor(t *testing.T) {
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest("POST", "/v1/responses", strings.NewReader(fmt.Sprintf(piResponses, "fake/m1")))
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer magpie")
+	req.Header.Set("Authorization", "Bearer magpie-friday")
 	req.Header.Set("User-Agent", "deepseek-harness/0.2.0")
 	New().Handler().ServeHTTP(rec, req)
 	body := rec.Body.String()

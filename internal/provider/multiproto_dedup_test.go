@@ -10,10 +10,10 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
 )
 
-// isolateFetchHome keeps a fetch's fixtures out of the user's own magpie
+// isolateFetchHome keeps a fetch's fixtures out of the user's own magpie-friday
 // home: the list a fetch reads and writes is under HOME, and the tests
 // below save providers of their own.
 func isolateFetchHome(t *testing.T) {
@@ -98,7 +98,7 @@ func TestFetchAsksEachAuthenticationAtOneBase(t *testing.T) {
 	}
 }
 
-// Two bases are not two lists (#1006). A remote magpie is configured with
+// Two bases are not two lists (#1006). A remote magpie-friday is configured with
 // its Chat base at …/v1 and its Anthropic base at the bare host beside
 // it, and both resolve to one list URL, GET /v1/models: the test of a
 // saved remote is to fetch that list once, because its decision models

@@ -3,8 +3,8 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/update"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/update"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -48,7 +48,7 @@ func movingOf(t *testing.T, id string) map[string]Moving {
 	return out
 }
 
-// Kiro's own sign-in goes as a marker, an account magpie signed in whole,
+// Kiro's own sign-in goes as a marker, an account magpie-friday signed in whole,
 // the provider's key as an API key account (off the provider while the
 // plugin has it); back, a renewed sign-in is written into its home, one
 // signed in since gets a home, and the key goes back onto the provider.
@@ -148,7 +148,7 @@ func TestKiroMover(t *testing.T) {
 }
 
 // WorkBuddy desktop's sign-in goes as a marker the plugin reads the app's
-// file by, never as tokens; one magpie signed in goes whole, and comes back
+// file by, never as tokens; one magpie-friday signed in goes whole, and comes back
 // with the plugin's renewed tokens.
 func TestWorkBuddyMover(t *testing.T) {
 	home := signIn(t)
@@ -195,7 +195,7 @@ func TestWorkBuddyMover(t *testing.T) {
 }
 
 // Two WorkBuddy accounts of one nickname are two accounts, told apart by
-// uid: the desktop's goes beside one magpie signed in under its name, and
+// uid: the desktop's goes beside one magpie-friday signed in under its name, and
 // neither reads as renewed by the other (wakkana on Discord). The same uid
 // under the desktop's name is the desktop's account, moved once.
 func TestWorkBuddyMoverSameNameOtherUID(t *testing.T) {

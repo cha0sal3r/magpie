@@ -80,7 +80,7 @@ func TestProjectServers(t *testing.T) {
 	if read(t, filepath.Join(h, ".claude.json")) != globalClaude || read(t, filepath.Join(h, ".codex", "config.toml")) != globalCodex {
 		t.Error("a user-wide file was written")
 	}
-	// the files magpie made are kept out of git; the user's .mcp.json isn't
+	// the files magpie-friday made are kept out of git; the user's .mcp.json isn't
 	g := read(t, filepath.Join(proj, ".gitignore"))
 	for _, f := range []string{"/.codex/config.toml", "/.gemini/settings.json", "/.cursor/mcp.json", "/opencode.json"} {
 		if !strings.Contains(g, f+"\n") {
@@ -101,7 +101,7 @@ func TestProjectServers(t *testing.T) {
 		t.Errorf("after rename: %v", s)
 	}
 
-	// taken from some agents: out of their files, those magpie made gone
+	// taken from some agents: out of their files, those magpie-friday made gone
 	ok(t)(ProjectServer(proj, "fs", []string{"claude"}))
 	for _, f := range []string{".codex", ".gemini", ".cursor", "opencode.json"} {
 		gone(t, filepath.Join(proj, f))
@@ -110,7 +110,7 @@ func TestProjectServers(t *testing.T) {
 		t.Errorf(".gitignore: %q", g)
 	}
 
-	// removing the project takes out only magpie's entries
+	// removing the project takes out only magpie-friday's entries
 	ok(t)(RemoveProject(proj, false))
 	s = servers(t, mcp, "mcpServers")
 	if len(s) != 1 || s["team"] == nil {
@@ -121,7 +121,7 @@ func TestProjectServers(t *testing.T) {
 	}
 }
 
-// A server by the name that magpie didn't write is the user's: it's left
+// A server by the name that magpie-friday didn't write is the user's: it's left
 // as it is, and said so.
 func TestProjectServerNotOurs(t *testing.T) {
 	_, proj := mcpProject(t)
@@ -143,7 +143,7 @@ func TestProjectServerNotOurs(t *testing.T) {
 	}
 }
 
-// What the user adds to a file magpie made keeps it, out of .gitignore.
+// What the user adds to a file magpie-friday made keeps it, out of .gitignore.
 func TestProjectServerFileKept(t *testing.T) {
 	_, proj := mcpProject(t)
 	ok(t)(ProjectServer(proj, "fs", []string{"cursor"}))
@@ -224,7 +224,7 @@ func TestProjectServersZCodePi(t *testing.T) {
 		t.Errorf("problems: %+v", r.Problems)
 	}
 
-	// ZCode: the user's model, server and key stay, magpie's beside them
+	// ZCode: the user's model, server and key stay, magpie-friday's beside them
 	doc := jsonOf(t, zc)
 	if doc["model"] != "glm-5.3" {
 		t.Errorf("model lost:\n%s", read(t, zc))
@@ -244,7 +244,7 @@ func TestProjectServersZCodePi(t *testing.T) {
 		t.Errorf("zcode events: %v", e)
 	}
 
-	// Pi: a file magpie made, in Pi's own shape, kept out of git
+	// Pi: a file magpie-friday made, in Pi's own shape, kept out of git
 	pi := filepath.Join(proj, ".pi", "mcp.json")
 	ps := servers(t, pi, "mcpServers")
 	if fs, _ := ps["fs"].(map[string]any); fs["command"] != "npx" || fs["type"] != nil {
@@ -271,7 +271,7 @@ func TestProjectServersZCodePi(t *testing.T) {
 		t.Error("ProjectMCPFile/ProjectNoSSE")
 	}
 
-	// taken out: only magpie's go, and the file it made with them
+	// taken out: only magpie-friday's go, and the file it made with them
 	ok(t)(RemoveProject(proj, false))
 	s, _ = jsonOf(t, zc)["mcp"].(map[string]any)["servers"].(map[string]any)
 	if len(s) != 1 || s["team"] == nil || jsonOf(t, zc)["model"] != "glm-5.3" {
@@ -283,8 +283,8 @@ func TestProjectServersZCodePi(t *testing.T) {
 	}
 }
 
-// #514: a project removed with keep goes off magpie's list alone; the
-// skills and servers magpie put in it, and its .gitignore lines, stay.
+// #514: a project removed with keep goes off magpie-friday's list alone; the
+// skills and servers magpie-friday put in it, and its .gitignore lines, stay.
 func TestRemoveProjectKeep(t *testing.T) {
 	h, proj := mcpProject(t)
 	src := filepath.Join(h, "src")
@@ -315,7 +315,7 @@ func TestRemoveProjectKeep(t *testing.T) {
 		}
 	}
 	check("removed")
-	// nothing magpie does later takes them out
+	// nothing magpie-friday does later takes them out
 	ok(t)(Sync())
 	ok(t)(RemoveServer("fs"))
 	check("later")

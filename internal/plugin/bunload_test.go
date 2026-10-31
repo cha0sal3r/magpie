@@ -29,7 +29,7 @@ func (e exitedWith) Error() string { return fmt.Sprintf("exit status %#x", uint3
 // INSTRUCTION, SIGILL) says which and what to do; any other exit is
 // given back as it was.
 func TestWontLoadSaysWindowsOrCPU(t *testing.T) {
-	bun := `C:\magpie\cache\bun\1.4.2\magpie-bun.exe`
+	bun := `C:\magpie-friday\cache\bun\1.4.2\magpie-friday-bun.exe`
 	for _, c := range []struct {
 		err  error
 		why  string

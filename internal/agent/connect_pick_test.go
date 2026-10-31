@@ -6,13 +6,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // The 「接入」 switch keeps an agent on the model it was on, now through
-// magpie: Claude Code on its opus alias goes to the Claude Opus magpie
+// magpie-friday: Claude Code on its opus alias goes to the Claude Opus magpie-friday
 // serves, not to the first model of the first provider.
 func TestConnectKeepsTheModel(t *testing.T) {
 	home, _ := codexHome(t, "", "")
@@ -59,7 +59,7 @@ func TestGeminiConnectRoundTrip(t *testing.T) {
 	}
 	if _, err := os.Stat(filepath.Join(dir, ".env")); err == nil {
 		if k, _ := edit.GetEnvFile(filepath.Join(dir, ".env"), "GEMINI_API_KEY"); k != "" {
-			t.Fatalf("magpie's key left: %q", k)
+			t.Fatalf("magpie-friday's key left: %q", k)
 		}
 	}
 	// and on again, on the model it was on (its sign-in follows the model)
@@ -119,9 +119,9 @@ func TestConnectPrefersTheSubscription(t *testing.T) {
 }
 
 // Codex signed in with ChatGPT keeps its own last pick when connected (the
-// owner: 让 Codex 记住上次的选择): magpie's models join its list by the base
+// owner: 让 Codex 记住上次的选择): magpie-friday's models join its list by the base
 // URL and its model stays; a model picked beside them keeps it connected,
-// and Disconnect leaves Codex on that pick, magpie taken out.
+// and Disconnect leaves Codex on that pick, magpie-friday taken out.
 func TestCodexConnectKeepsItsPick(t *testing.T) {
 	home, read := codexHome(t, `{"tokens":{"access_token":"x","id_token":"x.e30.x"}}`,
 		"model = \"gpt-5.5\"\nmodel_reasoning_effort = \"xhigh\"\n")
@@ -131,7 +131,7 @@ func TestCodexConnectKeepsItsPick(t *testing.T) {
 	}
 	cfg := read()
 	if !cx.Wired() || !strings.Contains(cfg, `model = "gpt-5.5"`) || !strings.Contains(cfg, `openai_base_url = "`+codexGatewayURL()+`"`) ||
-		!strings.Contains(cfg, "[model_providers.magpie]") || strings.Contains(cfg, "model_provider =") {
+		!strings.Contains(cfg, "[model_providers.magpie-friday]") || strings.Contains(cfg, "model_provider =") {
 		t.Fatalf("connected (wired %v):\n%s", cx.Wired(), cfg)
 	}
 	if d := cx.Drift(); d != nil {
@@ -162,7 +162,7 @@ func TestCodexConnectKeepsItsPick(t *testing.T) {
 
 // The 「接入」 switch off and on again leaves the agent on the models it was
 // on (the owner: an agent remembers its last pick): Claude Code on a second
-// magpie model and its effort, not the one Connect would pick. One the user
+// magpie-friday model and its effort, not the one Connect would pick. One the user
 // changed while it was off is theirs, and Connect picks as it does at first.
 func TestReconnectKeepsTheLastPick(t *testing.T) {
 	home, _ := codexHome(t, "", "")
@@ -232,13 +232,13 @@ func TestGooseRoundTripKeepsItsOwnModel(t *testing.T) {
 		}
 	}
 	if _, err := os.Stat(gooseProviderPath(a.Path)); err == nil {
-		t.Fatal("magpie's custom provider left")
+		t.Fatal("magpie-friday's custom provider left")
 	}
 }
 
-// magpie's max rides in Claude Code's env, over the effortLevel the user
+// magpie-friday's max rides in Claude Code's env, over the effortLevel the user
 // had: disconnecting takes the env's level away and leaves theirs, and
-// switching on again puts magpie's back over it (found on the omarchy VM:
+// switching on again puts magpie-friday's back over it (found on the omarchy VM:
 // a round trip lost the user's xhigh, under a connection made before
 // Connect kept what the agent was on).
 func TestClaudeDisconnectKeepsTheUsersEffort(t *testing.T) {
@@ -258,7 +258,7 @@ func TestClaudeDisconnectKeepsTheUsersEffort(t *testing.T) {
 	if err := c.Apply("effort", "max"); err != nil {
 		t.Fatal(err)
 	}
-	// connected by a magpie before this one, which kept no record of what
+	// connected by a magpie-friday before this one, which kept no record of what
 	// the agent was on
 	stash(map[string]string{"claude.connect.was": ""})
 	if err := c.Disconnect(); err != nil {
@@ -276,9 +276,9 @@ func TestClaudeDisconnectKeepsTheUsersEffort(t *testing.T) {
 	}
 }
 
-// A model of magpie's picked on the Agents page for an agent not connected
+// A model of magpie-friday's picked on the Agents page for an agent not connected
 // connects it first, as its switch does (the owner: the switch, and one
-// click in magpie, both): Goose starts on the model picked, and
+// click in magpie-friday, both): Goose starts on the model picked, and
 // disconnecting it brings back its own provider and model.
 func TestPickConnectsFirst(t *testing.T) {
 	home := syncHome(t)
@@ -316,10 +316,10 @@ func TestPickConnectsFirst(t *testing.T) {
 }
 
 // The switch says how it chose the model it connected an agent on (#726:
-// Codex kept its last pick, Claude Code went to a Sonnet through magpie,
+// Codex kept its last pick, Claude Code went to a Sonnet through magpie-friday,
 // with nothing to say why): Claude Code on its opus alias goes to the
-// Opus magpie serves, said "alike"; switched off and on, it is back on what
-// it was on, "again"; one already connected is "kept"; on a model magpie
+// Opus magpie-friday serves, said "alike"; switched off and on, it is back on what
+// it was on, "again"; one already connected is "kept"; on a model magpie-friday
 // doesn't serve, "first".
 func TestConnectSaysHow(t *testing.T) {
 	home, _ := codexHome(t, "", "")
@@ -356,6 +356,6 @@ func TestConnectSaysHow(t *testing.T) {
 	}
 	writeFile(t, path, `{"model": "claude-haiku-9"}`)
 	if how, err := c.ConnectHow(); err != nil || how.How != "first" || how.Value == "" {
-		t.Fatalf("on a model magpie lacks: %+v %v", how, err)
+		t.Fatalf("on a model magpie-friday lacks: %+v %v", how, err)
 	}
 }

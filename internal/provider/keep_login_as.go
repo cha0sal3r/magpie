@@ -3,7 +3,7 @@ package provider
 // Keeping Codex or Claude Code signed in to an account of the user's
 // choosing (#524). Making an account first did two things at once: the
 // gateway tries it first, and the agent is signed in to it. Kept on the
-// first (KeepLogin), magpie only stopped moving the sign-in on. But the
+// first (KeepLogin), magpie-friday only stopped moving the sign-in on. But the
 // first is often just the account whose allowance is to be spent first,
 // not the one the user uses the agent as: KeepLoginAs keeps the agent
 // signed in to that one, wherever it stands in the order, and the order —
@@ -68,7 +68,7 @@ func SetKeepLoginAs(id, user string) error {
 		return err
 	}
 	if p.Account == nil || p.Account.Agent != p.ID || !slices.Contains(switchedAgents, p.ID) {
-		return fmt.Errorf("magpie doesn't sign %s in to another of its accounts", p.Name)
+		return fmt.Errorf("magpie-friday doesn't sign %s in to another of its accounts", p.Name)
 	}
 	ls := Logins(p.ID)
 	i := slices.IndexFunc(ls, func(l Login) bool { return strings.EqualFold(l.User, user) })

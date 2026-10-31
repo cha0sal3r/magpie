@@ -5,12 +5,12 @@ package agent
 // folder of its own: $PRIME_AGENT_CODING_AGENT_DIR, "~" in it standing for
 // home, else ~/.prime/agent (pa-types platform/dirs.rs, agent_dir). It
 // reads both files with Pi's fields and types (pa-core models/custom.rs,
-// settings/types.rs), so magpie wires it as it does Pi:
+// settings/types.rs), so magpie-friday wires it as it does Pi:
 // defaultProvider/defaultModel/defaultThinkingLevel in settings.json and
-// magpie as the provider "magpie" in models.json.
+// magpie-friday as the provider "magpie-friday" in models.json.
 //
 // Its requests carry no User-Agent (its HTTP client sets none), so the key
-// magpie gives it names it (magpie-prime-agent): that is how the gateway
+// magpie-friday gives it names it (magpie-friday-prime-agent): that is how the gateway
 // counts its requests as Prime Agent's.
 //
 // Its global settings.json alone is written, as Pi's is: a project's
@@ -21,20 +21,20 @@ package agent
 import (
 	"path/filepath"
 
-	"github.com/yetone/magpie/internal/appdir"
+	"github.com/cha0sal3r/magpie-friday/internal/appdir"
 )
 
 func primeAgent(home string) *Agent { return primeAgentIn(here(home)) }
 
 // primeAgentIn is Prime Agent at a place: this machine's home, where its
-// variable moves it, or a WSL distro's, whose variables magpie can't read.
+// variable moves it, or a WSL distro's, whose variables magpie-friday can't read.
 func primeAgentIn(at place) *Agent {
 	return piLikeKeyed(at, "prime-agent", "Prime Agent", primeAgentDir(at),
 		func() string { return agentKeyAt("prime-agent", at.gw()) })
 }
 
 // primeAgentDir is Prime Agent's agent folder at a place. A relative
-// PRIME_AGENT_CODING_AGENT_DIR is its working directory's, which magpie
+// PRIME_AGENT_CODING_AGENT_DIR is its working directory's, which magpie-friday
 // can't know, so it is not taken.
 func primeAgentDir(at place) string {
 	if at.spell == nil {

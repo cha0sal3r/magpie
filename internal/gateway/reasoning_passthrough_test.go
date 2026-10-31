@@ -9,7 +9,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // deepseekResponses plays OpenCode Go's /responses for deepseek-v4.1-flash
@@ -108,10 +108,10 @@ func (u *deepseekResponses) last() []map[string]any {
 // deepseek-v4.1-flash, its request passed through as it is. Codex hands a
 // reasoning item back as it got it (codex-rs keeps reasoning_text content
 // when it has some, and sends content and encrypted_content as null
-// otherwise), so an item from a turn magpie translated, or another provider
+// otherwise), so an item from a turn magpie-friday translated, or another provider
 // in a mixed group served, has only its summary. Passed on as it was,
 // DeepSeek refused the request; and the refusal, naming the input, made
-// magpie leave every reasoning item out of the requests after it.
+// magpie-friday leave every reasoning item out of the requests after it.
 func TestDeepSeekReasoningPassedThrough(t *testing.T) {
 	fresh(t)
 	up := &deepseekResponses{}
@@ -144,7 +144,7 @@ func TestDeepSeekReasoningPassedThrough(t *testing.T) {
 		return ""
 	}
 
-	// a summary only, as magpie gives Codex in a translated reply
+	// a summary only, as magpie-friday gives Codex in a translated reply
 	if code, b := ask(`{"type":"reasoning","id":"rs_1","summary":[{"type":"summary_text","text":"Looking at main.go"}],"content":null,"encrypted_content":null}`); code != 200 {
 		t.Fatalf("summary-only reasoning: %d %s", code, b)
 	}

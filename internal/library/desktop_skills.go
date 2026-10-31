@@ -11,9 +11,9 @@ package library
 //	  skills/<name>/SKILL.md
 //
 // A skill is listed only once the manifest has it, and stays listed after
-// its folder goes, so magpie writes both (#638). Each is a copy, not a
+// its folder goes, so magpie-friday writes both (#638). Each is a copy, not a
 // link: Cowork runs a linked skill but won't read the files beside its
-// SKILL.md from outside the plugin's folder. The copy is magpie's by its
+// SKILL.md from outside the plugin's folder. The copy is magpie-friday's by its
 // mark, which also keeps the hash of what was copied: one changed in
 // Desktop since is left as it is, and set aside rather than deleted when
 // the library stops giving it. Desktop reads the manifest again when its
@@ -30,9 +30,9 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	"github.com/yetone/magpie/internal/desktopdir"
-	"github.com/yetone/magpie/internal/dirent"
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/desktopdir"
+	"github.com/cha0sal3r/magpie-friday/internal/dirent"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
 )
 
 const desktopManifest = "manifest.json"
@@ -78,7 +78,7 @@ func desktopCopy(p, name string) error {
 	return copyIn(p, name)
 }
 
-// desktopEdited is whether magpie's copy at p was changed since it was
+// desktopEdited is whether magpie-friday's copy at p was changed since it was
 // made: its files are no longer what its mark says were copied.
 func desktopEdited(p string) bool {
 	b, err := os.ReadFile(filepath.Join(p, marker))
@@ -109,7 +109,7 @@ func desktopStamp(raw []byte) any {
 func isoStamp(t time.Time) string { return t.UTC().Format("2006-01-02T15:04:05.000Z") }
 
 // fixUpdatedAt is the entry with its updatedAt, when a number of
-// milliseconds (as magpie wrote them before #863), written as Desktop's
+// milliseconds (as magpie-friday wrote them before #863), written as Desktop's
 // are, the other keys as they were; "" when it isn't a number.
 func fixUpdatedAt(e gjson.Result) string {
 	if e.Get("updatedAt").Type != gjson.Number {
@@ -230,7 +230,7 @@ func writeManifest(root string, put map[string]bool, drop []string) error {
 }
 
 // syncDesktopSkills gives Claude Desktop the library's skills it is to
-// have, in every account's skills-plugin, and takes out the ones magpie
+// have, in every account's skills-plugin, and takes out the ones magpie-friday
 // put there that it no longer is to.
 func (l *Library) syncDesktopSkills(t *Target, res *Result) {
 	id := t.Agent.ID
@@ -305,7 +305,7 @@ func (l *Library) syncDesktopSkills(t *Target, res *Result) {
 				continue
 			}
 			// one of Desktop's own (built in, or made there) by that name
-			// stays, the library's left out; magpie's own entry, its folder
+			// stays, the library's left out; magpie-friday's own entry, its folder
 			// gone, gets the folder back. It is the agent's own, which the
 			// page settles by keeping Desktop's (#1896), not a write that
 			// failed and might work if tried again.

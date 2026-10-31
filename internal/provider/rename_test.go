@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 func TestRename(t *testing.T) {
@@ -35,7 +35,7 @@ func TestRename(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	for _, bad := range []string{"other", "Not A Slug", "magpie", "group", "codex"} {
+	for _, bad := range []string{"other", "Not A Slug", "magpie-friday", "group", "codex"} {
 		if err := Rename("relay", bad); err == nil {
 			t.Fatalf("renamed to %q", bad)
 		}
@@ -67,7 +67,7 @@ func TestRename(t *testing.T) {
 	if _, err := os.Stat(catalog.LivePath("fast")); err != nil {
 		t.Fatal("the fetched list stayed behind")
 	}
-	if got := RenamedRef("magpie/relay/m1"); got != "magpie/fast/m1" {
+	if got := RenamedRef("magpie-friday/relay/m1"); got != "magpie-friday/fast/m1" {
 		t.Fatal(got)
 	}
 	// a save that doesn't say keeps what it was

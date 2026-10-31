@@ -13,23 +13,23 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/lastgood"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/lastgood"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // An agent's config is a file anyone can write: another switcher, an
-// installer, the agent's own setup. One that takes magpie out leaves the
-// row showing a magpie model while the agent asks its own vendor for it, and
-// the user blames magpie. So magpie remembers what it last set on each agent
+// installer, the agent's own setup. One that takes magpie-friday out leaves the
+// row showing a magpie-friday model while the agent asks its own vendor for it, and
+// the user blames magpie-friday. So magpie-friday remembers what it last set on each agent
 // (applied.json, beside the stash) and says when that no longer holds —
 // Drift — with the way to set it again.
 
 var appliedMu sync.Mutex
 
-// applied is what magpie last set on one agent, and when.
+// applied is what magpie-friday last set on one agent, and when.
 type applied struct {
 	At     time.Time         `json:"at"`
 	Fields map[string]string `json:"fields"` // field key → value
@@ -37,7 +37,7 @@ type applied struct {
 
 func appliedPath() string { return filepath.Join(filepath.Dir(provider.Path()), "applied.json") }
 
-// appliedLoad is agent id → what magpie set on it.
+// appliedLoad is agent id → what magpie-friday set on it.
 func appliedLoad() map[string]applied {
 	out := map[string]applied{}
 	if b, err := os.ReadFile(appliedPath()); err == nil {
@@ -46,7 +46,7 @@ func appliedLoad() map[string]applied {
 	return out
 }
 
-// appliedSave writes m as applied.json. It holds what magpie set on every
+// appliedSave writes m as applied.json. It holds what magpie-friday set on every
 // agent, and appliedLoad reads a file that doesn't parse as empty: such a
 // file is copied aside first, and one that can't be copied isn't written
 // over (#2263).
@@ -66,8 +66,8 @@ func appliedOf(id string) applied {
 	return appliedLoad()[id]
 }
 
-// record keeps what a field reads after magpie set it; a field put back to
-// the agent's default is magpie's no longer.
+// record keeps what a field reads after magpie-friday set it; a field put back to
+// the agent's default is magpie-friday's no longer.
 func record(id, key, v string) {
 	appliedMu.Lock()
 	defer appliedMu.Unlock()
@@ -86,12 +86,12 @@ func record(id, key, v string) {
 	appliedSave(m)
 }
 
-// Apply sets one of the agent's fields and remembers it as magpie's, so it
+// Apply sets one of the agent's fields and remembers it as magpie-friday's, so it
 // can be told apart from what something else writes there later. Every
-// setting of a field by the user goes through here. A field magpie set
-// before that this one moves too is magpie's doing as well: Claude Code's
-// Default takes its tiers and subagent model out with magpie's endpoint,
-// which read as changed outside magpie, and the drift kept the row up
+// setting of a field by the user goes through here. A field magpie-friday set
+// before that this one moves too is magpie-friday's doing as well: Claude Code's
+// Default takes its tiers and subagent model out with magpie-friday's endpoint,
+// which read as changed outside magpie-friday, and the drift kept the row up
 // among the connected ones while it said Not connected (#834).
 func (a *Agent) Apply(key, v string) error {
 	if a.Native != nil {
@@ -117,7 +117,7 @@ func (a *Agent) Apply(key, v string) error {
 		}
 	}
 	record(a.ID, f.Key, f.Get())
-	// magpie picked in by the user's own hand (magpie model, a pick in
+	// magpie-friday picked in by the user's own hand (magpie-friday model, a pick in
 	// the CLI) connects it again
 	if a.Wired() {
 		forget(a.ID + disconnectedKey)
@@ -125,12 +125,12 @@ func (a *Agent) Apply(key, v string) error {
 	return nil
 }
 
-// Drift is how an agent differs from what magpie set on it.
+// Drift is how an agent differs from what magpie-friday set on it.
 type Drift struct {
 	// Kind says what is off:
-	//   "unwired"  the model is magpie's but the config no longer sends it
-	//              through magpie (Check);
-	//   "replaced" a magpie model magpie set was replaced by the agent's own;
+	//   "unwired"  the model is magpie-friday's but the config no longer sends it
+	//              through magpie-friday (Check);
+	//   "replaced" a magpie-friday model magpie-friday set was replaced by the agent's own;
 	//   "bypassed" the config is right, yet the agent was used since and
 	//              nothing of it reached the gateway — it runs on an old
 	//              config, or something outside the file overrides it;
@@ -154,11 +154,11 @@ type Drift struct {
 // then, a request the gateway missed says nothing about the agent.
 var started = time.Now()
 
-// Drift says what, if anything, keeps the agent off what magpie set: its
-// config first (wiring, then each field against magpie's record), then —
+// Drift says what, if anything, keeps the agent off what magpie-friday set: its
+// config first (wiring, then each field against magpie-friday's record), then —
 // the config being right — whether its latest use actually came through.
-// A field moved from one magpie model to another (the agent's own picker)
-// isn't drift; one moved off magpie is.
+// A field moved from one magpie-friday model to another (the agent's own picker)
+// isn't drift; one moved off magpie-friday is.
 func (a *Agent) Drift() *Drift {
 	if a.Native != nil {
 		s := a.Native.Read()
@@ -171,7 +171,7 @@ func (a *Agent) Drift() *Drift {
 		return nil
 	}
 	vals := a.Values()
-	// the field on one of magpie's models: where drift shows, and what
+	// the field on one of magpie-friday's models: where drift shows, and what
 	// setting it again sets
 	on, onMagpie := a.Fields[0], false
 	for _, f := range a.Fields {
@@ -186,17 +186,17 @@ func (a *Agent) Drift() *Drift {
 		}
 	}
 	rec := appliedOf(a.ID)
-	// still joined, a model off magpie is one picked in the agent, beside
-	// magpie's in its list (dsh's /model), not a change from outside; so is
+	// still joined, a model off magpie-friday is one picked in the agent, beside
+	// magpie-friday's in its list (dsh's /model), not a change from outside; so is
 	// one Codex picks beside its ChatGPT sign-in, which still goes through
-	// magpie (#2424: the row went red with Reconnect)
+	// magpie-friday (#2424: the row went red with Reconnect)
 	joined := a.Joined != nil && a.Joined()
 	picked := joined || a.Beside != nil && a.Beside()
 	for _, f := range a.Fields {
 		want, ok := rec.Fields[f.Key]
 		// a field that reads empty while it follows another (Claude Code's
 		// tiers and subagents on its main model) runs on that one's model:
-		// the main model moved onto the one magpie set the field to reads
+		// the main model moved onto the one magpie-friday set the field to reads
 		// as following it, not as the field put back to the agent's own
 		// default (#1050)
 		now := vals[f.Key]
@@ -207,7 +207,7 @@ func (a *Agent) Drift() *Drift {
 			continue
 		}
 		return &Drift{Kind: "replaced", Field: f.Key, Now: vals[f.Key], Want: want,
-			Detail: a.Name + "'s config was changed outside magpie: " + f.Label + " is " + orDefault(vals[f.Key]) + ", not " + want + " as magpie set it"}
+			Detail: a.Name + "'s config was changed outside magpie-friday: " + f.Label + " is " + orDefault(vals[f.Key]) + ", not " + want + " as magpie-friday set it"}
 	}
 	if onMagpie || joined {
 		if d := a.unreachable(on, vals[on.Key]); d != nil {
@@ -221,36 +221,36 @@ func (a *Agent) Drift() *Drift {
 		if at, to, refused := a.Reached(rec.At); !at.IsZero() {
 			switch {
 			// a request the gateway saw since, or one to where the config
-			// keeps magpie (Codex's kept address, a reverse proxy, #1985),
+			// keeps magpie-friday (Codex's kept address, a reverse proxy, #1985),
 			// came through
 			case !sameHost(to, gateway.URL()) && !sameHost(to, a.pointedAt()) && lastSeen(a.ID).Before(at.Add(-2*time.Second)):
 				return &Drift{Kind: "bypassed", Field: on.Key, Now: vals[on.Key], Want: vals[on.Key],
-					Detail: a.Name + "'s last request (" + at.Format("15:04") + ") went to " + hostOf(to) + ", not magpie — it was started before magpie set it up and still runs on its old config: quit and reopen it"}
+					Detail: a.Name + "'s last request (" + at.Format("15:04") + ") went to " + hostOf(to) + ", not magpie-friday — it was started before magpie-friday set it up and still runs on its old config: quit and reopen it"}
 			case refused:
 				return &Drift{Kind: "bypassed", Field: on.Key, Now: vals[on.Key], Want: vals[on.Key],
-					Detail: a.Name + " couldn't reach magpie at " + at.Format("15:04") + " — magpie wasn't running then, so it has none of magpie's models: quit and reopen it"}
+					Detail: a.Name + " couldn't reach magpie-friday at " + at.Format("15:04") + " — magpie-friday wasn't running then, so it has none of magpie-friday's models: quit and reopen it"}
 			}
 		}
 	}
 	if a.LastUsed != nil && onMagpie {
 		if used := a.LastUsed(); bypassed(used, rec.At, lastSeen(a.ID)) {
 			return &Drift{Kind: "bypassed", Field: on.Key, Now: vals[on.Key], Want: vals[on.Key],
-				Detail: a.Name + " was used at " + used.Format("15:04") + " but none of its requests reached magpie — one started before magpie set it up still runs on its old config: restart it"}
+				Detail: a.Name + " was used at " + used.Format("15:04") + " but none of its requests reached magpie-friday — one started before magpie-friday set it up still runs on its old config: restart it"}
 		}
 	}
 	return nil
 }
 
-// installedURL is the gateway of the magpie people install, on its own
-// port, the one its Settings have; a magpie MAGPIE_ADDR puts on another
-// (magpie-dev, a sandbox) is run beside it.
+// installedURL is the gateway of the magpie-friday people install, on its own
+// port, the one its Settings have; a magpie-friday MAGPIE_ADDR puts on another
+// (magpie-friday-dev, a sandbox) is run beside it.
 var installedURL = gateway.SavedURL
 
-// elsewhere: this magpie is not on the installed one's port.
+// elsewhere: this magpie-friday is not on the installed one's port.
 func elsewhere() bool { return !sameHost(gateway.URL(), installedURL()) }
 
-// theInstalled: this magpie runs beside the installed one, and the agent is
-// wired to that one's gateway, not this one's — the installed magpie set it
+// theInstalled: this magpie-friday runs beside the installed one, and the agent is
+// wired to that one's gateway, not this one's — the installed magpie-friday set it
 // up, so it is that one's to check, not drift here. Otherwise the two would
 // take turns flagging each other's wiring.
 func (a *Agent) theInstalled() bool {
@@ -264,7 +264,7 @@ func (a *Agent) theInstalled() bool {
 	return strings.Contains(string(b), hostOf(installedURL())) && !strings.Contains(string(b), hostOf(gateway.URL()))
 }
 
-// bypassed: the agent was used — while this gateway was up and after magpie
+// bypassed: the agent was used — while this gateway was up and after magpie-friday
 // last set it — and no request of it arrived since. A request leaves within
 // moments of the prompt; a little grace keeps one in flight from counting.
 // lastSeen is when the agent's last request reached this process's gateway
@@ -278,7 +278,7 @@ func bypassed(used, applied, seen time.Time) bool {
 		time.Since(used) > grace && seen.Before(used.Add(-2*time.Second))
 }
 
-// magpieValue: the value is one of magpie's models as this agent spells it,
+// magpieValue: the value is one of magpie-friday's models as this agent spells it,
 // its suffix after the model (SplitSuffix) aside; a list of models is the
 // user's own.
 func magpieValue(a *Agent, f Field, v string, vals map[string]string) bool {
@@ -292,8 +292,8 @@ func magpieValue(a *Agent, f Field, v string, vals map[string]string) bool {
 	if isMagpie(v) {
 		return true
 	}
-	// spelled as magpie's provider in the agent's own config (OpenCode's
-	// magpie/…): magpie's even when its list there doesn't have the model
+	// spelled as magpie-friday's provider in the agent's own config (OpenCode's
+	// magpie-friday/…): magpie-friday's even when its list there doesn't have the model
 	if ref, ok := strings.CutPrefix(v, magpieID+"/"); ok && isMagpie(ref) {
 		return true
 	}
@@ -316,7 +316,7 @@ func groupNamed(v string) string {
 	// Claude Code's [1m] mark rides on the group's id as it does on a
 	// model's, and one of the two values here comes from the agent's own
 	// settings: without it off, a group read back marked is not the one
-	// magpie set (GroupFor takes it off; so does GroupFinder)
+	// magpie-friday set (GroupFor takes it off; so does GroupFinder)
 	v = strings.TrimSuffix(strings.TrimSpace(v), "[1m]")
 	v = strings.TrimPrefix(v, magpieID+"/")
 	if provider.IsGroupRef(v) {
@@ -328,7 +328,7 @@ func groupNamed(v string) string {
 
 // sameGroup: two values of a field reach the same routing group, one by
 // the group's id and the other by its model's name (#750: Codex's config
-// read gpt-6.1-sol where magpie had set group/auto-gpt-6-1-sol). Asked for
+// read gpt-6.1-sol where magpie-friday had set group/auto-gpt-6-1-sol). Asked for
 // either, the gateway serves the group, so the one is not the other
 // replaced.
 func sameGroup(a, b string) bool {
@@ -336,9 +336,9 @@ func sameGroup(a, b string) bool {
 	return g != "" && g == groupNamed(b)
 }
 
-// setAsGroup: magpie set the agent's field to a routing group, and v names
-// that group by its model's name (sameGroup) — magpie's model still, for an
-// agent whose config sends v to magpie's gateway.
+// setAsGroup: magpie-friday set the agent's field to a routing group, and v names
+// that group by its model's name (sameGroup) — magpie-friday's model still, for an
+// agent whose config sends v to magpie-friday's gateway.
 func setAsGroup(id, key, v string) bool {
 	if v == "" || isMagpie(v) {
 		return false
@@ -354,9 +354,9 @@ func orDefault(v string) string {
 	return v
 }
 
-// Reapply sets again what magpie set on the agent: what drifted, else its
-// fields as they read now — for a config taken off magpie in a way no check
-// catches. A replaced field brings back the others magpie set with it.
+// Reapply sets again what magpie-friday set on the agent: what drifted, else its
+// fields as they read now — for a config taken off magpie-friday in a way no check
+// catches. A replaced field brings back the others magpie-friday set with it.
 // Either way the record is renewed, so a use before now no longer counts.
 func (a *Agent) Reapply() error {
 	if a.Native != nil {
@@ -383,8 +383,8 @@ func (a *Agent) Reapply() error {
 	}
 	vals := a.Values()
 	for _, f := range a.Fields {
-		// magpie as the agent's provider too (Claude Desktop's provider
-		// field, beside its tiers on magpie's models), as Wired takes it:
+		// magpie-friday as the agent's provider too (Claude Desktop's provider
+		// field, beside its tiers on magpie-friday's models), as Wired takes it:
 		// left out, Reconnect set the tiers again and never the gateway
 		// Check found off (dumplings on Discord)
 		if v := vals[f.Key]; v != "" && (d != nil && f.Key == d.Field || v == magpieID || magpieValue(a, f, v, vals)) {
@@ -396,7 +396,7 @@ func (a *Agent) Reapply() error {
 	return nil
 }
 
-// Keep takes the agent's config as it is now: what magpie set before is
+// Keep takes the agent's config as it is now: what magpie-friday set before is
 // forgotten, and no longer said to have been changed.
 func (a *Agent) Keep() {
 	appliedMu.Lock()
@@ -409,8 +409,8 @@ func (a *Agent) Keep() {
 	appliedSave(m)
 }
 
-// Wired reports whether magpie is in the agent's config: a field on one of
-// magpie's models, or on magpie itself (an app whose one setting is magpie
+// Wired reports whether magpie-friday is in the agent's config: a field on one of
+// magpie-friday's models, or on magpie-friday itself (an app whose one setting is magpie-friday
 // as its provider).
 func (a *Agent) Wired() bool {
 	if a.Native != nil {
@@ -428,10 +428,10 @@ func (a *Agent) Wired() bool {
 	return false
 }
 
-// Pick sets a field from the Agents page's model picker. One of magpie's
+// Pick sets a field from the Agents page's model picker. One of magpie-friday's
 // models picked on an agent not connected yet connects it first, as its
 // switch does, then starts it on that model (the owner: the switch, and a
-// model picked in magpie in one click, both): the agent gets magpie's whole
+// model picked in magpie-friday in one click, both): the agent gets magpie-friday's whole
 // list, and Disconnect puts back what it had before.
 func (a *Agent) Pick(key, v string) error {
 	if a.Native != nil {
@@ -453,24 +453,24 @@ func (a *Agent) Pick(key, v string) error {
 	return a.Apply(key, v)
 }
 
-// Connect puts magpie into the agent's config, the Agents page's switch
-// (the owner: an agent is connected to magpie, and its models are picked in
-// the agent): the agent's main field goes to one of magpie's models — the
-// one serving the model it is on now, else the first — or to magpie itself
-// for an app whose one setting is magpie as its provider. Setting it writes
+// Connect puts magpie-friday into the agent's config, the Agents page's switch
+// (the owner: an agent is connected to magpie-friday, and its models are picked in
+// the agent): the agent's main field goes to one of magpie-friday's models — the
+// one serving the model it is on now, else the first — or to magpie-friday itself
+// for an app whose one setting is magpie-friday as its provider. Setting it writes
 // the provider and the whole catalog in, so the agent's own model list has
-// every one of magpie's models. An agent that can keep the model it is on
+// every one of magpie-friday's models. An agent that can keep the model it is on
 // (Join) keeps it. An agent already connected is left as it is.
-// NoModelsError is Connect's answer while magpie has no models to give
+// NoModelsError is Connect's answer while magpie-friday has no models to give
 // the agent: no provider or subscription has been added yet. The GUI says
 // it in the reader's language by its code (no_models).
 type NoModelsError struct{ Agent string }
 
 func (e *NoModelsError) Error() string {
-	return "Add a provider or subscription in magpie first, then connect " + e.Agent
+	return "Add a provider or subscription in magpie-friday first, then connect " + e.Agent
 }
 
-// AllHiddenError is Connect's answer when magpie has models but none of
+// AllHiddenError is Connect's answer when magpie-friday has models but none of
 // them is left in the agent's lists: the only ones picked for it are gone
 // with their provider, or every one is turned off for it (#1989). Saying
 // it can't be connected sent the user looking at the agent, when its model
@@ -479,7 +479,7 @@ func (e *NoModelsError) Error() string {
 type AllHiddenError struct{ Agent string }
 
 func (e *AllHiddenError) Error() string {
-	return "None of magpie's models is left in " + e.Agent + "'s model list: pick one under Model list → Pick on the Agents page, then connect " + e.Agent
+	return "None of magpie-friday's models is left in " + e.Agent + "'s model list: pick one under Model list → Pick on the Agents page, then connect " + e.Agent
 }
 
 func (a *Agent) Connect() error {
@@ -489,19 +489,19 @@ func (a *Agent) Connect() error {
 
 // Connection is how Connect chose the model an agent starts on, for the
 // Agents page to say it (#726: Codex showed its last pick, Claude Code a
-// Sonnet through magpie and Antigravity some model, with nothing saying
+// Sonnet through magpie-friday and Antigravity some model, with nothing saying
 // why). How is one of:
 //
 //   - "kept": it was connected already, left as it was
 //   - "again": the models it was on when it was switched off, put back
 //   - "joined": the model it is on stays its own (Codex signed in with
-//     ChatGPT), magpie's models join its list
-//   - "magpie": an app whose one setting is magpie as its provider
-//   - "same": the model it is on now, through magpie
-//   - "alike": the model its alias (opus) stands for, through magpie
+//     ChatGPT), magpie-friday's models join its list
+//   - "magpie-friday": an app whose one setting is magpie-friday as its provider
+//   - "same": the model it is on now, through magpie-friday
+//   - "alike": the model its alias (opus) stands for, through magpie-friday
 //   - "default": on its own default with no model set: the first of its
-//     own models in its list (the newest, for Claude Code), through magpie
-//   - "first": magpie has none of the model it is on: the first on the
+//     own models in its list (the newest, for Claude Code), through magpie-friday
+//   - "first": magpie-friday has none of the model it is on: the first on the
 //     account it is signed in to, else a subscription's, else the first
 //
 // Field and Value are the field set and what it was set to, where Connect
@@ -531,7 +531,7 @@ const disconnectedKey = ".disconnected"
 // connected it since.
 func (a *Agent) Disconnected() bool { return stashLoad()[a.ID+disconnectedKey] == "1" }
 
-// noModelLeft says why there is no model of magpie's to connect the agent
+// noModelLeft says why there is no model of magpie-friday's to connect the agent
 // to: none added yet (NoModelsError), or every one taken out of its lists
 // (AllHiddenError); nil while one is left.
 func (a *Agent) noModelLeft() error {
@@ -541,7 +541,7 @@ func (a *Agent) noModelLeft() error {
 	if len(shown)+len(hidden) == 0 {
 		return &NoModelsError{Agent: a.Name}
 	}
-	// magpie has models, and every one of them is taken out of the
+	// magpie-friday has models, and every one of them is taken out of the
 	// agent's lists (a picked model gone with its provider, one hidden by
 	// hand): saying the agent can't be connected sends the user looking
 	// at the agent, when its model list is what emptied it (#1989)
@@ -562,16 +562,16 @@ func (a *Agent) connect() (Connection, error) {
 	if ok, err := a.reconnect(now); ok || err != nil {
 		return Connection{How: "again"}, err
 	}
-	// the model it is on stays, where the agent can have magpie's models
+	// the model it is on stays, where the agent can have magpie-friday's models
 	// beside it (the owner: Codex keeps its own last pick)
 	if a.Join != nil {
 		if ok, err := a.Join(); ok || err != nil {
 			return Connection{How: "joined"}, err
 		}
 	}
-	// the field magpie is picked in: the one listing magpie's models (for
+	// the field magpie-friday is picked in: the one listing magpie-friday's models (for
 	// Gemini CLI its model, its first field being how it signs in), else one
-	// whose value is magpie itself
+	// whose value is magpie-friday itself
 	vals := a.Values()
 	var f *Field
 	var opts []Option
@@ -596,7 +596,7 @@ func (a *Agent) connect() (Connection, error) {
 		if err := a.noModelLeft(); err != nil {
 			return Connection{}, err
 		}
-		return Connection{}, fmt.Errorf("%s can't be connected to magpie", a.Name)
+		return Connection{}, fmt.Errorf("%s can't be connected to magpie-friday", a.Name)
 	}
 	cur := connectWas(vals[f.Key], opts)
 	if cur == "" && f.Key != a.Fields[0].Key {
@@ -612,7 +612,7 @@ func (a *Agent) connect() (Connection, error) {
 			}
 		}
 	}
-	// the model it is on now, through magpie (or of its family, for an
+	// the model it is on now, through magpie-friday (or of its family, for an
 	// alias): on the account it is signed in to (its vendor's) first, then
 	// on a subscription, before a key's; else its own vendor's; else a
 	// subscription's; else the first
@@ -623,8 +623,8 @@ func (a *Agent) connect() (Connection, error) {
 			if err := a.Apply(f.Key, magpieID); err != nil {
 				return Connection{}, err
 			}
-			// an app whose picker gets magpie's models as listed for it
-			// (WorkBuddy, ZCode): with none listed, setting magpie wrote
+			// an app whose picker gets magpie-friday's models as listed for it
+			// (WorkBuddy, ZCode): with none listed, setting magpie-friday wrote
 			// none, and the agent reads as not connected right after a
 			// connect that said it was (Lumens on Discord). One connected
 			// by its address alone (Cursor Private Inference) is connected
@@ -634,7 +634,7 @@ func (a *Agent) connect() (Connection, error) {
 					return Connection{}, err
 				}
 			}
-			return Connection{How: "magpie", Field: f.Key, Value: magpieID}, nil
+			return Connection{How: "magpie-friday", Field: f.Key, Value: magpieID}, nil
 		}
 		if o.Ref != "" && o.Group == RoutingGroups && group == "" {
 			group = o.Value
@@ -666,7 +666,7 @@ func (a *Agent) connect() (Connection, error) {
 			sub = o.Value
 		}
 	}
-	// the model it is on, of its own, as magpie serves it on a sign-in of
+	// the model it is on, of its own, as magpie-friday serves it on a sign-in of
 	// the user's, which its field lists as its own (Codex's on a ChatGPT
 	// account it can't join, #940)
 	if same == "" && alike == "" && cur != "" && a.OwnVia != nil {
@@ -691,7 +691,7 @@ func (a *Agent) connect() (Connection, error) {
 		pick = group
 	}
 	if pick == "" {
-		return Connection{}, fmt.Errorf("magpie has no models %s can use: add a subscription or a provider first", a.Name)
+		return Connection{}, fmt.Errorf("magpie-friday has no models %s can use: add a subscription or a provider first", a.Name)
 	}
 	return Connection{How: how, Field: f.Key, Value: pick}, a.Apply(f.Key, pick)
 }
@@ -714,12 +714,12 @@ func connectWas(v string, opts []Option) string {
 	return strings.TrimSpace(v)
 }
 
-// Disconnect takes magpie out of the agent's config and puts back what the
-// user had, the Agents page's "Disconnect from magpie" (Fate on Discord:
+// Disconnect takes magpie-friday out of the agent's config and puts back what the
+// user had, the Agents page's "Disconnect from magpie-friday" (Fate on Discord:
 // picking the agent's default did it, but nothing said so). Unwire first,
 // for an agent whose default would leave it as installed; then each field
-// still on magpie goes to its default, as picking it does, and so does
-// each one magpie set that reads as magpie set it (an effort). What magpie
+// still on magpie-friday goes to its default, as picking it does, and so does
+// each one magpie-friday set that reads as magpie-friday set it (an effort). What magpie-friday
 // remembered setting is forgotten.
 func (a *Agent) Disconnect() error {
 	if a.Native != nil {
@@ -732,8 +732,8 @@ func (a *Agent) Disconnect() error {
 	if !a.Wired() {
 		return nil
 	}
-	// the user's say, kept till they connect it again: nothing magpie does
-	// by itself (a start's Sync, Codex's account failover) puts magpie back
+	// the user's say, kept till they connect it again: nothing magpie-friday does
+	// by itself (a start's Sync, Codex's account failover) puts magpie-friday back
 	// in, this Disconnect's own writes included (paynezhuang on Discord)
 	stash(map[string]string{a.ID + disconnectedKey: "1"})
 	before, rec := a.Values(), appliedOf(a.ID)
@@ -745,7 +745,7 @@ func (a *Agent) Disconnect() error {
 	for _, f := range a.Fields {
 		vals := a.Values()
 		v := vals[f.Key]
-		// set by magpie: as it set it, or its group by the model's name
+		// set by magpie-friday: as it set it, or its group by the model's name
 		set := v != "" && (rec.Fields[f.Key] == v || sameGroup(rec.Fields[f.Key], v)) && before[f.Key] == v
 		if v == "" || !set && v != magpieID && !magpieValue(a, f, v, vals) {
 			continue
@@ -771,7 +771,7 @@ func (a *Agent) Disconnect() error {
 			return err
 		}
 	}
-	// what it was on through magpie, for switching it on again
+	// what it was on through magpie-friday, for switching it on again
 	back := reconnection{Magpie: map[string]string{}, Left: a.Values()}
 	for _, f := range a.Fields {
 		if v := before[f.Key]; v != back.Left[f.Key] {
@@ -801,7 +801,7 @@ func (a *Agent) DisconnectOffline() error {
 }
 
 // reconnection is what Disconnect took an agent off: the values of its
-// fields it changed (Routed: those that were magpie's) and what it left
+// fields it changed (Routed: those that were magpie-friday's) and what it left
 // every field at.
 type reconnection struct {
 	Magpie map[string]string `json:"magpie"`
@@ -811,7 +811,7 @@ type reconnection struct {
 
 // reconnect puts back the models an agent was on when it was disconnected
 // (the owner: an agent remembers its last pick), if nothing has changed
-// it since and magpie still routes them; false when it doesn't apply.
+// it since and magpie-friday still routes them; false when it doesn't apply.
 func (a *Agent) reconnect(now map[string]string) (bool, error) {
 	var rec reconnection
 	if json.Unmarshal([]byte(unstash(a.ID+".reconnect")), &rec) != nil || len(rec.Routed) == 0 {
@@ -828,8 +828,8 @@ func (a *Agent) reconnect(now map[string]string) (bool, error) {
 			return false, nil
 		}
 	}
-	// the models on magpie first, as Connect sets them (setting Gemini
-	// CLI's model signs it in through magpie, which its sign-in field
+	// the models on magpie-friday first, as Connect sets them (setting Gemini
+	// CLI's model signs it in through magpie-friday, which its sign-in field
 	// can't), then the rest that aren't so by then
 	var keys []string
 	for _, k := range rec.Routed {
@@ -849,7 +849,7 @@ func (a *Agent) reconnect(now map[string]string) (bool, error) {
 				return true, err
 			}
 		} else {
-			// set along with the model (Codex's effort): magpie's as before,
+			// set along with the model (Codex's effort): magpie-friday's as before,
 			// for Disconnect to take out again
 			record(a.ID, k, v)
 		}
@@ -899,15 +899,15 @@ func lastJSONLTime(path, key, textKey string) time.Time {
 }
 
 // sameHost: two URLs name the same server, whatever their scheme (Codex
-// asks magpie's http gateway over ws) or path.
+// asks magpie-friday's http gateway over ws) or path.
 func sameHost(a, b string) bool { return hostOf(a) == hostOf(b) }
 
-// wiringOff checks what magpie wrote into an agent's config to reach the
+// wiringOff checks what magpie-friday wrote into an agent's config to reach the
 // gateway — pairs of key and value, read with get — and says which no longer
 // holds, "" when all do. A URL is quoted; a key's value never is. A URL
-// that reaches magpie another way (reachesMagpie: a reverse proxy, #1985)
+// that reaches magpie-friday another way (reachesMagpie: a reverse proxy, #1985)
 // holds. So does a key of the gateway's own the user put in place of
-// magpie's (keyHolds).
+// magpie-friday's (keyHolds).
 func wiringOff(name, file string, get func(string) (string, bool), kvs ...string) string {
 	for i := 0; i+1 < len(kvs); i += 2 {
 		k, want := kvs[i], kvs[i+1]
@@ -918,11 +918,11 @@ func wiringOff(name, file string, get func(string) (string, bool), kvs ...string
 		where := name + "'s " + k + " (" + filepath.Base(file) + ")"
 		switch {
 		case v == "":
-			return where + " is gone, so it no longer reaches magpie"
+			return where + " is gone, so it no longer reaches magpie-friday"
 		case strings.Contains(strings.ToLower(k), "url"):
-			return where + " is " + v + ", not magpie's gateway at " + want
+			return where + " is " + v + ", not magpie-friday's gateway at " + want
 		default:
-			return where + " was changed, so magpie's gateway won't take its requests"
+			return where + " was changed, so magpie-friday's gateway won't take its requests"
 		}
 	}
 	return ""

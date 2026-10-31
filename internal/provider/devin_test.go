@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 func TestParseDevinStatus(t *testing.T) {
@@ -110,7 +110,7 @@ func TestWithDevinContexts(t *testing.T) {
 	})
 	t.Cleanup(func() { devinFamiliesCached(nil) })
 	saved := withDevinContexts([]catalog.Model{
-		{ID: "glm-5-2", Context: 1000000, Output: 131072}, // an older magpie's models.dev numbers
+		{ID: "glm-5-2", Context: 1000000, Output: 131072}, // an older magpie-friday's models.dev numbers
 		{ID: "glm-5-2-1m"},
 		{ID: "swe-2-high"},
 		{ID: "glm-5.2"},
@@ -256,7 +256,7 @@ func TestAskDevinStatus(t *testing.T) {
 	}
 }
 
-// the identity magpie serves: an ask that fails keeps the account, and one
+// the identity magpie-friday serves: an ask that fails keeps the account, and one
 // that says nobody (or keeps no key) drops it, on disk too
 func TestDevinStatusKeepsTheAccount(t *testing.T) {
 	home := claudeHome(t)
@@ -308,7 +308,7 @@ func TestDevinStatusKeepsTheAccount(t *testing.T) {
 	}
 
 	// a token Devin's servers refused is signed out too, kept on disk as
-	// such: magpie must not go on routing to a dead key
+	// such: magpie-friday must not go on routing to a dead key
 	ask(devinSigned)
 	if _, _, ok := devinStatus.get(); !ok {
 		t.Fatal("signed in again, not served")

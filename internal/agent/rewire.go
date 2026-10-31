@@ -7,12 +7,12 @@ import (
 )
 
 // The gateway's port is set in Settings (Magic_zero on Discord): every
-// agent magpie connected has the gateway's URL written into its config, so
+// agent magpie-friday connected has the gateway's URL written into its config, so
 // moving the gateway moves them too. Before the port changes, OnGateway
 // notes which agents reach the gateway where it is; once it has moved,
 // Rewire sets each of them again, which writes the URL it has now.
 
-// OnGateway are the agents connected to magpie whose configs reach the
+// OnGateway are the agents connected to magpie-friday whose configs reach the
 // gateway at its address now: none of their wiring is off.
 func OnGateway() []*Agent {
 	var out []*Agent
@@ -21,7 +21,7 @@ func OnGateway() []*Agent {
 			continue
 		}
 		if d := a.Drift(); d != nil && d.Kind == "unwired" {
-			continue // taken off magpie before: the user's to set again
+			continue // taken off magpie-friday before: the user's to set again
 		}
 		out = append(out, a)
 	}
@@ -30,10 +30,10 @@ func OnGateway() []*Agent {
 
 // Rewire puts the gateway's address now into the configs of agents, taken
 // by OnGateway before it moved: each one whose wiring is off now is set
-// again, an agent joined to magpie beside its own models (Codex signed in
+// again, an agent joined to magpie-friday beside its own models (Codex signed in
 // with ChatGPT) joined again. It says the names of those it moved, and
 // what one it couldn't move failed with. Cursor Private Inference's
-// variables and dsh's routes, which magpie keeps on its own, follow too;
+// variables and dsh's routes, which magpie-friday keeps on its own, follow too;
 // Claude Science's daemon, started for the old address, is drift
 // (scienceCheck) and is started again with the rest.
 func Rewire(as []*Agent) (moved []string, err error) {
@@ -69,16 +69,16 @@ func Rekey(as []*Agent) (moved []string, err error) {
 }
 
 // setAgain sets each agent's wiring again, keeping what it had before
-// magpie, and says the names of those it set and what one failed with.
+// magpie-friday, and says the names of those it set and what one failed with.
 func setAgain(as []*Agent) (moved []string, errs []error) {
 	for _, a := range as {
 		// set again on the old URL, an agent reads as not routed through
-		// magpie yet, and its set notes the old URL, magpie's token and
-		// model as what it had before magpie: what it really had is kept,
+		// magpie-friday yet, and its set notes the old URL, magpie-friday's token and
+		// model as what it had before magpie-friday: what it really had is kept,
 		// for switching it off to put back
 		was := stashLoad()
 		e := reset(a)
-		// the address magpie wrote follows it (wiredAt)
+		// the address magpie-friday wrote follows it (wiredAt)
 		for k, v := range stashLoad() {
 			if strings.HasSuffix(k, wiredAt) {
 				was[k] = v
@@ -123,7 +123,7 @@ func reset(a *Agent) error {
 	return a.Reapply()
 }
 
-// wiredAt ends a stash key holding the gateway address magpie last wrote
+// wiredAt ends a stash key holding the gateway address magpie-friday last wrote
 // into an agent's config, which a move of the gateway updates.
 const wiredAt = ".wired_at"
 

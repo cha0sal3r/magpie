@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Shares of an allowance past which an account is kept for when the others
@@ -54,7 +54,7 @@ func identity(n int) []int {
 //
 // One not known that tells what it has left as it answers goes first,
 // once: else, kept after those known, it would never answer and never be
-// known (Anthropic's usage endpoint can turn magpie away for hours).
+// known (Anthropic's usage endpoint can turn magpie-friday away for hours).
 var Smart = Strategy{Order: func(_ string, seats []Seat) []int {
 	var fine, low, spent []int
 	for i, s := range seats {
@@ -125,7 +125,7 @@ var Rotate = Strategy{Order: func(pool string, seats []Seat) []int {
 
 // LeastUsed puts a subscription, or a key that reads its own windows, by the
 // share of its allowance used, as the vendor says; then, and for other
-// keys, by what magpie sent it lately. Of those all but used up, one that
+// keys, by what magpie-friday sent it lately. Of those all but used up, one that
 // goes on on its credits goes first (spentBefore).
 var LeastUsed = Strategy{ByUse: true, Order: func(_ string, seats []Seat) []int {
 	idx := identity(len(seats))
@@ -154,7 +154,7 @@ var LeastUsed = Strategy{ByUse: true, Order: func(_ string, seats []Seat) []int 
 // that goes on on its credits first (spentBefore). Among the rest, one
 // not known that tells what it has left as it answers goes first while it
 // isn't, as in Smart, else it would never be known; then the pace, those
-// alike within a tenth by what magpie sent them lately, then in their
+// alike within a tenth by what magpie-friday sent them lately, then in their
 // order, keeping the vendor's prompt cache warm. An account not known
 // counts as a whole week ahead of it; a key has no week, unless it reads
 // its own windows (a sub2api key's limits). A Codex account that spends a

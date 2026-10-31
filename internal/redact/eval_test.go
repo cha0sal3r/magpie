@@ -12,8 +12,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/pii"
-	"github.com/yetone/magpie/internal/redact"
+	"github.com/cha0sal3r/magpie-friday/internal/pii"
+	"github.com/cha0sal3r/magpie-friday/internal/redact"
 )
 
 // The masking evaluation: made-up texts of the kinds agents send (prose,
@@ -25,7 +25,7 @@ import (
 // Three ways are scored on them:
 //   - rules: the rules alone, the model off;
 //   - model: what the local model found, as it said it, before any check;
-//   - both:  the rules and the model with magpie's checks on what it found,
+//   - both:  the rules and the model with magpie-friday's checks on what it found,
 //     as a user with the model on gets.
 //
 // What the model said is recorded in testdata/eval-model.json, so the
@@ -36,7 +36,7 @@ import (
 //
 // To ask the real model again, after a case is added or a new model,
 // point MAGPIE_EVAL_CACHE at the cache folder it was downloaded into
-// (the folder that holds magpie/privacy-filter):
+// (the folder that holds magpie-friday/privacy-filter):
 //
 //	MAGPIE_EVAL_CACHE=$HOME/.cache go test -run TestMaskEval -v ./internal/redact
 //
@@ -116,7 +116,7 @@ func gone(out, v string) bool {
 	return !strings.Contains(placeholders.ReplaceAllString(out, "\x00"), v)
 }
 
-// modelFound says the model put a span of a kind magpie masks over some
+// modelFound says the model put a span of a kind magpie-friday masks over some
 // of v, where v is in text.
 func modelFound(text, v string, fs []redact.Found) bool {
 	for at := 0; ; {
@@ -270,7 +270,7 @@ func writeRecording(t *testing.T, rec map[string]recorded) {
 func askModel(t *testing.T, dir string) map[string]recorded {
 	t.Setenv("XDG_CACHE_HOME", dir)
 	if !pii.Installed() {
-		t.Fatalf("the model isn't in %s", filepath.Join(dir, "magpie", "privacy-filter"))
+		t.Fatalf("the model isn't in %s", filepath.Join(dir, "magpie-friday", "privacy-filter"))
 	}
 	defer pii.Stop()
 	rec := map[string]recorded{}

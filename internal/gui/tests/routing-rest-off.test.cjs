@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// A provider set never to rest after an unknown failure (`magpie provider
+// A provider set never to rest after an unknown failure (`magpie-friday provider
 // rest-cap <id> off`; Kismet Alan on Discord: a relay's 5xx comes now and
 // then and the next request goes through): the Routing page tells its 502
 // as not resting, the request gone on to the next, and its row isn't shown

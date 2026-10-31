@@ -22,8 +22,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/steady"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/steady"
 )
 
 // The two times an account the user lets spend its resets by itself
@@ -146,7 +146,7 @@ var autoReset = autoResets{file: "codex-autoreset.json"}
 
 type autoResets struct {
 	sync.Mutex
-	file string // its name in magpie's folder
+	file string // its name in magpie-friday's folder
 	path string // the file read, read again when that changes (a new HOME)
 	// spent: by account, the end of the week a reset was spent in, when,
 	// and what spending it did — for the requests that found the same week
@@ -317,7 +317,7 @@ const (
 )
 
 // save writes it; a.Lock is held. Through steady.WriteFile, as every write
-// of magpie's own state is (#1505): a crash mid-write left logins.json and
+// of magpie-friday's own state is (#1505): a crash mid-write left logins.json and
 // plugin-auth.json zeroed at full length, and one here would read as no
 // reset spent this week, so the next look spent a second one.
 func (a *autoResets) save() {

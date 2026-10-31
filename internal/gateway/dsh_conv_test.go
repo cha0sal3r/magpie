@@ -13,14 +13,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
 )
 
 // Kumo31 on Discord: dsh's chat-completions and messages routes send no
 // session id, so the gateway keys each request by its first prompt's hash
 // (conversationID), and the Context page listed dsh's sessions as
-// "magpie-a…" where the Sessions page has their titles. The requests here
+// "magpie-friday-a…" where the Sessions page has their titles. The requests here
 // are the ones real dsh 0.2.0-rc.2 sent for the two sessions beside them,
 // a turn and its title call on each route, headers and body as they came:
 // every one's conversation id is one the session's file gives (Convs).
@@ -87,7 +87,7 @@ func TestDshSessionConvsAreTheGatewayIDs(t *testing.T) {
 	for name, id := range dshRequests {
 		_, h, body := dshRequest(t, name)
 		conv := conversationID(h, body)
-		if !strings.HasPrefix(conv, "magpie-") {
+		if !strings.HasPrefix(conv, "magpie-friday-") {
 			t.Fatalf("%s: dsh sent a session id now (%s); the join isn't needed for it", name, conv)
 		}
 		if !slices.Contains(byID[id].Convs, conv) {

@@ -7,10 +7,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 	"gopkg.in/yaml.v3"
 )
 
@@ -45,17 +45,17 @@ func TestOmp(t *testing.T) {
 	if f.Get() != "anthropic/claude-opus-5" {
 		t.Fatalf("get: %q", f.Get())
 	}
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	c, raw := read(configPath)
-	if roles(c)["default"] != "magpie/deepseek/pro" || roles(c)["smol"] != "openai/gpt-6-mini" || c["theme"] != "dark" ||
+	if roles(c)["default"] != "magpie-friday/deepseek/pro" || roles(c)["smol"] != "openai/gpt-6-mini" || c["theme"] != "dark" ||
 		!strings.Contains(raw, "# mine") || !strings.Contains(raw, "# main") {
 		t.Fatalf("config:\n%s", raw)
 	}
 	m, raw := read(modelsPath)
 	ps := providers(m)
-	mp, ok := ps["magpie"].(map[string]any)
+	mp, ok := ps["magpie-friday"].(map[string]any)
 	if !ok || ps["mine"] == nil || mp["auth"] != "none" || mp["api"] != "openai-completions" || !strings.HasSuffix(mp["baseUrl"].(string), "/v1") {
 		t.Fatalf("models:\n%s", raw)
 	}
@@ -67,43 +67,43 @@ func TestOmp(t *testing.T) {
 		t.Fatalf("models: %v", ids)
 	}
 
-	// its own model: magpie steps out
+	// its own model: magpie-friday steps out
 	if err := f.Set("moonshotai/kimi-k3"); err != nil {
 		t.Fatal(err)
 	}
 	c, _ = read(configPath)
 	m, _ = read(modelsPath)
-	if roles(c)["default"] != "moonshotai/kimi-k3" || providers(m)["magpie"] != nil || providers(m)["mine"] == nil {
+	if roles(c)["default"] != "moonshotai/kimi-k3" || providers(m)["magpie-friday"] != nil || providers(m)["mine"] == nil {
 		t.Fatalf("own: %v %v", c, m)
 	}
 
-	// another role through magpie keeps it in models.yml; the reset puts
-	// back the model default had before magpie took it over
-	f.Set("magpie/deepseek/flash")
-	os.WriteFile(configPath, []byte("modelRoles:\n  default: magpie/deepseek/flash\n  smol: magpie/deepseek/pro\n"), 0o644)
+	// another role through magpie-friday keeps it in models.yml; the reset puts
+	// back the model default had before magpie-friday took it over
+	f.Set("magpie-friday/deepseek/flash")
+	os.WriteFile(configPath, []byte("modelRoles:\n  default: magpie-friday/deepseek/flash\n  smol: magpie-friday/deepseek/pro\n"), 0o644)
 	if err := f.Set(""); err != nil {
 		t.Fatal(err)
 	}
 	c, _ = read(configPath)
 	m, _ = read(modelsPath)
-	if roles(c)["default"] != "moonshotai/kimi-k3" || roles(c)["smol"] != "magpie/deepseek/pro" || providers(m)["magpie"] == nil {
+	if roles(c)["default"] != "moonshotai/kimi-k3" || roles(c)["smol"] != "magpie-friday/deepseek/pro" || providers(m)["magpie-friday"] == nil {
 		t.Fatalf("reset with smol: %v %v", c, m)
 	}
 
-	// reset with nothing stashed: only default goes, and magpie with it
-	os.WriteFile(configPath, []byte("theme: dark\nmodelRoles:\n  default: magpie/deepseek/flash\n  smol: openai/gpt-6-mini\n"), 0o644)
+	// reset with nothing stashed: only default goes, and magpie-friday with it
+	os.WriteFile(configPath, []byte("theme: dark\nmodelRoles:\n  default: magpie-friday/deepseek/flash\n  smol: openai/gpt-6-mini\n"), 0o644)
 	if err := f.Set(""); err != nil {
 		t.Fatal(err)
 	}
 	c, _ = read(configPath)
 	m, _ = read(modelsPath)
-	if roles(c)["default"] != nil || roles(c)["smol"] != "openai/gpt-6-mini" || c["theme"] != "dark" || providers(m)["magpie"] != nil || providers(m)["mine"] == nil {
+	if roles(c)["default"] != nil || roles(c)["smol"] != "openai/gpt-6-mini" || c["theme"] != "dark" || providers(m)["magpie-friday"] != nil || providers(m)["mine"] == nil {
 		t.Fatalf("reset: %v %v", c, m)
 	}
 }
 
 // omp names models beyond modelRoles.default: the other roles, the retry
-// fallback chains, enabledModels and the task agents' overrides. magpie
+// fallback chains, enabledModels and the task agents' overrides. magpie-friday
 // stays in models.yml while any of them is on it, and a provider renamed
 // takes them along, their thinking levels and the comments around kept.
 func TestOmpRefsBeyondDefault(t *testing.T) {
@@ -125,57 +125,57 @@ func TestOmpRefsBeyondDefault(t *testing.T) {
 		var m struct{ Providers map[string]any }
 		b, _ := os.ReadFile(modelsPath)
 		yaml.Unmarshal(b, &m)
-		return m.Providers["magpie"] != nil
+		return m.Providers["magpie-friday"] != nil
 	}
 	f := omp(home).Field("model")
 
-	// the last role leaves magpie; a fallback chain still goes through it
-	os.WriteFile(configPath, []byte("modelRoles:\n  default: magpie/deepseek/flash\nretry:\n  fallbackChains:\n    default:\n      - magpie/deepseek/pro:max\n"), 0o644)
-	if err := f.Set("magpie/deepseek/flash"); err != nil {
+	// the last role leaves magpie-friday; a fallback chain still goes through it
+	os.WriteFile(configPath, []byte("modelRoles:\n  default: magpie-friday/deepseek/flash\nretry:\n  fallbackChains:\n    default:\n      - magpie-friday/deepseek/pro:max\n"), 0o644)
+	if err := f.Set("magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
 	if err := f.Set(""); err != nil {
 		t.Fatal(err)
 	}
 	if !hasMagpie() {
-		t.Fatal("a fallback chain on magpie/deepseek/pro:max lost magpie's provider")
+		t.Fatal("a fallback chain on magpie-friday/deepseek/pro:max lost magpie-friday's provider")
 	}
 	// none left: it goes
-	os.WriteFile(configPath, []byte("modelRoles:\n  default: magpie/deepseek/flash\nretry:\n  fallbackChains:\n    default:\n      - openai/gpt-6\n"), 0o644)
+	os.WriteFile(configPath, []byte("modelRoles:\n  default: magpie-friday/deepseek/flash\nretry:\n  fallbackChains:\n    default:\n      - openai/gpt-6\n"), 0o644)
 	if err := f.Set(""); err != nil {
 		t.Fatal(err)
 	}
 	if hasMagpie() {
-		t.Fatal("magpie's provider stayed with nothing on it")
+		t.Fatal("magpie-friday's provider stayed with nothing on it")
 	}
 
 	const before = `# mine
 modelRoles:
-  default: magpie/deepseek/pro
-  slow: magpie/deepseek/pro:max, openai/gpt-6 # slow ones
+  default: magpie-friday/deepseek/pro
+  slow: magpie-friday/deepseek/pro:max, openai/gpt-6 # slow ones
   plan:
-    - magpie/deepseek/flash:high
+    - magpie-friday/deepseek/flash:high
     - openai/gpt-6
 retry:
   fallbackChains:
     # tried in order
     default:
-      - magpie/deepseek/flash:max
-      - magpie/deepseekx/flash
-    magpie/deepseek/pro:
-      - magpie/deepseek/*
+      - magpie-friday/deepseek/flash:max
+      - magpie-friday/deepseekx/flash
+    magpie-friday/deepseek/pro:
+      - magpie-friday/deepseek/*
 enabledModels:
-  - magpie/deepseek/pro
+  - magpie-friday/deepseek/pro
   - path: /work
     models:
-      - magpie/deepseek/flash
+      - magpie-friday/deepseek/flash
 task:
   agentModelOverrides:
-    explore: magpie/deepseek/flash,openai/gpt-6
-    review: [magpie/deepseek/pro:low]
+    explore: magpie-friday/deepseek/flash,openai/gpt-6
+    review: [magpie-friday/deepseek/pro:low]
 `
 	os.WriteFile(configPath, []byte(before), 0o644)
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	moved, err := RenameProvider("deepseek", "ds")
@@ -184,17 +184,17 @@ task:
 	}
 	b, _ := os.ReadFile(configPath)
 	got := string(b)
-	// the default role set on magpie, its one model on the list became
-	// every model of magpie's (#1769)
-	want := strings.NewReplacer("magpie/deepseek/", "magpie/ds/").Replace(strings.Replace(before,
-		"  - magpie/deepseek/pro\n  - path: /work\n    models:\n      - magpie/deepseek/flash\n",
-		"  - path: /work\n    models:\n      - magpie/deepseek/flash\n  - magpie/**\n", 1))
+	// the default role set on magpie-friday, its one model on the list became
+	// every model of magpie-friday's (#1769)
+	want := strings.NewReplacer("magpie-friday/deepseek/", "magpie-friday/ds/").Replace(strings.Replace(before,
+		"  - magpie-friday/deepseek/pro\n  - path: /work\n    models:\n      - magpie-friday/deepseek/flash\n",
+		"  - path: /work\n    models:\n      - magpie-friday/deepseek/flash\n  - magpie-friday/**\n", 1))
 	var gotDoc, wantDoc any
 	yaml.Unmarshal(b, &gotDoc)
 	yaml.Unmarshal([]byte(want), &wantDoc)
 	gotY, _ := yaml.Marshal(gotDoc)
 	wantY, _ := yaml.Marshal(wantDoc)
-	if string(gotY) != string(wantY) || strings.Contains(got, "magpie/deepseek/") || !strings.Contains(got, "magpie/deepseekx/flash") ||
+	if string(gotY) != string(wantY) || strings.Contains(got, "magpie-friday/deepseek/") || !strings.Contains(got, "magpie-friday/deepseekx/flash") ||
 		!strings.Contains(got, "# mine") || !strings.Contains(got, "# slow ones") || !strings.Contains(got, "# tried in order") {
 		t.Fatalf("renamed:\n%s", got)
 	}
@@ -204,7 +204,7 @@ task:
 }
 
 // omp 16.x asks with Bun's User-Agent (Bun/1.3.14), which the gateway can't
-// tell for omp's; magpie's provider names it, and the gateway knows that
+// tell for omp's; magpie-friday's provider names it, and the gateway knows that
 // name for omp.
 func TestOmpNamedToTheGateway(t *testing.T) {
 	home := t.TempDir()
@@ -218,7 +218,7 @@ func TestOmpNamedToTheGateway(t *testing.T) {
 	if err := provider.Save(provider.Provider{ID: "deepseek", Name: "DeepSeek", Chat: "https://api.deepseek.com/v1", Key: "k", Models: []string{"pro"}}); err != nil {
 		t.Fatal(err)
 	}
-	if err := omp(home).Field("model").Set("magpie/deepseek/pro"); err != nil {
+	if err := omp(home).Field("model").Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	var m struct {
@@ -232,7 +232,7 @@ func TestOmpNamedToTheGateway(t *testing.T) {
 	}
 	ua := m.Providers[magpieID].Headers["User-Agent"]
 	if ua == "" || usage.AgentOf(ua) != "omp" {
-		t.Fatalf("magpie's provider names omp as %q, which the gateway takes for %q:\n%s", ua, usage.AgentOf(ua), b)
+		t.Fatalf("magpie-friday's provider names omp as %q, which the gateway takes for %q:\n%s", ua, usage.AgentOf(ua), b)
 	}
 	if usage.AgentOf("Bun/1.3.14") == "omp" {
 		t.Fatal("Bun's own User-Agent is taken for omp's, so the header proves nothing")
@@ -240,7 +240,7 @@ func TestOmpNamedToTheGateway(t *testing.T) {
 }
 
 // omp's own agents pick their models apart from the main one: through
-// magpie on its own, a role brings magpie's provider in, has its wiring
+// magpie-friday on its own, a role brings magpie-friday's provider in, has its wiring
 // checked, and takes the provider out again when it is the last.
 func TestOmpRoles(t *testing.T) {
 	home := t.TempDir()
@@ -265,7 +265,7 @@ func TestOmpRoles(t *testing.T) {
 		r, _ := c["modelRoles"].(map[string]any)
 		return r
 	}
-	magpieIn := func() bool { v, ok := edit.GetYAML(modelsPath, "providers.magpie.baseUrl"); return ok && v != "" }
+	magpieIn := func() bool { v, ok := edit.GetYAML(modelsPath, "providers.magpie-friday.baseUrl"); return ok && v != "" }
 
 	a := omp(home)
 	sub, small := a.Field("subagent"), a.Field("small")
@@ -277,20 +277,20 @@ func TestOmpRoles(t *testing.T) {
 			t.Fatalf("field %s: %+v", k, f)
 		}
 	}
-	if err := sub.Set("magpie/deepseek/flash"); err != nil {
+	if err := sub.Set("magpie-friday/deepseek/flash"); err != nil {
 		t.Fatal(err)
 	}
-	if r := roles(); r["task"] != "magpie/deepseek/flash" || r["default"] != "anthropic/claude-opus-5" || !magpieIn() {
-		t.Fatalf("subagent on magpie: %v, magpie in models.yml: %v", r, magpieIn())
+	if r := roles(); r["task"] != "magpie-friday/deepseek/flash" || r["default"] != "anthropic/claude-opus-5" || !magpieIn() {
+		t.Fatalf("subagent on magpie-friday: %v, magpie-friday in models.yml: %v", r, magpieIn())
 	}
-	if sub.Get() != "magpie/deepseek/flash" {
+	if sub.Get() != "magpie-friday/deepseek/flash" {
 		t.Fatalf("get: %q", sub.Get())
 	}
-	// the main model isn't magpie's, the subagents' is: its wiring is checked
+	// the main model isn't magpie-friday's, the subagents' is: its wiring is checked
 	if a.Check() != "" {
 		t.Fatalf("check, wired: %q", a.Check())
 	}
-	edit.SetYAML(modelsPath, edit.KV{Path: "providers.magpie.baseUrl", Value: "http://127.0.0.1:1/v1"})
+	edit.SetYAML(modelsPath, edit.KV{Path: "providers.magpie-friday.baseUrl", Value: "http://127.0.0.1:1/v1"})
 	if a.Check() == "" {
 		t.Fatal("check missed the subagents' broken wiring")
 	}
@@ -302,17 +302,17 @@ func TestOmpRoles(t *testing.T) {
 	if r := roles(); r["smol"] != "openai/gpt-6-mini" || !magpieIn() {
 		t.Fatalf("small, own: %v", r)
 	}
-	// the last role on magpie goes: so does magpie's provider
+	// the last role on magpie-friday goes: so does magpie-friday's provider
 	if err := sub.Set(""); err != nil {
 		t.Fatal(err)
 	}
 	if r := roles(); r["task"] != nil || r["smol"] != "openai/gpt-6-mini" || r["default"] != "anthropic/claude-opus-5" || magpieIn() {
-		t.Fatalf("subagent reset: %v, magpie in models.yml: %v", r, magpieIn())
+		t.Fatalf("subagent reset: %v, magpie-friday in models.yml: %v", r, magpieIn())
 	}
 }
 
 // A role's thinking level ("…:max") stays with it when another model is
-// picked, and the model the user had before magpie comes back, level and
+// picked, and the model the user had before magpie-friday comes back, level and
 // all, when the role is reset.
 func TestOmpLevels(t *testing.T) {
 	home := t.TempDir()
@@ -349,53 +349,53 @@ func TestOmpLevels(t *testing.T) {
 	}
 
 	// deepseek/pro has no max of its own: omp clamps it, so it stays
-	apply("model", "magpie/deepseek/pro", "magpie/deepseek/pro:max")
+	apply("model", "magpie-friday/deepseek/pro", "magpie-friday/deepseek/pro:max")
 	if d := a.Drift(); d != nil {
-		t.Fatalf("drift on what magpie set: %+v", d)
+		t.Fatalf("drift on what magpie-friday set: %+v", d)
 	}
-	apply("model", "magpie/deepseek/flash", "magpie/deepseek/flash:max")
-	apply("model", "magpie/deepseek/pro:low", "magpie/deepseek/pro:low") // its own level wins
+	apply("model", "magpie-friday/deepseek/flash", "magpie-friday/deepseek/flash:max")
+	apply("model", "magpie-friday/deepseek/pro:low", "magpie-friday/deepseek/pro:low") // its own level wins
 	// offered at its level beside the model: that keeps the level, the
 	// model alone clears it
 	var at, plain bool
 	for _, o := range a.Field("model").Options(a.Values()) {
-		at = at || o.Value == "magpie/deepseek/pro:low" && strings.HasSuffix(o.Label, " · low")
-		plain = plain || o.Value == "magpie/deepseek/pro"
+		at = at || o.Value == "magpie-friday/deepseek/pro:low" && strings.HasSuffix(o.Label, " · low")
+		plain = plain || o.Value == "magpie-friday/deepseek/pro"
 	}
 	if !at || !plain {
 		t.Fatalf("options: at its level %v, the model %v", at, plain)
 	}
-	apply("model", "magpie/deepseek/pro:low", "magpie/deepseek/pro:low")
-	apply("model", "magpie/deepseek/pro", "magpie/deepseek/pro")
-	apply("model", "magpie/deepseek/flash", "magpie/deepseek/flash")
-	apply("model", "magpie/deepseek/pro:low", "magpie/deepseek/pro:low")
-	apply("slow", "magpie/deepseek/pro", "magpie/deepseek/pro:auto")
+	apply("model", "magpie-friday/deepseek/pro:low", "magpie-friday/deepseek/pro:low")
+	apply("model", "magpie-friday/deepseek/pro", "magpie-friday/deepseek/pro")
+	apply("model", "magpie-friday/deepseek/flash", "magpie-friday/deepseek/flash")
+	apply("model", "magpie-friday/deepseek/pro:low", "magpie-friday/deepseek/pro:low")
+	apply("slow", "magpie-friday/deepseek/pro", "magpie-friday/deepseek/pro:auto")
 
-	// the first model stashed, not the magpie ones after it
+	// the first model stashed, not the magpie-friday ones after it
 	apply("model", "", "anthropic/claude-opus-5:max")
 	apply("slow", "", "openai/gpt-6:auto")
 	// a colon that is no level is the model's
 	apply("model", "ollama/qwen3:8b", "ollama/qwen3:8b:max")
 
 	// a model of the user's own in between is the one put back
-	apply("model", "magpie/deepseek/pro", "magpie/deepseek/pro:max")
+	apply("model", "magpie-friday/deepseek/pro", "magpie-friday/deepseek/pro:max")
 	apply("model", "openai/gpt-6", "openai/gpt-6:max")
-	apply("model", "magpie/deepseek/pro", "magpie/deepseek/pro:max")
+	apply("model", "magpie-friday/deepseek/pro", "magpie-friday/deepseek/pro:max")
 	apply("model", "", "openai/gpt-6:max")
 
 	// a provider removed moves the role to the same model elsewhere, level
 	// and all
-	apply("model", "magpie/deepseek/pro", "magpie/deepseek/pro:max")
+	apply("model", "magpie-friday/deepseek/pro", "magpie-friday/deepseek/pro:max")
 	if _, err := Reseat(func() error { return provider.Delete("deepseek") }); err != nil {
 		t.Fatal(err)
 	}
-	if got := get("model"); got != "magpie/other/pro:max" {
+	if got := get("model"); got != "magpie-friday/other/pro:max" {
 		t.Fatalf("reseated: %q", got)
 	}
 }
 
-// A role on one of magpie's models with a thinking level is that model
-// wherever magpie matches a value against the picker: offered once, typed
+// A role on one of magpie-friday's models with a thinking level is that model
+// wherever magpie-friday matches a value against the picker: offered once, typed
 // at a level on the command line, missed when omp puts it back to its own,
 // and moved, level and all, when its provider is renamed.
 func TestOmpLevelSuffix(t *testing.T) {
@@ -418,40 +418,40 @@ func TestOmpLevelSuffix(t *testing.T) {
 	a := omp(home)
 	f := a.Field("model")
 
-	v, err := a.Spell("model", "magpie/deepseek/pro:high")
-	if err != nil || v != "magpie/deepseek/pro:high" {
+	v, err := a.Spell("model", "magpie-friday/deepseek/pro:high")
+	if err != nil || v != "magpie-friday/deepseek/pro:high" {
 		t.Fatalf("spell at a level: %q %v", v, err)
 	}
 	if err := a.Apply("model", v); err != nil {
 		t.Fatal(err)
 	}
 	// the subagents on the same model at another level: moved with it too
-	if err := a.Apply("subagent", "magpie/deepseek/pro:max"); err != nil {
+	if err := a.Apply("subagent", "magpie-friday/deepseek/pro:max"); err != nil {
 		t.Fatal(err)
 	}
 	if d := a.Drift(); d != nil {
-		t.Fatalf("drift on what magpie set: %+v", d)
+		t.Fatalf("drift on what magpie-friday set: %+v", d)
 	}
 	// omp's own /model puts the role back on the user's model
 	edit.SetYAML(configPath, edit.KV{Path: "modelRoles.default", Value: "anthropic/claude-opus-5:high"})
-	if d := a.Drift(); d == nil || d.Kind != "replaced" || d.Want != "magpie/deepseek/pro:high" {
+	if d := a.Drift(); d == nil || d.Kind != "replaced" || d.Want != "magpie-friday/deepseek/pro:high" {
 		t.Fatalf("drift, replaced: %+v", d)
 	}
-	if err := a.Reapply(); err != nil || f.Get() != "magpie/deepseek/pro:high" {
+	if err := a.Reapply(); err != nil || f.Get() != "magpie-friday/deepseek/pro:high" {
 		t.Fatalf("reapplied: %q %v", f.Get(), err)
 	}
 
 	if _, err := RenameProvider("deepseek", "ds"); err != nil {
 		t.Fatal(err)
 	}
-	if f.Get() != "magpie/ds/pro:high" || a.Field("subagent").Get() != "magpie/ds/pro:max" {
+	if f.Get() != "magpie-friday/ds/pro:high" || a.Field("subagent").Get() != "magpie-friday/ds/pro:max" {
 		t.Fatalf("renamed: %q, subagent %q", f.Get(), a.Field("subagent").Get())
 	}
 }
 
 // A role omp falls back through, a list of models (a YAML list or the
 // comma-separated string omp also takes), is the user's to have back when
-// magpie lets go of the role; a level on its last model is no role's level.
+// magpie-friday lets go of the role; a level on its last model is no role's level.
 func TestOmpRoleList(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
@@ -473,11 +473,11 @@ func TestOmpRoleList(t *testing.T) {
 		if got := a.Field(k).Get(); got != "openai/gpt-6,anthropic/claude-opus-5:high" {
 			t.Fatalf("%s reads %q", k, got)
 		}
-		if err := a.Apply(k, "magpie/deepseek/pro"); err != nil {
+		if err := a.Apply(k, "magpie-friday/deepseek/pro"); err != nil {
 			t.Fatal(err)
 		}
-		if got := a.Field(k).Get(); got != "magpie/deepseek/pro" {
-			t.Fatalf("%s on magpie: %q", k, got)
+		if got := a.Field(k).Get(); got != "magpie-friday/deepseek/pro" {
+			t.Fatalf("%s on magpie-friday: %q", k, got)
 		}
 		if err := a.Apply(k, ""); err != nil {
 			t.Fatal(err)
@@ -488,9 +488,9 @@ func TestOmpRoleList(t *testing.T) {
 	}
 }
 
-// A role on magpie at a thinking level that a fallback chain names too: a
+// A role on magpie-friday at a thinking level that a fallback chain names too: a
 // provider renamed moves each once, the level kept. The role back on omp's
-// own, the chain alone keeps magpie's provider, has its wiring checked, and
+// own, the chain alone keeps magpie-friday's provider, has its wiring checked, and
 // applying again mends it.
 func TestOmpRoleAndChain(t *testing.T) {
 	home := t.TempDir()
@@ -507,26 +507,26 @@ func TestOmpRoleAndChain(t *testing.T) {
 	dir := filepath.Join(home, ".omp", "agent")
 	configPath, modelsPath := filepath.Join(dir, "config.yml"), filepath.Join(dir, "models.yml")
 	os.MkdirAll(dir, 0o755)
-	os.WriteFile(configPath, []byte("modelRoles:\n  default: anthropic/claude-opus-5\nretry:\n  fallbackChains:\n    slow:\n      - magpie/deepseek/pro:max\n      - openai/gpt-6\n"), 0o644)
+	os.WriteFile(configPath, []byte("modelRoles:\n  default: anthropic/claude-opus-5\nretry:\n  fallbackChains:\n    slow:\n      - magpie-friday/deepseek/pro:max\n      - openai/gpt-6\n"), 0o644)
 	a := omp(home)
-	if err := a.Apply("slow", "magpie/deepseek/pro:max"); err != nil {
+	if err := a.Apply("slow", "magpie-friday/deepseek/pro:max"); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := RenameProvider("deepseek", "ds"); err != nil {
 		t.Fatal(err)
 	}
 	chain := edit.GetYAMLList(configPath, "retry.fallbackChains.slow")
-	if s := a.Field("slow").Get(); s != "magpie/ds/pro:max" || !slices.Equal(chain, []string{"magpie/ds/pro:max", "openai/gpt-6"}) {
+	if s := a.Field("slow").Get(); s != "magpie-friday/ds/pro:max" || !slices.Equal(chain, []string{"magpie-friday/ds/pro:max", "openai/gpt-6"}) {
 		t.Fatalf("renamed: slow %q, chain %v", s, chain)
 	}
 
 	if err := a.Apply("slow", ""); err != nil {
 		t.Fatal(err)
 	}
-	if v, _ := edit.GetYAML(modelsPath, "providers.magpie.baseUrl"); v == "" || a.Field("slow").Get() != "" {
-		t.Fatalf("the chain lost magpie's provider, or slow stayed: %q", a.Field("slow").Get())
+	if v, _ := edit.GetYAML(modelsPath, "providers.magpie-friday.baseUrl"); v == "" || a.Field("slow").Get() != "" {
+		t.Fatalf("the chain lost magpie-friday's provider, or slow stayed: %q", a.Field("slow").Get())
 	}
-	edit.SetYAML(modelsPath, edit.KV{Path: "providers.magpie.baseUrl", Value: "http://127.0.0.1:1/v1"})
+	edit.SetYAML(modelsPath, edit.KV{Path: "providers.magpie-friday.baseUrl", Value: "http://127.0.0.1:1/v1"})
 	if d := a.Drift(); d == nil || d.Kind != "unwired" {
 		t.Fatalf("a chain's broken wiring: %+v", d)
 	}
@@ -539,14 +539,14 @@ func TestOmpRoleAndChain(t *testing.T) {
 }
 
 // A role that is a list of models omp falls back through is the user's own,
-// even when it starts on one of magpie's: magpie taking the role over
+// even when it starts on one of magpie-friday's: magpie-friday taking the role over
 // stashes it, and a reset puts it back written as it was — a YAML list or a
 // comma-separated string.
 func TestOmpListRole(t *testing.T) {
 	for _, slow := range []string{
-		" [magpie/deepseek/flash, openai/gpt-6]",
-		" magpie/deepseek/flash, openai/gpt-6",
-		"\n    - magpie/deepseek/flash\n    - openai/gpt-6",
+		" [magpie-friday/deepseek/flash, openai/gpt-6]",
+		" magpie-friday/deepseek/flash, openai/gpt-6",
+		"\n    - magpie-friday/deepseek/flash\n    - openai/gpt-6",
 	} {
 		t.Run(slow, func(t *testing.T) {
 			home := t.TempDir()
@@ -566,7 +566,7 @@ func TestOmpListRole(t *testing.T) {
 			before := "modelRoles:\n  default: anthropic/claude-opus-5\n  slow:" + slow + "\n"
 			os.WriteFile(configPath, []byte(before), 0o644)
 			a := omp(home)
-			if err := a.Apply("slow", "magpie/deepseek/pro"); err != nil {
+			if err := a.Apply("slow", "magpie-friday/deepseek/pro"); err != nil {
 				t.Fatal(err)
 			}
 			if err := a.Apply("slow", ""); err != nil {
@@ -580,8 +580,8 @@ func TestOmpListRole(t *testing.T) {
 	}
 }
 
-// A provider renamed moves the magpie models in a list role once, the list
-// written as it was, and in the list the stash keeps for a role magpie took
+// A provider renamed moves the magpie-friday models in a list role once, the list
+// written as it was, and in the list the stash keeps for a role magpie-friday took
 // over, which a reset then puts back.
 func TestOmpListRoleRenamed(t *testing.T) {
 	home := t.TempDir()
@@ -598,9 +598,9 @@ func TestOmpListRoleRenamed(t *testing.T) {
 	dir := filepath.Join(home, ".omp", "agent")
 	configPath := filepath.Join(dir, "config.yml")
 	os.MkdirAll(dir, 0o755)
-	os.WriteFile(configPath, []byte("modelRoles:\n  default: anthropic/claude-opus-5\n  slow: [magpie/deepseek/flash, openai/gpt-6]\n  task: [magpie/deepseek/pro:high, openai/gpt-6]\n"), 0o644)
+	os.WriteFile(configPath, []byte("modelRoles:\n  default: anthropic/claude-opus-5\n  slow: [magpie-friday/deepseek/flash, openai/gpt-6]\n  task: [magpie-friday/deepseek/pro:high, openai/gpt-6]\n"), 0o644)
 	a := omp(home)
-	if err := a.Apply("slow", "magpie/deepseek/pro:max"); err != nil {
+	if err := a.Apply("slow", "magpie-friday/deepseek/pro:max"); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := RenameProvider("deepseek", "ds"); err != nil {
@@ -608,21 +608,21 @@ func TestOmpListRoleRenamed(t *testing.T) {
 	}
 	b, _ := os.ReadFile(configPath)
 	task := edit.GetYAMLList(configPath, "modelRoles.task")
-	if s := a.Field("slow").Get(); s != "magpie/ds/pro:max" || !slices.Equal(task, []string{"magpie/ds/pro:high", "openai/gpt-6"}) || !strings.Contains(string(b), "task: [") {
+	if s := a.Field("slow").Get(); s != "magpie-friday/ds/pro:max" || !slices.Equal(task, []string{"magpie-friday/ds/pro:high", "openai/gpt-6"}) || !strings.Contains(string(b), "task: [") {
 		t.Fatalf("renamed: slow %q\n%s", s, b)
 	}
 	if err := a.Apply("slow", ""); err != nil {
 		t.Fatal(err)
 	}
 	b, _ = os.ReadFile(configPath)
-	if !strings.Contains(string(b), "slow: [magpie/ds/flash, openai/gpt-6]") {
+	if !strings.Contains(string(b), "slow: [magpie-friday/ds/flash, openai/gpt-6]") {
 		t.Fatalf("reset:\n%s", b)
 	}
 }
 
 // The model picker offers the models of the providers the user added to
 // models.yml, beside models.dev's for the current provider, spelled as
-// ownOptions spells them (the name as the note): not magpie's own entry, nor
+// ownOptions spells them (the name as the note): not magpie-friday's own entry, nor
 // a provider whose models omp only discovers at run time. A model named in
 // both keeps what models.dev knows of it, and a provider in both stays one
 // group. Every role offers them, the subagents' as the model's.
@@ -661,7 +661,7 @@ func TestOmpOwnModels(t *testing.T) {
   zzrelay:
     models:
       - id: m1
-  magpie:
+  magpie-friday:
     baseUrl: http://127.0.0.1:1/v1
     auth: none
     models:
@@ -686,9 +686,9 @@ func TestOmpOwnModels(t *testing.T) {
 	if o := byValue["zai/glm-5"]; o.Note != "GLM-5" || o.Icon == "" {
 		t.Fatalf("zai/glm-5 lost models.dev's name or icon: %+v in %+v", o, opts)
 	}
-	// magpie has no provider here, so its entry's model comes from nowhere else
+	// magpie-friday has no provider here, so its entry's model comes from nowhere else
 	for v := range byValue {
-		if strings.HasPrefix(v, "lan/") || v == "magpie/deepseek/pro" {
+		if strings.HasPrefix(v, "lan/") || v == "magpie-friday/deepseek/pro" {
 			t.Fatalf("%s offered: %+v", v, opts)
 		}
 	}
@@ -711,11 +711,11 @@ func TestOmpOwnModels(t *testing.T) {
 	}
 }
 
-// What the user set on magpie's provider in omp's models.yml stays through
+// What the user set on magpie-friday's provider in omp's models.yml stays through
 // every sync and pick (#2030's siblings): a model's override, discovery's
 // timeouts, strict tools turned off, a header or compat flag beside
-// magpie's. The address, API, auth and model list stay magpie's, and a key
-// magpie doesn't write goes.
+// magpie-friday's. The address, API, auth and model list stay magpie-friday's, and a key
+// magpie-friday doesn't write goes.
 func TestOmpKeepsTheUsersSettings(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
@@ -734,17 +734,17 @@ func TestOmpKeepsTheUsersSettings(t *testing.T) {
 	os.WriteFile(filepath.Join(dir, "config.yml"), []byte("modelRoles:\n  default: anthropic/claude-opus-5\n"), 0o644)
 	a := omp(home)
 	f := a.Field("model")
-	if err := f.Set("magpie/deepseek/pro"); err != nil {
+	if err := f.Set("magpie-friday/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
 	if err := edit.SetYAML(modelsPath,
-		edit.KV{Path: "providers.magpie.modelOverrides", Value: map[string]any{"deepseek/pro": map[string]any{"contextWindow": 64000}}},
-		edit.KV{Path: "providers.magpie.disableStrictTools", Value: true},
-		edit.KV{Path: "providers.magpie.headers.X-Mine", Value: "1"},
-		edit.KV{Path: "providers.magpie.compat.supportsStore", Value: false},
-		edit.KV{Path: "providers.magpie.baseUrl", Value: "http://127.0.0.1:1/v1"},
-		edit.KV{Path: "providers.magpie.apiKey", Value: "stale"},
-		edit.KV{Path: "providers.magpie.models", Value: []any{map[string]any{"id": "gone/old"}}},
+		edit.KV{Path: "providers.magpie-friday.modelOverrides", Value: map[string]any{"deepseek/pro": map[string]any{"contextWindow": 64000}}},
+		edit.KV{Path: "providers.magpie-friday.disableStrictTools", Value: true},
+		edit.KV{Path: "providers.magpie-friday.headers.X-Mine", Value: "1"},
+		edit.KV{Path: "providers.magpie-friday.compat.supportsStore", Value: false},
+		edit.KV{Path: "providers.magpie-friday.baseUrl", Value: "http://127.0.0.1:1/v1"},
+		edit.KV{Path: "providers.magpie-friday.apiKey", Value: "stale"},
+		edit.KV{Path: "providers.magpie-friday.models", Value: []any{map[string]any{"id": "gone/old"}}},
 	); err != nil {
 		t.Fatal(err)
 	}
@@ -786,11 +786,11 @@ func TestOmpKeepsTheUsersSettings(t *testing.T) {
 		}
 		if mp.BaseURL == "http://127.0.0.1:1/v1" || mp.Auth != "none" || mp.APIKey != nil || mp.Headers["User-Agent"] != "omp" ||
 			slices.Contains(ids, "gone/old") || !slices.Contains(ids, "kimi/k3") {
-			t.Errorf("%s: magpie's own parts not written:\n%s", when, raw)
+			t.Errorf("%s: magpie-friday's own parts not written:\n%s", when, raw)
 		}
 	}
 	check("sync")
-	if err := f.Set("magpie/kimi/k3"); err != nil {
+	if err := f.Set("magpie-friday/kimi/k3"); err != nil {
 		t.Fatal(err)
 	}
 	check("pick")

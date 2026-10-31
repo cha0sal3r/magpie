@@ -5,9 +5,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/yetone/magpie/internal/filememo"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/cha0sal3r/magpie-friday/internal/filememo"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/sessions"
 )
 
 type desktopSessionInfo struct {
@@ -174,7 +174,7 @@ func (r *sessionResolver) desktopIdentity(c sessions.Call) (desktopSessionIdenti
 	// Only a file under a desktop root's local-agent-mode-sessions can
 	// name one: the rest (every Claude Code session, ~380k calls in a
 	// long history, asked twice each) skip the Rel and the Split, which
-	// were a fifth of what a started magpie's first Requests read
+	// were a fifth of what a started magpie-friday's first Requests read
 	// allocated.
 	roots := r.roots
 	if !strings.Contains(c.File, desktopAgentSessions) {

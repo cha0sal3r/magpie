@@ -1,7 +1,7 @@
 package provider
 
 // A provider the user switched off (Provider.Off) or whose account they
-// removed from magpie (Provider.Hidden) is left alone in the background:
+// removed from magpie-friday (Provider.Hidden) is left alone in the background:
 // no CLI is asked who is signed in (`claude auth status`, `cursor-agent
 // about`, `devin auth status`), no allowance is read, no sign-in renewed,
 // no window warmed, no account switched, no daily check-in made and no
@@ -10,8 +10,8 @@ package provider
 // made just as a proxy came back up after a restart went out on the
 // machine's own address (Riko on Discord).
 
-// leftAlone says whether magpie leaves provider id alone in the
-// background: switched off, or its account removed from magpie.
+// leftAlone says whether magpie-friday leaves provider id alone in the
+// background: switched off, or its account removed from magpie-friday.
 func leftAlone(id string) bool {
 	if id == "" {
 		return false

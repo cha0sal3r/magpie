@@ -21,7 +21,7 @@ const probes = {
   none: { source: "mikubaka88/CCFA-Skills", kind: "github", candidates: [], left: [big] },
 };
 const lib = () => ({
-  dir: `${HOME}/.config/magpie/library`, backups: `${HOME}/.config/magpie/backups`, home: HOME,
+  dir: `${HOME}/.config/magpie-friday/library`, backups: `${HOME}/.config/magpie-friday/backups`, home: HOME,
   agents: [{ id: "claude", name: "Claude Code", icon: "", skills: `${HOME}/.claude/skills` }], instructions: { agents: [] }, servers: [], skills: [], foundServers: [], projects: [], foundSkills: [],
 });
 

@@ -11,7 +11,7 @@ import (
 // openCodeAuth is auth.json as OpenCode v1.19.0 writes it
 // (JSON.stringify(data, null, 2), mode 0600), from `opencode auth login`:
 // two keys of its own (Zen and Go), a vendor's key with metadata, a
-// provider magpie has no preset for, Claude Pro/Max and Copilot sign-ins,
+// provider magpie-friday has no preset for, Claude Pro/Max and Copilot sign-ins,
 // and an enterprise server's well-known token.
 const openCodeAuth = `{
   "opencode": {
@@ -88,7 +88,7 @@ func openCodeSource(t *testing.T) AppSource {
 	return AppSource{}
 }
 
-// OpenCode's keys come over onto magpie's presets: OpenCode Go's on
+// OpenCode's keys come over onto magpie-friday's presets: OpenCode Go's on
 // OpenCode Go, Zen's on OpenCode Zen (not Go, whose host it shares), a
 // vendor's on its own; its sign-ins are listed and never imported.
 // auth.json is only read (@hu_xiaomi on X).
@@ -121,7 +121,7 @@ func TestImportOpenCodeAuth(t *testing.T) {
 	}
 	for _, ref := range []string{"anthropic", "github-copilot", "https://opencode.example.com"} {
 		it := items[ref]
-		if it.Skip != "it is a sign-in, not a key; add the subscription in magpie" || it.Provider.Key != "" || it.Provider.Chat != "" || it.Provider.Anthropic != "" {
+		if it.Skip != "it is a sign-in, not a key; add the subscription in magpie-friday" || it.Provider.Key != "" || it.Provider.Chat != "" || it.Provider.Anthropic != "" {
 			t.Fatalf("sign-in %s: %+v", ref, it)
 		}
 	}

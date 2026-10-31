@@ -8,12 +8,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// bigsteven on Discord: another computer's magpie (LAN share) serves each
+// bigsteven on Discord: another computer's magpie-friday (LAN share) serves each
 // of its models from its own providers, and rests them itself. When one of
-// them was out of quota there, its 429 rested the whole remote magpie here
+// them was out of quota there, its 429 rested the whole remote magpie-friday here
 // for the 3 hours it named, so a group whose member was another of its
 // models, with quota left, went to its next member, or had none. Such a
 // refusal rests only the model it was about.
@@ -54,7 +54,7 @@ func TestRemoteMagpieQuotaRestsTheModel(t *testing.T) {
 		t.Fatalf("codex on the remote: %d %s", code, body)
 	}
 	if r, ok := restOf("office"); ok {
-		t.Errorf("the whole remote magpie rests for one model's quota: %+v", r)
+		t.Errorf("the whole remote magpie-friday rests for one model's quota: %+v", r)
 	}
 	if _, ok := restOf("office/codex/gpt-5.5"); !ok {
 		t.Errorf("codex/gpt-5.5 doesn't rest: %v", rests())
@@ -68,7 +68,7 @@ func TestRemoteMagpieQuotaRestsTheModel(t *testing.T) {
 		t.Fatalf("glm on the remote: %d %s", code, body)
 	}
 	if r, ok := restOf("office"); ok {
-		t.Errorf("the whole remote magpie rests for one model's rate limit: %+v", r)
+		t.Errorf("the whole remote magpie-friday rests for one model's rate limit: %+v", r)
 	}
 	if r, ok := restOf("office/glm/glm-5"); !ok || r.Why != failRate {
 		t.Errorf("glm/glm-5 doesn't rest as rate limited: %+v %v", r, rests())

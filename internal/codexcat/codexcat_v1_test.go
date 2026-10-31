@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 func v1Home(t *testing.T, cache string) string {
@@ -45,7 +45,7 @@ func versions(t *testing.T, ms []catalog.Model) map[string]any {
 	return out
 }
 
-// With settings.CodexAgentsV1 the OpenAI models magpie hands Codex — the
+// With settings.CodexAgentsV1 the OpenAI models magpie-friday hands Codex — the
 // ChatGPT account's own under codex/, and the groups one is in — say
 // multi-agent V1 (#141); a third-party model's entry says nothing, and with
 // the setting off nothing does.
@@ -86,7 +86,7 @@ func TestCodexAgentsV1Entries(t *testing.T) {
 // the backend did, so turning the setting off undoes it: a version the
 // backend gave comes back, one it didn't give goes.
 func TestCodexAgentsV1CacheRestores(t *testing.T) {
-	home := v1Home(t, `{"etag":"W/\"a+magpie-0011\"","models":[
+	home := v1Home(t, `{"etag":"W/\"a+magpie-friday-0011\"","models":[
 		{"slug":"gpt-6","multi_agent_version":"v2"},
 		{"slug":"gpt-5.5"},
 		{"slug":"gpt-luna","multi_agent_version":"v1"}]}`)
@@ -95,7 +95,7 @@ func TestCodexAgentsV1CacheRestores(t *testing.T) {
 		t.Fatalf("%v", got)
 	}
 	// Codex has since cached a stamped list
-	os.WriteFile(filepath.Join(home, ".codex", "models_cache.json"), []byte(`{"etag":"W/\"b+magpie-v1.0011\"","models":[
+	os.WriteFile(filepath.Join(home, ".codex", "models_cache.json"), []byte(`{"etag":"W/\"b+magpie-friday-v1.0011\"","models":[
 		{"slug":"gpt-6","multi_agent_version":"v1"},
 		{"slug":"gpt-5.5","multi_agent_version":"v1"},
 		{"slug":"gpt-luna","multi_agent_version":"v1"},

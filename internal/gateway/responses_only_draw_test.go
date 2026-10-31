@@ -9,8 +9,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A provider added as "OpenAI Responses" only (what a Codex backend such as
@@ -56,7 +56,7 @@ func TestResponsesOnlyProviderDraws(t *testing.T) {
 	}
 
 	code, a, raw := postImages(t, New(), "/v1/images/generations", "application/json",
-		`{"model":"relay/gpt-image-2.5-flare","prompt":"a magpie","size":"1024x1024"}`)
+		`{"model":"relay/gpt-image-2.5-flare","prompt":"a magpie-friday","size":"1024x1024"}`)
 	if code != 200 || len(a.Data) != 1 {
 		t.Fatalf("%d %s", code, raw)
 	}

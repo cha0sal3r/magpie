@@ -9,7 +9,7 @@ package gui
 #include <stdlib.h>
 
 // The Dock tile flaps as the header logo does: the icon the system draws
-// for magpie (its glass tile and glossy bird, light) is cut into body, tail
+// for magpie-friday (its glass tile and glossy bird, light) is cut into body, tail
 // and wing by the logo's clip paths, and each frame turns the pieces over
 // the tile with the bird taken out. Drawn at mpDockPx; the tile's view
 // scales it to the Dock's size.
@@ -271,7 +271,7 @@ var (
 	dockFlapping atomic.Bool
 )
 
-// dockReady cuts the icon of app (magpie's own bundle when "") up the first
+// dockReady cuts the icon of app (magpie-friday's own bundle when "") up the first
 // time the tile flaps, by the header logo's paths; false when it can't, or
 // the Dock shows icons another way.
 func dockReady(app string) bool {

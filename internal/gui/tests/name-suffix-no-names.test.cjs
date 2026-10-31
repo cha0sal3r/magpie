@@ -1,7 +1,7 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // love1sbug on X (v0.1.1220): Names in agents' lists (Agent 列表里的名称)
 // changed nothing in the agent's model list. Claude Code's and Qwen Code's
-// lists follow it now; an agent whose list magpie hands the models' ids
+// lists follow it now; an agent whose list magpie-friday hands the models' ids
 // alone, or that reads the gateway's names itself (agent.NoNames), can't,
 // so each place the setting is offered names the connected ones it changes
 // nothing in: under Settings › Provider in model names, under Routing's
@@ -16,11 +16,11 @@ const { chromium, webkit } = require("playwright");
 
 const assets = path.resolve(__dirname, "../assets");
 const said = {
-  en: "Changes nothing in Goose, Hermes Agent: magpie’s names don’t reach their model lists",
-  zh: "对 Goose, Hermes Agent 不起作用：它们的模型列表里没有 magpie 给的名称",
-  "zh-TW": "對 Goose, Hermes Agent 不起作用：它們的模型列表裡沒有 magpie 給的名稱",
-  ja: "Goose, Hermes Agent には効きません：そのモデル一覧には magpie の名前が出ません",
-  de: "Wirkt nicht in Goose, Hermes Agent: deren Modelllisten zeigen magpies Namen nicht",
+  en: "Changes nothing in Goose, Hermes Agent: magpie-friday’s names don’t reach their model lists",
+  zh: "对 Goose, Hermes Agent 不起作用：它们的模型列表里没有 magpie-friday 给的名称",
+  "zh-TW": "對 Goose, Hermes Agent 不起作用：它們的模型列表裡沒有 magpie-friday 給的名稱",
+  ja: "Goose, Hermes Agent には効きません：そのモデル一覧には magpie-friday の名前が出ません",
+  de: "Wirkt nicht in Goose, Hermes Agent: deren Modelllisten zeigen magpie-fridays Namen nicht",
 };
 const names = { en: "Names & levels", zh: "名称与推理档位" };
 

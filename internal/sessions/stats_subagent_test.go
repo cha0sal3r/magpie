@@ -10,7 +10,7 @@ import (
 // changed are read. They built every session's subagents, and each
 // subagent's task was read again from its file at every start, and on
 // every poll for one whose first lines name none: 3.5 GB of a live
-// magpie's 6.3 GB of session scans in 48 minutes.
+// magpie-friday's 6.3 GB of session scans in 48 minutes.
 func TestStatsReadNoSubagentFile(t *testing.T) {
 	inZone(t, 0)
 	claude, _ := setup(t)

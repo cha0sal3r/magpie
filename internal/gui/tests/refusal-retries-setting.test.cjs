@@ -1,6 +1,6 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // Settings › Models › Replies (DD on Discord: Anthropic's safety filter
-// refused a turn, and magpie asked account after account where Claude Code
+// refused a turn, and magpie-friday asked account after account where Claude Code
 // would have switched to its fallback model): Ask again after a refusal is
 // All at first, says what Never ask again does, and Never ask again saves
 // refusalRetries 0, then All saves null, with the rest of the settings kept

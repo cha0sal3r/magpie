@@ -8,10 +8,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/cha0sal3r/magpie-friday/internal/plugin"
 )
 
-// An install goes on though the page's connection goes: on magpie web
+// An install goes on though the page's connection goes: on magpie-friday web
 // behind Cloudflare the tunnel gives up after 100 seconds and answers the
 // page with its own 524 page (precisionz installing Zed, #2032), and bun
 // stopped halfway leaves plugins/ half-written. So do a remove, an update

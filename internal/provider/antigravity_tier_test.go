@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
 // A Google AI Pro account as loadCodeAssist answers it (CLIProxyAPI
@@ -75,11 +75,11 @@ func antigravityModelIDs(t *testing.T, agent string) []string {
 	return ids
 }
 
-// A Google AI Pro account's Antigravity has Claude (Discord: magpie 0.1.770
+// A Google AI Pro account's Antigravity has Claude (Discord: magpie-friday 0.1.770
 // listed a Pro account's models without any, while Antigravity's picker
 // had Claude 5.5): fetchAvailableModels names the plan the account pays for
 // in entitlement.userTier, as Antigravity's language server does, and the
-// log says what Google answered and what magpie left out.
+// log says what Google answered and what magpie-friday left out.
 func TestAntigravityProAccountNamesItsTier(t *testing.T) {
 	f := &fakeGoogle{load: proLoad, modelsFor: tierModels("g1-pro-tier")}
 	googleSandbox(t, f)
@@ -171,7 +171,7 @@ func TestAntigravityTierFreeAndKeptProject(t *testing.T) {
 
 // A model Antigravity marks disabled isn't served: a real account's
 // fetchAvailableModels had gemini-4-argon-disabled with disabled true,
-// magpie listed it, DeepSeek Harness offered it, and asking for it was a
+// magpie-friday listed it, DeepSeek Harness offered it, and asking for it was a
 // 404 "Requested entity was not found" (kwanyu on Discord, 10-24). It is
 // left out of the list for every client; the models beside it, and their
 // ids, are as Google sent them.
@@ -198,7 +198,7 @@ func TestAntigravityDisabledModelLeftOut(t *testing.T) {
 // #1553 (AnxForever): a Google AI Pro account that loadCodeAssist has on
 // free-tier, paying for g1-pro-tier, in aicode-consumers. Google answered
 // its fetchAvailableModels with g1-pro-tier named "Request contains an
-// invalid argument." magpie then asks again with {project} alone, which is
+// invalid argument." magpie-friday then asks again with {project} alone, which is
 // all the open-source clients that serve Pro accounts send (CLIProxyAPI,
 // sub2api, Antigravity-Manager), and lists what that gives. Should that
 // fail too, the log says so and the account keeps the list it had.

@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/yetone/magpie/internal/agent"
+	"github.com/cha0sal3r/magpie-friday/internal/agent"
 )
 
 // Group is what a profile holds for one agent, to be read before it is
@@ -60,7 +60,7 @@ func secret(key, label, value string) bool {
 	return value != "" && (secretName.MatchString(key) || secretName.MatchString(label) || secretValue.MatchString(value))
 }
 
-// Details is what p holds, by agent: the agents magpie knows in the order it
+// Details is what p holds, by agent: the agents magpie-friday knows in the order it
 // lists them, then any it no longer does by id. A quiet field left empty is
 // left out, as the agent's row leaves it out, unless it says which field it
 // follows: Claude Code's four tiers are all there, one that follows the main

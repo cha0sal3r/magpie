@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // compactedText is the summary in a compaction Codex was answered with.
@@ -18,7 +18,7 @@ func compactedText(t *testing.T, body string) string {
 		item := e["item"].(map[string]any)
 		enc, _ := item["encrypted_content"].(string)
 		if item["type"] != "compaction" || !strings.HasPrefix(enc, magpieCompaction) {
-			t.Fatalf("not magpie's compaction: %s", body)
+			t.Fatalf("not magpie-friday's compaction: %s", body)
 		}
 		b, _ := base64.StdEncoding.DecodeString(strings.TrimPrefix(enc, magpieCompaction))
 		return string(b)
@@ -38,9 +38,9 @@ const compact404Request = `{"model":"fake/m1","stream":true,"store":false,"inclu
 
 const relay404 = `{"error":{"message":"Upstream request failed","type":"upstream_error"}}`
 
-// #866: a relay that answers a magpie model's summary request 404
+// #866: a relay that answers a magpie-friday model's summary request 404
 // ("flyapi: Upstream request failed") left Codex's compaction aborted and
-// reconnecting. magpie asks again with the conversation as text, and when
+// reconnecting. magpie-friday asks again with the conversation as text, and when
 // that fails too compacts without a model, so Codex goes on.
 func TestCodexCompact404AsksAgainAsText(t *testing.T) {
 	f := &fake{t: t, reply: sse(
@@ -98,7 +98,7 @@ func TestCodexCompactOtherFailuresStay(t *testing.T) {
 	}
 }
 
-// #1511 (TooPub): a relay answered a magpie model's summary request
+// #1511 (TooPub): a relay answered a magpie-friday model's summary request
 // 400 invalid_request_error "apex: Upstream request failed", and Codex's
 // compaction stopped there, while Codex asking the same relay itself
 // compacted. The reporter's body, as it came.

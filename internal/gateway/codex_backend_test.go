@@ -15,9 +15,9 @@ import (
 	"time"
 
 	"github.com/klauspost/compress/zstd"
-	"github.com/yetone/magpie/internal/codexcat"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/codexcat"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // chatgpt stands in for the ChatGPT backend behind CodexBase.
@@ -43,7 +43,7 @@ func codexPost(t *testing.T, body string) (int, string) {
 }
 
 // One of Codex's own models goes on to the ChatGPT backend as it came, the
-// sign-in with it; a summary magpie made earlier goes as the text it holds.
+// sign-in with it; a summary magpie-friday made earlier goes as the text it holds.
 func TestCodexOwnModelPassesThrough(t *testing.T) {
 	setup(t, provider.Chat, &fake{t: t})
 	var got []byte
@@ -184,7 +184,7 @@ func TestCodexAPIKeyRecordedAsOpenAI(t *testing.T) {
 
 // A compaction signed by another account is that account's, not the
 // sign-in the request would have relayed on. A request naming another
-// ChatGPT account than the sign-in magpie reads (a Codex in WSL, or
+// ChatGPT account than the sign-in magpie-friday reads (a Codex in WSL, or
 // under another CODEX_HOME) is not put on that sign-in, and with no
 // sign-in to name it stays openai, so no row is half a codex account.
 func TestCodexServedNamesTheAccountThatSigned(t *testing.T) {
@@ -250,7 +250,7 @@ func TestCodexOwnRelayAnswersNoLead(t *testing.T) {
 }
 
 // A turn on one of Codex's own models shows in the Routing view's live
-// trace, as those on magpie's do.
+// trace, as those on magpie-friday's do.
 func TestCodexOwnModelTraced(t *testing.T) {
 	setup(t, provider.Chat, &fake{t: t})
 	chatgpt(t, func(w http.ResponseWriter, r *http.Request) {
@@ -355,7 +355,7 @@ func TestCodexOwnModelAfterAnotherVendor(t *testing.T) {
 	}
 }
 
-// A refusal that names nothing magpie can take out goes to Codex as it came.
+// A refusal that names nothing magpie-friday can take out goes to Codex as it came.
 func TestCodexOwnModelRefusalPassesThrough(t *testing.T) {
 	setup(t, provider.Chat, &fake{t: t})
 	asks := 0
@@ -374,7 +374,7 @@ func TestCodexMagpieModelKeepsReasoningInput(t *testing.T) {
 	body := `{"model":"fake/m1","input":[{"type":"reasoning","content":[{"type":"reasoning_text","text":"thought"}],"encrypted_content":"foreign-token"}]}`
 	got, compact := codexInput([]byte(body), true)
 	if compact || string(got) != body {
-		t.Errorf("magpie input: %s, compact: %t", got, compact)
+		t.Errorf("magpie-friday input: %s, compact: %t", got, compact)
 	}
 }
 
@@ -416,7 +416,7 @@ func TestCodexOwnModelCompactionPassesThrough(t *testing.T) {
 	}
 }
 
-// A magpie model is served by magpie, whatever sign-in Codex sent.
+// A magpie-friday model is served by magpie-friday, whatever sign-in Codex sent.
 func TestCodexMagpieModelServed(t *testing.T) {
 	f := &fake{t: t, reply: sse(
 		`data: {"id":"c1","model":"m1","choices":[{"delta":{"content":"hi"}}]}`,
@@ -433,7 +433,7 @@ func TestCodexMagpieModelServed(t *testing.T) {
 	}
 }
 
-// Codex compresses what it sends the ChatGPT backend; magpie reads it all
+// Codex compresses what it sends the ChatGPT backend; magpie-friday reads it all
 // the same.
 func TestCodexReadsCompressedBody(t *testing.T) {
 	f := &fake{t: t, reply: sse(
@@ -453,7 +453,7 @@ func TestCodexReadsCompressedBody(t *testing.T) {
 	}
 }
 
-// Compacting a magpie model's conversation: the model summarises, and Codex
+// Compacting a magpie-friday model's conversation: the model summarises, and Codex
 // gets the compaction item it asked for, holding the summary.
 func TestCodexCompactsMagpieModel(t *testing.T) {
 	f := &fake{t: t, reply: sse(
@@ -496,7 +496,7 @@ func TestCodexCompactsMagpieModel(t *testing.T) {
 	}
 }
 
-// The model list is the backend's for this sign-in, then magpie's.
+// The model list is the backend's for this sign-in, then magpie-friday's.
 func TestCodexModelList(t *testing.T) {
 	setup(t, provider.Chat, &fake{t: t})
 	var auth string
@@ -523,10 +523,10 @@ func TestCodexModelList(t *testing.T) {
 		}
 	}
 	// Other sign-ins found on the machine (Cursor's, say) may follow. The
-	// ETag is the backend's with magpie's list in it.
+	// ETag is the backend's with magpie-friday's list in it.
 	tag := codexcat.Tag(provider.CodexListed())
 	if rec.Code != 200 || len(slugs) < 2 || slugs[0] != "gpt-5.5" || fake == nil || fake["base_instructions"] == "" ||
-		rec.Header().Get("ETag") != `"v1+magpie-`+tag+`"` || auth != "Bearer chatgpt-token" {
+		rec.Header().Get("ETag") != `"v1+magpie-friday-`+tag+`"` || auth != "Bearer chatgpt-token" {
 		t.Errorf("%d %v %q %q", rec.Code, slugs, rec.Header().Get("ETag"), auth)
 	}
 	for _, s := range slugs {
@@ -563,7 +563,7 @@ func TestCodexModelListNarrowedByPicks(t *testing.T) {
 	var native []string
 	for _, m := range list.Models {
 		slug, _ := m["slug"].(string)
-		// the backend's own models are the gpt-* ones; magpie's added
+		// the backend's own models are the gpt-* ones; magpie-friday's added
 		// entries carry their own slugs and stay
 		if strings.HasPrefix(slug, "gpt-") {
 			native = append(native, slug)
@@ -667,7 +667,7 @@ func TestCodexModelListHidesOnAgentsPage(t *testing.T) {
 // The codex provider set to "Only through routing groups" keeps the
 // ChatGPT account's own models out of Codex's list, as it keeps them out of
 // every other agent's: Codex was handed all seven the backend listed, and
-// with none of them in magpie's lists, the Agents page had no Codex group
+// with none of them in magpie-friday's lists, the Agents page had no Codex group
 // to hide (#1602). Its hidden ones (codex-auto-review) stay, and the ETag
 // changes so Codex asks again. A group that keeps its members out of the
 // lists (Group.Unlists) takes just those.
@@ -754,7 +754,7 @@ func TestCodexModelListUnlistedForGroups(t *testing.T) {
 	}
 }
 
-// A reply's X-Models-Etag carries magpie's list too: Codex refetches its
+// A reply's X-Models-Etag carries magpie-friday's list too: Codex refetches its
 // model list on a new one, and only on the backend's it never would when a
 // provider was added.
 func TestCodexModelsEtagTagged(t *testing.T) {
@@ -770,7 +770,7 @@ func TestCodexModelsEtagTagged(t *testing.T) {
 	req.Header.Set("Authorization", "Bearer chatgpt-token")
 	New().Handler().ServeHTTP(rec, req)
 	tag := codexcat.Tag(provider.CodexListed())
-	if got := rec.Header().Get("X-Models-Etag"); got != `W/"v1+magpie-`+tag+`"` || !codexcat.Tagged(got, tag) {
+	if got := rec.Header().Get("X-Models-Etag"); got != `W/"v1+magpie-friday-`+tag+`"` || !codexcat.Tagged(got, tag) {
 		t.Errorf("%d X-Models-Etag %q", rec.Code, got)
 	}
 }
@@ -838,7 +838,7 @@ func TestCodexOwnModelKeyRefused(t *testing.T) {
 	req.Header.Set("Authorization", "Bearer sk-relay-key")
 	New().Handler().ServeHTTP(rec, req)
 	body := rec.Body.String()
-	if rec.Code != 401 || !strings.Contains(body, "Incorrect API key provided") || !strings.Contains(body, "pick one of magpie's models") {
+	if rec.Code != 401 || !strings.Contains(body, "Incorrect API key provided") || !strings.Contains(body, "pick one of magpie-friday's models") {
 		t.Fatalf("%d %s", rec.Code, body)
 	}
 }
@@ -1080,10 +1080,10 @@ func TestCodexOwnModelLogsEffort(t *testing.T) {
 	}
 }
 
-// A Codex that reaches magpie for account failover alone, not connected to
+// A Codex that reaches magpie-friday for account failover alone, not connected to
 // it, is handed only its own models, and an ETag that is neither the full
 // list's nor contains it, so moving between the two has Codex ask again
-// (#1385: 62 of magpie's models were in its list). Its replies' models ETag
+// (#1385: 62 of magpie-friday's models were in its list). Its replies' models ETag
 // carries the same tag.
 func TestCodexModelListOwnOnlyForFailover(t *testing.T) {
 	setup(t, provider.Chat, &fake{t: t})
@@ -1127,7 +1127,7 @@ func TestCodexModelListOwnOnlyForFailover(t *testing.T) {
 	if len(own) != 1 || own[0] != "gpt-5.5" {
 		t.Errorf("failover-only list = %v, want just gpt-5.5", own)
 	}
-	if ownTag == fullTag || ownTag != `"v1+magpie-`+provider.CodexOwnListTag()+`"` ||
+	if ownTag == fullTag || ownTag != `"v1+magpie-friday-`+provider.CodexOwnListTag()+`"` ||
 		codexcat.Tagged(ownTag, provider.CodexListTag()) || codexcat.Tagged(fullTag, provider.CodexOwnListTag()) {
 		t.Errorf("ETag own %q, full %q", ownTag, fullTag)
 	}

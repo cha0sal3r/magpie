@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // onAlerts is told when the Settings page turns a usage or balance alert
@@ -16,8 +16,8 @@ import (
 // at once; set by the process that has the tray.
 var onAlerts func()
 
-// notifyProblem says why magpie's notifications can't be shown, "" when
-// they can or it isn't known: "denied" (turned off for magpie in the
+// notifyProblem says why magpie-friday's notifications can't be shown, "" when
+// they can or it isn't known: "denied" (turned off for magpie-friday in the
 // system's settings) or "unavailable" (a build or desktop without them).
 // Set by the process that has the tray.
 var notifyProblem func() string

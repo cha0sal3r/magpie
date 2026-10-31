@@ -9,7 +9,7 @@ import (
 // With CODEX_HOME set, Codex's sign-in is read from $CODEX_HOME/auth.json,
 // a switch of account writes it there, the config imported from and the
 // app-server restarted are that home's, and nothing is written under
-// ~/.codex (Wakkana on Discord: magpie read and wrote a ~/.codex Codex
+// ~/.codex (Wakkana on Discord: magpie-friday read and wrote a ~/.codex Codex
 // never looked at).
 func TestCodexHomeEnvSignIn(t *testing.T) {
 	home := signIn(t)

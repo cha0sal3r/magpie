@@ -26,13 +26,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/agentenv"
+	"github.com/cha0sal3r/magpie-friday/internal/agentenv"
 )
 
 const (
 	// prefix starts the temporary home's name; Run removes only a folder
 	// so named.
-	prefix = "magpie-test-home-"
+	prefix = "magpie-friday-test-home-"
 	// Marker holds the temporary home in the environment. A test binary
 	// started again by one of its own tests inherits it, and keeps the
 	// environment that test gave it (its fixtures) instead of isolating

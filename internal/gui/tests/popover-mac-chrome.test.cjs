@@ -23,7 +23,7 @@ const models = () => [
 
 function server(lang) {
   const list = models();
-  const options = list.map((m) => ({ value: "magpie/" + m.id, label: m.name, ref: m.id }));
+  const options = list.map((m) => ({ value: "magpie-friday/" + m.id, label: m.name, ref: m.id }));
   const state = () => ({
     agents: [{
       id: "codex", name: "Codex", path: "/test/config.toml", icon: "codex-color", wired: true,

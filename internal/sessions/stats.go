@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Stats is what every session spent, day by day: all of them, not only the
@@ -42,8 +42,8 @@ type Summary struct {
 	ParentSession string        `json:"parent_session,omitempty"`
 	RootSession   string        `json:"root_session,omitempty"`
 	ModelEffort   []ModelEffort `json:"model_effort,omitempty"`
-	// Gateway: magpie knows the session only from the gateway's records
-	// (MergeExternalStats). The agent left no file magpie reads, so it has
+	// Gateway: magpie-friday knows the session only from the gateway's records
+	// (MergeExternalStats). The agent left no file magpie-friday reads, so it has
 	// no folder, and no prompt unless gateway conversations were recorded
 	// (#2285: a Pi subagent's DeepSeek turns read as "(no prompt)").
 	Gateway bool `json:"gateway,omitempty"`
@@ -112,7 +112,7 @@ func StatsAt(days int, now time.Time) Stats { return statsAt(days, now) }
 
 // StatsAndNative is StatsFor, and the agent|id of every session List would
 // list, with no limit: what tells a gateway session the agent keeps too
-// from one only magpie saw. Both come of one pass over the files, as the
+// from one only magpie-friday saw. Both come of one pass over the files, as the
 // overview asks for both on every poll (#2776).
 func StatsAndNative(days int) (Stats, map[string]bool) {
 	native := map[string]bool{}

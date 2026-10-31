@@ -5,10 +5,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// #2274 (huangzuomin): Codex compacting through magpie on
+// #2274 (huangzuomin): Codex compacting through magpie-friday on
 // antigravity/gemini-3.8-flash asked for 1169 summaries in 6 hours. Each
 // summary's stream was let through at its first words, so Antigravity
 // cutting it short ("the reply ended before it was complete"), or a 429

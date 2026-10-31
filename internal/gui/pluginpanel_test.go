@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // copyTree copies a testdata folder to to.
@@ -84,9 +84,9 @@ func TestPluginPanelsServedShutIn(t *testing.T) {
 		t.Fatalf("panels: %s %v", w.Body, err)
 	}
 	want := []struct{ slot, title, key string }{
-		{"provider", "Notes", "plugin-magpie-provider-notes-0"},
-		{"usage", "Top models today", "plugin-magpie-provider-notes-1"},
-		{"settings", "Provider notes", "plugin-magpie-provider-notes-2"},
+		{"provider", "Notes", "plugin-magpie-friday-provider-notes-0"},
+		{"usage", "Top models today", "plugin-magpie-friday-provider-notes-1"},
+		{"settings", "Provider notes", "plugin-magpie-friday-provider-notes-2"},
 	}
 	toks := map[string]bool{}
 	for i, p := range panels {

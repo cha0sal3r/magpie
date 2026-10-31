@@ -10,10 +10,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// How often magpie quota wait reads the allowance again: shortly after the
+// How often magpie-friday quota wait reads the allowance again: shortly after the
 // soonest reset it knows, but never sooner than a minute (the readings are
 // kept that long anyway, and the vendors' usage endpoints are rate limited)
 // nor later than ten, as a reset can come early (a Codex reset spent, a plan
@@ -24,7 +24,7 @@ const (
 	quotaWaitMargin = 30 * time.Second
 )
 
-// exitError is an error that ends magpie with its own exit code rather
+// exitError is an error that ends magpie-friday with its own exit code rather
 // than 1; with no err, nothing is printed.
 type exitError struct {
 	code int
@@ -43,7 +43,7 @@ func (e exitError) Unwrap() error { return e.err }
 // errWaitTimeout is quota wait's --timeout running out, exit code 1.
 var errWaitTimeout = errors.New("timed out")
 
-// quotaTarget is what magpie quota wait waits on: every account of a
+// quotaTarget is what magpie-friday quota wait waits on: every account of a
 // provider (user ""), or one account.
 type quotaTarget struct {
 	provider string
@@ -55,7 +55,7 @@ func (t quotaTarget) has(q provider.SubscriptionQuota) bool {
 	return strings.EqualFold(q.Provider, t.provider) && (t.user == "" || strings.EqualFold(q.User, t.user))
 }
 
-// resolveQuotaTarget finds what arg names among the readings, as magpie
+// resolveQuotaTarget finds what arg names among the readings, as magpie-friday
 // quota matches a provider (its id or name), or one account by its user,
 // or <provider>/<user> where two providers have the same user. find says
 // whether arg is a provider at all, for an error that tells the two apart.
@@ -77,7 +77,7 @@ func resolveQuotaTarget(arg string, qs []provider.SubscriptionQuota, find func(s
 			if slices.ContainsFunc(qs, t.has) {
 				return t, nil
 			}
-			return quotaTarget{}, fmt.Errorf("%s has no account %s · magpie quota %s lists its accounts", id, u, id)
+			return quotaTarget{}, fmt.Errorf("%s has no account %s · magpie-friday quota %s lists its accounts", id, u, id)
 		}
 	}
 	var hits []quotaTarget
@@ -97,18 +97,18 @@ func resolveQuotaTarget(arg string, qs []provider.SubscriptionQuota, find func(s
 		return quotaTarget{}, fmt.Errorf("%s is an account of more than one subscription: name one of %s", arg, strings.Join(names, ", "))
 	}
 	if find != nil && find(arg) {
-		return quotaTarget{}, fmt.Errorf("%s has no subscription or plan whose allowance magpie reads: sign in to it first, or magpie quota lists what there is", arg)
+		return quotaTarget{}, fmt.Errorf("%s has no subscription or plan whose allowance magpie-friday reads: sign in to it first, or magpie-friday quota lists what there is", arg)
 	}
-	return quotaTarget{}, fmt.Errorf("no subscription, plan or account %s · magpie quota lists them", arg)
+	return quotaTarget{}, fmt.Errorf("no subscription, plan or account %s · magpie-friday quota lists them", arg)
 }
 
-// quotaWait is magpie quota wait's loop, with what it reads, the clock and
+// quotaWait is magpie-friday quota wait's loop, with what it reads, the clock and
 // how it sleeps given, so tests run it on a fake clock.
 type quotaWait struct {
 	// read is every account's allowance now; readable ones say Error "".
 	read func(ctx context.Context) []provider.SubscriptionQuota
 	// skip, when set, leaves out an account a provider's wait shouldn't
-	// count: one switched off or signed out in magpie, whose room the agent
+	// count: one switched off or signed out in magpie-friday, whose room the agent
 	// would never be moved to.
 	skip  func(q provider.SubscriptionQuota) bool
 	now   func() time.Time
@@ -223,10 +223,10 @@ func sleepCtx(ctx context.Context, d time.Duration) error {
 	}
 }
 
-// quotaWaitCmd: magpie quota wait <provider|account> [--timeout <d>]
+// quotaWaitCmd: magpie-friday quota wait <provider|account> [--timeout <d>]
 // [--quiet] — blocks until the subscription (any of its accounts) or the
 // account has allowance again, for a script to go on with the work it
-// stopped (#720): until codex exec …; do magpie quota wait codex; done.
+// stopped (#720): until codex exec …; do magpie-friday quota wait codex; done.
 // Exits 0 then, 1 on --timeout, 2 on a name it doesn't know, 130 on Ctrl+C.
 func quotaWaitCmd(args []string) error {
 	var arg string
@@ -255,7 +255,7 @@ func quotaWaitCmd(args []string) error {
 			}
 			timeout = d
 		case strings.HasPrefix(a, "-"):
-			return exitError{2, fmt.Errorf("unknown flag %s · %s", a, "magpie quota wait <provider|account> [--timeout <duration>] [--quiet]")}
+			return exitError{2, fmt.Errorf("unknown flag %s · %s", a, "magpie-friday quota wait <provider|account> [--timeout <duration>] [--quiet]")}
 		default:
 			if arg != "" {
 				return exitError{2, fmt.Errorf("one subscription or account at a time: %s or %s", arg, a)}
@@ -264,7 +264,7 @@ func quotaWaitCmd(args []string) error {
 		}
 	}
 	if arg == "" {
-		return exitError{2, fmt.Errorf("wait for what? magpie quota wait <provider|account>, such as codex")}
+		return exitError{2, fmt.Errorf("wait for what? magpie-friday quota wait <provider|account>, such as codex")}
 	}
 	ctx, stop := interruptContext()
 	defer stop()
@@ -298,7 +298,7 @@ func quotaWaitCmd(args []string) error {
 		return false
 	}
 	if t.user == "" && !slices.ContainsFunc(qs, func(q provider.SubscriptionQuota) bool { return t.has(q) && !skip(q) }) {
-		return exitError{2, fmt.Errorf("none of %s's accounts is on in magpie · turn one on, or name the account", t.provider)}
+		return exitError{2, fmt.Errorf("none of %s's accounts is on in magpie-friday · turn one on, or name the account", t.provider)}
 	}
 	first := true
 	w := quotaWait{

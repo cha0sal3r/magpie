@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // museReasoningID is the reasoning item id Muse Spark on OpenCode handed
@@ -35,7 +35,7 @@ var openaiItemID = regexp.MustCompile(`^[A-Za-z0-9_-]+$`)
 
 // idChecker plays OpenAI's /responses as Copilot passes it on: an input
 // item whose id has another character is refused with OpenAI's 400, word
-// for word as echo_ts got it (Copilot's name is magpie's, before it).
+// for word as echo_ts got it (Copilot's name is magpie-friday's, before it).
 // With check off it takes any id, as OpenCode does its own.
 type idChecker struct {
 	mu     sync.Mutex
@@ -151,7 +151,7 @@ func TestCopilotTakesAnotherVendorsItemIDs(t *testing.T) {
 	checkSent(t, asked[0])
 }
 
-// A relay in front of OpenAI, which magpie can't tell from any other
+// A relay in front of OpenAI, which magpie-friday can't tell from any other
 // upstream, refuses the ids as OpenAI does: asked once more with ids it
 // takes, and from then on asked that way at once.
 func TestRelayRefusingItemIDsAskedAgain(t *testing.T) {

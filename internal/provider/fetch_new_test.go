@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/cha0sal3r/magpie-friday/internal/catalog"
 )
 
-// An account signed in while magpie runs gets its vendor's list the next
+// An account signed in while magpie-friday runs gets its vendor's list the next
 // time the providers are listed, not only after Refresh (#204: WorkBuddy's
 // models incomplete when first added, all of them after Refresh; Codex is
 // the built-in signed in here). One whose list couldn't be had isn't asked
@@ -65,7 +65,7 @@ func TestFetchNewAccount(t *testing.T) {
 		t.Fatalf("asked %d times with no account", n)
 	}
 
-	// Codex signs itself in while magpie runs
+	// Codex signs itself in while magpie-friday runs
 	codexSignedIn(t, home)
 	if ids()["gpt-6-luna"] {
 		t.Fatal("the vendor's model listed before its list was fetched")
@@ -91,7 +91,7 @@ func TestFetchNewAccount(t *testing.T) {
 	newFetches.Unlock()
 	down.Store(true)
 	// missing both times: when it failed, and while it waits to ask again,
-	// so the terminal and magpie serve try once more later (#1789)
+	// so the terminal and magpie-friday serve try once more later (#1789)
 	if !FetchNew(5 * time.Second) {
 		t.Fatal("a list that failed not said missing")
 	}
@@ -114,7 +114,7 @@ func TestFetchNewAccount(t *testing.T) {
 }
 
 // codexSignedIn signs Codex in under home, with no list of its own kept:
-// a built-in account whose list magpie fetches.
+// a built-in account whose list magpie-friday fetches.
 func codexSignedIn(t *testing.T, home string) {
 	t.Helper()
 	exp := float64(time.Now().Add(24 * time.Hour).Unix())

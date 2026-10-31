@@ -271,7 +271,7 @@ func linesFile(s Session) bool {
 	return true
 }
 
-// SearchGateway finds needle in what magpie recorded of a gateway session,
+// SearchGateway finds needle in what magpie-friday recorded of a gateway session,
 // the parts as its transcript shows them.
 func SearchGateway(ctx context.Context, agent, id, needle string) (Hit, bool, error) {
 	if err := ctx.Err(); err != nil {
@@ -299,7 +299,7 @@ var gatewayTitles sync.Map // path -> string
 const gatewayTitleLines = 8
 
 // GatewayTitle is what a gateway session was first asked, made one short
-// line, from the first turns magpie recorded of it; "" when it recorded
+// line, from the first turns magpie-friday recorded of it; "" when it recorded
 // none or nothing the user wrote.
 func GatewayTitle(agent, id string) string {
 	if agent == "" || id == "" {

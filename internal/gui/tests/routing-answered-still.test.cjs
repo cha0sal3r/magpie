@@ -1,6 +1,6 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // A request that is over doesn't look called on the Routing page (#2386,
-// Moody-Sin: magpie on a server, the agent long stopped, and the page and
+// Moody-Sin: magpie-friday on a server, the agent long stopped, and the page and
 // the app still showed the account that answered the last request as being
 // called, however often reloaded). The row that answered the request shown
 // stays lit (its dot filled, its wire drawn in the agent's colour), but

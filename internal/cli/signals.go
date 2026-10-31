@@ -8,19 +8,19 @@ import (
 	"sync/atomic"
 	"syscall"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/proc"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
-// endProbesOnSignal: the probes magpie asks a CLI with lead a session of
+// endProbesOnSignal: the probes magpie-friday asks a CLI with lead a session of
 // their own (proc.ProbeContext), so Ctrl+C in the terminal, the terminal
-// closing or a service manager's SIGTERM reach magpie and not them, and
-// magpie ending on the signal left them to init. They are ended first, and
-// magpie then dies of the signal. A command that waits on Ctrl+C itself
+// closing or a service manager's SIGTERM reach magpie-friday and not them, and
+// magpie-friday ending on the signal left them to init. They are ended first, and
+// magpie-friday then dies of the signal. A command that waits on Ctrl+C itself
 // (interruptContext) is left to finish its own way, its probes ended all the
 // same; the app and the TUI, which quit on SIGINT and SIGTERM their own way,
-// take those back (ownSignals). A signal magpie was started ignoring (nohup,
+// take those back (ownSignals). A signal magpie-friday was started ignoring (nohup,
 // a background job) stays ignored: asking for it would undo that.
 func endProbesOnSignal() {
 	caught = nil
@@ -56,8 +56,8 @@ var (
 	onSignal chan os.Signal
 )
 
-// die ends magpie of s, as s would have had there been no handler: the
-// shell that ran it sees a process a signal ended (a loop running magpie
+// die ends magpie-friday of s, as s would have had there been no handler: the
+// shell that ran it sees a process a signal ended (a loop running magpie-friday
 // stops on Ctrl+C), not one that exited. Where a signal can't be sent to
 // oneself (Windows), it exits as a shell reports such a process. A var so
 // tests can see what a signal would do.
@@ -75,7 +75,7 @@ var die = func(s os.Signal) {
 // probes, and installs a downloaded update), bubbletea leaves the TUI's
 // screen as it found it, and each comes back to main, where the probes are
 // ended too. Exiting first skipped all of that. SIGHUP stays: neither
-// handles it, and the terminal closing would end magpie there and then,
+// handles it, and the terminal closing would end magpie-friday there and then,
 // with its probes, out of the terminal's reach, left running.
 func ownSignals() {
 	if onSignal == nil {

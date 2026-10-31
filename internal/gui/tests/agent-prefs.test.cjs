@@ -8,7 +8,7 @@
 // does the agent's menu; shut, the rows are back where they were. Gateway
 // mode writes no agent's files, so none of it shows, but Long conversations:
 // it sets the windows the gateway serves, which agents elsewhere read, so
-// with no Codex or Claude Code here (a gateway, magpie in Docker) it stays
+// with no Codex or Claude Code here (a gateway, magpie-friday in Docker) it stays
 // in Settings › General, on the size set before (Linka on Discord). Five languages, wide
 // and narrow, Chromium and WebKit; no backend, the API is faked here.
 const assert = require("node:assert/strict");
@@ -27,7 +27,7 @@ function settingsPayload(over) {
     dock: false, dockWindow: false, proxy: "", redact: false, redactPersonal: false, redactWords: [],
     codexWarmup: "", claudeWarmup: "", codexWarmAt: "", claudeWarmAt: "", workbuddyCheckin: false, noStats: false,
     trayUsage: "", trayUsageEvery: 3, vision: "", imageGen: "",
-    version: "0.1.400", dir: "~/.config/magpie", gateway: "http://127.0.0.1:3425",
+    version: "0.1.400", dir: "~/.config/magpie-friday", gateway: "http://127.0.0.1:3425",
     proxyNow: "none", proxySource: "none", login: false,
     visionModels: [], imageGenModels: [], workbuddyCheckins: [], lanURLs: [], titleModels: [],
     fx: { rate: 7.2, at: new Date().toISOString(), stale: false },

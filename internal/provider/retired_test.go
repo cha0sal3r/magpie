@@ -17,7 +17,7 @@ func retiredLooks() int {
 // Every answered request asks Unretire (the gateway's servedCandidate):
 // retired.json isn't looked at on disk for each, only once in retiredLook.
 // What this process retires or brings back is told at once, another
-// magpie's write within retiredLook, and a config path of its own (a new
+// magpie-friday's write within retiredLook, and a config path of its own (a new
 // HOME) is read at once.
 func TestRetiredLooksOnceInAWhile(t *testing.T) {
 	home := t.TempDir()
@@ -43,7 +43,7 @@ func TestRetiredLooksOnceInAWhile(t *testing.T) {
 		t.Fatal("this process's unretirement isn't told at once")
 	}
 
-	// another magpie's write
+	// another magpie-friday's write
 	defer func(d time.Duration) { retiredLook = d }(retiredLook)
 	retiredLook = 20 * time.Millisecond
 	b, _ := json.Marshal(map[string]time.Time{"p/other": time.Now()})
@@ -57,7 +57,7 @@ func TestRetiredLooksOnceInAWhile(t *testing.T) {
 	os.Chtimes(retiredPath(), later, later)
 	for deadline := time.Now().Add(10 * time.Second); !Retired("p", "other"); time.Sleep(5 * time.Millisecond) {
 		if time.Now().After(deadline) {
-			t.Fatal("another magpie's write isn't seen")
+			t.Fatal("another magpie-friday's write isn't seen")
 		}
 	}
 

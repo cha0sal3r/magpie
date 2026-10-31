@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-// Busy is what a restart of the magpie serving the gateway would cut
+// Busy is what a restart of the magpie-friday serving the gateway would cut
 // short (#577): the agents' requests in flight — a reply streaming, an
 // image being made — and the turns of Claude Code run through the
 // subscription bridge waiting on their caller's tool results, whose
 // Claude Code lives only in this process. A request in flight is one
-// that does work (not a GET: the model lists, the info another magpie
+// that does work (not a GET: the model lists, the info another magpie-friday
 // asks for every 15 s); the bridge's own helper calls are not counted
 // apart, a turn waiting on them being in Tools. Last is when the last
 // counted request ended, so a caller can tell a tool chain's gap — the
@@ -21,7 +21,7 @@ import (
 // Bridge and BridgeLast are the same for the bridge's turns alone, which
 // a restart that hands the gateway over (handover.go) still waits for:
 // their Claude Code lives in this process, and only here can the turn go
-// on. Every other request finishes in the magpie that hands over while
+// on. Every other request finishes in the magpie-friday that hands over while
 // the new one takes the next.
 type Busy struct {
 	Requests   int       `json:"requests"`
@@ -88,7 +88,7 @@ func (s *Server) counted(h http.Handler) http.Handler {
 type busyCounters struct {
 	inFlight atomic.Int64
 	lastDone atomic.Int64 // unix ns
-	active   inflights    // what each is, for /v1/magpie/concurrency
+	active   inflights    // what each is, for /v1/magpie-friday/concurrency
 	// the subscription bridge's turns among them, and when the last ended
 	bridgeInFlight atomic.Int64
 	bridgeDone     atomic.Int64 // unix ns

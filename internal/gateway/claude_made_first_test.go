@@ -12,12 +12,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/testenv"
 )
 
 // claudeMadeFirst signs Claude Code in to a@example.com, with
-// b@example.com added in magpie beside it, as nil_1024 had them, and puts
+// b@example.com added in magpie-friday beside it, as nil_1024 had them, and puts
 // a Claude Code in PATH that answers as the account whose sign-in it reads
 // at each turn, from the config directory it runs in, as Claude Code reads
 // its keychain again every half minute: b's 5 hours are spent, a's not;
@@ -90,7 +90,7 @@ done
 	t.Cleanup(provider.ForgetAccounts)
 }
 
-// nil_1024: Claude Code signed in to A, B added in magpie and made first
+// nil_1024: Claude Code signed in to A, B added in magpie-friday and made first
 // (Claude Code's own sign-in moved to B), B's 5 hours spent. A went on
 // being asked in the Claude Code kept for its conversation, in Claude
 // Code's own home, which by then read B's sign-in: A's turns were B's,

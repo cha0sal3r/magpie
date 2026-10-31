@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Remote media uses the remote's images and videos APIs, including edits,
@@ -94,7 +94,7 @@ func TestRemoteMagpieMedia(t *testing.T) {
 		}
 	})).ServeHTTP(httptest.NewRecorder(), r)
 	head := <-arrived
-	if head.Get(AgentHeader) != "pi" || head.Get(SessionHeader) != "media-session" || !strings.HasPrefix(head.Get("User-Agent"), "magpie/") {
+	if head.Get(AgentHeader) != "pi" || head.Get(SessionHeader) != "media-session" || !strings.HasPrefix(head.Get("User-Agent"), "magpie-friday/") {
 		t.Errorf("media caller: %v", head)
 	}
 }

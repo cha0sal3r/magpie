@@ -14,7 +14,7 @@ import (
 	"testing"
 )
 
-// `magpie web` sent its page's ~4 MB of scripts and styles, and the API's
+// `magpie-friday web` sent its page's ~4 MB of scripts and styles, and the API's
 // JSON, as they are: over a 3 Mbps link to a server every load waited for
 // all of it (akic404 on Discord). A browser that takes gzip gets them
 // gzipped, a client that doesn't gets the bytes as they are, pictures

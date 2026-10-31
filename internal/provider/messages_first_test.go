@@ -3,7 +3,7 @@ package provider
 import "testing"
 
 // The API a model is wired to agents on (Pi, omp, droid each speak the one
-// magpie names for a model): a Claude model at a relay with an Anthropic URL
+// magpie-friday names for a model): a Claude model at a relay with an Anthropic URL
 // beside its OpenAI one is Anthropic's Messages, not Chat, which drops its
 // cache_control (#997). Other models, and a provider without an Anthropic
 // URL, are as before.

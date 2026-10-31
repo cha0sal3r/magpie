@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 func TestDefaultKeyRevocationSurvivesDowngrade(t *testing.T) {
@@ -22,7 +22,7 @@ func TestDefaultKeyRevocationSurvivesDowngrade(t *testing.T) {
 			}
 			after := settings.Load()
 			if after.LANKey == "" || after.LANKey == before.LANKey {
-				t.Fatal("older Magpie would accept the revoked credential")
+				t.Fatal("older magpie-friday would accept the revoked credential")
 			}
 			if _, ok := Authenticate(after.LANKey); ok {
 				t.Fatal("legacy replacement is an active gateway key")
@@ -60,7 +60,7 @@ func TestDefaultKeyRevocationSurvivesDowngrade(t *testing.T) {
 
 func TestReadOnlyMigrationDoesNotRetryCompletedKeyWrite(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
-	s := settings.Settings{LAN: true, LANKey: "sk-magpie-fixture-legacy"}
+	s := settings.Settings{LAN: true, LANKey: "sk-magpie-friday-fixture-legacy"}
 	if err := settings.Save(s); err != nil {
 		t.Fatal(err)
 	}
@@ -79,7 +79,7 @@ func TestReadOnlyMigrationDoesNotRetryCompletedKeyWrite(t *testing.T) {
 			t.Fatal("completed key migration retried read-only settings", err)
 		}
 	}
-	if who, ok := Authenticate(s.LANKey); !ok || who.KeyName != "Magpie" {
+	if who, ok := Authenticate(s.LANKey); !ok || who.KeyName != "magpie-friday" {
 		t.Fatal("legacy key was not usable after partial migration", who, ok)
 	}
 }
@@ -108,7 +108,7 @@ func TestReadOnlyDefaultKeyMutationExplainsLegacyMirror(t *testing.T) {
 				t.Fatal(err)
 			}
 			_, err = Update(action, Change{Key: s.LANKeyID})
-			if !errors.Is(err, os.ErrPermission) || !strings.Contains(err.Error(), "older Magpie") || !strings.Contains(err.Error(), "writable") || !strings.Contains(err.Error(), "unchanged") {
+			if !errors.Is(err, os.ErrPermission) || !strings.Contains(err.Error(), "older magpie-friday") || !strings.Contains(err.Error(), "writable") || !strings.Contains(err.Error(), "unchanged") {
 				t.Fatal("default-key error does not explain the recovery or downgrade risk", err)
 			}
 			after, err := os.ReadFile(Path())
@@ -133,7 +133,7 @@ func TestReadOnlyDefaultKeyMutationExplainsLegacyMirror(t *testing.T) {
 }
 
 // A default key the user removed isn't made again when sharing is turned
-// off and on, or a new "Magpie" key keeps appearing beside their own
+// off and on, or a new "magpie-friday" key keeps appearing beside their own
 // (#1655); a disabled one stays disabled; a new key asked for is made.
 func TestRemovedDefaultKeyStaysRemovedOnReshare(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
@@ -160,7 +160,7 @@ func TestRemovedDefaultKeyStaysRemovedOnReshare(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, older := range []bool{false, true} {
-		if older { // an older magpie saved settings without the id
+		if older { // an older magpie-friday saved settings without the id
 			s := settings.Load()
 			s.LANKeyID = ""
 			if err := settings.Save(s); err != nil {

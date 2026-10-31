@@ -6,15 +6,15 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // With CLAUDE_CONFIG_DIR set, Claude Code keeps everything there and never
 // makes ~/.claude: it is listed on the Agents page by that folder, a model
 // picked for it goes to $CLAUDE_CONFIG_DIR/settings.json, the file it
-// reads, and magpie reads the pick back from there. The sessions, the
+// reads, and magpie-friday reads the pick back from there. The sessions, the
 // library and the sign-in already read $CLAUDE_CONFIG_DIR while the
 // Agents page looked for ~/.claude alone, so a Claude Code kept elsewhere
 // wasn't found (#1482).
@@ -42,13 +42,13 @@ func TestClaudeConfigDirTakesThePick(t *testing.T) {
 	path := filepath.Join(cd, "settings.json")
 	if v, _ := edit.GetJSON(path, "env.ANTHROPIC_BASE_URL"); v != gateway.URL() {
 		b, _ := os.ReadFile(path)
-		t.Fatalf("$CLAUDE_CONFIG_DIR/settings.json doesn't point at magpie:\n%s", b)
+		t.Fatalf("$CLAUDE_CONFIG_DIR/settings.json doesn't point at magpie-friday:\n%s", b)
 	}
 	if v, _ := edit.GetJSON(path, "theme"); v != "dark" {
 		t.Fatalf("the user's own theme is %q after the pick", v)
 	}
 	if got := claude(home).Field("model").Get(); got != "relay/glm-4.6" {
-		t.Fatalf("magpie reads the pick back as %q", got)
+		t.Fatalf("magpie-friday reads the pick back as %q", got)
 	}
 	if m := StandIn("claude", "claude-sonnet-4-5"); m == "" {
 		t.Fatal("the gateway has no stand-in for Claude Code: read from somewhere else")

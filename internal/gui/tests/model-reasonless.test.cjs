@@ -2,7 +2,7 @@
 // yuexian7 on Discord: models.dev lists their model as reasoning, and the
 // vendor answers any reasoning parameter with 422 while the request
 // without it works. In the provider editor's Names & levels, a model's
-// levels can all be unticked: magpie then sends it no reasoning field, said
+// levels can all be unticked: magpie-friday then sends it no reasoning field, said
 // beside the levels, and the Save sends {reasonless: true}. A model saved
 // so shows none ticked, and ticking one takes it back. Every language,
 // at a wide and a narrow window.
@@ -46,7 +46,7 @@ function serve(lang, posts) {
 const keys = [
   "No reasoning field sent",
   "Reasoning levels agents are offered; none ticked: it is sent no reasoning field",
-  "None ticked: magpie sends {id} no reasoning field, whatever effort the agent asks, as for a model that doesn't reason",
+  "None ticked: magpie-friday sends {id} no reasoning field, whatever effort the agent asks, as for a model that doesn't reason",
 ];
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {

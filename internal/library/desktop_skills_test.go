@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/desktopdir"
+	"github.com/cha0sal3r/magpie-friday/internal/desktopdir"
 )
 
 // desktopAccount makes a skills-plugin for one of Claude Desktop's
@@ -215,7 +215,7 @@ func TestClaudeDesktopSkills(t *testing.T) {
 		t.Errorf("the other account's copy wasn't made again:\n%s", s)
 	}
 
-	// taken away: magpie's copies and entries go, the changed one into the
+	// taken away: magpie-friday's copies and entries go, the changed one into the
 	// backups; Desktop's own stay
 	ok(t)(SkillAgents("pdf", nil))
 	for _, root := range []string{a, b} {
@@ -238,7 +238,7 @@ func TestClaudeDesktopSkills(t *testing.T) {
 	}
 
 	// given again after its folder was deleted by hand, the entry left:
-	// magpie's own entry gets its folder back
+	// magpie-friday's own entry gets its folder back
 	ok(t)(SkillAgents("pdf", []string{"claude-desktop"}))
 	os.RemoveAll(filepath.Join(b, "skills", "pdf"))
 	ok(t)(Sync())
@@ -246,7 +246,7 @@ func TestClaudeDesktopSkills(t *testing.T) {
 		t.Error(err)
 	}
 
-	// #863: an updatedAt magpie wrote as milliseconds before is written as
+	// #863: an updatedAt magpie-friday wrote as milliseconds before is written as
 	// an ISO time at the next sync, the same moment, the entry's other keys
 	// and Desktop's own entries as they were
 	write(t, m, strings.Replace(read(t, m), `"skills": [`, `"skills": [{"skillId":"ponytail","name":"ponytail","syncManaged":true,"updatedAt":1759536000000,"enabled":true},`, 1))

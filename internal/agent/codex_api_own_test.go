@@ -7,10 +7,10 @@ import (
 	"testing"
 )
 
-// On magpie API, one of Codex's own models picked as its default keeps
-// magpie as Codex's provider, magpie's models in its picker: the model goes
-// as magpie serves it on the ChatGPT account. Picking it used to take magpie
-// out, and every model of magpie's left Codex's picker with it (#701). Back
+// On magpie-friday API, one of Codex's own models picked as its default keeps
+// magpie-friday as Codex's provider, magpie-friday's models in its picker: the model goes
+// as magpie-friday serves it on the ChatGPT account. Picking it used to take magpie-friday
+// out, and every model of magpie-friday's left Codex's picker with it (#701). Back
 // on ChatGPT, the model is Codex's own again, straight to OpenAI.
 func TestCodexAPIKeepsMagpieOnOwnModel(t *testing.T) {
 	home, read := codexHome(t, `{"tokens":{"access_token":"x","id_token":"x.e30.x"}}`, "model = \"gpt-a\"\n")
@@ -18,29 +18,29 @@ func TestCodexAPIKeepsMagpieOnOwnModel(t *testing.T) {
 	os.WriteFile(filepath.Join(dir, "models_cache.json"), []byte(`{"models":[
 		{"slug":"gpt-a","display_name":"A","priority":1},
 		{"slug":"gpt-b","display_name":"B","priority":2}]}`), 0o644)
-	catalogPath := filepath.Join(dir, "magpie-models.json")
+	catalogPath := filepath.Join(dir, "magpie-friday-models.json")
 	wired := func(model string) {
 		t.Helper()
 		cfg := read()
-		if !strings.Contains(cfg, `model_provider = "magpie"`) || !strings.Contains(cfg, "model_catalog_json") ||
+		if !strings.Contains(cfg, `model_provider = "magpie-friday"`) || !strings.Contains(cfg, "model_catalog_json") ||
 			!strings.Contains(cfg, "openai_base_url") || !strings.Contains(cfg, `model = "`+model+`"`) {
 			t.Fatalf("not wired on %s:\n%s", model, cfg)
 		}
 		b, err := os.ReadFile(catalogPath)
 		if err != nil || !strings.Contains(string(b), `"fake/m1"`) {
-			t.Fatalf("magpie's models not in Codex's catalog (%v):\n%s", err, b)
+			t.Fatalf("magpie-friday's models not in Codex's catalog (%v):\n%s", err, b)
 		}
 	}
 	cx := codex(home)
 	login, model := cx.Field("login"), cx.Fields[0]
 
-	// magpie API chosen on Codex's own model wires magpie in at once
+	// magpie-friday API chosen on Codex's own model wires magpie-friday in at once
 	if err := login.Set("api"); err != nil {
 		t.Fatal(err)
 	}
 	wired("codex/gpt-a")
 
-	// a magpie model, then Codex's own again: magpie stays
+	// a magpie-friday model, then Codex's own again: magpie-friday stays
 	if err := model.Set("fake/m1"); err != nil {
 		t.Fatal(err)
 	}
@@ -64,10 +64,10 @@ func TestCodexAPIKeepsMagpieOnOwnModel(t *testing.T) {
 		t.Fatalf("model = %q", got)
 	}
 
-	// one magpie doesn't serve is refused, the config left as it was
+	// one magpie-friday doesn't serve is refused, the config left as it was
 	before := read()
 	if err := model.Set("gpt-zzz"); err == nil {
-		t.Fatal("a model magpie doesn't serve was taken on magpie API")
+		t.Fatal("a model magpie-friday doesn't serve was taken on magpie-friday API")
 	}
 	if read() != before {
 		t.Fatalf("a refused model changed the config:\n%s", read())
@@ -90,8 +90,8 @@ func TestCodexAPIKeepsMagpieOnOwnModel(t *testing.T) {
 	}
 }
 
-// A Codex an older magpie left on its own model, unwired, while its sign-in
-// is magpie API (#701's config) is wired again at the next sync.
+// A Codex an older magpie-friday left on its own model, unwired, while its sign-in
+// is magpie-friday API (#701's config) is wired again at the next sync.
 func TestCodexAPISyncWiresOwnModel(t *testing.T) {
 	home, read := codexHome(t, `{"tokens":{"access_token":"x","id_token":"x.e30.x"}}`, "model = \"gpt-a\"\n")
 	dir := filepath.Join(home, ".codex")
@@ -102,7 +102,7 @@ func TestCodexAPISyncWiresOwnModel(t *testing.T) {
 	if err := cx.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	if cfg := read(); !strings.Contains(cfg, `model_provider = "magpie"`) || !strings.Contains(cfg, `model = "codex/gpt-a"`) {
+	if cfg := read(); !strings.Contains(cfg, `model_provider = "magpie-friday"`) || !strings.Contains(cfg, `model = "codex/gpt-a"`) {
 		t.Fatalf("after sync:\n%s", cfg)
 	}
 }

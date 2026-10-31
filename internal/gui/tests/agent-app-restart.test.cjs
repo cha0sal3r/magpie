@@ -1,7 +1,7 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // 微雨南山 and stones on Discord: WorkBuddy, Claude Desktop and the Codex app
-// read magpie's settings only as they start. A row whose app started before
-// magpie's last change has a Restart; it asks in magpie's own dialog, and
+// read magpie-friday's settings only as they start. A row whose app started before
+// magpie-friday's last change has a Restart; it asks in magpie-friday's own dialog, and
 // only then quits the app and opens it again. Cancel quits nothing. Every
 // language, both engines, the window wide and narrow and the tray panel. No
 // backend, the API is faked here.
@@ -13,9 +13,9 @@ const { chromium, webkit } = require("playwright");
 
 const assets = path.resolve(__dirname, "../assets");
 const days = (n) => new Date(Date.now() - n * 86400e3).toISOString();
-const model = (value) => [{ key: "model", label: "model", value, options: [{ value: "deepseek-v4", label: "DeepSeek V4", ref: "deepseek/deepseek-v4", note: "DeepSeek · via magpie" }] }];
+const model = (value) => [{ key: "model", label: "model", value, options: [{ value: "deepseek-v4", label: "DeepSeek V4", ref: "deepseek/deepseek-v4", note: "DeepSeek · via magpie-friday" }] }];
 const workbuddy = { id: "workbuddy", name: "WorkBuddy", icon: "generic", path: "/fixture/models.json", wired: true, fields: model("deepseek-v4"), appRestart: { since: days(1) } };
-// disconnected in magpie, the app still runs on magpie's settings
+// disconnected in magpie-friday, the app still runs on magpie-friday's settings
 const claude = { id: "claude-desktop", name: "Claude Desktop", icon: "generic", path: "/fixture/claude", wired: false, fields: model(""), appRestart: { since: days(1) } };
 
 const words = {
@@ -81,7 +81,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
           assert.equal((await go.textContent()).trim(), w.restart);
           assert.ok((await page.locator(`${row("workbuddy")} .ag-st-t`).textContent()).includes(w.line));
         }
-        // not connected in magpie, Claude Desktop still runs on its settings
+        // not connected in magpie-friday, Claude Desktop still runs on its settings
         await page.locator(`${row("claude-desktop")} .ag-restart`).waitFor();
         const box = await go.boundingBox();
         assert.ok(box.x >= 0 && box.x + box.width <= width, "past the window: " + JSON.stringify(box));

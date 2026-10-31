@@ -10,13 +10,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
 )
 
 // keepBackups is how many changes' backups are kept.
 const keepBackups = 30
 
-// BackupDir is where a file is copied before magpie first changes it in a
+// BackupDir is where a file is copied before magpie-friday first changes it in a
 // change: one folder a change, named by when, a folder an agent in it.
 func BackupDir() string { return filepath.Join(settings.Dir(), "backups") }
 

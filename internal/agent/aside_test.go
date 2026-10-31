@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/cha0sal3r/magpie-friday/internal/edit"
+	"github.com/cha0sal3r/magpie-friday/internal/gateway"
 )
 
 func asideHome(t *testing.T) (string, string) {
@@ -36,7 +36,7 @@ func asideHome(t *testing.T) (string, string) {
 	return settings, models
 }
 
-// asideFakeSet does to settings what Aside does for magpie's repl
+// asideFakeSet does to settings what Aside does for magpie-friday's repl
 // expression.
 func asideFakeSet(settings, expr string) error {
 	if strings.HasPrefix(expr, "aside.settings.set(") {
@@ -92,7 +92,7 @@ func TestAsideConnectOnlyRegistersProvider(t *testing.T) {
 	if !a.Wired() || readFile(settings) != before || calls != 0 {
 		t.Fatalf("connect changed selection: wired=%v calls=%d settings=%s", a.Wired(), calls, readFile(settings))
 	}
-	if key, _ := edit.GetJSON(models, "providers.magpie.apiKey"); key != gateway.TokenFor("aside") {
+	if key, _ := edit.GetJSON(models, "providers.magpie-friday.apiKey"); key != gateway.TokenFor("aside") {
 		t.Fatal("wrong caller credential")
 	}
 	if err := a.Disconnect(); err != nil {
@@ -107,10 +107,10 @@ func TestAsideSelectedFieldRestoresCompleteSelection(t *testing.T) {
 	settings, _ := asideHome(t)
 	before := readFile(settings)
 	a := mustFindAside(t)
-	if err := a.Pick("model", "magpie/relay/glm-4.6"); err != nil {
+	if err := a.Pick("model", "magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
-	if a.Field("model").Get() != "magpie/relay/glm-4.6" {
+	if a.Field("model").Get() != "magpie-friday/relay/glm-4.6" {
 		t.Fatal("model did not take effect")
 	}
 	if a.Field("fast").Get() != "" {
@@ -132,7 +132,7 @@ func TestAsideRejectsDaemonFailureWithoutFileFallback(t *testing.T) {
 	a := mustFindAside(t)
 	before := readFile(settings)
 	asideSet = func(string, string) error { return errors.New("refused") }
-	if err := a.Apply("model", "magpie/relay/glm-4.6"); err == nil {
+	if err := a.Apply("model", "magpie-friday/relay/glm-4.6"); err == nil {
 		t.Fatal("daemon refusal reported success")
 	}
 	if readFile(settings) != before {
@@ -146,7 +146,7 @@ func TestAsideRejectsDaemonFailureWithoutFileFallback(t *testing.T) {
 func TestAsideNativeSelectionKeepsProviderAndEndsOwnership(t *testing.T) {
 	settings, _ := asideHome(t)
 	a := mustFindAside(t)
-	if err := a.Apply("model", "magpie/relay/glm-4.6"); err != nil {
+	if err := a.Apply("model", "magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	if err := edit.SetJSON(settings, edit.KV{Path: "defaultModel.provider", Value: "native"}, edit.KV{Path: "defaultModel.modelId", Value: "other"}); err != nil {
@@ -166,7 +166,7 @@ func TestAsideNativeSelectionKeepsProviderAndEndsOwnership(t *testing.T) {
 
 func TestAsideLegacySelectionNeedsRestoreTarget(t *testing.T) {
 	settings, models := asideHome(t)
-	writeFile(t, settings, `{"defaultModel":{"provider":"magpie","modelId":"relay/glm-4.6","thinkingLevel":"high"}}`)
+	writeFile(t, settings, `{"defaultModel":{"provider":"magpie-friday","modelId":"relay/glm-4.6","thinkingLevel":"high"}}`)
 	a := mustFindAside(t)
 	if err := a.Connect(); err != nil {
 		t.Fatal(err)
@@ -182,7 +182,7 @@ func TestAsideLegacySelectionNeedsRestoreTarget(t *testing.T) {
 
 func TestAsideForeignProviderAndSyncAreReadOnly(t *testing.T) {
 	settings, models := asideHome(t)
-	writeFile(t, models, `{"providers":{"magpie":{"apiKey":"someone-else","baseUrl":"https://other.invalid/v1"}}}`)
+	writeFile(t, models, `{"providers":{"magpie-friday":{"apiKey":"someone-else","baseUrl":"https://other.invalid/v1"}}}`)
 	before := readFile(settings) + readFile(models)
 	a := mustFindAside(t)
 	if err := a.Connect(); err == nil {
@@ -207,7 +207,7 @@ func TestAsideUnavailableRuntimeCanRegisterProvider(t *testing.T) {
 	if !a.Wired() {
 		t.Fatal("saved provider not registered")
 	}
-	if err := a.Apply("model", "magpie/relay/glm-4.6"); err == nil {
+	if err := a.Apply("model", "magpie-friday/relay/glm-4.6"); err == nil {
 		t.Fatal("unreachable runtime accepted model")
 	}
 	if readFile(settings) != before {
@@ -218,7 +218,7 @@ func TestAsideUnavailableRuntimeCanRegisterProvider(t *testing.T) {
 func TestAsidePreviewIsAPurePlan(t *testing.T) {
 	settings, models := asideHome(t)
 	a := mustFindAside(t)
-	if err := a.Apply("model", "magpie/relay/glm-4.6"); err != nil {
+	if err := a.Apply("model", "magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	record := newAsideConnection(here("")).record
@@ -242,14 +242,14 @@ func TestAsidePreviewIsAPurePlan(t *testing.T) {
 func TestAsideDisconnectRetainsProviderOnFailedRestore(t *testing.T) {
 	_, models := asideHome(t)
 	a := mustFindAside(t)
-	if err := a.Apply("model", "magpie/relay/glm-4.6"); err != nil {
+	if err := a.Apply("model", "magpie-friday/relay/glm-4.6"); err != nil {
 		t.Fatal(err)
 	}
 	asideSet = func(string, string) error { return errors.New("restore refused") }
 	if err := a.Disconnect(); err == nil {
 		t.Fatal("failed restoration reported success")
 	}
-	if _, ok := edit.GetJSON(models, "providers.magpie"); !ok {
+	if _, ok := edit.GetJSON(models, "providers.magpie-friday"); !ok {
 		t.Fatal("provider removed before successful restoration")
 	}
 }

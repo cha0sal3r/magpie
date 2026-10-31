@@ -3,7 +3,7 @@
 // whose conversation can be read has Export Markdown beside Show
 // conversation in its details. In the app it posts sessions/export with the
 // session's agent and id (the server finds the file and saves to Downloads)
-// and the status says where it went; in magpie web the browser downloads
+// and the status says where it went; in magpie-friday web the browser downloads
 // /api/sessions/markdown. It doesn't open or close the row, nor move the
 // page; an agent whose sessions can't be read has no such button. In
 // English and Chinese, Chromium and WebKit, at a narrow width.
@@ -48,7 +48,7 @@ function serve(lang, web, calls) {
     }
     if (url.pathname === "/api/sessions/export") {
       calls.push({ path: "export", method: route.request().method(), agent: url.searchParams.get("agent"), id: url.searchParams.get("id") });
-      return json({ path: "~/Downloads/magpie-session-claude-c-1.md" });
+      return json({ path: "~/Downloads/magpie-friday-session-claude-c-1.md" });
     }
     if (url.pathname === "/api/sessions/transcript") {
       calls.push({ path: "transcript" });
@@ -64,8 +64,8 @@ function serve(lang, web, calls) {
 }
 
 const words = {
-  en: { nav: "Sessions", exp: "Export Markdown", saved: "Saved to ~/Downloads/magpie-session-claude-c-1.md" },
-  zh: { nav: "会话", exp: "导出 Markdown", saved: "已保存到 ~/Downloads/magpie-session-claude-c-1.md" },
+  en: { nav: "Sessions", exp: "Export Markdown", saved: "Saved to ~/Downloads/magpie-friday-session-claude-c-1.md" },
+  zh: { nav: "会话", exp: "导出 Markdown", saved: "已保存到 ~/Downloads/magpie-friday-session-claude-c-1.md" },
 };
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {

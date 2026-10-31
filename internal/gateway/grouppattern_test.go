@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A group whose members are a pattern (#766) sends a request to a model the
@@ -50,7 +50,7 @@ func TestPatternGroupRoutes(t *testing.T) {
 }
 
 // A group whose patterns match nothing served now is named as such, not
-// answered with every model magpie has.
+// answered with every model magpie-friday has.
 func TestEmptyPatternGroupSaysSo(t *testing.T) {
 	fresh(t)
 	if err := provider.SaveGroup(provider.Group{ID: "none", Name: "None", Match: []string{"nobody/*"}}); err != nil {

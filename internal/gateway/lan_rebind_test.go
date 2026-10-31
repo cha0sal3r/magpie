@@ -57,18 +57,18 @@ func TestReboundPageRefused(t *testing.T) {
 		t.Fatal("a browser at a localhost subdomain:", c)
 	}
 	// an agent sends no browser marks, whatever name it was given
-	if c := call("POST", evil, "Authorization", "Bearer magpie", "User-Agent", "claude-cli/2.1"); c != 200 || !reached {
+	if c := call("POST", evil, "Authorization", "Bearer magpie-friday", "User-Agent", "claude-cli/2.1"); c != 200 || !reached {
 		t.Fatal("an agent:", c)
 	}
-	t.Setenv("MAGPIE_PUBLIC_URL", "https://magpie.example.net")
-	if c := call("GET", "magpie.example.net", chrome...); c != 200 || !reached {
+	t.Setenv("MAGPIE_PUBLIC_URL", "https://magpie-friday.example.net")
+	if c := call("GET", "magpie-friday.example.net", chrome...); c != 200 || !reached {
 		t.Fatal("the public URL's host:", c)
 	}
 	_, secrets := newCaller(t, "Page")
 	if c := call("GET", evil, append([]string{"Authorization", "Bearer " + secrets[0]}, chrome...)...); c != 200 || !reached {
 		t.Fatal("with an enabled gateway key:", c)
 	}
-	if c := call("GET", evil, append([]string{"Authorization", "Bearer sk-magpie-wrong"}, chrome...)...); c != http.StatusForbidden || reached {
+	if c := call("GET", evil, append([]string{"Authorization", "Bearer sk-magpie-friday-wrong"}, chrome...)...); c != http.StatusForbidden || reached {
 		t.Fatal("with a wrong key:", c)
 	}
 }

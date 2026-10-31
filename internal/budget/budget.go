@@ -38,11 +38,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/gwbudget"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/cha0sal3r/magpie-friday/internal/access"
+	"github.com/cha0sal3r/magpie-friday/internal/gwbudget"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/settings"
+	"github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
 // sums is what a key's calls came to in a window.
@@ -97,7 +97,7 @@ func slot(keyID string) string { return usage.Path() + "\x00" + keyID }
 
 // counts reports whether r is a call a key's budget counts.
 // A call an app reported itself (#1874) never counts: it didn't go through
-// magpie, and may be a backfill of calls long past.
+// magpie-friday, and may be a backfill of calls long past.
 func counts(r usage.Record) bool { return !r.IsRejected() && !r.IsReported() && r.Computer == "" }
 
 // sumsFor is keyID's sums for each window starting at starts, read from
@@ -310,7 +310,7 @@ func (r *Refusal) Error() string {
 	if !r.Spent {
 		what += fmt.Sprintf(", with %d requests in flight holding the rest", r.InFlight)
 	}
-	return fmt.Sprintf("magpie gateway key %q has used %s for this %s; it resets at %s",
+	return fmt.Sprintf("magpie-friday gateway key %q has used %s for this %s; it resets at %s",
 		r.Key, what, (&access.Limit{Period: r.Period, Days: r.Days, Hours: r.Hours}).Per(), r.Reset.Format("2006-01-02 15:04 MST"))
 }
 

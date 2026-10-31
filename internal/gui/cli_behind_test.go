@@ -10,10 +10,10 @@ import (
 	"testing"
 )
 
-// The window's advice about a copied `magpie` command is a bare Lstat — no
-// version read, because `magpie version` isn't read-only: the old binary
+// The window's advice about a copied `magpie-friday` command is a bare Lstat — no
+// version read, because `magpie-friday version` isn't read-only: the old binary
 // runs its old migrations over the user's real settings first. Only
-// `magpie update`, which the user started, reads versions. The advice can
+// `magpie-friday update`, which the user started, reads versions. The advice can
 // be dismissed, and the dismiss is kept per version: the next app update
 // asks once more.
 func TestCLIBehindIsLstatOnlyAndDismissible(t *testing.T) {
@@ -32,7 +32,7 @@ func TestCLIBehindIsLstatOnlyAndDismissible(t *testing.T) {
 
 	// a copy: the window says so without running anything (nothing here is
 	// executable — a binary would have to be run to report a version)
-	cli := filepath.Join(bin, "magpie")
+	cli := filepath.Join(bin, "magpie-friday")
 	if err := os.WriteFile(cli, []byte("not executable"), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -54,7 +54,7 @@ func TestCLIBehindIsLstatOnlyAndDismissible(t *testing.T) {
 	if got := cliBehind(); got != "" {
 		t.Fatalf("cliBehind = %q after dismiss, want empty", got)
 	}
-	b, err := os.ReadFile(filepath.Join(home, "magpie", cliQuietFile))
+	b, err := os.ReadFile(filepath.Join(home, "magpie-friday", cliQuietFile))
 	if err != nil || string(b) != Version+"\n" {
 		t.Fatalf("dismiss file = %q, %v; want this version, so the next one asks again", b, err)
 	}
@@ -77,7 +77,7 @@ func TestCLIBehindIsLstatOnlyAndDismissible(t *testing.T) {
 
 	// a link, not a copy: quiet even undismissed
 	os.Remove(cli)
-	if err := os.Symlink("/Applications/magpie.app/Contents/MacOS/magpie", cli); err != nil {
+	if err := os.Symlink("/Applications/magpie-friday.app/Contents/MacOS/magpie-friday", cli); err != nil {
 		t.Fatal(err)
 	}
 	cliBehindOnce = new(sync.Once)

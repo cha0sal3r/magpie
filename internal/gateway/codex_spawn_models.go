@@ -8,15 +8,15 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/codexcat"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/codexcat"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // Codex's spawn_agent tool names only the first five models of its
 // catalog to its lead (codex-rs core/src/agent/child_config.rs
 // MAX_SPAWN_AGENT_MODEL_OVERRIDES, in multi_agents_spec.rs
 // spawn_agent_models_description and, with model_catalog_in_context,
-// context/world_state/model_catalog.rs), Codex's own ahead of magpie's,
+// context/world_state/model_catalog.rs), Codex's own ahead of magpie-friday's,
 // though it takes any model of the catalog named in spawn_agent's model
 // argument (find_spawn_agent_model_name). So a lead could put its
 // subagents on five models at most, with "Codex subagents on any model"
@@ -29,7 +29,7 @@ import (
 // spawnMore heads the models spawnAgentModels adds to spawn_agent's
 // description; one that has it already is left as it is. It goes upstream
 // with the rest of the prompt, to OpenAI too when the lead is a ChatGPT
-// account, so it stays neutral: it names neither magpie nor Codex's limit,
+// account, so it stays neutral: it names neither magpie-friday nor Codex's limit,
 // and says nothing of who the agent is.
 const spawnMore = "More models that may be set as `model`:"
 
@@ -40,7 +40,7 @@ const spawnMost = 200
 type spawnChoice struct{ slug, name string }
 
 // spawnAgentModels is body, a Codex request at CodexPath (codexPath) or at
-// /v1/responses (Codex with magpie as its model provider), with its
+// /v1/responses (Codex with magpie-friday as its model provider), with its
 // spawn_agent tool naming every model of the catalog that Codex was handed
 // there, not only the first five. lead is the request's model.
 func spawnAgentModels(r *http.Request, body []byte, lead string, codexPath bool) []byte {

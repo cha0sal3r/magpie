@@ -4,11 +4,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // A plugin's account showing its defaults alone says why on the
-// Providers page, as the app's editor does (gnayiab on X: magpie's TUI in
+// Providers page, as the app's editor does (gnayiab on X: magpie-friday's TUI in
 // WSL had Cursor with Auto alone and nothing said).
 func TestProvidersSayWhyAListFellBack(t *testing.T) {
 	home(t)

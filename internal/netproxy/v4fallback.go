@@ -79,7 +79,7 @@ type v6Conn struct {
 	addr string
 	mu   sync.Mutex
 	read bool // a byte came back
-	shut bool // closed on magpie's side
+	shut bool // closed on magpie-friday's side
 }
 
 func (c *v6Conn) Read(b []byte) (int, error) {
@@ -111,7 +111,7 @@ func (c *v6Conn) seen(n int, err error) {
 		c.read = true
 		return
 	}
-	// a timeout, or a close of magpie's own, says nothing of the path
+	// a timeout, or a close of magpie-friday's own, says nothing of the path
 	if err == nil || c.shut || errors.Is(err, net.ErrClosed) || errors.Is(err, os.ErrDeadlineExceeded) {
 		return
 	}

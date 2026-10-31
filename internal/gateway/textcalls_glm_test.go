@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // glmExec is GLM's own call of Codex's exec, as GLM-5.3-Flash through vLLM
@@ -169,7 +169,7 @@ func TestPluginGLMTextCall(t *testing.T) {
 		io.WriteString(w, `data: {"id":"c1","object":"chat.completion.chunk","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}`+"\n\ndata: [DONE]\n\n")
 	}))
 	req := httptest.NewRequest("POST", "/v1/responses", strings.NewReader(`{"model":"`+pid+`/fake-1","stream":true,"input":"go","tools":[{"type":"custom","name":"exec"}]}`))
-	req.Header.Set("Authorization", "Bearer magpie")
+	req.Header.Set("Authorization", "Bearer magpie-friday")
 	rec := httptest.NewRecorder()
 	New().Handler().ServeHTTP(rec, req)
 	body := rec.Body.String()

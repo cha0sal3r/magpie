@@ -10,7 +10,7 @@ import (
 func TestLocal(t *testing.T) {
 	for addr, want := range map[string]bool{
 		"127.0.0.1:80": true, "[::1]:443": true, "localhost:3425": true, "LOCALHOST.:1": true,
-		"magpie.localhost:80": true, "0.0.0.0:80": true, "[::]:80": true, "127.8.0.1:9": true,
+		"magpie-friday.localhost:80": true, "0.0.0.0:80": true, "[::]:80": true, "127.8.0.1:9": true,
 		"models.dev:443": false, "api.kimi.com:443": false, "10.0.0.132:22": false,
 		"192.168.1.2:80": false, "localhost.example.com:80": false, "decide.test:443": false,
 	} {

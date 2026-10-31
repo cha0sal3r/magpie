@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	stats "github.com/yetone/magpie/internal/usage"
+	stats "github.com/cha0sal3r/magpie-friday/internal/usage"
 )
 
-// magpie usage --last and --days read a rolling window ending now (#2075):
+// magpie-friday usage --last and --days read a rolling window ending now (#2075):
 // what --csv rows and the summary both cover, where the presets begin at a
 // local midnight.
 func TestUsageRollingWindow(t *testing.T) {

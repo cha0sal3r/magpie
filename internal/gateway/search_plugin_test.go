@@ -8,15 +8,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gwtool"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/cha0sal3r/magpie-friday/internal/gwtool"
+	"github.com/cha0sal3r/magpie-friday/internal/provider"
 )
 
 // The tool point's web search with plugins/search on and off, for a user
 // with a search API and a Kimi Code plan that searches by itself. On,
-// magpie offers its web_search to a model that can't search and answers
+// magpie-friday offers its web_search to a model that can't search and answers
 // it with the API or the plan's own search service. Off, it offers none,
-// the request goes to the vendor without it, and a search asked of magpie
+// the request goes to the vendor without it, and a search asked of magpie-friday
 // anyway (the search MCP server, Codex's in ChatGPT's place) says the
 // plugin is off without asking the API or the plan. A vendor that
 // searches by itself is sent its own web_search either way.
@@ -66,10 +66,10 @@ func TestSearchOnAndOff(t *testing.T) {
 
 	// on
 	if !CanSearch() || !canSearchFor(provider.Provider{}) || !searchesOwn(plan) {
-		t.Fatal("on: magpie's search not offered")
+		t.Fatal("on: magpie-friday's search not offered")
 	}
 	if !strings.Contains(ask(false), "web_search") {
-		t.Error("on: a model that can't search wasn't given magpie's web_search")
+		t.Error("on: a model that can't search wasn't given magpie-friday's web_search")
 	}
 	if !strings.Contains(ask(true), "web_search_20250305") {
 		t.Error("on: a vendor that searches by itself wasn't sent its own web_search")
@@ -93,10 +93,10 @@ func TestSearchOnAndOff(t *testing.T) {
 	// off
 	withoutSearch(t)
 	if CanSearch() || canSearchFor(provider.Provider{}) || canSearchFor(plan) || searchesOwn(plan) {
-		t.Error("off: magpie's search still offered")
+		t.Error("off: magpie-friday's search still offered")
 	}
 	if sent := ask(false); strings.Contains(sent, "web_search") {
-		t.Errorf("off: magpie's web_search offered: %s", sent)
+		t.Errorf("off: magpie-friday's web_search offered: %s", sent)
 	}
 	if !strings.Contains(ask(true), "web_search_20250305") {
 		t.Error("off: a vendor that searches by itself lost its own web_search")
@@ -118,12 +118,12 @@ func TestSearchOnAndOff(t *testing.T) {
 	}
 }
 
-// The magpie serving the gateway, and only while it serves, offers
-// magpie's tools only as their plugins serve them (gwtool.Gate): with
+// The magpie-friday serving the gateway, and only while it serves, offers
+// magpie-friday's tools only as their plugins serve them (gwtool.Gate): with
 // plugins/search off, not its web search.
 func TestServingGatesTools(t *testing.T) {
 	fresh(t)
-	t.Setenv("MAGPIE_ADDR", "127.0.0.1:0") // never where a magpie runs
+	t.Setenv("MAGPIE_ADDR", "127.0.0.1:0") // never where a magpie-friday runs
 	searchOn()
 	defer func() { searchOn = gwtool.Serve(gwtool.WebSearch) }()
 	if !gwtool.Served(gwtool.WebSearch) {
