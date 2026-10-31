@@ -10,15 +10,15 @@ targets are in [Install](reference.md#install).
 
 magpie-friday is a fork: `origin` is ours, `upstream` is `yetone/magpie`. `main`
 mirrors upstream and carries no commits of its own; the work lives on a
-feature branch (here `provider-429-cooldown`).
+feature branch (here `friday`).
 
 ```sh
 git fetch upstream
 git checkout main && git merge --ff-only upstream/main
-git checkout provider-429-cooldown
+git checkout friday
 git rebase main          # fix conflicts, then: git add <file> && git rebase --continue
 go build -tags nogui ./...   # at least a compile check before you push
-git push --force-with-lease origin provider-429-cooldown
+git push --force-with-lease origin friday
 ```
 
 - `main` is a clean mirror, so bringing it up to upstream is always a
