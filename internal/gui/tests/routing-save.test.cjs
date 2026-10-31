@@ -63,7 +63,7 @@ const STAYS = [["", "Auto", "自动"], ["session", "Session", "整个会话"], [
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
   for (const lang of ["en", "zh"]) {
     const zh = lang === "zh";
-    const L = { routing: zh ? "路由" : "Routing", stays: zh ? "会话保持" : "Stays", unsaved: zh ? "未保存" : "unsaved", save: zh ? "保存" : "Save", cancel: zh ? "取消" : "Cancel" };
+    const L = { routing: zh ? "密钥与账户" : "Keys & accounts", stays: zh ? "会话保持" : "Stays", unsaved: zh ? "未保存" : "unsaved", save: zh ? "保存" : "Save", cancel: zh ? "取消" : "Cancel" };
     for (const p of [sub, relay]) {
       test(`${engine} ${lang}: ${p.name}'s Routing and Stays are made with its Save, not at each click`, async (t) => {
         const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: process.env.PLAYWRIGHT_CHANNEL || "chromium" }));

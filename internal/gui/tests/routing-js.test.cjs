@@ -52,7 +52,7 @@ function serve(lang, posts, off = []) {
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
   for (const lang of ["en", "zh"]) {
     const zh = lang === "zh";
-    const L = { routing: zh ? "路由" : "Routing", save: zh ? "保存" : "Save" };
+    const L = { routing: zh ? "密钥与账户" : "Keys & accounts", save: zh ? "保存" : "Save" };
     test(`${engine} ${lang}: a JS plugin's routings are offered, said and saved; one no plugin serves shows as it is`, async (t) => {
       const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: process.env.PLAYWRIGHT_CHANNEL || "chromium" }));
       t.after(() => browser.close());

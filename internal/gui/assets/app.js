@@ -8063,10 +8063,8 @@ document.addEventListener("click", (e) => {
 // which opens it: none hides behind a fold
 function advancedSet(d, p) {
   return (d.headers || []).some(([k]) => (k || "").trim()) || !!(d.extraBody || "").trim() ||
-    !!d.proxyMode || Object.values(d.accountProxies || {}).some((x) => x?.mode) ||
-    [d.concurrency, d.queueLimit, d.queueWait, d.maxRPM, d.priceRate, d.contexts, d.outputs, d.compacts].some((v) => String(v ?? "").trim()) ||
-    !!(d.searches || d.authHeader || d.passUserAgent || d.unredacted || d.pinUpstream || d.nativeCompaction || d.balanceToken || d.limitRestOff) ||
-    !!d.fallback?.length || !!p?.balanceToken?.set;
+    !!(d.searches || d.authHeader || d.passUserAgent || d.unredacted || d.pinUpstream || d.balanceToken) ||
+    !!p?.balanceToken?.set;
 }
 function priceRateError(ed) {
   shown(ed.querySelector("input.price-rate"))?.focus({ preventScroll: true });
@@ -9376,6 +9374,30 @@ function drawEditor(p, presetID) {
   const advIn = el("div", "inner");
   adv.append(advIn);
 
+  // the provider's own routing — keys & accounts, cross-provider fallback and
+  // model families — in a fold of its own, open when one is set
+  const rout = el("details", "more routing");
+  rout.open = !!(p?.fallback?.length) || !!(p?.routing);
+  rout.append(el("summary", "", t("Routing")));
+  const routIn = el("div", "inner");
+  rout.append(routIn);
+
+  // how long a request the models take and how it is compacted
+  const modelDesc = el("details", "more model-desc");
+  modelDesc.open = [draft.contexts, draft.outputs, draft.compacts].some((v) => String(v ?? "").trim());
+  modelDesc.append(el("summary", "", t("Model description")));
+  const modelDescIn = el("div", "inner");
+  modelDesc.append(modelDescIn);
+
+  // proxy, concurrency and price: how requests are sent, limited and priced
+  const netLim = el("details", "more net-lim");
+  netLim.open = !!draft.proxyMode || Object.values(draft.accountProxies || {}).some((x) => x?.mode) ||
+    [draft.concurrency, draft.queueLimit, draft.queueWait, draft.maxRPM, draft.priceRate].some((v) => String(v ?? "").trim()) ||
+    !!draft.limitRestOff;
+  netLim.append(el("summary", "", t("Network & limits")));
+  const netLimIn = el("div", "inner");
+  netLim.append(netLimIn);
+
   if (p?.account) {
     // the sign-in belongs to the agent; magpie-friday only borrows it
     const a = p.account;
@@ -9383,7 +9405,7 @@ function drawEditor(p, presetID) {
       // no Claude Code on Windows: the gateway runs the one in WSL
       const via = a.wsl ? t("Runs through WSL · {distro}: Claude Code there signs in and answers; Windows has none of its own.", { distro: a.wsl }) + " " : "";
       ed.append(...field(t("Accounts"), renderAccounts(a, p), via + (p.routing ? t("Tick every account to use; Routing says how requests spread over them.") : subOf(a.agent).single ? t("{agent} keeps one account; the gateway runs it for every request. Signing in to another replaces it.", { agent: a.agentName }) : subOf(a.agent).own && (a.logins || []).some((l) => l.own) ? t("The gateway uses the first. Tick more and it moves on to the next when the one before it is out of quota. {agent} itself stays signed in as it is.", { agent: a.agentName && a.agentName !== a.agent ? a.agentName : p.name }) : subOf(a.agent).own || subOf(a.agent).plugin ? t("The gateway uses the first. Tick more and it moves on to the next when the one before it is out of quota.") : t("{agent} signs in to the first. Tick more and the gateway moves on to the next when the one before it is out of quota. Sessions already running keep theirs until restarted.", { agent: a.agentName }))));
-      if ((a.logins || []).filter((l) => l.active || l.on).length > 1) ed.append(...renderRouting(p));
+      if ((a.logins || []).filter((l) => l.active || l.on).length > 1) routIn.append(...renderRouting(p));
       if (p.move) ed.append(...renderMove(p));
     } else {
       const acct = el("div", "acct");
@@ -9395,25 +9417,28 @@ function drawEditor(p, presetID) {
     // a subscription's window too: Codex's backend says 272K for models
     // that take 872K (#120)
     const cx = input(draft.contexts || "", t("e.g. 128k · or gpt-6=1m, comma separated"));
-    advIn.append(...field(t("Context window"), contextPicks(p, cx), t("How long a request the models take, told to the agents; empty leaves it to the vendor and models.dev")));
-    advIn.append(...outputField());
-    advIn.append(...compactField());
-    if (p.carriesCompaction) advIn.append(...nativeCompactionField(() => true)[0]);
-    advIn.append(...field(t("Fallback"), renderFallback(p), fallbackHint(p)));
-    advIn.append(...routeField(p));
+    modelDescIn.append(...field(t("Context window"), contextPicks(p, cx), t("How long a request the models take, told to the agents; empty leaves it to the vendor and models.dev")));
+    modelDescIn.append(...outputField());
+    modelDescIn.append(...compactField());
+    if (p.carriesCompaction) modelDescIn.append(...nativeCompactionField(() => true)[0]);
+    routIn.append(...field(t("Fallback"), renderFallback(p), fallbackHint(p)));
+    routIn.append(...routeField(p));
     const proxies = el("div", "stack");
     proxies.append(proxyPicker());
     const perAccount = subOf(a.agent) ? accountProxyPicker(a) : null;
     if (perAccount) proxies.append(perAccount);
-    advIn.append(...field(t("Proxy"), proxies));
-    advIn.append(...concurrencyField(p));
-    advIn.append(...priceRateField());
+    netLimIn.append(...field(t("Proxy"), proxies));
+    netLimIn.append(...concurrencyField(p));
+    netLimIn.append(...priceRateField());
     if (p.cline) advIn.append(...upstreamField());
     ed.append(...pluginOptionsField(subOf(a.agent)));
     // a plugin's provider is reached inside magpie-friday: its plugin:// URLs go
     // nowhere to show or test
     const urls = [p.chat, p.responses, p.anthropic].filter(Boolean);
     if (urls.length && !urls.some((u) => u.startsWith("plugin://"))) ed.append(...field(t("Endpoints"), renderEndpoints(p, p)));
+    if (routIn.childElementCount) ed.append(rout);
+    if (modelDescIn.childElementCount) ed.append(modelDesc);
+    if (netLimIn.childElementCount) ed.append(netLim);
     ed.append(adv);
     const bar = el("div", "bar");
     // removing only hides it from magpie-friday; the agent stays signed in
@@ -9600,7 +9625,7 @@ function drawEditor(p, presetID) {
   };
   if (addressField) ed.append(...addressField);
   if (p?.keyList?.length) ed.append(...field(t("Accounts"), renderKeyAccounts(p), p.routing ? t("Tick every key to use; Routing says how requests spread over them.") : t("Tick every key to use. Requests go to the first; when it runs out of quota or hits a rate limit, the next ticked key takes over.")));
-  if (p?.keyList?.filter((k) => k.on).length > 1) ed.append(...renderRouting(p));
+  if (p?.keyList?.filter((k) => k.on).length > 1) routIn.append(...renderRouting(p));
   else if (vertex) ed.append(...vertexFields());
   else ed.append(...field(t("API key"), keyWrap, isNew ? t("Kept in ~/.config/magpie-friday/providers.json, readable by you alone. Nothing is read from your shell.") : ""));
 
@@ -9622,9 +9647,9 @@ function drawEditor(p, presetID) {
   proxies.append(proxyPicker());
   const perKey = keyProxyPicker(p);
   if (perKey) proxies.append(perKey);
-  advIn.append(...field(t("Proxy"), proxies));
-  advIn.append(...concurrencyField(p));
-  advIn.append(...priceRateField());
+  netLimIn.append(...field(t("Proxy"), proxies));
+  netLimIn.append(...concurrencyField(p));
+  netLimIn.append(...priceRateField());
 
   if (p?.cline || (isNew && pr?.id === "clinepass")) advIn.append(...upstreamField());
 
@@ -9710,7 +9735,7 @@ function drawEditor(p, presetID) {
   if (custom) {
     const [rtk, rcb] = tick(t("Set it aside when out of quota or rate limited"), !draft.limitRestOff);
     rcb.onchange = () => { draft.limitRestOff = !rcb.checked; };
-    advIn.append(...field(t("Rests"), rtk, t("Off: a 429 or an out-of-quota refusal doesn't rest its keys, and the next request is sent to it as usual. For a relay whose limits pass in a moment.")));
+    netLimIn.append(...field(t("Rests"), rtk, t("Off: a 429 or an out-of-quota refusal doesn't rest its keys, and the next request is sent to it as usual. For a relay whose limits pass in a moment.")));
   }
 
   // a vendor that tells the whole account's balance only to a token of its
@@ -9860,18 +9885,18 @@ function drawEditor(p, presetID) {
     // the window agents are told a model has, over what the vendor or
     // models.dev says: one for all of them, and model=size for one
     const cx = input(draft.contexts || "", t("e.g. 128k · or gpt-6=1m, comma separated"));
-    if (!decideOnly(p || pr)) advIn.append(...field(t("Context window"), contextPicks(p, cx), t("How long a request the models take, told to the agents; empty leaves it to the vendor and models.dev")));
-    if (!decideOnly(p || pr)) advIn.append(...outputField());
+    if (!decideOnly(p || pr)) modelDescIn.append(...field(t("Context window"), contextPicks(p, cx), t("How long a request the models take, told to the agents; empty leaves it to the vendor and models.dev")));
+    if (!decideOnly(p || pr)) modelDescIn.append(...outputField());
     if (!decideOnly(p || pr)) {
-      advIn.append(...compactField());
+      modelDescIn.append(...compactField());
       const [row, refresh] = nativeCompactionField(carriesCompaction);
-      advIn.append(...row);
+      modelDescIn.append(...row);
       showCompaction = refresh;
     }
   }
   if (p && !decideOnly(p)) {
-    advIn.append(...field(t("Fallback"), renderFallback(p), fallbackHint(p)));
-    advIn.append(...routeField(p));
+    routIn.append(...field(t("Fallback"), renderFallback(p), fallbackHint(p)));
+    routIn.append(...routeField(p));
   }
   else if (custom) {
     const ex = input(draft.extra.join(", "), t("model ids, comma separated · e.g. gpt-5.5, claude-sonnet-5"));
@@ -9937,6 +9962,9 @@ function drawEditor(p, presetID) {
     refreshEndpoints();
     ed.append(...row);
   }
+  if (routIn.childElementCount) ed.append(rout);
+  if (modelDescIn.childElementCount) ed.append(modelDesc);
+  if (netLimIn.childElementCount) ed.append(netLim);
   ed.append(adv);
 
   if (custom) {
@@ -11977,7 +12005,7 @@ function renderRouting(p) {
   drawRouting();
   drawSink();
   drawStays();
-  return [el("label", "", t("Routing")), rWrap, kLabel, kWrap, el("label", "", t("Stays")), sWrap];
+  return [el("label", "", t("Keys & accounts")), rWrap, kLabel, kWrap, el("label", "", t("Stays")), sWrap];
 }
 
 // renderFallback: where requests go when this provider can't take them —

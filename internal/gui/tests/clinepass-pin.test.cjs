@@ -95,7 +95,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       // the Cline plugin's provider has it too, ticked as saved; unticked,
       // Save posts it off
       await page.locator(".row.provider", { hasText: /^Cline(?!Pass)/ }).first().click();
-      await page.locator(".editor input.price-rate").waitFor();
+      await page.locator(".editor label.pin-upstream").waitFor();
       const ptick = page.locator(".editor label.pin-upstream");
       assert.equal((await ptick.textContent()).trim(), w.tick);
       assert.equal(await ptick.locator("input").isChecked(), true, "pinned as saved");
@@ -108,8 +108,8 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       assert.equal(posts.at(-1).body.pinUpstream, false);
 
       await page.locator(".row.provider", { hasText: "Relay" }).click();
-      // Relay sets nothing under Advanced, so its editor opens folded
-      await page.locator(".editor details.advanced:not([open]) input.price-rate").waitFor({ state: "attached" });
+      // Relay sets nothing under Network & limits, so its editor opens folded
+      await page.locator(".editor details.net-lim:not([open]) input.price-rate").waitFor({ state: "attached" });
       assert.equal(await page.locator(".editor label.pin-upstream").count(), 0, "only a Cline provider has it");
       assert.deepEqual(errors, []);
     });

@@ -1,10 +1,10 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // zoecats (Discord #feedback, 10-25): a local aggregator answers "quota
 // exhausted" for the moment it switches upstreams, and magpie-friday set its key
-// aside for half an hour. A provider the user added has, under Advanced,
+// aside for half an hour. A provider the user added has, under Network & limits,
 // "Set it aside when out of quota or rate limited", ticked by default and
 // with a note. Unticked and saved, it posts limitRestOff: true; one saved
-// so opens unticked, with Advanced open, and ticked again posts false. A
+// so opens unticked, with Network & limits open, and ticked again posts false. A
 // preset's and a signed-in account have no such row, and a preset's Save
 // sends none. A checkbox, never a native select. Every language, wide and
 // narrow.
@@ -86,7 +86,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         await page.locator(".editor .bar").waitFor();
         return { page, errors, posts, w };
       };
-      const adv = (page) => page.locator(".editor details.advanced");
+      const adv = (page) => page.locator(".editor details.net-lim");
       const unfold = async (page) => {
         await adv(page).waitFor({ state: "attached" });
         if (!(await adv(page).evaluate((d) => d.open))) await adv(page).locator(":scope > summary").click();
@@ -106,7 +106,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
           const missing = await page.evaluate(([lang, ks]) => ks.filter((k) => !(I18N[lang] || {})[k]), [lang, strings]);
           assert.deepEqual(missing, [], `every string has its ${lang}`);
         }
-        assert.equal(await adv(page).evaluate((d) => d.open), false, "Advanced stays folded while it is as by default");
+        assert.equal(await adv(page).evaluate((d) => d.open), false, "Network & limits stays folded while it is as by default");
         await unfold(page);
         assert.equal(await row(page, w).isVisible(), true);
         assert.equal(await box(page, w).isChecked(), true, "ticked by default");
@@ -124,9 +124,9 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         assert.deepEqual(errors, []);
       });
 
-      test(`${engine} ${lang} ${width}: one saved not to rest opens unticked with Advanced open, and ticked is saved to rest`, async (t) => {
+      test(`${engine} ${lang} ${width}: one saved not to rest opens unticked with Network & limits open, and ticked is saved to rest`, async (t) => {
         const { page, errors, posts, w } = await open(t, "Kept Relay");
-        assert.equal(await adv(page).evaluate((d) => d.open), true, "Advanced opens with it set");
+        assert.equal(await adv(page).evaluate((d) => d.open), true, "Network & limits opens with it set");
         assert.equal(await box(page, w).isChecked(), false);
         await box(page, w).scrollIntoViewIfNeeded();
         await box(page, w).check();

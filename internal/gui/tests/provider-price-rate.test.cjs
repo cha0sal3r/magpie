@@ -14,7 +14,7 @@ const assets = path.resolve(__dirname, "../assets");
 // the editor folds what few need under Advanced, this field among them:
 // opened as a reader would, unless something set in it opened it already
 const unfold = async (page) => {
-  const adv = page.locator(".editor details.advanced");
+  const adv = page.locator(".editor details.net-lim");
   await adv.waitFor({ state: "attached" });
   if (!(await adv.evaluate((d) => d.open))) await adv.locator(":scope > summary").click();
 };

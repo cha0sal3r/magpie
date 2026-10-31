@@ -47,7 +47,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       await page.goto("http://magpie.test/?view=providers");
       await page.locator(".row.provider", { hasText: "Acme" }).first().click();
       // Fallback is under Advanced
-      { const adv = page.locator(".editor details.advanced"); await adv.waitFor({ state: "attached" }); if (!(await adv.evaluate((d) => d.open))) await adv.locator(":scope > summary").click(); }
+      { const adv = page.locator(".editor details.routing"); await adv.waitFor({ state: "attached" }); if (!(await adv.evaluate((d) => d.open))) await adv.locator(":scope > summary").click(); }
       const box = page.locator(".editor .fallback");
       await box.locator("input").focus();
       const chips = box.locator(".mchips .mchip");

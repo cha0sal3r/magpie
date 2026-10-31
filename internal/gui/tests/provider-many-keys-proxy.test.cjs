@@ -72,7 +72,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       await page.goto("http://magpie.test/?view=providers");
       await page.locator(".row.provider", { hasText: "Relay" }).first().click();
       // Proxy is under Advanced, open already when one is set
-      { const adv = page.locator(".editor details.advanced"); await adv.waitFor({ state: "attached" }); if (!(await adv.evaluate((d) => d.open))) await adv.locator(":scope > summary").click(); }
+      { const adv = page.locator(".editor details.net-lim"); await adv.waitFor({ state: "attached" }); if (!(await adv.evaluate((d) => d.open))) await adv.locator(":scope > summary").click(); }
       const more = page.locator(".editor .acct-proxies > .acct-proxy-more");
       await more.waitFor();
       const lines = () => page.locator(".editor .acct-proxy").evaluateAll((ls) => ls.map((l) => l.dataset.key));

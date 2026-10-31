@@ -41,6 +41,16 @@ make cli     # terminal-only, no cgo: everything `magpie-friday serve` and `daem
 cgo and the platform webview. A headless service only needs `make cli`, which
 leaves `./magpie-friday` in the repository.
 
+Don't point Go's caches into the repository tree. A sandboxed or offline build
+may set `GOCACHE="$PWD/.gocache" GOMODCACHE="$PWD/.gomodcache"` to dodge a
+read-only default cache; the `.gocache`/`.gomodcache` (and any `.verification/`)
+directories that leaves behind are not excluded by the `i18n-keys` test's
+whole-repo walk (`internal/gui/tests/i18n-keys.test.cjs`), so their vendored
+`.go` files read as project source and make `a plugin's words are its own`
+fail with false collisions. Point those caches at a temp directory outside the
+repo, or delete them before running the test — `chmod -R u+w` them first, Go
+writes them read-only.
+
 ## 3 · Put the command on PATH — link it, don't copy it
 
 `go install github.com/cha0sal3r/magpie-friday@latest` installs to `GOBIN`. If you
