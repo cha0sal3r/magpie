@@ -51,9 +51,10 @@ The strategy's five parts:
   the family's listed models first, then every model the provider serves that
   belongs to the family but the family did not name, newest version first, so a
   model the channel adds or removes joins or leaves the fallback without an edit.
-  A model falls back within its own family alone — it never climbs to a newer
-  model and never moves on to another family, so a series with a single member
-  has no fallback beyond itself. Models listed
+  A model falls back within its own family alone, in the family's own order — a
+  fallback may run on to a newer model as well as an older one — but it never
+  moves on to another family, so a series with a single member has no fallback
+  beyond itself. Models listed
   in `ToolExcluded` are skipped on tool calls. This is ordinary gateway candidate
   fallback: only errors the gateway classifies as retryable move to the next
   model, the failed model is rested using the normal failure policy, and any
@@ -63,25 +64,18 @@ The strategy's five parts:
   direct routes; routing-group members retain the group's own ordering and
   fallback semantics.
 
-  **Within-family fallback is the invariant.** The current membership test
-  breaks it for families whose names overlap as substrings: `routeFamilyHas`
-  and `routeFamilyMembers` both accept a model whose id merely *contains* the
-  family's name (`strings.Contains(model, fam.Name)`), and `routeChain` stops at
-  the first family whose name matches, with no most-specific-family tie-break.
-  When a broader name is listed before a narrower one, it claims the narrower
-  families' models as its own, and its member list — the listed models, then
-  every served model whose id contains the name — then moves a model on into
-  another family. For example, families whose names stem from Anthropic's legacy
-  and current ids (`claude` from `claude-3-5-sonnet`, `claude-sonnet`,
-  `claude-opus`) listed with `claude` first plan a `claude-opus-5` request as
-  `claude-opus-5` then `claude-sonnet-4`. The generator's version-descending
-  order usually puts such a broad legacy name last, so the common Anthropic case
-  happens not to leak, but nothing enforces it and a hand-written order exposes
-  it. This must be fixed: a model belongs to exactly one family, the most
-  specific one matching, and `routeFamilyMembers` derives members from that
-  family alone. `TestRouteChainStaysWithinFamily` and
-  `TestRouteDoesNotLeaveItsFamily` enforce the invariant only for families whose
-  names do not overlap; no test covers overlapping names.
+  **Within-family fallback is the invariant, enforced by most-specific
+  matching.** A model belongs to exactly one family — the one that matches it
+  most specifically (`owningFamily`): an explicit `models` listing first, else
+  the longest family name that is a substring of the model's id, `exclude`
+  overriding both. `routeChain` falls back only within that family, to the
+  members after the asked model in the family's own order (which may be newer
+  or older), and `routeFamilyMembers` derives members only for the family that
+  owns them, so a broad name (`claude`, from legacy `claude-3-5-sonnet`) never
+  takes a narrower name's models (`claude-opus`, `claude-sonnet`).
+  `TestRouteChainStaysWithinFamily` and `TestRouteDoesNotLeaveItsFamily` cover
+  non-overlapping names, and `TestRouteChainMostSpecificFamily` and
+  `TestRouteFamilyDerivedStaysSpecific` cover overlapping names.
 - Cooldown ([`route_router.go`](../../internal/gateway/route_router.go)): a 429
   cools only the model that failed, for `cooldown.seconds` (60 by default) — a
   `neverCool` model never cools, and a `no429` model is not cooled by a 429 — and

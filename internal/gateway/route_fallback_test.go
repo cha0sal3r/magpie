@@ -158,6 +158,57 @@ func TestRouteChainStaysWithinFamily(t *testing.T) {
 	}
 }
 
+// A broader family name that is a substring of a narrower one must not claim
+// the narrower family's models, whatever the list order: routeChain used to
+// stop at the first name that matched by substring, so "claude" listed first
+// swallowed claude-opus-5 and planned it to fall back to claude-sonnet-4.
+func TestRouteChainMostSpecificFamily(t *testing.T) {
+	pol := provider.RoutePolicy{
+		Family: provider.RouteFamily{
+			Families: []provider.RouteFamilyList{
+				{Name: "claude", Models: []string{"claude-3-5-sonnet"}},
+				{Name: "claude-sonnet", Models: []string{"claude-sonnet-4"}},
+				{Name: "claude-opus", Models: []string{"claude-opus-5"}},
+			},
+		},
+	}
+	avail := []string{"claude-3-5-sonnet", "claude-sonnet-4", "claude-opus-5"}
+	for _, tc := range []struct {
+		model string
+		want  []string
+	}{
+		{"claude-opus-5", []string{"claude-opus-5"}},
+		{"claude-sonnet-4", []string{"claude-sonnet-4"}},
+		{"claude-3-5-sonnet", []string{"claude-3-5-sonnet"}},
+	} {
+		if got := routeChain(pol, avail, tc.model, false); !slices.Equal(got, tc.want) {
+			t.Errorf("routeChain(%q) = %v, want %v", tc.model, got, tc.want)
+		}
+	}
+}
+
+// The same for derived families, as the generator makes them for Anthropic's
+// legacy and current ids: a listless broad name derives only its own models
+// and never takes a more-specific name's models.
+func TestRouteFamilyDerivedStaysSpecific(t *testing.T) {
+	pol := provider.RoutePolicy{
+		Family: provider.RouteFamily{
+			Families: []provider.RouteFamilyList{
+				{Name: "claude"},
+				{Name: "claude-opus"},
+				{Name: "claude-sonnet"},
+			},
+		},
+	}
+	avail := []string{"claude-3-5-sonnet", "claude-opus-5", "claude-sonnet-4"}
+	if got := routeChain(pol, avail, "claude-opus-5", false); !slices.Equal(got, []string{"claude-opus-5"}) {
+		t.Errorf("claude-opus-5 chain = %v, want itself alone", got)
+	}
+	if got := routeChain(pol, avail, "claude-3-5-sonnet", false); !slices.Equal(got, []string{"claude-3-5-sonnet"}) {
+		t.Errorf("claude-3-5-sonnet chain = %v, want itself alone", got)
+	}
+}
+
 func routeProvider(t *testing.T, upstream http.Handler) {
 	t.Helper()
 	restingUntil.Lock()

@@ -10,10 +10,10 @@ import (
 )
 
 // routeChain is the policy's model-family fallback order. An alias starts
-// at its mapped primary; a concrete model only falls through to
-// lower-priority siblings of its own family, never upgrades and never moves
-// on to another family: each family falls back within itself alone, so a
-// series with a single member has no fallback beyond itself. A family that
+// at its mapped primary; a concrete model falls through to the members after
+// it in its own family's order, which may be newer or older models, but
+// never on to another family: each family falls back within itself alone, so
+// a series with a single member has no fallback beyond itself. A family that
 // names no models is derived from avail, the provider's own model list, so a
 // model the channel adds later falls back without an edit. Models the policy
 // says do not take tools are omitted from a request carrying tools.
@@ -32,11 +32,8 @@ func routeChain(pol provider.RoutePolicy, avail []string, model string, tools bo
 		primary = bestTarget
 	}
 	var out []string
-	for _, fam := range pol.Family.Families {
-		if !routeFamilyHas(fam, primary) {
-			continue
-		}
-		members := routeFamilyMembers(fam, avail)
+	if fam := owningFamily(pol, primary); fam >= 0 {
+		members := routeFamilyMembers(pol, fam, avail)
 		if at := slices.Index(members, primary); at >= 0 {
 			out = append(out, members[at:]...)
 		} else {
@@ -45,7 +42,6 @@ func routeChain(pol provider.RoutePolicy, avail []string, model string, tools bo
 			out = append(out, primary)
 			out = append(out, members...)
 		}
-		break
 	}
 	if len(out) == 0 {
 		out = []string{primary}
@@ -57,28 +53,43 @@ func routeChain(pol provider.RoutePolicy, avail []string, model string, tools bo
 	return out
 }
 
-// routeFamilyHas is whether a model belongs to the family: its id contains
-// the family's name, unless the family names it in Exclude. A model the
-// family lists explicitly still counts when its id does not contain the name.
-func routeFamilyHas(fam provider.RouteFamilyList, model string) bool {
-	if slices.Contains(fam.Exclude, model) {
-		return false
+// owningFamily is the index of the family a model belongs to: the one that
+// matches it most specifically. An exact Models listing beats a name that is
+// a substring of the model's id, and among substring matches the longest name
+// wins (ties keep the family's list order); Exclude overrides both. -1 when
+// none matches. Choosing the most specific family is what keeps a model's
+// fallback inside its own family: a broader name ("claude") no longer claims
+// a model a narrower one ("claude-opus") also matches.
+func owningFamily(pol provider.RoutePolicy, model string) int {
+	sub, subLen := -1, 0
+	for i, fam := range pol.Family.Families {
+		if slices.Contains(fam.Exclude, model) {
+			continue
+		}
+		if slices.Contains(fam.Models, model) {
+			return i
+		}
+		if strings.Contains(model, fam.Name) && len(fam.Name) > subLen {
+			sub, subLen = i, len(fam.Name)
+		}
 	}
-	return slices.Contains(fam.Models, model) || strings.Contains(model, fam.Name)
+	return sub
 }
 
 // routeFamilyMembers is the family's members in fallback order: the listed
-// models first, then every other model the provider serves whose id contains
-// the family's name, newest version first. A family that lists none is
-// derived entirely from the provider's list, so a model the channel adds or
-// removes is picked up without an edit to the file.
-func routeFamilyMembers(fam provider.RouteFamilyList, avail []string) []string {
-	out := slices.Clone(fam.Models)
+// models first, then every other model the provider serves that belongs to
+// this family and no more-specific one, newest version first. A family that
+// lists none is derived entirely from the provider's list, so a model the
+// channel adds or removes is picked up without an edit to the file, and one
+// family never takes another family's model.
+func routeFamilyMembers(pol provider.RoutePolicy, fam int, avail []string) []string {
+	out := slices.Clone(pol.Family.Families[fam].Models)
 	var fresh []string
 	for _, m := range avail {
-		if strings.Contains(m, fam.Name) && !slices.Contains(fam.Models, m) && !slices.Contains(fam.Exclude, m) {
-			fresh = append(fresh, m)
+		if slices.Contains(out, m) || owningFamily(pol, m) != fam {
+			continue
 		}
+		fresh = append(fresh, m)
 	}
 	slices.SortStableFunc(fresh, provider.VersionDesc)
 	return append(out, fresh...)

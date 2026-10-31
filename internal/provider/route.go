@@ -32,10 +32,10 @@ type RoutePolicy struct {
 }
 
 // RouteFamily is the model-family fallback plan: an alias starts at its
-// mapped model, and a concrete model falls through to lower-priority
-// siblings of its own family only — never up and never on to another
-// family, each family falling back within itself alone — so a series with a
-// single member has no fallback beyond itself.
+// mapped model, and a concrete model falls through to the members after it
+// in its own family's order, which may be newer or older models, but never
+// on to another family — each family falls back within itself alone, so a
+// series with a single member has no fallback beyond itself.
 type RouteFamily struct {
 	// Aliases maps a model alias to the concrete model it starts at
 	// ("gpt" → "gpt-6-astra").
